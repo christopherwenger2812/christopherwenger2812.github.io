@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="app-version" content="2026.11.13-2">
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Space">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M20 34l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <title>Christopher’s All in One App</title>
+    <script>
+        // Theme, Akzentfarbe und Dichte vor dem ersten Rendern setzen (verhindert Aufblitzen)
+        try {
+            const r = document.documentElement, t = localStorage.getItem('organizer_theme'), c = JSON.parse(localStorage.getItem('organizer_cfg') || '{}');
+            r.dataset.theme = ['midnight', 'white', 'ocean', 'emerald'].includes(t) ? t : 'midnight';
+            if (c.accent) r.style.setProperty('--accent', c.accent);
+            if (c.density) r.dataset.density = c.density;
+        } catch (e) { document.documentElement.dataset.theme = 'midnight'; }
+    </script>
+    <script>
+        // App-Icon für den Home-Bildschirm (iOS/Android) zur Laufzeit erzeugen
+        try {
+            const c = document.createElement('canvas'); c.width = c.height = 180;
+            const x = c.getContext('2d'), g = x.createLinearGradient(0, 180, 180, 0);
+            g.addColorStop(0, '#4f46e5'); g.addColorStop(1, '#10b981');
+            x.fillStyle = g; x.fillRect(0, 0, 180, 180);
+            x.strokeStyle = '#fff'; x.lineWidth = 17; x.lineCap = x.lineJoin = 'round';
+            x.beginPath(); x.moveTo(52, 95); x.lineTo(78, 121); x.lineTo(130, 62); x.stroke();
+            const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.appendChild(l);
+        } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+
+        /* ---------- Themes (alle Farben laufen über Variablen) ---------- */
+        :root, [data-theme="midnight"] { --bg:#0b0f19; --surface:#131c2e; --surface2:#0e1524; --border:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --hover:#1a2740; --accent:#6366f1; color-scheme: dark; }
+        [data-theme="white"]   { --bg:#f1f5f9; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0; --text:#0f172a; --muted:#64748b; --hover:#f8fafc; --accent:#4f46e5; color-scheme: light; }
+        [data-theme="ocean"]   { --bg:#0f172a; --surface:#1e293b; --surface2:#162033; --border:#334155; --text:#f8fafc; --muted:#94a3b8; --hover:#27354d; --accent:#6366f1; color-scheme: dark; }
+        [data-theme="emerald"] { --bg:#022c22; --surface:#064e3b; --surface2:#053f31; --border:#047857; --text:#ecfdf5; --muted:#a7d8c3; --hover:#075e47; --accent:#10b981; color-scheme: dark; }
+        :root { --row-pad: .9rem 1rem; }
+        [data-density="compact"] { --row-pad: .45rem .8rem; }
+
+        html, body { min-height: 100dvh; }
+        body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; -webkit-tap-highlight-color: transparent; }
+
+        .card   { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: 0 12px 32px -16px rgba(0,0,0,.45); }
+        .inner  { background: var(--surface2); border: 1px solid var(--border); border-radius: 1rem; }
+        .row    { padding: var(--row-pad); }
+        .muted  { color: var(--muted); }
+        .divider { border-color: var(--border); }
+        .accent { color: var(--accent); }
+        .field  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: .9rem; padding: .7rem 1rem; font-size: .8rem; font-weight: 600; width: 100%; outline: none; transition: border-color .15s, box-shadow .15s; }
+        .field::placeholder { color: var(--muted); opacity: .75; font-weight: 500; }
+        .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .7rem 1.1rem; border-radius: .9rem; font-size: .75rem; font-weight: 700; transition: all .15s; cursor: pointer; white-space: nowrap; }
+        .btn:disabled { opacity: .45; cursor: not-allowed; }
+        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 20px -8px var(--accent); }
+        .btn-primary:not(:disabled):hover { filter: brightness(1.12); }
+        .btn-soft   { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+        .btn-soft:hover { background: var(--hover); }
+        .btn-ghost  { color: var(--muted); }
+        .btn-ghost:hover { color: var(--text); background: var(--hover); }
+        .btn-danger { background: #e11d48; color: #fff; }
+        .btn-danger:not(:disabled):hover { filter: brightness(1.1); }
+        .icon-btn { width: 2.25rem; height: 2.25rem; display: inline-flex; align-items: center; justify-content: center; border-radius: .75rem; color: var(--muted); transition: all .15s; flex-shrink: 0; }
+        .icon-btn:hover { background: var(--hover); color: var(--text); }
+        .icon-btn.danger:hover { color: #f43f5e; }
+
+        .seg { display: inline-flex; gap: .2rem; padding: .3rem; border-radius: 1rem; background: var(--surface2); border: 1px solid var(--border); }
+        .seg > button { padding: .5rem .85rem; border-radius: .7rem; font-size: .75rem; font-weight: 700; color: var(--muted); transition: all .15s; }
+        .seg > button:hover { color: var(--text); }
+        .seg > button.on { background: var(--accent); color: #fff; box-shadow: 0 6px 16px -8px var(--accent); }
+
+        .label { font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+        .chip { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .6rem; border-radius: .6rem; font-size: .68rem; font-weight: 700; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+        button.chip { cursor: pointer; transition: all .15s; }
+        button.chip.on { background: var(--accent); color: #fff; }
+        .pill { display: flex; width: 100%; align-items: center; gap: .35rem; text-align: left; font-size: .68rem; font-weight: 600; padding: .25rem .5rem; border-radius: .55rem; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 18%, transparent); overflow: hidden; }
+        .pill > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .holiday { font-size: .62rem; font-weight: 700; color: #f59e0b; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); padding: .05rem .4rem; border-radius: .45rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+
+        .mnav { display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .7rem; border-radius: 1rem; font-size: .65rem; font-weight: 700; color: var(--muted); transition: all .15s; }
+        .mnav.on { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+
+        .side { display: flex; align-items: center; gap: .7rem; width: 100%; padding: .6rem .8rem; border-radius: .8rem; font-size: .8rem; font-weight: 700; text-align: left; transition: background .15s; }
+        .side:hover { background: var(--hover); }
+        .side.on { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+        .check { width: 1.5rem; height: 1.5rem; border-radius: 9999px; border: 2px solid var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: transparent; font-size: .6rem; transition: all .15s; }
+        .check:hover { border-color: var(--accent); }
+        .check.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        .tile { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .8rem .4rem; border-radius: 1rem; background: var(--surface2); border: 1px solid var(--border); text-align: center; position: relative; transition: all .15s; cursor: pointer; min-width: 0; }
+        .tile:hover { background: var(--hover); transform: translateY(-1px); }
+        .tile .em { font-size: 1.9rem; line-height: 1.1; }
+        .tile .nm { font-size: .72rem; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .tile .badge { position: absolute; top: .3rem; right: .3rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 9999px; background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .tile.off { opacity: .45; }
+        .logo { position: relative; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: .8rem; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent); }
+        .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: .45rem; border-radius: .8rem; background: var(--surface); }
+
+        .switch { position: relative; width: 2.6rem; height: 1.5rem; border-radius: 9999px; background: var(--border); transition: .2s; flex-shrink: 0; }
+        .switch::after { content: ''; position: absolute; top: .2rem; left: .2rem; width: 1.1rem; height: 1.1rem; border-radius: 9999px; background: #fff; transition: .2s; }
+        .switch.on { background: var(--accent); }
+        .switch.on::after { transform: translateX(1.1rem); }
+
+        .evblock { position: absolute; border-radius: .5rem; padding: .2rem .4rem; font-size: .68rem; font-weight: 600; line-height: 1.2; overflow: hidden; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 28%, var(--surface)); box-shadow: 0 2px 8px -4px rgba(0,0,0,.5); z-index: 2; text-align: left; }
+        .backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; background: rgba(2, 6, 23, .7); backdrop-filter: blur(8px); overflow-y: auto; }
+        .backdrop > * { margin-block: auto; }
+        .swatch { width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 2px solid transparent; transition: transform .15s; flex-shrink: 0; }
+        .swatch.on { border-color: var(--text); transform: scale(1.12); }
+        .safe-bottom { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input[type="checkbox"] { accent-color: var(--accent); }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()">
+
+    <!-- Erinnerungs-Banner -->
+    <div class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-[70] space-y-2">
+        <template x-for="b in banners" :key="b.id">
+            <div x-transition class="bg-indigo-600 text-white p-4 rounded-3xl shadow-2xl border border-white/10 flex items-start justify-between gap-3">
+                <div class="flex items-start gap-3 min-w-0">
+                    <div class="bg-white/20 p-2.5 rounded-2xl"><i class="fa-solid fa-bell animate-bounce"></i></div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] uppercase font-extrabold tracking-widest text-indigo-200" x-text="b.kind"></p>
+                        <p class="text-sm font-bold break-words" x-text="b.title"></p>
+                        <p class="text-xs text-indigo-100 mt-0.5" x-text="b.info"></p>
+                    </div>
+                </div>
+                <button @click="banners = banners.filter(x => x.id !== b.id)" class="text-indigo-200 hover:text-white p-1" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </template>
+    </div>
+
+    <!-- Update-Hinweis -->
+    <div x-show="updateAvailable" x-transition x-cloak class="fixed left-3 right-3 sm:left-auto sm:right-4 sm:w-[26rem] bottom-40 md:bottom-4 z-[75] card p-4 flex items-center gap-3">
+        <div class="logo"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+        <div class="min-w-0 flex-1"><p class="text-sm font-bold">Neue Version verfügbar</p><p class="text-[11px] muted truncate" x-text="'Version ' + remoteVersion + ' · deine Daten bleiben erhalten'"></p></div>
+        <button @click="updateAvailable = false" class="btn btn-ghost !px-3">Später</button>
+        <button @click="applyUpdate()" class="btn btn-primary">Update</button>
+    </div>
+
+    <!-- Toast -->
+    <div x-show="toastMsg" x-transition x-cloak
+         class="fixed left-1/2 -translate-x-1/2 bottom-28 md:bottom-8 z-[80] px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl border max-w-[90vw] text-center"
+         style="background: var(--surface); border-color: var(--border); color: var(--text);" x-text="toastMsg"></div>
+
+    <div class="min-h-[100dvh] flex flex-col">
+        <header class="sticky top-0 z-40 border-b backdrop-blur-xl divider" style="background: color-mix(in srgb, var(--surface) 85%, transparent);">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white p-3 rounded-2xl shadow-xl shadow-indigo-600/20 shrink-0"><i class="fa-solid fa-compass-drafting text-lg"></i></div>
+                    <div class="min-w-0">
+                        <h1 class="text-base font-extrabold tracking-tight truncate">Christopher’s Space</h1>
+                        <p class="text-[11px] font-medium flex items-center gap-1.5 mt-0.5 muted">
+                            <span class="w-2 h-2 rounded-full shrink-0" :class="headerOk ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'"></span>
+                            <span class="truncate" x-text="headerStatus"></span>
+                        </p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex seg" aria-label="Hauptnavigation">
+                    <template x-for="t in tabs" :key="t.id">
+                        <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span x-text="t.label"></span></button>
+                    </template>
+                </nav>
+            </div>
+        </header>
+
+        <nav class="md:hidden fixed bottom-3 left-3 right-3 z-40 card px-2 pt-2 safe-bottom flex justify-around backdrop-blur-xl" aria-label="Hauptnavigation">
+            <template x-for="t in tabs" :key="t.id">
+                <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="mnav"><i :class="t.icon" class="text-base"></i><span x-text="t.label"></span></button>
+            </template>
+        </nav>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12">
+
+            <!-- ================= KALENDER ================= -->
+            <section x-show="activeTab === 'calendar'" x-cloak class="space-y-5">
+                <div class="card p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight" x-text="calendarTitle"></h2>
+                        <p class="muted text-xs mt-1 font-medium" x-text="calendarSubtitle"></p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <button x-show="googleScriptUrl" @click="fetchGoogleEvents(true)" class="btn btn-soft text-emerald-400"><i class="fa-solid fa-rotate"></i><span>Google Sync</span></button>
+                        <div class="seg">
+                            <template x-for="v in [['year','Jahr'],['month','Monat'],['week','Woche'],['day','Tag']]" :key="v[0]">
+                                <button @click="calendarView = v[0]" :class="calendarView === v[0] ? 'on' : ''" x-text="v[1]"></button>
+                            </template>
+                        </div>
+                        <div class="seg">
+                            <button @click="changeDatePeriod(-1)" aria-label="Zurück"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                            <button @click="goToToday()">Heute</button>
+                            <button @click="changeDatePeriod(1)" aria-label="Weiter"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                        </div>
+                        <button @click="openEventModal()" class="btn btn-primary"><i class="fa-solid fa-plus text-[10px]"></i><span>Neuer Termin</span></button>
+                    </div>
+                </div>
+
+                <!-- Monat -->
+                <div x-show="calendarView === 'month'" class="card overflow-hidden">
+                    <div class="grid grid-cols-7 text-center text-xs font-bold py-3 muted border-b divider" style="background: var(--surface2);">
+                        <template x-for="d in dayHeads"><div x-text="d"></div></template>
+                    </div>
+                    <div class="grid grid-cols-7 gap-px" style="background: var(--border);">
+                        <template x-for="day in calendarDays" :key="day.dateString">
+                            <div @click="openEventModalForDate(day.dateString)" class="min-h-[88px] sm:min-h-[120px] p-1.5 sm:p-2.5 flex flex-col gap-1.5 cursor-pointer min-w-0 hover:brightness-110"
+                                 :style="'background:' + (day.isCurrentMonth ? 'var(--surface)' : 'var(--surface2)')" :class="day.isCurrentMonth ? '' : 'opacity-50'">
+                                <div class="flex items-center justify-between gap-1 min-w-0">
+                                    <span class="text-xs font-bold rounded-lg w-7 h-7 shrink-0 flex items-center justify-center" :class="day.isToday ? 'bg-indigo-600 text-white shadow-lg' : ''" x-text="day.dayNumber"></span>
+                                    <span x-show="day.holiday" class="holiday" x-text="day.holiday"></span>
+                                </div>
+                                <div class="space-y-1 overflow-y-auto max-h-[84px]">
+                                    <template x-for="ev in eventsOnDate(day.dateString)" :key="ev.id">
+                                        <button @click.stop="editEvent(ev)" class="pill" :style="{'--c': ev.color}"><span x-text="evLabel(ev, day.dateString)"></span></button>
+                                    </template>
+                                    <template x-for="t in tasksOnDate(day.dateString)" :key="t.id">
+                                        <button @click.stop="openTaskModal(t)" class="pill" :style="{'--c': '#94a3b8'}"><i class="fa-regular fa-circle-check text-[9px]"></i><span x-text="t.title"></span></button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Woche & Tag mit Stundenraster -->
+                <div x-show="calendarView === 'week' || calendarView === 'day'" class="card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <div :style="gridDays.length > 1 ? 'min-width: 760px' : ''">
+                            <div class="flex border-b divider" style="background: var(--surface2);">
+                                <div class="w-14 shrink-0"></div>
+                                <template x-for="d in gridDays" :key="d.dateString">
+                                    <div class="flex-1 min-w-0 p-2 border-l divider">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <span class="label" x-text="d.weekday"></span>
+                                            <span class="text-sm font-black rounded-lg w-7 h-7 flex items-center justify-center" :class="d.isToday ? 'bg-indigo-600 text-white' : ''" x-text="d.dayNumber"></span>
+                                            <span x-show="d.holiday" class="holiday" x-text="d.holiday"></span>
+                                        </div>
+                                        <div class="mt-1.5 space-y-1">
+                                            <template x-for="ev in bannerEvents(d.dateString)" :key="ev.id">
+                                                <button @click="editEvent(ev)" class="pill" :style="{'--c': ev.color}"><span x-text="evLabel(ev, d.dateString)"></span></button>
+                                            </template>
+                                            <template x-for="t in tasksOnDate(d.dateString)" :key="t.id">
+                                                <button @click="openTaskModal(t)" class="pill" :style="{'--c': '#94a3b8'}"><i class="fa-regular fa-circle-check text-[9px]"></i><span x-text="(t.dueTime ? t.dueTime + ' ' : '') + t.title"></span></button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div x-ref="timeScroll" class="overflow-y-auto" style="max-height: 64vh;">
+                                <div class="flex relative" :style="'height:' + gridHeight + 'px'">
+                                    <div class="w-14 shrink-0 relative">
+                                        <template x-for="h in gridHours" :key="h.h">
+                                            <span class="absolute right-2 text-[10px] font-semibold muted" :style="'top:' + h.top + 'px; transform: translateY(' + (h.top === 0 ? '2px' : '-50%') + ')'" x-text="h.label"></span>
+                                        </template>
+                                    </div>
+                                    <template x-for="d in gridDays" :key="d.dateString">
+                                        <div class="flex-1 min-w-0 border-l divider relative cursor-pointer" :style="gridLines" @click="slotClick($event, d.dateString)">
+                                            <template x-for="b in dayLayout(d.dateString)" :key="b.ev.id">
+                                                <button @click.stop="editEvent(b.ev)" class="evblock" :style="b.style">
+                                                    <p class="truncate font-bold" x-text="b.ev.title"></p>
+                                                    <p class="opacity-70 truncate" x-text="b.ev.startTime + ' – ' + b.ev.endTime"></p>
+                                                </button>
+                                            </template>
+                                            <div x-show="d.isToday && nowTop !== null" class="absolute left-0 right-0 h-0.5 bg-rose-500 z-10 pointer-events-none" :style="'top:' + nowTop + 'px'">
+                                                <span class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jahr -->
+                <div x-show="calendarView === 'year'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <template x-for="(mName, mIdx) in monthNames" :key="mName">
+                        <div @click="setMonth(mIdx); calendarView = 'month'" class="card p-5 cursor-pointer group hover:brightness-110 transition">
+                            <h3 class="text-sm font-extrabold mb-3 text-center group-hover:text-indigo-400 transition-colors" x-text="mName"></h3>
+                            <div class="grid grid-cols-7 text-center text-[10px] font-bold muted mb-1.5"><template x-for="d in dayHeads"><div x-text="d.charAt(0)"></div></template></div>
+                            <div class="grid grid-cols-7 gap-1 text-center text-[10px]">
+                                <template x-for="(c, ci) in getYearMonthDays(mIdx)" :key="ci">
+                                    <div class="py-1 rounded-md" :class="{'bg-indigo-600 text-white font-bold': c.isToday, 'text-amber-500 font-bold': c.holiday && !c.isToday, 'underline decoration-indigo-400 underline-offset-2': c.hasEvents && !c.isToday}" :title="c.holiday || ''" x-text="c.dayNum || ''"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
+            <!-- ================= TO-DOS ================= -->
+            <section x-show="activeTab === 'todos'" x-cloak class="grid md:grid-cols-[17rem_minmax(0,1fr)] gap-5 items-start">
+                <!-- Listen (Desktop) -->
+                <aside class="card p-3 hidden md:block space-y-1">
+                    <template x-for="l in smartLists" :key="l.id">
+                        <button @click="selectTodoList(l.id)" class="side" :class="todoListId === l.id ? 'on' : ''">
+                            <i :class="l.icon" class="w-5 text-center" :style="'color:' + l.color"></i><span class="flex-1" x-text="l.name"></span>
+                            <span class="text-[11px] muted font-bold" x-text="openCount(l.id) || ''"></span>
+                        </button>
+                    </template>
+                    <div class="border-t divider my-2"></div>
+                    <template x-for="l in todoLists" :key="l.id">
+                        <button @click="selectTodoList(l.id)" class="side" :class="todoListId === l.id ? 'on' : ''">
+                            <span class="w-5 text-center" x-text="l.emoji"></span><span class="flex-1 truncate" x-text="l.name"></span>
+                            <span class="text-[11px] muted font-bold" x-text="openCount(l.id) || ''"></span>
+                        </button>
+                    </template>
+                    <button @click="openListModal()" class="side muted"><i class="fa-solid fa-plus w-5 text-center"></i><span>Neue Liste</span></button>
+                </aside>
+
+                <!-- Listen (Mobil) -->
+                <div class="md:hidden flex gap-2 overflow-x-auto pb-1">
+                    <template x-for="l in [...smartLists, ...todoLists]" :key="l.id">
+                        <button @click="selectTodoList(l.id)" class="chip !py-2 !px-3.5 !text-xs shrink-0" :class="todoListId === l.id ? 'on' : ''">
+                            <i x-show="l.icon" :class="l.icon"></i><span x-show="l.emoji" x-text="l.emoji"></span><span x-text="l.name"></span>
+                        </button>
+                    </template>
+                    <button @click="openListModal()" class="chip !py-2 !px-3.5 !text-xs shrink-0"><i class="fa-solid fa-plus"></i>Liste</button>
+                </div>
+
+                <div class="space-y-4 min-w-0">
+                    <div class="card p-5 sm:p-6 space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3 min-w-0">
+                                    <i x-show="activeList.icon" :class="activeList.icon" :style="'color:' + activeList.color"></i><span x-show="activeList.emoji" x-text="activeList.emoji"></span>
+                                    <span class="truncate" x-text="activeList.name"></span>
+                                </h2>
+                                <p class="muted text-xs mt-1 font-medium" x-text="todoListId === 'myday' ? longDate(today) : (openCount(todoListId) + ' offen')"></p>
+                            </div>
+                            <button x-show="isCustomList" @click="openListModal(activeList)" class="icon-btn" aria-label="Liste bearbeiten"><i class="fa-solid fa-pen text-xs"></i></button>
+                        </div>
+                        <form @submit.prevent="addTodoQuick()" class="flex gap-2">
+                            <input type="text" x-model="newTaskTitle" placeholder="Aufgabe hinzufügen…" class="field" aria-label="Neue Aufgabe">
+                            <button type="submit" class="btn btn-primary" :disabled="!newTaskTitle.trim()"><i class="fa-solid fa-plus"></i></button>
+                        </form>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <input type="search" x-model="todoSearch" placeholder="Suchen…" class="field !w-44 sm:!w-56">
+                            <select x-model="todoSort" class="field !w-auto" aria-label="Sortierung">
+                                <option value="created">Erstellt</option><option value="due">Fälligkeit</option><option value="important">Wichtigkeit</option><option value="alpha">Alphabetisch</option>
+                            </select>
+                            <div class="seg ml-auto">
+                                <button @click="setView('todos', 'list')" :class="cfg.views.todos === 'list' ? 'on' : ''" title="Liste"><i class="fa-solid fa-list"></i></button>
+                                <button @click="setView('todos', 'compact')" :class="cfg.views.todos === 'compact' ? 'on' : ''" title="Kompakt"><i class="fa-solid fa-bars"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <template x-for="sec in todoSections" :key="sec.key">
+                        <div class="space-y-2">
+                            <button x-show="sec.label" @click="sec.key === 'done' && (doneOpen = !doneOpen)" class="label flex items-center gap-2 px-1" :class="sec.key === 'done' ? 'cursor-pointer' : 'cursor-default'">
+                                <i x-show="sec.key === 'done'" class="fa-solid fa-chevron-right text-[9px] transition-transform" :class="doneOpen ? 'rotate-90' : ''"></i>
+                                <span x-text="sec.label"></span><span x-text="sec.items.length"></span>
+                            </button>
+                            <div x-show="sec.key !== 'done' || doneOpen" class="space-y-2">
+                                <template x-for="t in sec.items" :key="t.id">
+                                    <div @click="openTaskModal(t)" class="inner row flex items-center gap-3 cursor-pointer hover:brightness-110 transition" :class="t.done ? 'opacity-60' : ''">
+                                        <button @click.stop="toggleTodo(t.id)" class="check" :class="t.done ? 'done' : ''" :aria-label="t.done ? 'Wieder öffnen' : 'Erledigen'"><i class="fa-solid fa-check"></i></button>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-bold break-words" :class="t.done ? 'line-through muted' : ''" x-text="t.title"></p>
+                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[11px] muted empty:hidden">
+                                                <span x-show="t.myDay === today && todoListId !== 'myday'"><i class="fa-regular fa-sun mr-1"></i>Mein Tag</span>
+                                                <span x-show="t.steps.length && cfg.views.todos === 'list'"><i class="fa-solid fa-list-check mr-1"></i><span x-text="t.steps.filter(s => s.done).length + ' von ' + t.steps.length"></span></span>
+                                                <span x-show="t.due" :class="dueClass(t)"><i class="fa-regular fa-calendar mr-1"></i><span x-text="t.due ? dueLabel(t) : ''"></span></span>
+                                                <span x-show="remindTimeOf(t)"><i class="fa-regular fa-bell"></i></span>
+                                                <span x-show="t.repeat"><i class="fa-solid fa-repeat"></i></span>
+                                                <span x-show="t.note && cfg.views.todos === 'list'"><i class="fa-regular fa-note-sticky"></i></span>
+                                                <span x-show="isSmartList && listOf(t)" x-text="listOf(t) ? listOf(t).emoji + ' ' + listOf(t).name : ''"></span>
+                                            </div>
+                                        </div>
+                                        <button @click.stop="toggleImportant(t.id)" class="icon-btn" :class="t.important ? '!text-amber-400' : ''" aria-label="Wichtig"><i :class="t.important ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                    <p x-show="!todoSections.some(s => s.items.length)" class="muted text-sm font-medium text-center py-12">
+                        <i class="fa-regular fa-circle-check text-3xl block mb-3 opacity-60"></i>Hier gibt es nichts zu tun.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ================= EINKAUF (Bring!-Stil) ================= -->
+            <section x-show="activeTab === 'shopping'" x-cloak class="space-y-5">
+                <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Einkaufsliste</h2>
+                        <p class="muted text-xs mt-1 font-medium"><span x-text="shopOpen.length"></span> Artikel offen · <span x-text="shopDone.length"></span> im Warenkorb</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <div class="seg">
+                            <button @click="setView('shopping', 'tiles')" :class="cfg.views.shopping === 'tiles' ? 'on' : ''" title="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
+                            <button @click="setView('shopping', 'list')" :class="cfg.views.shopping === 'list' ? 'on' : ''" title="Liste"><i class="fa-solid fa-list"></i></button>
+                        </div>
+                        <button x-show="shopDone.length" @click="clearBought()" class="btn btn-soft"><i class="fa-solid fa-broom"></i>Gekauftes entfernen</button>
+                    </div>
+                </div>
+
+                <!-- Hinzufügen & Katalog -->
+                <div class="card p-5 sm:p-6 space-y-4">
+                    <form @submit.prevent="addFromQuery()" class="flex gap-2">
+                        <input type="text" x-model="shopQuery" placeholder="Artikel suchen oder neu eingeben…" class="field" aria-label="Artikel">
+                        <button type="submit" class="btn btn-primary" :disabled="!shopQuery.trim()"><i class="fa-solid fa-plus"></i></button>
+                    </form>
+                    <div class="flex gap-2 overflow-x-auto pb-1" x-show="!shopQuery.trim()">
+                        <button @click="shopCat = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === 'all' ? 'on' : ''">Alle</button>
+                        <template x-for="c in shopCategories" :key="c"><button @click="shopCat = c" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === c ? 'on' : ''" x-text="c"></button></template>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2 max-h-72 overflow-y-auto pr-1">
+                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="tile !border-dashed">
+                            <span class="em">➕</span><span class="nm" x-text="'„' + shopQuery.trim() + '“'"></span>
+                        </button>
+                        <template x-for="p in catalogView" :key="p.name">
+                            <button @click="tapProduct(p)" class="tile">
+                                <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
+                                <span class="em" x-text="p.emoji"></span><span class="nm" x-text="p.name"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Liste -->
+                <div class="space-y-5">
+                    <template x-for="g in shopGroups" :key="g.cat">
+                        <div class="card p-5 sm:p-6 space-y-3">
+                            <p class="label flex items-center gap-2" x-show="cfg.shopGroup"><span x-text="g.cat"></span><span x-text="g.items.length"></span></p>
+                            <div :class="cfg.views.shopping === 'tiles' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5' : 'space-y-2'">
+                                <template x-for="i in g.items" :key="i.id">
+                                    <div @click="toggleBought(i.id)" :class="cfg.views.shopping === 'tiles' ? 'tile' : 'inner row flex items-center gap-3 cursor-pointer hover:brightness-110'">
+                                        <button @click.stop="openShopModal(i)" class="icon-btn !w-7 !h-7" :class="cfg.views.shopping === 'tiles' ? 'absolute top-1 right-1' : 'order-last'" aria-label="Details"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                        <span :class="cfg.views.shopping === 'tiles' ? 'em' : 'text-2xl'" x-text="i.emoji"></span>
+                                        <div :class="cfg.views.shopping === 'tiles' ? 'w-full min-w-0' : 'flex-1 min-w-0'">
+                                            <p :class="cfg.views.shopping === 'tiles' ? 'nm' : 'text-sm font-bold truncate'" x-text="i.name"></p>
+                                            <p class="text-[10px] muted font-semibold truncate" x-show="qtyLabel(i) || i.note" x-text="[qtyLabel(i), i.note].filter(Boolean).join(' · ')"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                    <p x-show="!shopOpen.length" class="muted text-sm font-medium text-center py-8"><i class="fa-solid fa-basket-shopping text-3xl block mb-3 opacity-60"></i>Die Liste ist leer – tippe oben auf ein Produkt.</p>
+
+                    <div x-show="shopDone.length" class="card p-5 sm:p-6 space-y-3">
+                        <p class="label">Im Warenkorb · antippen zum Zurücklegen</p>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
+                            <template x-for="i in shopDone" :key="i.id">
+                                <div @click="toggleBought(i.id)" class="tile off"><span class="em" x-text="i.emoji"></span><span class="nm line-through" x-text="i.name"></span></div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TRESOR ================= -->
+            <section x-show="activeTab === 'passwords'" x-cloak class="space-y-5">
+                <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3">
+                            <i class="fa-solid" :class="vaultState === 'unlocked' ? 'fa-lock-open text-emerald-400' : 'fa-lock text-indigo-400'"></i>Passwort-Tresor
+                        </h2>
+                        <p class="muted text-xs mt-1 font-medium">Mit Master-Passwort verschlüsselt (AES-256-GCM) – nur auf diesem Gerät gespeichert.</p>
+                    </div>
+                    <div x-show="vaultState === 'unlocked'" class="flex flex-wrap gap-2.5">
+                        <button @click="openPasswordModal()" class="btn btn-primary"><i class="fa-solid fa-plus text-[10px]"></i>Neuer Eintrag</button>
+                        <button @click="openFolders()" class="btn btn-soft" title="Gruppen verwalten"><i class="fa-solid fa-folder-tree"></i><span class="hidden sm:inline">Gruppen</span></button>
+                        <button @click="openChangeMaster()" class="btn btn-soft" title="Master-Passwort ändern"><i class="fa-solid fa-key"></i></button>
+                        <button @click="lockVault(true)" class="btn btn-soft"><i class="fa-solid fa-lock"></i>Sperren</button>
+                    </div>
+                </div>
+
+                <!-- Einrichtung -->
+                <div x-show="vaultState === 'none'" class="card p-6 sm:p-8 max-w-xl mx-auto w-full space-y-5">
+                    <div class="text-center space-y-2">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3 class="text-lg font-black">Master-Passwort festlegen</h3>
+                        <p class="muted text-xs leading-relaxed">Dieses Passwort schützt alle Tresor-Einträge. Du brauchst es bei jedem Entsperren.</p>
+                    </div>
+                    <p x-show="legacyCount > 0" class="inner p-3 text-xs font-semibold text-emerald-400"><i class="fa-solid fa-circle-info mr-1.5"></i><span x-text="legacyCount"></span> bestehende Einträge werden dabei automatisch verschlüsselt übernommen.</p>
+                    <form @submit.prevent="setupVault()" class="space-y-3">
+                        <div class="relative">
+                            <input :type="mpShow ? 'text' : 'password'" x-model="mpInput" autocomplete="new-password" placeholder="Master-Passwort (mind. 8 Zeichen)" class="field !pr-11" required>
+                            <button type="button" @click="mpShow = !mpShow" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2" aria-label="Anzeigen"><i class="fa-solid text-xs" :class="mpShow ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                        </div>
+                        <div x-show="mpInput" class="space-y-1">
+                            <div class="h-1.5 rounded-full overflow-hidden" style="background: var(--surface2);"><div class="h-full rounded-full transition-all" :style="'width:' + mpStrength.pct + '%; background:' + mpStrength.color"></div></div>
+                            <p class="text-[11px] font-bold" :style="'color:' + mpStrength.color" x-text="mpStrength.label"></p>
+                        </div>
+                        <input :type="mpShow ? 'text' : 'password'" x-model="mpConfirm" autocomplete="new-password" placeholder="Master-Passwort wiederholen" class="field" required>
+                        <p x-show="vaultError" class="text-xs font-bold text-rose-400" x-text="vaultError"></p>
+                        <button type="submit" class="btn btn-primary w-full" :disabled="vaultBusy"><i class="fa-solid" :class="vaultBusy ? 'fa-circle-notch spin' : 'fa-lock'"></i><span x-text="vaultBusy ? 'Verschlüssele…' : 'Tresor einrichten'"></span></button>
+                    </form>
+                    <p class="text-[11px] leading-relaxed muted"><i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1"></i>Es gibt keine Wiederherstellung. Wer das Master-Passwort vergisst, kann den Tresor nur zurücksetzen – dabei werden alle Einträge gelöscht.</p>
+                </div>
+
+                <!-- Gesperrt -->
+                <div x-show="vaultState === 'locked'" class="card p-6 sm:p-8 max-w-md mx-auto w-full space-y-5">
+                    <div class="text-center space-y-2">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl"><i class="fa-solid fa-lock"></i></div>
+                        <h3 class="text-lg font-black">Tresor gesperrt</h3>
+                        <p class="muted text-xs">Gib dein Master-Passwort ein, um fortzufahren.</p>
+                    </div>
+                    <form @submit.prevent="unlockVault()" class="space-y-3">
+                        <div class="relative">
+                            <input x-ref="unlockInput" :type="mpShow ? 'text' : 'password'" x-model="mpInput" autocomplete="current-password" placeholder="Master-Passwort" class="field !pr-11" required>
+                            <button type="button" @click="mpShow = !mpShow" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2" aria-label="Anzeigen"><i class="fa-solid text-xs" :class="mpShow ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                        </div>
+                        <p x-show="vaultError" class="text-xs font-bold text-rose-400" x-text="vaultError"></p>
+                        <button type="submit" class="btn btn-primary w-full" :disabled="vaultBusy"><i class="fa-solid" :class="vaultBusy ? 'fa-circle-notch spin' : 'fa-lock-open'"></i><span x-text="vaultBusy ? 'Entsperre…' : 'Entsperren'"></span></button>
+                    </form>
+                    <button @click="openReset()" class="block mx-auto text-xs font-bold text-rose-400 hover:underline">Master-Passwort vergessen?</button>
+                </div>
+
+                <!-- Entsperrt -->
+                <div x-show="vaultState === 'unlocked'" class="card p-5 sm:p-6 space-y-5">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b pb-5 divider">
+                        <div class="flex gap-2 overflow-x-auto pb-1">
+                            <button @click="pwFolderFilter = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === 'all' ? 'on' : ''">Alle</button>
+                            <template x-for="f in vaultFolders" :key="f"><button @click="pwFolderFilter = f" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === f ? 'on' : ''" x-text="f"></button></template>
+                            <button x-show="passwords.some(p => !p.folder)" @click="pwFolderFilter = '__none'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === '__none' ? 'on' : ''">Ohne Gruppe</button>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <input type="search" x-model="pwSearch" placeholder="Tresor durchsuchen…" class="field lg:!w-64">
+                            <div class="seg">
+                                <button @click="setView('vault', 'grid')" :class="cfg.views.vault === 'grid' ? 'on' : ''" title="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
+                                <button @click="setView('vault', 'list')" :class="cfg.views.vault === 'list' ? 'on' : ''" title="Liste"><i class="fa-solid fa-list"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div :class="cfg.views.vault === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-2'">
+                        <template x-for="pw in filteredPasswords" :key="pw.id">
+                            <div class="inner p-4 flex gap-3 transition hover:border-indigo-500/50" :class="cfg.views.vault === 'grid' ? 'flex-col' : 'flex-col sm:flex-row sm:items-center'">
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <div class="logo"><i class="fa-solid fa-shield-halved text-sm"></i>
+                                        <template x-if="cfg.showLogos && logoUrl(pw)"><img :src="logoUrl(pw)" alt="" loading="lazy" referrerpolicy="no-referrer" @error="$el.remove()"></template>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="text-sm font-bold truncate" x-text="pw.title"></h3>
+                                        <p class="text-[11px] muted font-mono truncate" x-text="pw.username || hostOf(pw.url) || 'Ohne Benutzername'"></p>
+                                    </div>
+                                    <span x-show="pw.folder" class="chip hidden sm:inline-flex" x-text="pw.folder"></span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl border divider sm:w-72 shrink-0" style="background: var(--surface);">
+                                    <span class="text-xs font-mono text-emerald-400 tracking-wider truncate" x-text="revealed[pw.id] ? pw.password : '••••••••••••'"></span>
+                                    <div class="flex shrink-0">
+                                        <button @click="revealed[pw.id] = !revealed[pw.id]" class="icon-btn !w-8 !h-8" aria-label="Anzeigen"><i class="fa-solid text-xs" :class="revealed[pw.id] ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                                        <button @click="copyText(pw.password, 'Passwort kopiert', true)" class="icon-btn !w-8 !h-8" aria-label="Passwort kopieren"><i class="fa-solid fa-copy text-xs"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex items-center shrink-0 -mx-1">
+                                    <a x-show="siteUrl(pw)" :href="siteUrl(pw)" target="_blank" rel="noopener noreferrer" class="icon-btn" aria-label="Website öffnen"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                                    <button x-show="pw.username" @click="copyText(pw.username, 'Benutzername kopiert')" class="icon-btn" aria-label="Benutzername kopieren"><i class="fa-regular fa-user text-xs"></i></button>
+                                    <button @click="editPassword(pw)" class="icon-btn" aria-label="Bearbeiten"><i class="fa-solid fa-pen text-xs"></i></button>
+                                    <button @click="deletePassword(pw.id)" class="icon-btn danger" aria-label="Löschen"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <p x-show="!filteredPasswords.length" class="muted text-sm font-medium text-center py-10"><i class="fa-solid fa-vault text-2xl block mb-3 opacity-60"></i>Keine Einträge gefunden.</p>
+                    <p class="text-[11px] muted text-center" x-show="cfg.vaultLockMin > 0">Der Tresor sperrt sich nach <span x-text="cfg.vaultLockMin"></span> Minuten Inaktivität automatisch.</p>
+                </div>
+            </section>
+
+            <!-- ================= SETTINGS ================= -->
+            <section x-show="activeTab === 'settings'" x-cloak class="space-y-5">
+                <div class="card p-5 sm:p-6">
+                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3"><i class="fa-solid fa-sliders text-indigo-400"></i>Einstellungen</h2>
+                    <p class="muted text-xs mt-1 font-medium">Alles wird automatisch gespeichert.</p>
+                </div>
+
+                <div class="card p-5 sm:p-6 space-y-5">
+                    <p class="label"><i class="fa-solid fa-palette mr-2"></i>Design</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <template x-for="t in themes" :key="t.id">
+                            <button @click="setTheme(t.id)" class="inner p-4 text-left text-xs font-bold transition flex items-center gap-3" :class="themeSettings === t.id ? '!border-indigo-500 ring-2 ring-indigo-500/30' : 'hover:brightness-110'">
+                                <span class="w-6 h-6 rounded-full border shrink-0" :style="'background: linear-gradient(135deg,' + t.bg + ' 50%,' + t.accent + ' 50%); border-color: var(--border)'"></span><span x-text="t.label"></span>
+                            </button>
+                        </template>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold mb-2">Akzentfarbe</p>
+                        <div class="flex flex-wrap gap-2.5">
+                            <button @click="setCfg('accent', '')" class="swatch flex items-center justify-center text-[10px] muted" :class="!cfg.accent ? 'on' : ''" style="background: var(--surface2); border-color: var(--border)" title="Theme-Standard"><i class="fa-solid fa-rotate-left"></i></button>
+                            <template x-for="c in accents" :key="c"><button @click="setCfg('accent', c)" class="swatch" :class="cfg.accent === c ? 'on' : ''" :style="'background:' + c" :aria-label="'Akzent ' + c"></button></template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generische Einstellungen -->
+                <template x-for="sec in settingsDef" :key="sec.title">
+                    <div class="card p-5 sm:p-6 space-y-1">
+                        <p class="label mb-3"><i :class="sec.icon" class="mr-2"></i><span x-text="sec.title"></span></p>
+                        <template x-for="it in sec.items" :key="it.k">
+                            <div class="flex items-center justify-between gap-4 py-3 border-t divider first:border-t-0">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-bold" x-text="it.label"></p>
+                                    <p class="text-[11px] muted mt-0.5" x-show="it.desc" x-text="it.desc"></p>
+                                </div>
+                                <button x-show="it.type === 'toggle'" type="button" role="switch" :aria-checked="!!cfg[it.k]" class="switch" :class="cfg[it.k] ? 'on' : ''" @click="toggleCfg(it.k)"></button>
+                                <select x-show="it.type === 'select'" class="field !w-auto max-w-[11rem] sm:max-w-none" @change="selectCfg(it, $event.target.value)">
+                                    <template x-for="o in it.o" :key="o[0]"><option :value="o[0]" :selected="String(o[0]) === String(cfg[it.k])" x-text="o[1]"></option></template>
+                                </select>
+                                <input x-show="it.type === 'time'" type="time" class="field !w-auto" :value="cfg[it.k]" @change="setCfg(it.k, $event.target.value || '09:00')">
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <div class="card p-5 sm:p-6 space-y-5">
+                    <div>
+                        <p class="label"><i class="fa-solid fa-arrows-rotate mr-2"></i>Geräte-Abgleich</p>
+                        <p class="text-[11px] muted mt-1.5 leading-relaxed">Hält Termine, Aufgaben, Einkauf und Tresor auf deinen Geräten synchron. Alles wird mit deinem Sync-Passwort verschlüsselt, bevor es das Gerät verlässt. Einstellungen und Design werden nicht abgeglichen.</p>
+                    </div>
+
+                    <form @submit.prevent="saveSyncCreds()" class="space-y-3">
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <input type="text" x-model="syncRoomInput" placeholder="Raumname (z. B. christopher-home)" autocomplete="off" autocapitalize="none" class="field" aria-label="Raumname">
+                            <div class="relative">
+                                <input :type="syncPassShow ? 'text' : 'password'" x-model="syncPassInput" placeholder="Sync-Passwort (mind. 8 Zeichen)" autocomplete="new-password" class="field !pr-11" aria-label="Sync-Passwort">
+                                <button type="button" @click="syncPassShow = !syncPassShow" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2" aria-label="Anzeigen"><i class="fa-solid text-xs" :class="syncPassShow ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                            </div>
+                        </div>
+                        <p class="text-[11px] muted leading-relaxed">Raumname und Passwort müssen auf allen Geräten <b>identisch</b> sein. Das Passwort wird auf diesem Gerät gespeichert und lässt sich nicht wiederherstellen – bewahre es gut auf.</p>
+                        <p x-show="syncError" class="text-xs font-bold text-rose-400" x-text="syncError"></p>
+                        <div class="flex flex-wrap justify-end gap-2">
+                            <button type="button" x-show="syncReady" @click="clearSync()" class="btn btn-ghost !text-rose-400">Abgleich beenden</button>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </div>
+                    </form>
+
+                    <div class="pt-5 border-t divider space-y-3" :class="syncReady ? '' : 'opacity-50 pointer-events-none'">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold"><i class="fa-brands fa-google mr-2"></i>Über dein Google-Konto</p>
+                                <p class="text-[11px] muted mt-0.5">Ein kleines Script in deinem Drive speichert die verschlüsselten Daten – die Geräte müssen nie gleichzeitig online sein.</p>
+                            </div>
+                            <button type="button" role="switch" :aria-checked="syncCfg.google" class="switch" :class="syncCfg.google ? 'on' : ''" @click="toggleSyncChannel('google')" aria-label="Google-Abgleich"></button>
+                        </div>
+                        <div x-show="syncCfg.google" class="space-y-3">
+                            <input type="url" x-model="syncCfg.url" @change="saveSyncCfg()" placeholder="https://script.google.com/macros/s/…/exec" class="field" aria-label="Sync-Script-URL">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <p class="text-[11px] muted min-w-0" :class="gError ? '!text-rose-400' : ''" x-text="gStatusText"></p>
+                                <div class="flex gap-2">
+                                    <button type="button" @click="copySyncScript()" class="btn btn-soft"><i class="fa-regular fa-copy"></i>Script kopieren</button>
+                                    <button type="button" @click="saveSyncCfg(); syncGoogle(true)" class="btn btn-soft" :disabled="gBusy"><i class="fa-solid fa-rotate" :class="gBusy ? 'spin' : ''"></i>Jetzt abgleichen</button>
+                                </div>
+                            </div>
+                            <details class="inner p-4 text-[11px] leading-relaxed">
+                                <summary class="cursor-pointer text-xs font-bold">Einrichtung (einmalig, ca. 3 Minuten)</summary>
+                                <ol class="list-decimal pl-5 mt-3 space-y-1.5 muted">
+                                    <li>Oben auf <b>Script kopieren</b> klicken.</li>
+                                    <li>Auf <b>script.google.com</b> mit deinem Google-Konto anmelden und <b>Neues Projekt</b> wählen.</li>
+                                    <li>Den Beispielcode komplett löschen, das kopierte Script einfügen und speichern.</li>
+                                    <li><b>Bereitstellen → Neue Bereitstellung → Typ „Web-App“</b>: Ausführen als <b>Ich</b>, Zugriff <b>Jeder</b> → Bereitstellen.</li>
+                                    <li>Drive-Zugriff erlauben (bei der Warnung „Nicht verifiziert“: <b>Erweitert → Weiter</b>).</li>
+                                    <li>Die <b>Web-App-URL</b> hier einfügen. Auf dem zweiten Gerät dieselbe URL, denselben Raumnamen und dasselbe Passwort eintragen.</li>
+                                </ol>
+                                <p class="mt-3 muted">„Jeder“ heißt nur, dass kein Google-Login nötig ist. Gespeichert werden ausschließlich verschlüsselte Daten unter einem nicht erratbaren Dateinamen in deinem Drive.</p>
+                            </details>
+                        </div>
+                    </div>
+
+                    <div class="pt-5 border-t divider space-y-3" :class="syncReady ? '' : 'opacity-50 pointer-events-none'">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold"><i class="fa-solid fa-link mr-2"></i>Direkt zwischen Geräten (P2P)</p>
+                                <p class="text-[11px] muted mt-0.5">Sofortiger Abgleich, solange mindestens zwei Geräte mit demselben Raum geöffnet sind.</p>
+                            </div>
+                            <button type="button" role="switch" :aria-checked="syncCfg.p2p" class="switch" :class="syncCfg.p2p ? 'on' : ''" @click="toggleSyncChannel('p2p')" aria-label="P2P-Abgleich"></button>
+                        </div>
+                        <div x-show="syncCfg.p2p" class="space-y-2">
+                            <p class="text-[11px] muted" :class="p2p.status === 'error' ? '!text-rose-400' : ''" x-text="p2pStatusText"></p>
+                            <p class="text-[11px] muted leading-relaxed">Die Geräte finden sich über den kostenlosen PeerJS-Vermittlungsserver; die Daten gehen verschlüsselt direkt von Gerät zu Gerät. Hinter manchen Netzwerken (z. B. Firmen-WLAN) kann die Verbindung scheitern – dann hilft der Google-Abgleich.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-5 sm:p-6 space-y-3">
+                    <p class="label"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>App &amp; Updates</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold">Version <span x-text="appVersion"></span></p>
+                            <p class="text-[11px] muted mt-0.5" x-text="updateStatusText"></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button x-show="updateAvailable" @click="applyUpdate()" class="btn btn-primary"><i class="fa-solid fa-download"></i>Jetzt aktualisieren</button>
+                            <button @click="checkForUpdate(true)" class="btn btn-soft" :disabled="updateChecking"><i class="fa-solid fa-rotate" :class="updateChecking ? 'spin' : ''"></i>Nach Updates suchen</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-5 sm:p-6 space-y-6">
+                    <div class="space-y-3">
+                        <p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Google-Kalender importieren (Apps-Script-URL)</p>
+                        <input type="url" x-model="googleScriptUrlInput" placeholder="https://script.google.com/macros/s/…/exec" class="field">
+                        <div class="flex justify-end"><button @click="saveGoogleScriptUrl()" class="btn btn-primary">URL speichern</button></div>
+                    </div>
+                    <div class="space-y-3 pt-6 border-t divider">
+                        <p class="label"><i class="fa-solid fa-floppy-disk mr-2"></i>Backup</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button @click="exportData()" class="btn btn-soft"><i class="fa-solid fa-download"></i>Exportieren</button>
+                            <label class="btn btn-soft"><i class="fa-solid fa-upload"></i>Importieren<input type="file" @change="importData($event)" accept=".json,application/json" class="hidden"></label>
+                        </div>
+                        <p class="text-[11px] muted">Der Tresor wird im Backup nur verschlüsselt gespeichert – ohne Master-Passwort ist er nicht lesbar.</p>
+                    </div>
+                    <div class="space-y-3 pt-6 border-t divider">
+                        <p class="label text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gefahrenzone</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button x-show="vaultState !== 'none'" @click="openReset()" class="btn btn-soft text-rose-400">Tresor zurücksetzen</button>
+                            <button @click="resetAll()" class="btn btn-soft text-rose-400">Alle Daten löschen</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ================= DIALOGE ================= -->
+    <!-- Termin -->
+    <div x-show="showEventModal" x-transition.opacity x-cloak class="backdrop" @click.self="showEventModal = false">
+        <form @submit.prevent="saveEvent()" class="card w-full max-w-lg p-6 sm:p-8 space-y-5">
+            <div class="flex items-center justify-between gap-3">
+                <h3 class="font-black text-lg" x-text="currentEvent.id ? 'Termin bearbeiten' : 'Neuer Termin'"></h3>
+                <button type="button" @click="showEventModal = false" class="icon-btn" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input x-ref="evTitle" type="text" x-model="currentEvent.title" required placeholder="Titel hinzufügen…" class="field !text-base !font-bold">
+            <label class="flex items-center justify-between text-sm font-bold">Ganztägig
+                <button type="button" role="switch" class="switch" :class="currentEvent.allDay ? 'on' : ''" @click="currentEvent.allDay = !currentEvent.allDay"></button>
+            </label>
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="label w-12 shrink-0">Start</span>
+                    <input type="date" x-model="currentEvent.startDate" @change="onEventStart()" required class="field flex-1 min-w-0" aria-label="Startdatum">
+                    <input x-show="!currentEvent.allDay" type="time" x-model="currentEvent.startTime" @change="onEventStart()" required class="field !w-auto" aria-label="Startzeit">
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="label w-12 shrink-0">Ende</span>
+                    <input type="date" x-model="currentEvent.endDate" @change="onEventEnd()" :min="currentEvent.startDate" required class="field flex-1 min-w-0" aria-label="Enddatum">
+                    <input x-show="!currentEvent.allDay" type="time" x-model="currentEvent.endTime" @change="onEventEnd()" required class="field !w-auto" aria-label="Endzeit">
+                </div>
+            </div>
+            <div>
+                <p class="label mb-2">Erinnerung</p>
+                <select x-model="currentEvent.reminder" class="field">
+                    <option value="">Keine</option><option value="0">Zur Startzeit</option><option value="5">5 Minuten vorher</option><option value="15">15 Minuten vorher</option>
+                    <option value="30">30 Minuten vorher</option><option value="60">1 Stunde vorher</option><option value="1440">1 Tag vorher</option>
+                </select>
+            </div>
+            <div>
+                <p class="label mb-2">Farbe</p>
+                <div class="flex gap-2.5"><template x-for="c in eventColors" :key="c"><button type="button" @click="currentEvent.color = c" class="swatch" :class="currentEvent.color === c ? 'on' : ''" :style="'background:' + c" :aria-label="'Farbe ' + c"></button></template></div>
+            </div>
+            <div class="flex items-center justify-between gap-3 pt-4 border-t divider">
+                <button type="button" x-show="currentEvent.id" @click="deleteEvent(currentEvent.id); showEventModal = false" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span x-show="!currentEvent.id"></span>
+                <div class="flex gap-2"><button type="button" @click="showEventModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Aufgabe -->
+    <div x-show="showTodoModalState" x-transition.opacity x-cloak class="backdrop" @click.self="showTodoModalState = false">
+        <form @submit.prevent="saveTodo()" class="card w-full max-w-lg p-6 sm:p-8 space-y-5">
+            <div class="flex items-center gap-3">
+                <button type="button" @click="currentTodo.done = !currentTodo.done" class="check" :class="currentTodo.done ? 'done' : ''" aria-label="Erledigt"><i class="fa-solid fa-check"></i></button>
+                <input x-ref="todoTitle" type="text" x-model="currentTodo.title" required placeholder="Was ist zu tun?" class="field !text-base !font-bold">
+                <button type="button" @click="currentTodo.important = !currentTodo.important" class="icon-btn" :class="currentTodo.important ? '!text-amber-400' : ''" aria-label="Wichtig"><i :class="currentTodo.important ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
+            </div>
+
+            <!-- Schritte -->
+            <div class="space-y-2">
+                <template x-for="s in currentTodo.steps" :key="s.id">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" x-model="s.done" class="w-4 h-4 shrink-0">
+                        <input type="text" x-model="s.t" class="field !py-2" :class="s.done ? 'line-through opacity-60' : ''">
+                        <button type="button" @click="currentTodo.steps = currentTodo.steps.filter(x => x.id !== s.id)" class="icon-btn danger !w-8 !h-8"><i class="fa-solid fa-xmark text-xs"></i></button>
+                    </div>
+                </template>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-xs muted w-4 text-center"></i>
+                    <input type="text" x-model="newStep" @keydown.enter.prevent="addStep()" placeholder="Schritt hinzufügen" class="field !py-2">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-3">
+                <button type="button" @click="currentTodo.myDay = currentTodo.myDay === today ? '' : today" class="btn btn-soft justify-start" :class="currentTodo.myDay === today ? '!border-amber-400 text-amber-400' : ''"><i class="fa-regular fa-sun"></i>Zu „Mein Tag“ hinzufügen</button>
+                <select x-model="currentTodo.listId" class="field" aria-label="Liste"><template x-for="l in todoLists" :key="l.id"><option :value="l.id" x-text="l.emoji + ' ' + l.name"></option></template></select>
+            </div>
+
+            <div class="space-y-3">
+                <p class="label">Fällig</p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" @click="currentTodo.due = today" class="chip">Heute</button>
+                    <button type="button" @click="currentTodo.due = addDaysStr(today, 1)" class="chip">Morgen</button>
+                    <button type="button" @click="currentTodo.due = addDaysStr(today, 7)" class="chip">Nächste Woche</button>
+                    <button type="button" x-show="currentTodo.due" @click="currentTodo.due = ''; currentTodo.dueTime = ''" class="chip !text-rose-400">Entfernen</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="date" x-model="currentTodo.due" class="field" aria-label="Fälligkeitsdatum">
+                    <input type="time" x-model="currentTodo.dueTime" :disabled="!currentTodo.due" class="field" aria-label="Uhrzeit">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-3">
+                <div><p class="label mb-2">Erinnerung</p>
+                    <select x-model="currentTodo.reminder" class="field">
+                        <option value="">Keine</option><option value="due">Zur Fälligkeit</option><option value="15">15 Min. vorher</option><option value="60">1 Std. vorher</option><option value="1440">1 Tag vorher</option><option value="custom">Eigener Zeitpunkt…</option>
+                    </select>
+                </div>
+                <div><p class="label mb-2">Wiederholen</p>
+                    <select x-model="currentTodo.repeat" class="field">
+                        <option value="">Nie</option><option value="daily">Täglich</option><option value="weekdays">Werktags</option><option value="weekly">Wöchentlich</option><option value="monthly">Monatlich</option><option value="yearly">Jährlich</option>
+                    </select>
+                </div>
+            </div>
+            <input x-show="currentTodo.reminder === 'custom'" type="datetime-local" x-model="currentTodo.remindAt" class="field" aria-label="Erinnerungszeitpunkt">
+            <p x-show="currentTodo.reminder && currentTodo.reminder !== 'custom' && !currentTodo.due" class="text-[11px] text-amber-400 font-semibold">Für diese Erinnerung wird ein Fälligkeitsdatum benötigt.</p>
+            <p x-show="currentTodo.reminder && currentTodo.reminder !== 'custom' && currentTodo.due && !currentTodo.dueTime" class="text-[11px] muted">Ohne Uhrzeit erinnert die App um <span x-text="cfg.remindTime"></span> Uhr.</p>
+
+            <textarea x-model="currentTodo.note" rows="3" placeholder="Notiz hinzufügen…" class="field resize-none"></textarea>
+
+            <div class="flex items-center justify-between gap-3 pt-4 border-t divider">
+                <button type="button" x-show="currentTodo.id" @click="deleteTodo(currentTodo.id); showTodoModalState = false" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span x-show="!currentTodo.id"></span>
+                <div class="flex gap-2"><button type="button" @click="showTodoModalState = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Aufgabenliste -->
+    <div x-show="showListModal" x-transition.opacity x-cloak class="backdrop" @click.self="showListModal = false">
+        <form @submit.prevent="saveList()" class="card w-full max-w-sm p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg" x-text="currentList.id ? 'Liste bearbeiten' : 'Neue Liste'"></h3>
+            <div class="flex gap-2">
+                <input type="text" x-model="currentList.emoji" maxlength="4" class="field !w-16 text-center !text-lg" aria-label="Symbol">
+                <input x-ref="listName" type="text" x-model="currentList.name" required placeholder="Listenname" class="field">
+            </div>
+            <div class="flex flex-wrap gap-1.5"><template x-for="e in listEmojis" :key="e"><button type="button" @click="currentList.emoji = e" class="icon-btn text-lg" x-text="e"></button></template></div>
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <button type="button" x-show="currentList.id" @click="deleteList(currentList.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span x-show="!currentList.id"></span>
+                <div class="flex gap-2"><button type="button" @click="showListModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Einkaufsartikel -->
+    <div x-show="showShopModal" x-transition.opacity x-cloak class="backdrop" @click.self="showShopModal = false">
+        <form @submit.prevent="saveShopItem()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <div class="flex items-center gap-3">
+                <input type="text" x-model="currentShop.emoji" maxlength="4" class="field !w-16 text-center !text-xl" aria-label="Symbol">
+                <input type="text" x-model="currentShop.name" required placeholder="Artikelname" class="field !font-bold">
+            </div>
+            <div class="grid grid-cols-[auto_1fr] gap-2 items-center">
+                <div class="seg !p-1">
+                    <button type="button" @click="currentShop.qty = Math.max(1, (Number(currentShop.qty) || 1) - 1)"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                    <input type="number" min="0.1" step="any" x-model.number="currentShop.qty" class="w-14 bg-transparent text-center text-sm font-black outline-none" aria-label="Menge">
+                    <button type="button" @click="currentShop.qty = (Number(currentShop.qty) || 0) + 1"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                </div>
+                <select x-model="currentShop.unit" class="field" aria-label="Einheit"><template x-for="u in shopUnits" :key="u"><option :value="u" x-text="u || 'Ohne Einheit'"></option></template></select>
+            </div>
+            <div x-show="variantsOf(currentShop.name).length">
+                <p class="label mb-2">Variante / Detail</p>
+                <div class="flex flex-wrap gap-1.5"><template x-for="v in variantsOf(currentShop.name)" :key="v"><button type="button" @click="toggleVariant(v)" class="chip" :class="hasVariant(v) ? 'on' : ''" x-text="v"></button></template></div>
+            </div>
+            <input type="text" x-model="currentShop.note" placeholder="Notiz (z. B. Marke, Bio, laktosefrei)" class="field">
+            <select x-model="currentShop.category" class="field" aria-label="Kategorie"><template x-for="c in shopCategories" :key="c"><option :value="c" x-text="c"></option></template></select>
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <button type="button" @click="deleteShopItem(currentShop.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Entfernen</button>
+                <div class="flex gap-2"><button type="button" @click="showShopModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tresor-Eintrag -->
+    <div x-show="showPasswordModalState" x-transition.opacity x-cloak class="backdrop" @click.self="showPasswordModalState = false">
+        <form @submit.prevent="savePassword()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg" x-text="currentPassword.id ? 'Eintrag bearbeiten' : 'Neuer Tresor-Eintrag'"></h3>
+            <div class="flex items-center gap-3">
+                <div class="logo"><i class="fa-solid fa-shield-halved"></i>
+                    <template x-if="cfg.showLogos && logoUrl(currentPassword)"><img :src="logoUrl(currentPassword)" alt="" referrerpolicy="no-referrer" @error="$el.remove()"></template>
+                </div>
+                <input x-ref="pwTitle" type="text" x-model="currentPassword.title" required placeholder="Titel (z. B. Netflix)" class="field">
+            </div>
+            <input type="text" x-model="currentPassword.url" placeholder="Website (z. B. netflix.com)" autocomplete="off" inputmode="url" class="field">
+            <input type="text" x-model="currentPassword.username" placeholder="Benutzername / E-Mail" autocomplete="off" class="field">
+            <div class="flex gap-2">
+                <input type="text" x-model="currentPassword.password" required placeholder="Passwort" autocomplete="off" class="field flex-1 !font-mono">
+                <button type="button" @click="generatePassword()" class="btn btn-primary" title="Passwort generieren"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
+            <select x-model="currentPassword.folder" class="field" aria-label="Gruppe">
+                <option value="">Ohne Gruppe</option>
+                <template x-for="f in vaultFolders" :key="f"><option :value="f" x-text="'Gruppe: ' + f"></option></template>
+            </select>
+            <div class="flex justify-end gap-2 pt-1"><button type="button" @click="showPasswordModalState = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary" :disabled="vaultBusy">Speichern</button></div>
+        </form>
+    </div>
+
+    <!-- Tresor-Gruppen verwalten -->
+    <div x-show="showFolders" x-transition.opacity x-cloak class="backdrop" @click.self="showFolders = false">
+        <form @submit.prevent="saveFolders()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg">Gruppen verwalten</h3>
+            <p class="text-xs muted">Gruppen umbenennen, hinzufügen oder löschen. Einträge gelöschter Gruppen bleiben erhalten und landen unter „Ohne Gruppe“.</p>
+            <div class="space-y-2">
+                <template x-for="(f, i) in folderDraft" :key="f.key">
+                    <div class="flex items-center gap-2">
+                        <input type="text" x-model="f.name" class="field" placeholder="Gruppenname" aria-label="Gruppenname">
+                        <span class="text-[11px] muted w-10 text-right shrink-0" x-text="passwords.filter(p => p.folder === f.old).length || ''"></span>
+                        <button type="button" @click="folderDraft.splice(i, 1)" class="icon-btn danger" aria-label="Gruppe löschen"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </template>
+            </div>
+            <button type="button" @click="folderDraft.push({ key: uid(), old: null, name: '' })" class="btn btn-soft w-full"><i class="fa-solid fa-plus text-[10px]"></i>Neue Gruppe</button>
+            <p x-show="vaultError" class="text-xs font-bold text-rose-400" x-text="vaultError"></p>
+            <div class="flex justify-end gap-2 pt-1"><button type="button" @click="showFolders = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary" :disabled="vaultBusy">Speichern</button></div>
+        </form>
+    </div>
+
+    <!-- Master-Passwort ändern -->
+    <div x-show="showChangeMaster" x-transition.opacity x-cloak class="backdrop" @click.self="showChangeMaster = false">
+        <form @submit.prevent="changeMaster()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg">Master-Passwort ändern</h3>
+            <input type="password" x-model="mpCurrent" autocomplete="current-password" placeholder="Aktuelles Master-Passwort" class="field" required>
+            <input type="password" x-model="mpInput" autocomplete="new-password" placeholder="Neues Master-Passwort (mind. 8 Zeichen)" class="field" required>
+            <input type="password" x-model="mpConfirm" autocomplete="new-password" placeholder="Neues Passwort wiederholen" class="field" required>
+            <p x-show="vaultError" class="text-xs font-bold text-rose-400" x-text="vaultError"></p>
+            <div class="flex justify-end gap-2 pt-1"><button type="button" @click="showChangeMaster = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary" :disabled="vaultBusy"><i x-show="vaultBusy" class="fa-solid fa-circle-notch spin"></i>Ändern</button></div>
+        </form>
+    </div>
+
+    <!-- Tresor zurücksetzen -->
+    <div x-show="showResetModal" x-transition.opacity x-cloak class="backdrop" @click.self="showResetModal = false">
+        <form @submit.prevent="resetVault()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <h3 class="font-black text-lg">Tresor zurücksetzen</h3>
+            </div>
+            <p class="text-xs leading-relaxed muted">Da die Einträge mit deinem Master-Passwort verschlüsselt sind, können sie ohne dieses Passwort nicht wiederhergestellt werden. Beim Zurücksetzen werden <strong style="color: var(--text)">alle Tresor-Einträge unwiderruflich gelöscht</strong> und du kannst danach ein neues Master-Passwort festlegen. Alles andere bleibt unberührt.</p>
+            <div><p class="label mb-2">Zur Bestätigung „LÖSCHEN“ eingeben</p><input type="text" x-model="resetConfirm" autocomplete="off" class="field" placeholder="LÖSCHEN"></div>
+            <div class="flex justify-end gap-2 pt-1"><button type="button" @click="showResetModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-danger" :disabled="resetConfirm.trim().toUpperCase() !== 'LÖSCHEN'">Endgültig zurücksetzen</button></div>
+        </form>
+    </div>
+
+    <script>
+        /* ============ Hilfsfunktionen ============ */
+        const HPX = 52; // Höhe einer Stunde im Stundenraster (px)
+        const APP_VERSION = (document.querySelector('meta[name="app-version"]') || {}).content || '0';
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+        const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+        const toMin = t => { const [h, m] = (t || '0:0').split(':').map(Number); return h * 60 + (m || 0); };
+        const minToTime = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+        const dtOf = (ds, t) => { const d = parseDate(ds); d.setMinutes(toMin(t)); return d; };
+        const addMin = (ds, t, min) => { const x = new Date(dtOf(ds, t).getTime() + min * 60000); return { date: fmt(x), time: `${pad(x.getHours())}:${pad(x.getMinutes())}` }; };
+        function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+        const readJSON = (key, fallback) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } };
+
+        const STATES = [['BW','Baden-Württemberg'],['BY','Bayern'],['BE','Berlin'],['BB','Brandenburg'],['HB','Bremen'],['HH','Hamburg'],['HE','Hessen'],['MV','Mecklenburg-Vorpommern'],['NI','Niedersachsen'],['NW','Nordrhein-Westfalen'],['RP','Rheinland-Pfalz'],['SL','Saarland'],['SN','Sachsen'],['ST','Sachsen-Anhalt'],['SH','Schleswig-Holstein'],['TH','Thüringen']];
+
+        function easterSunday(y) {
+            const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+            const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+            return new Date(y, mo - 1, da);
+        }
+        const holCache = {};
+        function holidaysFor(year, st) {
+            const key = year + st;
+            if (holCache[key]) return holCache[key];
+            const map = {}, add = (d, name) => { map[fmt(d)] = name; };
+            const fixed = (m, d, name, only) => { if (!only || only.includes(st)) add(new Date(year, m - 1, d), name); };
+            fixed(1, 1, 'Neujahr'); fixed(5, 1, 'Tag der Arbeit'); fixed(10, 3, 'Tag der Dt. Einheit'); fixed(12, 25, '1. Weihnachtstag'); fixed(12, 26, '2. Weihnachtstag');
+            fixed(1, 6, 'Heilige Drei Könige', ['BW', 'BY', 'ST']); fixed(3, 8, 'Frauentag', ['BE', 'MV']); fixed(8, 15, 'Mariä Himmelfahrt', ['SL']); fixed(9, 20, 'Weltkindertag', ['TH']);
+            fixed(10, 31, 'Reformationstag', ['BB', 'HB', 'HH', 'MV', 'NI', 'SN', 'ST', 'SH', 'TH']); fixed(11, 1, 'Allerheiligen', ['BW', 'BY', 'NW', 'RP', 'SL']);
+            const e = easterSunday(year);
+            add(addDays(e, -2), 'Karfreitag'); add(addDays(e, 1), 'Ostermontag'); add(addDays(e, 39), 'Christi Himmelfahrt'); add(addDays(e, 50), 'Pfingstmontag');
+            if (['BW', 'BY', 'HE', 'NW', 'RP', 'SL'].includes(st)) add(addDays(e, 60), 'Fronleichnam');
+            if (st === 'SN') { let d = new Date(year, 10, 22); while (d.getDay() !== 3) d = addDays(d, -1); add(d, 'Buß- und Bettag'); }
+            return (holCache[key] = map);
+        }
+        function isoWeek(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            return Math.ceil(((d - new Date(Date.UTC(d.getUTCFullYear(), 0, 1))) / 86400000 + 1) / 7);
+        }
+
+        /* ============ Datenmodelle & Migration ============ */
+        const DEFAULT_CFG = {
+            accent: '', density: 'comfortable', startTab: 'last', confirmDelete: true, notifications: false, autoUpdate: true,
+            calView: 'month', weekStart: 1, hourFrom: 6, hourTo: 22, defaultDuration: 60, defaultReminder: '', state: 'NW', showHolidays: true, showTasksInCal: true,
+            remindTime: '09:00', newOnTop: true, showDone: true,
+            shopGroup: true,
+            vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
+            views: { todos: 'list', shopping: 'tiles', vault: 'grid' }
+        };
+        const DEFAULT_FOLDERS = ['Privat', 'Arbeit', 'Finanzen', 'Sonstiges'];
+
+        function normEvent(e) {
+            const o = { ...e };
+            if (!o.startDate) { o.startDate = o.date; o.startTime = o.time || ''; o.allDay = !o.time; } // Altformat
+            delete o.date; delete o.time;
+            o.id = String(o.id ?? uid());
+            o.color = o.color || '#6366f1';
+            o.allDay = !!o.allDay;
+            o.endDate = o.endDate && o.endDate >= o.startDate ? o.endDate : o.startDate;
+            o.reminder = o.reminder == null ? '' : String(o.reminder);
+            if (o.allDay) { o.startTime = o.endTime = ''; }
+            else {
+                o.startTime = o.startTime || '09:00';
+                if (!o.endTime) { const s = toMin(o.startTime) + 60; o.endTime = s >= 1440 ? '23:59' : minToTime(s); }
+            }
+            return o;
+        }
+        const newTodo = (p = {}) => ({ id: uid(), title: '', done: false, important: false, myDay: '', listId: 'inbox', due: '', dueTime: '', reminder: '', remindAt: '', repeat: '', steps: [], note: '', created: Date.now(), doneAt: 0, ...p });
+        function normTodo(t, groupMap) {
+            const o = { ...newTodo(), ...t };
+            if ('completed' in o) { o.done = !!o.completed; delete o.completed; }
+            if ('group' in o) { if (o.group === 'Wichtig') o.important = true; else if (groupMap[o.group]) o.listId = groupMap[o.group]; delete o.group; }
+            o.id = String(o.id); o.steps = Array.isArray(o.steps) ? o.steps : []; o.listId = o.listId || 'inbox';
+            return o;
+        }
+
+        /* ============ Einkaufskatalog (Bring!-Stil) ============ */
+        const RAW_CATALOG = {
+            'Obst & Gemüse': '🍎 Äpfel,🍌 Bananen,🍊 Orangen,🍋 Zitronen,🍇 Trauben,🍓 Erdbeeren,🫐 Heidelbeeren,🍐 Birnen,🍉 Melone,🍅 Tomaten,🥒 Gurke,🥕 Karotten,🥔 Kartoffeln,🧅 Zwiebeln,🧄 Knoblauch,🥦 Brokkoli,🫑 Paprika,🥬 Salat,🍄 Champignons,🥑 Avocado,🌽 Mais,🍆 Aubergine,🥝 Kiwi',
+            'Brot & Backwaren': '🍞 Brot,🥖 Baguette,🥐 Croissants,🥯 Brötchen,🥨 Brezeln,🍰 Kuchen,🫓 Toast,🥞 Pfannkuchen',
+            'Milch & Käse': '🥛 Milch,🧈 Butter,🧀 Käse,🥚 Eier,🥣 Joghurt,🍶 Sahne,🧀 Mozzarella,🧀 Frischkäse,🥛 Quark,🥛 Hafermilch',
+            'Fleisch & Fisch': '🍗 Hähnchen,🥩 Rindfleisch,🥓 Speck,🌭 Würstchen,🍖 Hackfleisch,🐟 Lachs,🍤 Garnelen,🥪 Aufschnitt,🍖 Schinken',
+            'Tiefkühl': '🍕 Pizza,🍟 Pommes,🥦 TK-Gemüse,🍦 Eiscreme,🐟 Fischstäbchen,🫛 TK-Erbsen',
+            'Getränke': '💧 Wasser,🧃 Saft,🥤 Limonade,☕ Kaffee,🍵 Tee,🍺 Bier,🍷 Wein,🥂 Sekt,🧋 Cola',
+            'Vorräte': '🍝 Nudeln,🍚 Reis,🥫 Dosentomaten,🫘 Bohnen,🥣 Müsli,🌾 Mehl,🍬 Zucker,🫒 Olivenöl,🍯 Honig,🥜 Nüsse,🫙 Marmelade,🥔 Haferflocken,🍜 Suppe',
+            'Gewürze & Soßen': '🧂 Salz,🌶️ Pfeffer,🍅 Ketchup,🌭 Senf,🥫 Tomatenmark,🍾 Essig,🍲 Brühe,🥫 Mayonnaise,🌿 Kräuter',
+            'Snacks & Süßes': '🍫 Schokolade,🍪 Kekse,🥔 Chips,🍿 Popcorn,🍬 Gummibärchen,🥜 Erdnüsse',
+            'Haushalt': '🧻 Toilettenpapier,🧽 Spülmittel,🧴 Waschmittel,🗑️ Müllbeutel,🕯️ Kerzen,🔋 Batterien,🧻 Küchenrolle,🧹 Putzmittel,💡 Glühbirnen',
+            'Drogerie': '🧼 Seife,🪥 Zahnpasta,🧴 Shampoo,🚿 Duschgel,🪒 Rasierer,🤧 Taschentücher,🧴 Deo,🧴 Sonnencreme',
+            'Tier & Baby': '🐕 Hundefutter,🐈 Katzenfutter,🍼 Babynahrung,🧷 Windeln,🧴 Feuchttücher'
+        };
+        const CATEGORIES = [...Object.keys(RAW_CATALOG), 'Sonstiges'];
+        const CATALOG = Object.entries(RAW_CATALOG).flatMap(([category, s]) => s.split(',').map(x => { const i = x.indexOf(' '); return { emoji: x.slice(0, i), name: x.slice(i + 1), category }; }));
+        const VARIANTS = {
+            Milch: ['3,5 % Fett', '1,5 % Fett', 'Laktosefrei', 'Bio'], Hafermilch: ['Barista', 'Ungesüßt'], Brot: ['Vollkorn', 'Weißbrot', 'Dinkel', 'Geschnitten'], Käse: ['Gouda', 'Emmentaler', 'Bergkäse', 'Gerieben', 'Scheiben'],
+            Äpfel: ['Bio', 'Süß', 'Säuerlich'], Eier: ['10er', '6er', 'Bio', 'Freiland'], Butter: ['Gesalzen', 'Ungesalzen'], Joghurt: ['Natur', 'Griechisch', 'Frucht', 'Laktosefrei'],
+            Nudeln: ['Spaghetti', 'Penne', 'Fusilli', 'Vollkorn'], Reis: ['Basmati', 'Jasmin', 'Langkorn'], Kaffee: ['Bohnen', 'Gemahlen', 'Entkoffeiniert'], Wasser: ['Still', 'Medium', 'Sprudel'],
+            Hackfleisch: ['Gemischt', 'Rind'], Tomaten: ['Cherry', 'Rispen', 'Bio'], Kartoffeln: ['Festkochend', 'Mehligkochend'], Hähnchen: ['Brust', 'Schenkel', 'Ganz'], Zucker: ['Weiß', 'Braun', 'Puder'],
+            Mehl: ['Typ 405', 'Vollkorn'], Bananen: ['Bio'], Saft: ['Orange', 'Apfel', 'Multivitamin'], Tee: ['Schwarz', 'Grün', 'Kräuter'], Pizza: ['Margherita', 'Salami', 'Vegetarisch'], Schokolade: ['Vollmilch', 'Zartbitter', 'Weiß']
+        };
+        const guessCategory = name => (CATALOG.find(p => { const a = p.name.toLowerCase(), b = name.toLowerCase(); return a.includes(b) || b.includes(a); }) || { category: 'Sonstiges' }).category;
+        function normShop(i) {
+            const known = CATALOG.find(p => p.name.toLowerCase() === (i.name || '').toLowerCase());
+            return { id: String(i.id ?? uid()), name: i.name, emoji: i.emoji || known?.emoji || '🛒', category: CATEGORIES.includes(i.category) ? i.category : (known?.category || guessCategory(i.name || '')),
+                     qty: Number(i.qty) || 1, unit: i.unit || '', note: i.note || '', done: !!(i.done ?? i.completed) };
+        }
+
+        /* ============ Tresor-Kryptografie (WebCrypto) ============ */
+        const VAULT_KEY = 'organizer_vault';
+        const PBKDF2_ITER = 600000;
+        const te = new TextEncoder(), td = new TextDecoder();
+        let vaultKey = null;    // nur im Speicher, nie gespeichert
+        let vaultMeta = null;   // { salt, iter }
+        let legacyEntries = []; // unverschlüsselte Altdaten aus früheren Versionen
+
+        const toB64 = buf => { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+        const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+        async function deriveKey(password, salt, iterations) {
+            const base = await crypto.subtle.importKey('raw', te.encode(password), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+        }
+        async function encryptJSON(key, obj) {
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            return { iv: toB64(iv), data: toB64(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, te.encode(JSON.stringify(obj)))) };
+        }
+        async function decryptJSON(key, rec) {
+            return JSON.parse(td.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: fromB64(rec.iv) }, key, fromB64(rec.data))));
+        }
+        const validVaultRecord = r => r && typeof r === 'object' && r.salt && r.iv && r.data && Number.isFinite(r.iter);
+
+        /* ============ Geräte-Abgleich: Kern ============ */
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems']];
+        const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
+        const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
+        const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
+        let syncMeta = {};                                  // pro Eintrag: { u: Änderungszeit, h: Hash } bzw. { u, d: 1 } für Gelöschtes
+        let syncKeyCache = { tag: '', key: null };          // abgeleiteter Schlüssel (nur im Speicher)
+        const syncRt = { gen: 0, peer: null, conns: new Map(), retryTimer: null, sendTimer: null, gTimer: null, gPoll: null };
+        const PEER_LIB = 'https://cdn.jsdelivr.net/npm/peerjs@1.5/dist/peerjs.min.js';
+        const SYNC_SCRIPT = `/**
+ * Christophers Space – Sync-Script
+ * Speichert die (bereits in der App verschlüsselten) Abgleich-Daten in deinem Google Drive.
+ * Bereitstellen als Web-App: Ausführen als "Ich", Zugriff "Jeder".
+ */
+function doGet(e) {
+  return handle_((e && e.parameter) || {});
+}
+
+function doPost(e) {
+  var body = {};
+  try { body = JSON.parse(e.postData.contents); } catch (err) {}
+  return handle_(body);
+}
+
+function out_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handle_(p) {
+  var room = String(p.room || '');
+  if (!/^[a-f0-9]{32}$/.test(room)) return out_({ ok: false, error: 'Ungültiger Raum' });
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var name = 'space-sync-' + room + '.json';
+    var files = DriveApp.getFilesByName(name);
+    var file = files.hasNext() ? files.next() : null;
+    var cur = { rev: 0, blob: null };
+    if (file) { try { cur = JSON.parse(file.getBlob().getDataAsString()); } catch (err) {} }
+
+    if (p.action === 'get') {
+      return out_({ ok: true, rev: cur.rev || 0, blob: cur.blob || null });
+    }
+    if (p.action === 'put') {
+      if (typeof p.blob !== 'string' || p.blob.length > 20000000) return out_({ ok: false, error: 'Ungültige Daten' });
+      if ((cur.rev || 0) !== Number(p.baseRev)) {
+        return out_({ ok: false, conflict: true, rev: cur.rev || 0, blob: cur.blob || null });
+      }
+      var next = JSON.stringify({ rev: (cur.rev || 0) + 1, blob: p.blob });
+      if (file) file.setContent(next); else DriveApp.createFile(name, next, MimeType.PLAIN_TEXT);
+      return out_({ ok: true, rev: (cur.rev || 0) + 1 });
+    }
+    return out_({ ok: false, error: 'Unbekannte Aktion' });
+  } finally {
+    lock.releaseLock();
+  }
+}
+`;
+
+    </script>
+
+    <script>
+        function organizerApp() {
+            return {
+                tabs: [
+                    { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
+                    { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
+                    { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
+                    { id: 'passwords', label: 'Tresor', icon: 'fa-solid fa-vault' },
+                    { id: 'settings', label: 'Settings', icon: 'fa-solid fa-sliders' }
+                ],
+                themes: [
+                    { id: 'midnight', label: 'Mitternacht', bg: '#0b0f19', accent: '#6366f1' },
+                    { id: 'white', label: 'Clean White', bg: '#ffffff', accent: '#4f46e5' },
+                    { id: 'ocean', label: 'Ozean Blau', bg: '#1e293b', accent: '#6366f1' },
+                    { id: 'emerald', label: 'Emerald Grün', bg: '#064e3b', accent: '#10b981' }
+                ],
+                accents: ['#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f59e0b', '#10b981', '#06b6d4'],
+                eventColors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'],
+                listEmojis: ['🏠', '💼', '🛒', '📚', '🎯', '💡', '✈️', '🎁', '💪', '🧹', '💰', '❤️'],
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                shopCategories: CATEGORIES,
+                shopUnits: ['', 'Stk', 'g', 'kg', 'ml', 'l', 'Pkg', 'Bund', 'Dose', 'Flasche'],
+
+                /* Einstellungen: werden generisch gerendert */
+                settingsDef: [
+                    { title: 'Allgemein', icon: 'fa-solid fa-gear', items: [
+                        { k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['shopping', 'Einkauf'], ['passwords', 'Tresor']] },
+                        { k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
+                        { k: 'confirmDelete', type: 'toggle', label: 'Vor dem Löschen nachfragen' },
+                        { k: 'notifications', type: 'toggle', label: 'Browser-Benachrichtigungen', desc: 'Erinnerungen zusätzlich als Systemhinweis (nur bei geöffnetem Tab)' },
+                        { k: 'autoUpdate', type: 'toggle', label: 'Automatisch nach Updates suchen', desc: 'Nur bei online gehosteter Version; Prüfung beim Start, höchstens alle 6 Stunden' }
+                    ] },
+                    { title: 'Kalender', icon: 'fa-regular fa-calendar-days', items: [
+                        { k: 'calView', type: 'select', label: 'Standardansicht', o: [['month', 'Monat'], ['week', 'Woche'], ['day', 'Tag'], ['year', 'Jahr']] },
+                        { k: 'weekStart', type: 'select', label: 'Wochenbeginn', o: [[1, 'Montag'], [0, 'Sonntag']] },
+                        { k: 'hourFrom', type: 'select', label: 'Stundenraster ab', o: Array.from({ length: 12 }, (_, h) => [h, pad(h) + ':00']) },
+                        { k: 'hourTo', type: 'select', label: 'Stundenraster bis', o: Array.from({ length: 13 }, (_, i) => [i + 12, pad((i + 12) % 24) + ':00' + (i + 12 === 24 ? ' (Mitternacht)' : '')]) },
+                        { k: 'defaultDuration', type: 'select', label: 'Standarddauer neuer Termine', o: [[15, '15 Minuten'], [30, '30 Minuten'], [60, '1 Stunde'], [90, '1,5 Stunden'], [120, '2 Stunden']] },
+                        { k: 'defaultReminder', type: 'select', label: 'Standard-Erinnerung für Termine', o: [['', 'Keine'], ['0', 'Zur Startzeit'], ['15', '15 Min. vorher'], ['60', '1 Std. vorher'], ['1440', '1 Tag vorher']] },
+                        { k: 'state', type: 'select', label: 'Bundesland', desc: 'Für die Anzeige der Feiertage', o: STATES },
+                        { k: 'showHolidays', type: 'toggle', label: 'Feiertage anzeigen' },
+                        { k: 'showTasksInCal', type: 'toggle', label: 'Aufgaben mit Fälligkeit im Kalender zeigen' }
+                    ] },
+                    { title: 'To-Dos', icon: 'fa-solid fa-list-check', items: [
+                        { k: 'remindTime', type: 'time', label: 'Standard-Erinnerungszeit', desc: 'Für Aufgaben mit Datum, aber ohne Uhrzeit' },
+                        { k: 'newOnTop', type: 'toggle', label: 'Neue Aufgaben oben einsortieren' },
+                        { k: 'showDone', type: 'toggle', label: 'Erledigte Aufgaben standardmäßig ausklappen' }
+                    ] },
+                    { title: 'Einkauf', icon: 'fa-solid fa-bag-shopping', items: [
+                        { k: 'shopGroup', type: 'toggle', label: 'Nach Kategorien gruppieren' }
+                    ] },
+                    { title: 'Tresor', icon: 'fa-solid fa-vault', items: [
+                        { k: 'vaultLockMin', type: 'select', label: 'Automatisch sperren nach', o: [[1, '1 Minute'], [2, '2 Minuten'], [5, '5 Minuten'], [10, '10 Minuten'], [15, '15 Minuten'], [30, '30 Minuten']] },
+                        { k: 'clipboardClear', type: 'select', label: 'Zwischenablage leeren nach', desc: 'Nach dem Kopieren eines Passworts', o: [[0, 'Nie'], [15, '15 Sekunden'], [30, '30 Sekunden'], [60, '60 Sekunden']] },
+                        { k: 'genLength', type: 'select', label: 'Länge generierter Passwörter', o: [[12, '12'], [16, '16'], [20, '20'], [24, '24'], [32, '32']] },
+                        { k: 'showLogos', type: 'toggle', label: 'Website-Logos anzeigen', desc: 'Lädt Icons über den Google-Favicon-Dienst – dabei wird nur die Domain übermittelt' }
+                    ] }
+                ],
+
+                activeTab: 'calendar',
+                cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)),
+                themeSettings: 'midnight',
+                syncStatus: 'Lokal gespeichert', syncOk: false,
+                googleScriptUrl: '', googleScriptUrlInput: '',
+                syncCfg: { room: '', pass: '', google: false, p2p: false, url: '' },
+                syncRoomInput: '', syncPassInput: '', syncPassShow: false, syncError: '',
+                gBusy: false, gError: '', gLast: 0, _syncToastAt: 0,
+                p2p: { status: 'off', role: '', peers: 0, error: '' },
+                banners: [], toastMsg: '', nowTick: 0, _toastTimer: null, _idleTimer: null,
+                updateAvailable: false, updateChecking: false, remoteVersion: '', lastUpdateCheck: 0,
+
+                /* Kalender */
+                calendarView: 'month',
+                anchor: fmt(new Date()),
+                events: [],
+                showEventModal: false, evDur: 60,
+                currentEvent: {},
+
+                /* To-Dos */
+                smartLists: [
+                    { id: 'myday', name: 'Mein Tag', icon: 'fa-regular fa-sun', color: '#f59e0b' },
+                    { id: 'important', name: 'Wichtig', icon: 'fa-regular fa-star', color: '#ec4899' },
+                    { id: 'planned', name: 'Geplant', icon: 'fa-regular fa-calendar', color: '#10b981' },
+                    { id: 'all', name: 'Alle Aufgaben', icon: 'fa-solid fa-infinity', color: '#6366f1' }
+                ],
+                todos: [], todoLists: [], todoListId: 'myday',
+                todoSort: 'created', todoSearch: '', newTaskTitle: '', doneOpen: true,
+                showTodoModalState: false, currentTodo: newTodo(), newStep: '',
+                showListModal: false, currentList: { id: null, name: '', emoji: '📋' },
+
+                /* Einkauf */
+                shoppingItems: [], shopQuery: '', shopCat: CATEGORIES[0],
+                showShopModal: false, currentShop: {},
+
+                /* Tresor */
+                vaultState: 'none', vaultBusy: false, vaultError: '', legacyCount: 0,
+                mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
+                passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
+                pwSearch: '', pwFolderFilter: 'all',
+                showPasswordModalState: false, showChangeMaster: false, showResetModal: false, showFolders: false, resetConfirm: '',
+                currentPassword: { id: null, title: '', url: '', username: '', password: '', folder: 'Privat' },
+
+                /* ---------- Init ---------- */
+                init() {
+                    const saved = readJSON('organizer_cfg', {});
+                    this.cfg = { ...DEFAULT_CFG, ...saved, views: { ...DEFAULT_CFG.views, ...(saved.views || {}) } };
+                    const oldState = localStorage.getItem('organizer_state');
+                    if (!saved.state && STATES.some(s => s[0] === oldState)) this.cfg.state = oldState;
+                    this.applyCfg();
+
+                    const th = localStorage.getItem('organizer_theme');
+                    this.themeSettings = this.themes.some(t => t.id === th) ? th : 'midnight';
+                    const last = localStorage.getItem('organizer_start_tab');
+                    const start = this.cfg.startTab === 'last' ? last : this.cfg.startTab;
+                    this.activeTab = this.tabs.some(t => t.id === start) ? start : 'calendar';
+                    this.calendarView = this.cfg.calView;
+                    this.doneOpen = this.cfg.showDone;
+                    this.googleScriptUrl = this.googleScriptUrlInput = localStorage.getItem('organizer_gscript_url') || '';
+                    const sc = readJSON(SYNC_CFG_KEY, null);
+                    if (sc && typeof sc === 'object') this.syncCfg = { ...this.syncCfg, ...sc };
+                    this.syncRoomInput = this.syncCfg.room || localStorage.getItem('organizer_sync_room') || '';
+                    this.syncPassInput = this.syncCfg.pass;
+                    localStorage.removeItem('organizer_sync_room');
+                    syncMeta = readJSON(SYNC_META_KEY, {});
+                    if (!syncMeta || typeof syncMeta !== 'object' || Array.isArray(syncMeta)) syncMeta = {};
+
+                    this.events = readJSON('organizer_events', []).map(normEvent).filter(e => e.startDate);
+                    const groups = readJSON('organizer_todo_groups', null), lists = readJSON('organizer_todo_lists', null);
+                    this.loadTodoData(readJSON('organizer_todos', []), lists, lists ? null : (groups ?? ['Arbeit', 'Privat', 'Haushalt']));
+                    this.shoppingItems = readJSON('organizer_shopping', []).filter(i => i && i.name).map(normShop);
+
+                    legacyEntries = readJSON('organizer_passwords', []);
+                    if (!Array.isArray(legacyEntries)) legacyEntries = [];
+                    this.legacyCount = legacyEntries.length;
+                    const vr0 = readJSON(VAULT_KEY, null);
+                    this.vaultState = validVaultRecord(vr0) ? 'locked' : 'none';
+                    if (validVaultRecord(vr0) && !vr0.vid) { vr0.vid = uid() + uid(); try { localStorage.setItem(VAULT_KEY, JSON.stringify(vr0)); } catch (e) {} } // Tresor-Kennung für den Abgleich
+                    if (!window.crypto?.subtle) this.vaultError = 'Dieser Browser/Kontext unterstützt keine Verschlüsselung (WebCrypto).';
+
+                    ['click', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, () => this.touchIdle(), { passive: true }));
+                    this.$watch('activeTab', v => { this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
+                    this.$watch('calendarView', () => this.scrollGrid());
+                    this.saveAllData(); // persistiert migrierte Daten im neuen Format
+
+                    if (this.googleScriptUrl) this.fetchGoogleEvents();
+                    this.lastUpdateCheck = Number(localStorage.getItem('organizer_update_check')) || 0;
+                    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.onVisible(); });
+                    setTimeout(() => this.maybeAutoCheck(), 3000);
+                    this.startSync();
+                    setInterval(() => { this.nowTick++; this.checkReminders(); }, 30000);
+                    this.checkReminders();
+                    this.scrollGrid();
+                },
+
+                /* ---------- Allgemein ---------- */
+                switchTab(tab) {
+                    this.activeTab = tab;
+                    localStorage.setItem('organizer_start_tab', tab);
+                    if (tab === 'passwords' && this.vaultState === 'locked') this.$nextTick(() => this.$refs.unlockInput?.focus());
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                setTheme(theme) { this.themeSettings = theme; localStorage.setItem('organizer_theme', theme); document.documentElement.dataset.theme = theme; },
+                get today() { void this.nowTick; return fmt(new Date()); },
+                addDaysStr(ds, n) { return fmt(addDays(parseDate(ds), n)); },
+                longDate(ds) { return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); },
+                toast(msg) { this.toastMsg = msg; clearTimeout(this._toastTimer); this._toastTimer = setTimeout(() => this.toastMsg = '', 2800); },
+                ask(msg) { return !this.cfg.confirmDelete || confirm(msg); },
+                closeModals() {
+                    this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
+                    this.showChangeMaster = this.showResetModal = this.showFolders = false;
+                },
+                async copyText(text, msg, secret = false) {
+                    try { await navigator.clipboard.writeText(text); }
+                    catch (e) {
+                        const ta = Object.assign(document.createElement('textarea'), { value: text });
+                        ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+                        try { document.execCommand('copy'); } catch (_) {}
+                        ta.remove();
+                    }
+                    this.toast(msg || 'Kopiert');
+                    if (secret && this.cfg.clipboardClear > 0) setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), this.cfg.clipboardClear * 1000);
+                },
+
+                /* ---------- Einstellungen ---------- */
+                saveCfg() { try { localStorage.setItem('organizer_cfg', JSON.stringify(this.cfg)); } catch (e) {} },
+                applyCfg() {
+                    const r = document.documentElement;
+                    r.dataset.density = this.cfg.density;
+                    if (this.cfg.accent) r.style.setProperty('--accent', this.cfg.accent); else r.style.removeProperty('--accent');
+                },
+                setCfg(k, v) {
+                    this.cfg[k] = v; this.saveCfg(); this.applyCfg();
+                    if (k === 'calView') this.calendarView = v;
+                    if (k === 'hourFrom' || k === 'hourTo') this.scrollGrid();
+                },
+                selectCfg(it, v) { const o = it.o.find(x => String(x[0]) === v); this.setCfg(it.k, o ? o[0] : v); },
+                async toggleCfg(k) {
+                    if (k === 'notifications' && !this.cfg.notifications) {
+                        if (!('Notification' in window)) return this.toast('Dieser Browser unterstützt keine Benachrichtigungen');
+                        if (await Notification.requestPermission() !== 'granted') return this.toast('Benachrichtigungen wurden nicht erlaubt');
+                    }
+                    this.setCfg(k, !this.cfg[k]);
+                },
+                setView(section, v) { this.cfg.views[section] = v; this.saveCfg(); },
+                resetAll() {
+                    if (!confirm('Wirklich ALLE Daten auf diesem Gerät löschen (Termine, Aufgaben, Einkauf, Tresor, Einstellungen)? Das kann nicht rückgängig gemacht werden.')) return;
+                    localStorage.clear(); sessionStorage.clear(); location.reload();
+                },
+                saveGoogleScriptUrl() {
+                    this.googleScriptUrl = this.googleScriptUrlInput.trim();
+                    localStorage.setItem('organizer_gscript_url', this.googleScriptUrl);
+                    if (this.googleScriptUrl) this.fetchGoogleEvents(true);
+                    else { this.events = this.events.filter(e => !e.isGoogle); this.syncStatus = 'Lokal gespeichert'; this.syncOk = false; }
+                    this.toast('Google URL gespeichert');
+                },
+                /* ---------- Geräte-Abgleich (Google & P2P) ---------- */
+                get syncReady() { return !!this.syncCfg.room && (this.syncCfg.pass || '').length >= 8 && !!window.crypto?.subtle; },
+                get syncActive() { return this.syncReady && (this.syncCfg.google || this.syncCfg.p2p); },
+                get headerStatus() {
+                    if (!this.syncActive) return this.syncStatus;
+                    const p = [];
+                    if (this.syncCfg.google) p.push(this.gError ? 'Google ⚠' : this.gBusy ? 'Google …' : this.gLast ? 'Google ✓' : 'Google');
+                    if (this.syncCfg.p2p) p.push({ connected: 'P2P ✓', waiting: 'P2P wartet', connecting: 'P2P …', error: 'P2P ⚠' }[this.p2p.status] || 'P2P');
+                    return 'Abgleich: ' + p.join(' · ');
+                },
+                get headerOk() {
+                    if (!this.syncActive) return this.syncOk;
+                    return (!this.syncCfg.google || (!this.gError && !!this.gLast)) && (!this.syncCfg.p2p || ['connected', 'waiting'].includes(this.p2p.status));
+                },
+                get gStatusText() {
+                    if (!this.syncCfg.url) return 'Bitte die Web-App-URL deines Scripts eintragen.';
+                    if (this.gBusy) return 'Synchronisiere …';
+                    if (this.gError) return '⚠ ' + this.gError;
+                    return this.gLast ? 'Zuletzt abgeglichen: ' + new Date(this.gLast).toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht abgeglichen.';
+                },
+                get p2pStatusText() {
+                    const s = this.p2p;
+                    if (s.status === 'connecting') return 'Verbinde …';
+                    if (s.status === 'waiting') return 'Bereit – wartet auf ein anderes Gerät mit demselben Raum.';
+                    if (s.status === 'connected') return s.role === 'hub' ? `${s.peers} ${s.peers === 1 ? 'Gerät' : 'Geräte'} verbunden` : 'Mit anderem Gerät verbunden';
+                    if (s.status === 'error') return '⚠ ' + s.error + ' – neuer Versuch in Kürze';
+                    return 'Aus';
+                },
+                saveSyncCfg() { try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(this.syncCfg)); } catch (e) {} },
+                saveSyncCreds() {
+                    const room = this.syncRoomInput.trim().toLowerCase(), pass = this.syncPassInput;
+                    if (!window.crypto?.subtle) return void (this.syncError = 'Die Verschlüsselung ist hier nicht verfügbar (die Seite muss über HTTPS geöffnet werden).');
+                    if (room.length < 3) return void (this.syncError = 'Der Raumname muss mindestens 3 Zeichen lang sein.');
+                    if (pass.length < 8) return void (this.syncError = 'Das Sync-Passwort muss mindestens 8 Zeichen lang sein.');
+                    this.syncError = '';
+                    const changed = room !== this.syncCfg.room || pass !== this.syncCfg.pass;
+                    this.syncRoomInput = room;
+                    Object.assign(this.syncCfg, { room, pass });
+                    this.saveSyncCfg();
+                    if (changed) this.restartSync();
+                    this.toast('Zugangsdaten gespeichert');
+                },
+                clearSync() {
+                    if (!this.ask('Abgleich beenden und die Zugangsdaten von diesem Gerät entfernen? Deine Daten bleiben erhalten.')) return;
+                    this.stopSync();
+                    Object.assign(this.syncCfg, { room: '', pass: '', google: false, p2p: false });
+                    this.syncPassInput = ''; this.syncRoomInput = ''; this.gError = ''; this.gLast = 0;
+                    this.saveSyncCfg(); this.toast('Abgleich beendet');
+                },
+                toggleSyncChannel(ch) {
+                    if (!this.syncReady) return;
+                    this.syncCfg[ch] = !this.syncCfg[ch]; this.saveSyncCfg();
+                    if (ch === 'google') { this.gError = ''; if (this.syncCfg.google && this.syncCfg.url) this.syncGoogle(true); }
+                    else if (this.syncCfg.p2p) this.startP2P(); else this.stopP2P();
+                },
+                copySyncScript() { this.copyText(SYNC_SCRIPT, 'Script kopiert – jetzt in Google Apps Script einfügen'); },
+                startSync() {
+                    if (!this.syncReady) return;
+                    if (this.syncCfg.google && this.syncCfg.url) setTimeout(() => this.syncGoogle(), 1500);
+                    if (this.syncCfg.p2p) this.startP2P();
+                    clearInterval(syncRt.gPoll);
+                    syncRt.gPoll = setInterval(() => { if (document.visibilityState === 'visible' && this.syncReady && this.syncCfg.google && this.syncCfg.url) this.syncGoogle(); }, 120000);
+                },
+                stopSync() { this.stopP2P(); clearInterval(syncRt.gPoll); clearTimeout(syncRt.gTimer); clearTimeout(syncRt.sendTimer); },
+                restartSync() { syncKeyCache = { tag: '', key: null }; this.gError = ''; this.stopSync(); this.startSync(); },
+                onVisible() {
+                    this.maybeAutoCheck();
+                    if (!this.syncReady) return;
+                    if (this.syncCfg.google && this.syncCfg.url && Date.now() - this.gLast > 30000) this.syncGoogle();
+                    if (this.syncCfg.p2p && ['off', 'error'].includes(this.p2p.status)) this.startP2P();
+                },
+                async getSyncKey() {
+                    const tag = this.syncCfg.room + '\u0000' + this.syncCfg.pass;
+                    if (syncKeyCache.tag !== tag) syncKeyCache = { tag, key: await deriveKey(this.syncCfg.pass, te.encode('space-sync|' + this.syncCfg.room), 250000) };
+                    return syncKeyCache.key;
+                },
+                async roomHash(kind) { return (await sha256Hex(kind + '|' + this.syncCfg.room + (kind === 'google' ? '' : '|' + this.syncCfg.pass))).slice(0, 32); }, // Google: nur Raum (so wird ein falsches Passwort als Fehler erkannt); P2P: mit Passwort (nicht erratbar)
+
+                /* Änderungen erkennen: jeder Eintrag bekommt eine Änderungszeit, Gelöschtes wird als „Grabstein“ gemerkt */
+                touchSync() {
+                    this.stampChanges();
+                    try { localStorage.setItem(SYNC_META_KEY, JSON.stringify(syncMeta)); } catch (e) {}
+                },
+                stampChanges() {
+                    const now = Date.now(), seen = new Set(); let changed = false;
+                    for (const [p, prop, filt] of SYNC_COLLECTIONS) {
+                        for (const it of this[prop]) {
+                            if (filt && !filt(it)) continue;
+                            const k = p + ':' + it.id, h = hashStr(JSON.stringify(it)), m = syncMeta[k];
+                            seen.add(k);
+                            if (!m || m.d || m.h !== h) { syncMeta[k] = { u: now, h }; changed = true; }
+                        }
+                    }
+                    const vraw = localStorage.getItem(VAULT_KEY), vm = syncMeta.vault;
+                    if (vraw) { const h = hashStr(vraw); if (!vm || vm.d || vm.h !== h) { syncMeta.vault = { u: now, h }; changed = true; } }
+                    else if (vm && !vm.d) { syncMeta.vault = { u: now, d: 1 }; changed = true; }
+                    for (const k of Object.keys(syncMeta)) {
+                        if (k === 'vault') continue;
+                        const m = syncMeta[k];
+                        if (m.d) { if (now - m.u > TOMBSTONE_MS) delete syncMeta[k]; }
+                        else if (!seen.has(k)) { syncMeta[k] = { u: now, d: 1 }; changed = true; }
+                    }
+                    if (changed) this.queueSync();
+                    return changed;
+                },
+                queueSync() {
+                    if (!this.syncReady) return;
+                    clearTimeout(syncRt.sendTimer); syncRt.sendTimer = setTimeout(() => this.p2pBroadcast(), 600);
+                    if (this.syncCfg.google && this.syncCfg.url) { clearTimeout(syncRt.gTimer); syncRt.gTimer = setTimeout(() => this.syncGoogle(), 2500); }
+                },
+                buildSnapshot() {
+                    const maps = {};
+                    for (const [p, prop, filt] of SYNC_COLLECTIONS) maps[p] = new Map(this[prop].filter(it => !filt || filt(it)).map(it => [String(it.id), it]));
+                    const items = {};
+                    for (const [k, m] of Object.entries(syncMeta)) {
+                        if (m.d) { items[k] = { u: m.u, d: 1 }; continue; }
+                        const v = k === 'vault' ? readJSON(VAULT_KEY, null) : maps[k.slice(0, 2)]?.get(k.slice(3));
+                        if (v) items[k] = { u: m.u, v };
+                    }
+                    return { v: 1, items };
+                },
+                normIncoming(p, v) {
+                    if (p === 'ev') return normEvent({ ...v });
+                    if (p === 'td') return normTodo({ ...v }, {});
+                    if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋' };
+                    return normShop({ ...v });
+                },
+                /* Führt den fremden Stand mit dem lokalen zusammen: pro Eintrag gewinnt die jüngere Änderung. */
+                applyRemote(remote) {
+                    const items = remote.items || {}, cols = {}, dirty = new Set(); let needPush = false, changed = 0;
+                    for (const [p, prop, filt] of SYNC_COLLECTIONS) cols[p] = this[prop].filter(it => !filt || filt(it));
+                    for (const [k, r] of Object.entries(items)) {
+                        if (!r || !Number.isFinite(r.u)) continue;
+                        const l = syncMeta[k];
+                        const vclash = k === 'vault' && !r.d && validVaultRecord(r.v) && (() => { const lv = readJSON(VAULT_KEY, null); return validVaultRecord(lv) && !(lv.vid && lv.vid === r.v.vid) && lv.salt !== r.v.salt; })();
+                        if (!vclash && l && l.u >= r.u) { if (l.u > r.u) needPush = true; continue; }
+                        if (k === 'vault') {
+                            const res = this.applyRemoteVault(r);
+                            if (res === 'push') needPush = true; else if (res === 'changed') changed++;
+                            continue;
+                        }
+                        const p = k.slice(0, 2), id = k.slice(3), col = cols[p];
+                        if (!col || k[2] !== ':') continue;
+                        const idx = col.findIndex(x => String(x.id) === id);
+                        if (r.d) { if (idx !== -1) col.splice(idx, 1); syncMeta[k] = { u: r.u, d: 1 }; }
+                        else {
+                            if (!r.v || typeof r.v !== 'object') continue;
+                            const item = this.normIncoming(p, { ...r.v, id });
+                            if (idx !== -1) col[idx] = item; else col.push(item);
+                            syncMeta[k] = { u: r.u, h: hashStr(JSON.stringify(item)) };
+                        }
+                        dirty.add(p); changed++;
+                    }
+                    for (const k of Object.keys(syncMeta)) if (!(k in items)) needPush = true;
+                    if (dirty.size) {
+                        if (dirty.has('ev')) this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
+                        if (dirty.has('td')) this.todos = cols.td;
+                        if (dirty.has('sh')) this.shoppingItems = cols.sh;
+                        if (dirty.has('ls')) {
+                            if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
+                            this.todoLists = cols.ls;
+                            if (this.isCustomList && !cols.ls.some(l => l.id === this.todoListId)) this.selectTodoList('myday');
+                        }
+                    }
+                    if (changed) {
+                        this.saveAllData();
+                        if (Date.now() - this._syncToastAt > 8000) { this._syncToastAt = Date.now(); this.toast('Daten von einem anderen Gerät aktualisiert'); }
+                    }
+                    return { needPush, changed };
+                },
+                applyRemoteVault(r) {
+                    const cur = readJSON(VAULT_KEY, null);
+                    const keepLocal = () => { const raw = localStorage.getItem(VAULT_KEY); syncMeta.vault = raw ? { u: Date.now(), h: hashStr(raw) } : { u: Date.now(), d: 1 }; return 'push'; };
+                    if (r.d) {
+                        if (!cur) { syncMeta.vault = { u: r.u, d: 1 }; return 'ok'; }
+                        if (!confirm('Der Tresor wurde auf einem anderen Gerät gelöscht bzw. zurückgesetzt. Auch auf diesem Gerät löschen?')) return keepLocal();
+                        this.lockVault(false); localStorage.removeItem(VAULT_KEY); this.vaultState = 'none';
+                        syncMeta.vault = { u: r.u, d: 1 }; this.toast('Tresor wurde auf einem anderen Gerät zurückgesetzt'); return 'changed';
+                    }
+                    const v = r.v;
+                    if (!validVaultRecord(v)) return 'ok';
+                    if (cur && cur.salt === v.salt && cur.iv === v.iv && cur.data === v.data) { syncMeta.vault = { u: r.u, h: hashStr(localStorage.getItem(VAULT_KEY)) }; return 'ok'; }
+                    const same = cur && ((cur.vid && cur.vid === v.vid) || cur.salt === v.salt);
+                    if (cur && !same && !confirm('Auf einem anderen Gerät gibt es einen anderen Tresor (anderes Master-Passwort). Diesen übernehmen und den Tresor auf diesem Gerät ersetzen? (Abbrechen = dein Tresor ersetzt den anderen.)')) return keepLocal();
+                    this.lockVault(false);
+                    const raw = JSON.stringify(v);
+                    localStorage.setItem(VAULT_KEY, raw); this.vaultState = 'locked';
+                    syncMeta.vault = { u: r.u, h: hashStr(raw) };
+                    this.toast('Der Tresor wurde auf einem anderen Gerät geändert – bitte neu entsperren');
+                    return 'changed';
+                },
+                async encryptSnap() { return JSON.stringify(await encryptJSON(await this.getSyncKey(), this.buildSnapshot())); },
+                async decryptSnap(blob) {
+                    try {
+                        const s = await decryptJSON(await this.getSyncKey(), JSON.parse(blob));
+                        if (!s || s.v !== 1 || typeof s.items !== 'object') throw 0;
+                        return s;
+                    } catch (e) { throw new Error('Falsches Sync-Passwort oder beschädigte Daten'); }
+                },
+
+                /* --- Google-Konto --- */
+                async gCall(payload) {
+                    const url = (this.syncCfg.url || '').trim();
+                    if (!/^https:\/\/script\.google\.com\//.test(url)) throw new Error('Die Script-URL ist ungültig (sie beginnt mit https://script.google.com/).');
+                    const room = await this.roomHash('google'), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 25000);
+                    try {
+                        const res = payload.action === 'get'
+                            ? await fetch(`${url}?action=get&room=${room}`, { signal: ctl.signal, cache: 'no-store' })
+                            : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, room }), signal: ctl.signal });
+                        if (!res.ok) throw new Error('Das Script antwortet mit Fehler ' + res.status);
+                        try { return await res.json(); } catch (e) { throw new Error('Unerwartete Antwort – ist die Web-App für „Jeder“ freigegeben und neu bereitgestellt?'); }
+                    } finally { clearTimeout(to); }
+                },
+                async syncGoogle(manual = false) {
+                    if (!this.syncReady || !this.syncCfg.google) return;
+                    if (!this.syncCfg.url) { if (manual) this.toast('Bitte zuerst die Script-URL eintragen'); return; }
+                    if (this.gBusy) { return; }
+                    this.gBusy = true;
+                    try {
+                        this.stampChanges();
+                        let got = await this.gCall({ action: 'get' }), done = false;
+                        for (let i = 0; i < 4 && !done; i++) {
+                            if (!got.ok) throw new Error(got.error || 'Serverfehler');
+                            const remote = got.blob ? await this.decryptSnap(got.blob) : { v: 1, items: {} };
+                            if (!this.applyRemote(remote).needPush) { done = true; break; }
+                            const put = await this.gCall({ action: 'put', baseRev: got.rev, blob: await this.encryptSnap() });
+                            if (put.ok) { done = true; break; }
+                            if (!put.conflict) throw new Error(put.error || 'Serverfehler');
+                            got = { ok: true, rev: put.rev, blob: put.blob }; // jemand war schneller → dessen Stand mit unserem zusammenführen und erneut senden
+                        }
+                        if (!done) throw new Error('Zu viele gleichzeitige Änderungen – bitte später erneut versuchen.');
+                        this.gError = ''; this.gLast = Date.now();
+                        if (manual) this.toast('Mit Google abgeglichen');
+                    } catch (e) {
+                        this.gError = e.name === 'AbortError' ? 'Zeitüberschreitung' : e instanceof TypeError ? 'Keine Verbindung zum Script (offline, oder Zugriff nicht auf „Jeder“ gestellt?)' : (e.message || 'Unbekannter Fehler');
+                        if (manual) this.toast('Abgleich fehlgeschlagen');
+                    } finally { this.gBusy = false; }
+                },
+
+                /* --- P2P (PeerJS): ein Gerät wird „Hub“, die anderen verbinden sich mit ihm --- */
+                loadPeerLib() {
+                    return new Promise((res, rej) => {
+                        if (window.Peer) return res();
+                        const sc = document.createElement('script'); sc.src = PEER_LIB;
+                        sc.onload = res; sc.onerror = () => rej(new Error('PeerJS konnte nicht geladen werden (offline?)'));
+                        document.head.appendChild(sc);
+                    });
+                },
+                async startP2P() {
+                    this.stopP2P(true);
+                    if (!this.syncReady || !this.syncCfg.p2p) return;
+                    const gen = syncRt.gen;
+                    this.p2p = { status: 'connecting', role: '', peers: 0, error: '' };
+                    try { await this.loadPeerLib(); } catch (e) { return this.p2pFail(e.message, gen); }
+                    const hubId = 'space-' + await this.roomHash('p2p');
+                    if (gen !== syncRt.gen) return;
+                    this.p2pBecomeHub(hubId, gen);
+                },
+                stopP2P(keepStatus) {
+                    syncRt.gen++; clearTimeout(syncRt.retryTimer);
+                    try { syncRt.peer && syncRt.peer.destroy(); } catch (e) {}
+                    syncRt.peer = null; syncRt.conns.clear();
+                    if (!keepStatus) this.p2p = { status: 'off', role: '', peers: 0, error: '' };
+                },
+                p2pRetry(ms) {
+                    const gen = syncRt.gen; clearTimeout(syncRt.retryTimer);
+                    syncRt.retryTimer = setTimeout(() => { if (gen === syncRt.gen) this.startP2P(); }, ms);
+                },
+                p2pFail(msg, gen) {
+                    if (gen !== syncRt.gen) return;
+                    try { syncRt.peer && syncRt.peer.destroy(); } catch (e) {}
+                    syncRt.peer = null; syncRt.conns.clear();
+                    this.p2p = { status: 'error', role: '', peers: 0, error: msg };
+                    this.p2pRetry(20000);
+                },
+                p2pErrText(err) { return err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' ? 'Keine Verbindung zum Vermittlungsserver' : (err.type || 'Fehler') + (err.message ? ': ' + err.message : ''); },
+                p2pBecomeHub(hubId, gen) {
+                    const peer = new Peer(hubId); syncRt.peer = peer;
+                    peer.on('open', () => { if (gen === syncRt.gen) this.p2p = { status: syncRt.conns.size ? 'connected' : 'waiting', role: 'hub', peers: syncRt.conns.size, error: '' }; });
+                    peer.on('connection', conn => { if (gen === syncRt.gen) this.p2pAttach(conn, true, gen); });
+                    peer.on('error', err => {
+                        if (gen !== syncRt.gen) return;
+                        if (err.type === 'unavailable-id') { try { peer.destroy(); } catch (e) {} this.p2pBecomeClient(hubId, gen); } // es gibt schon einen Hub
+                        else this.p2pFail(this.p2pErrText(err), gen);
+                    });
+                    peer.on('disconnected', () => { if (gen === syncRt.gen) try { peer.reconnect(); } catch (e) {} });
+                },
+                p2pBecomeClient(hubId, gen) {
+                    const peer = new Peer(); syncRt.peer = peer;
+                    peer.on('open', () => { if (gen === syncRt.gen) this.p2pAttach(peer.connect(hubId, { reliable: true }), false, gen); });
+                    peer.on('error', err => {
+                        if (gen !== syncRt.gen) return;
+                        if (err.type === 'peer-unavailable') { try { peer.destroy(); } catch (e) {} this.p2p = { ...this.p2p, status: 'connecting' }; this.p2pRetry(1500 + Math.random() * 2500); } // Hub weg → neu wählen
+                        else this.p2pFail(this.p2pErrText(err), gen);
+                    });
+                    peer.on('disconnected', () => { if (gen === syncRt.gen) try { peer.reconnect(); } catch (e) {} });
+                },
+                p2pAttach(conn, isHub, gen) {
+                    let gone = false;
+                    const drop = () => {
+                        if (gone) return; gone = true;
+                        if (gen !== syncRt.gen) return;
+                        syncRt.conns.delete(conn.peer);
+                        this.p2p = { status: isHub ? (syncRt.conns.size ? 'connected' : 'waiting') : 'connecting', role: isHub ? 'hub' : '', peers: syncRt.conns.size, error: '' };
+                        if (!isHub) this.p2pRetry(1000 + Math.random() * 1500);
+                    };
+                    conn.on('open', () => {
+                        if (gen !== syncRt.gen) return;
+                        syncRt.conns.set(conn.peer, conn);
+                        this.p2p = { status: 'connected', role: isHub ? 'hub' : 'client', peers: syncRt.conns.size, error: '' };
+                        this.p2pSend([conn], false);
+                    });
+                    conn.on('data', d => this.p2pReceive(conn, d, isHub, gen));
+                    conn.on('close', drop); conn.on('error', drop);
+                },
+                async p2pSend(conns, ack) {
+                    const list = conns.filter(c => c.open);
+                    if (!list.length) return;
+                    try {
+                        this.stampChanges();
+                        const e = await encryptJSON(await this.getSyncKey(), this.buildSnapshot());
+                        list.forEach(c => { try { c.send({ t: 'snap', e, ack: !!ack }); } catch (x) {} });
+                    } catch (x) {}
+                },
+                p2pBroadcast() { if (this.syncReady && this.syncCfg.p2p && syncRt.conns.size) this.p2pSend([...syncRt.conns.values()], false); },
+                async p2pReceive(conn, d, isHub, gen) {
+                    if (gen !== syncRt.gen || !d || d.t !== 'snap' || !d.e) return;
+                    let remote;
+                    try { remote = await decryptJSON(await this.getSyncKey(), d.e); } catch (e) { return; } // falsches Passwort → ignorieren
+                    if (gen !== syncRt.gen || !remote || remote.v !== 1 || !remote.items || typeof remote.items !== 'object') return;
+                    this.stampChanges();
+                    const { needPush, changed } = this.applyRemote(remote);
+                    if (needPush && !d.ack) this.p2pSend([conn], true);
+                    if (isHub && changed) this.p2pSend([...syncRt.conns.values()].filter(c => c !== conn), true);
+                },
+                async fetchGoogleEvents(manual = false) {
+                    if (!this.googleScriptUrl) return;
+                    try {
+                        const data = await (await fetch(this.googleScriptUrl)).json();
+                        if (data && Array.isArray(data.events)) {
+                            const g = data.events.map((e, i) => normEvent({ color: '#10b981', ...e, id: 'g-' + (e.id ?? i), isGoogle: true })).filter(e => e.startDate);
+                            this.events = [...this.events.filter(e => !e.isGoogle), ...g];
+                            this.syncStatus = 'Google Sync aktiv'; this.syncOk = true;
+                            if (manual) this.toast('Google-Termine aktualisiert');
+                        }
+                    } catch (e) { this.syncStatus = 'Sync-Fehler'; this.syncOk = false; if (manual) this.toast('Google Sync fehlgeschlagen'); }
+                },
+
+                /* ---------- App-Updates ---------- */
+                get appVersion() { return APP_VERSION; },
+                get canCheckUpdate() { return /^https?:$/.test(location.protocol); },
+                get updateStatusText() {
+                    if (!this.canCheckUpdate) return 'Lokal geöffnet – die Update-Prüfung funktioniert nur bei online gehosteter Version.';
+                    if (this.updateAvailable) return `Neue Version ${this.remoteVersion} verfügbar.`;
+                    return this.lastUpdateCheck ? 'Aktuell · zuletzt geprüft ' + new Date(this.lastUpdateCheck).toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht geprüft.';
+                },
+                maybeAutoCheck() { if (this.cfg.autoUpdate && this.canCheckUpdate && Date.now() - this.lastUpdateCheck > 6 * 3600 * 1000) this.checkForUpdate(false); },
+                async checkForUpdate(manual = false) {
+                    if (!this.canCheckUpdate) { if (manual) this.toast('Update-Prüfung nur bei online gehosteter Version möglich'); return; }
+                    if (this.updateChecking) return;
+                    this.updateChecking = true;
+                    try {
+                        const res = await fetch(location.href.split('#')[0].split('?')[0], { cache: 'reload' });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const m = (await res.text()).match(/<meta name="app-version" content="([^"]+)"/);
+                        if (!m) throw new Error('Keine Versionsangabe gefunden');
+                        this.remoteVersion = m[1];
+                        this.updateAvailable = m[1] !== APP_VERSION;
+                        this.lastUpdateCheck = Date.now();
+                        localStorage.setItem('organizer_update_check', String(this.lastUpdateCheck));
+                        if (manual) this.toast(this.updateAvailable ? 'Neue Version verfügbar' : 'Du nutzt die aktuelle Version');
+                    } catch (e) { if (manual) this.toast('Update-Prüfung fehlgeschlagen – bist du online?'); }
+                    finally { this.updateChecking = false; }
+                },
+                async applyUpdate() { // Daten liegen im Browser (localStorage) und bleiben beim Neuladen erhalten
+                    try { await fetch(location.href.split('#')[0].split('?')[0], { cache: 'reload' }); } catch (e) {}
+                    location.reload();
+                },
+
+                /* ---------- Erinnerungen ---------- */
+                fire(kind, title, info) {
+                    this.banners = [...this.banners.slice(-3), { id: uid(), kind, title, info }];
+                    if (this.cfg.notifications && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body: info });
+                },
+                checkReminders() {
+                    const fired = new Set(readJSON('organizer_fired', [])), now = Date.now();
+                    const due = (key, trig) => { if (now >= trig && now < trig + 5 * 60000 && !fired.has(key)) { fired.add(key); return true; } return false; };
+                    for (const e of this.events) {
+                        if (e.reminder === '') continue;
+                        const start = dtOf(e.startDate, e.allDay ? this.cfg.remindTime : e.startTime).getTime(), r = Number(e.reminder);
+                        if (due(`e|${e.id}|${e.startDate}|${e.startTime}|${r}`, start - r * 60000))
+                            this.fire('Termin', e.title, (r === 0 ? 'Jetzt' : r >= 1440 ? 'Morgen' : r >= 60 ? `In ${r / 60} Std.` : `In ${r} Min.`) + (e.allDay ? ' · ganztägig' : ` · ${e.startTime} Uhr`));
+                    }
+                    for (const t of this.todos) {
+                        const trig = this.remindTimeOf(t);
+                        if (trig && due(`t|${t.id}|${trig.getTime()}`, trig.getTime())) this.fire('Aufgabe', t.title, t.due ? 'Fällig: ' + this.dueLabel(t) : 'Erinnerung');
+                    }
+                    try { localStorage.setItem('organizer_fired', JSON.stringify([...fired].slice(-300))); } catch (_) {}
+                },
+
+                /* ---------- Kalender ---------- */
+                get currentYear() { return parseDate(this.anchor).getFullYear(); },
+                get currentMonth() { return parseDate(this.anchor).getMonth(); },
+                get dayHeads() { const n = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']; return this.cfg.weekStart === 1 ? n : [n[6], ...n.slice(0, 6)]; },
+                holidayFor(ds) { return this.cfg.showHolidays ? (holidaysFor(+ds.slice(0, 4), this.cfg.state)[ds] || '') : ''; },
+                dayInfo(d) { const ds = fmt(d); return { dateString: ds, dayNumber: d.getDate(), weekday: d.toLocaleDateString('de-DE', { weekday: 'short' }), isToday: ds === this.today, holiday: this.holidayFor(ds) }; },
+                get calendarTitle() {
+                    const d = parseDate(this.anchor);
+                    if (this.calendarView === 'year') return `Jahr ${d.getFullYear()}`;
+                    if (this.calendarView === 'month') return `${this.monthNames[d.getMonth()]} ${d.getFullYear()}`;
+                    if (this.calendarView === 'week') return `KW ${isoWeek(addDays(d, -this.weekOffset(d) + 3))} · ${d.getFullYear()}`;
+                    return this.longDate(this.anchor);
+                },
+                get calendarSubtitle() {
+                    if (this.calendarView === 'week') { const w = this.weekDays, f = ds => parseDate(ds).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' }); return `${f(w[0].dateString)} – ${f(w[6].dateString)}`; }
+                    if (this.calendarView === 'day') return this.holidayFor(this.anchor) || 'Tagesübersicht';
+                    const p = this.calendarView === 'year' ? String(this.currentYear) : `${this.currentYear}-${pad(this.currentMonth + 1)}`;
+                    const n = this.events.filter(e => e.startDate.slice(0, p.length) <= p && e.endDate.slice(0, p.length) >= p).length;
+                    return `${n} ${n === 1 ? 'Termin' : 'Termine'} ${this.calendarView === 'year' ? 'in diesem Jahr' : 'in diesem Monat'}`;
+                },
+                weekOffset(d) { return (d.getDay() - this.cfg.weekStart + 7) % 7; },
+                get calendarDays() {
+                    const m = this.currentMonth, first = new Date(this.currentYear, m, 1), start = addDays(first, -this.weekOffset(first));
+                    const cells = Array.from({ length: 42 }, (_, i) => { const d = addDays(start, i); return { ...this.dayInfo(d), isCurrentMonth: d.getMonth() === m }; });
+                    if (!cells[35].isCurrentMonth) cells.length = 35;
+                    return cells;
+                },
+                get weekDays() { const d = parseDate(this.anchor), mon = addDays(d, -this.weekOffset(d)); return Array.from({ length: 7 }, (_, i) => this.dayInfo(addDays(mon, i))); },
+                get gridDays() { return this.calendarView === 'day' ? [this.dayInfo(parseDate(this.anchor))] : this.weekDays; },
+                get gridHours() { const f = this.cfg.hourFrom; return Array.from({ length: this.cfg.hourTo - f }, (_, i) => ({ h: f + i, label: pad(f + i) + ':00', top: i * HPX })); },
+                get gridHeight() { return (this.cfg.hourTo - this.cfg.hourFrom) * HPX; },
+                get gridLines() { return `background-image: repeating-linear-gradient(to bottom, var(--border) 0, var(--border) 1px, transparent 1px, transparent ${HPX}px)`; },
+                get nowTop() {
+                    void this.nowTick; const n = new Date(), m = n.getHours() * 60 + n.getMinutes();
+                    return m < this.cfg.hourFrom * 60 || m > this.cfg.hourTo * 60 ? null : (m - this.cfg.hourFrom * 60) / 60 * HPX;
+                },
+                getYearMonthDays(mIdx) {
+                    const y = this.currentYear, first = new Date(y, mIdx, 1), total = new Date(y, mIdx + 1, 0).getDate();
+                    const cells = Array.from({ length: this.weekOffset(first) }, () => ({ dayNum: 0 }));
+                    for (let i = 1; i <= total; i++) {
+                        const ds = `${y}-${pad(mIdx + 1)}-${pad(i)}`;
+                        cells.push({ dayNum: i, isToday: ds === this.today, holiday: this.holidayFor(ds), hasEvents: this.events.some(e => e.startDate <= ds && ds <= e.endDate) });
+                    }
+                    return cells;
+                },
+                setMonth(mIdx) { this.anchor = `${this.currentYear}-${pad(mIdx + 1)}-01`; },
+                changeDatePeriod(dir) {
+                    const d = parseDate(this.anchor);
+                    if (this.calendarView === 'year') d.setFullYear(d.getFullYear() + dir);
+                    else if (this.calendarView === 'month') { d.setDate(1); d.setMonth(d.getMonth() + dir); }
+                    else d.setDate(d.getDate() + (this.calendarView === 'week' ? 7 : 1) * dir);
+                    this.anchor = fmt(d);
+                },
+                goToToday() { this.anchor = this.today; this.scrollGrid(); },
+                scrollGrid() {
+                    this.$nextTick(() => setTimeout(() => {
+                        const el = this.$refs.timeScroll; if (!el) return;
+                        const base = this.gridDays.some(d => d.isToday) ? new Date().getHours() - 1 : 8;
+                        el.scrollTop = Math.max(0, (base - this.cfg.hourFrom) * HPX);
+                    }, 40));
+                },
+
+                eventsOnDate(ds) {
+                    return this.events.filter(e => e.startDate <= ds && ds <= e.endDate)
+                        .sort((a, b) => Number(b.allDay) - Number(a.allDay) || a.startTime.localeCompare(b.startTime));
+                },
+                bannerEvents(ds) { return this.eventsOnDate(ds).filter(e => e.allDay || e.startDate !== e.endDate); },
+                tasksOnDate(ds) { return this.cfg.showTasksInCal ? this.todos.filter(t => !t.done && t.due === ds) : []; },
+                evLabel(ev, ds) { return (ev.startDate === ds && !ev.allDay ? ev.startTime + ' ' : '') + ev.title; },
+                dayLayout(ds) { // positioniert Termine im Stundenraster; überlappende Termine teilen sich die Breite
+                    const from = this.cfg.hourFrom * 60, to = this.cfg.hourTo * 60;
+                    const items = this.events.filter(e => !e.allDay && e.startDate === ds && e.endDate === ds)
+                        .map(ev => { const s = toMin(ev.startTime); return { ev, s, e: Math.max(toMin(ev.endTime), s + 30) }; })
+                        .filter(x => x.e > from && x.s < to).sort((a, b) => a.s - b.s || b.e - a.e);
+                    const out = []; let cols = [], group = [], clusterEnd = 0;
+                    const flush = () => { group.forEach(g => g.n = cols.length); out.push(...group); group = []; cols = []; clusterEnd = 0; };
+                    for (const it of items) {
+                        if (group.length && it.s >= clusterEnd) flush();
+                        let c = cols.findIndex(end => end <= it.s);
+                        if (c < 0) { c = cols.length; cols.push(0); }
+                        cols[c] = it.e; it.c = c; group.push(it); clusterEnd = Math.max(clusterEnd, it.e);
+                    }
+                    flush();
+                    return out.map(({ ev, s, e, c, n }) => {
+                        const top = (Math.max(s, from) - from) / 60 * HPX, h = (Math.min(e, to) - Math.max(s, from)) / 60 * HPX;
+                        return { ev, style: `top:${top}px;height:${Math.max(h, 18)}px;left:calc(${c / n * 100}% + 1px);width:calc(${100 / n}% - 3px);--c:${ev.color}` };
+                    });
+                },
+                slotClick(e, ds) {
+                    const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
+                    const m = Math.min(this.cfg.hourFrom * 60 + Math.floor(y / HPX * 2) * 30, 1410);
+                    this.anchor = ds; this.openEventModal({ startDate: ds, startTime: minToTime(m) });
+                },
+                openEventModal(p = {}) {
+                    const d = p.startDate || this.anchor;
+                    const st = p.startTime || minToTime((d === this.today ? Math.min(new Date().getHours() + 1, 23) : 9) * 60);
+                    const end = addMin(d, st, this.cfg.defaultDuration);
+                    this.evDur = this.cfg.defaultDuration;
+                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.eventColors[0], reminder: this.cfg.defaultReminder };
+                    this.showEventModal = true;
+                    this.$nextTick(() => this.$refs.evTitle?.focus());
+                },
+                openEventModalForDate(ds) { this.anchor = ds; this.openEventModal({ startDate: ds }); },
+                editEvent(ev) {
+                    if (ev.isGoogle) return this.toast('Google-Termine sind schreibgeschützt');
+                    this.currentEvent = { ...ev };
+                    if (ev.allDay) { this.currentEvent.startTime = '09:00'; this.currentEvent.endTime = '10:00'; this.evDur = 60; }
+                    else this.evDur = Math.max(15, (dtOf(ev.endDate, ev.endTime) - dtOf(ev.startDate, ev.startTime)) / 60000);
+                    this.showEventModal = true;
+                },
+                onEventStart() { // Dauer beibehalten, wenn der Start verschoben wird
+                    const e = this.currentEvent;
+                    if (e.allDay) { if (e.endDate < e.startDate) e.endDate = e.startDate; return; }
+                    if (!e.startDate || !e.startTime) return;
+                    const end = addMin(e.startDate, e.startTime, this.evDur);
+                    e.endDate = end.date; e.endTime = end.time;
+                },
+                onEventEnd() {
+                    const e = this.currentEvent;
+                    if (e.allDay || !e.endDate || !e.endTime) return;
+                    const dur = (dtOf(e.endDate, e.endTime) - dtOf(e.startDate, e.startTime)) / 60000;
+                    if (dur > 0) this.evDur = dur; else this.onEventStart();
+                },
+                saveEvent() {
+                    this.onEventEnd();
+                    const ev = normEvent({ ...this.currentEvent, title: this.currentEvent.title.trim() || 'Ohne Titel' });
+                    const i = this.events.findIndex(e => e.id === ev.id);
+                    if (i !== -1 && ev.id) this.events[i] = ev; else this.events.push({ ...ev, id: uid() });
+                    this.saveAllData(); this.showEventModal = false;
+                },
+                deleteEvent(id) { this.events = this.events.filter(e => e.id !== id); this.saveAllData(); this.toast('Termin gelöscht'); },
+
+                /* ---------- To-Dos ---------- */
+                loadTodoData(todos, lists, groups) {
+                    const map = {};
+                    if (!Array.isArray(lists)) { // Altformat: Gruppen werden zu Listen
+                        lists = [{ id: 'inbox', name: 'Aufgaben', emoji: '🏠' }];
+                        (groups || []).filter(g => g !== 'Wichtig').forEach((g, i) => { lists.push({ id: 'l' + (i + 1), name: g, emoji: '📋' }); map[g] = 'l' + (i + 1); });
+                    }
+                    if (!lists.some(l => l.id === 'inbox')) lists.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
+                    this.todoLists = lists;
+                    this.todos = (Array.isArray(todos) ? todos : []).map(t => normTodo(t, map)).map(t => lists.some(l => l.id === t.listId) ? t : { ...t, listId: 'inbox' });
+                },
+                get activeList() { return this.smartLists.find(l => l.id === this.todoListId) || this.todoLists.find(l => l.id === this.todoListId) || this.smartLists[0]; },
+                get isSmartList() { return this.smartLists.some(l => l.id === this.todoListId); },
+                get isCustomList() { return !this.isSmartList; },
+                listOf(t) { return this.todoLists.find(l => l.id === t.listId); },
+                selectTodoList(id) { this.todoListId = id; this.todoSort = id === 'planned' ? 'due' : 'created'; this.todoSearch = ''; },
+                todosOf(id) {
+                    const today = this.today;
+                    return this.todos.filter(t => id === 'myday' ? t.myDay === today : id === 'important' ? t.important : id === 'planned' ? !!t.due : id === 'all' ? true : t.listId === id);
+                },
+                openCount(id) { return this.todosOf(id).filter(t => !t.done).length; },
+                sortTodos(arr) {
+                    const dueKey = t => t.due ? t.due + (t.dueTime || '23:59') : '9999';
+                    const by = {
+                        created: (a, b) => (this.cfg.newOnTop ? -1 : 1) * (a.created - b.created),
+                        due: (a, b) => dueKey(a).localeCompare(dueKey(b)),
+                        important: (a, b) => Number(b.important) - Number(a.important) || b.created - a.created,
+                        alpha: (a, b) => a.title.localeCompare(b.title, 'de')
+                    };
+                    return [...arr].sort(by[this.todoSort] || by.created);
+                },
+                get todoSections() {
+                    const q = this.todoSearch.trim().toLowerCase();
+                    const items = this.todosOf(this.todoListId).filter(t => !q || t.title.toLowerCase().includes(q));
+                    const open = this.sortTodos(items.filter(t => !t.done)), done = items.filter(t => t.done).sort((a, b) => b.doneAt - a.doneAt);
+                    const secs = [];
+                    if (this.todoListId === 'planned' && this.todoSort === 'due') {
+                        const diff = t => Math.round((parseDate(t.due) - parseDate(this.today)) / 864e5);
+                        [['Überfällig', d => d < 0], ['Heute', d => d === 0], ['Morgen', d => d === 1], ['Diese Woche', d => d >= 2 && d <= 7], ['Später', d => d > 7]]
+                            .forEach(([label, fn]) => { const it = open.filter(t => fn(diff(t))); if (it.length) secs.push({ key: label, label, items: it }); });
+                    } else secs.push({ key: 'open', label: '', items: open });
+                    if (done.length) secs.push({ key: 'done', label: 'Erledigt', items: done });
+                    return secs;
+                },
+                dueLabel(t) {
+                    const diff = Math.round((parseDate(t.due) - parseDate(this.today)) / 864e5);
+                    const s = diff === 0 ? 'Heute' : diff === 1 ? 'Morgen' : diff === -1 ? 'Gestern' : parseDate(t.due).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' });
+                    return t.dueTime ? `${s}, ${t.dueTime}` : s;
+                },
+                dueClass(t) {
+                    if (t.done) return '';
+                    if (dtOf(t.due, t.dueTime || '23:59') < new Date()) return 'text-rose-400 font-bold';
+                    return t.due === this.today ? 'text-indigo-400 font-bold' : '';
+                },
+                remindTimeOf(t) {
+                    if (!t.reminder || t.done) return null;
+                    if (t.reminder === 'custom') return t.remindAt ? new Date(t.remindAt) : null;
+                    if (!t.due) return null;
+                    return new Date(dtOf(t.due, t.dueTime || this.cfg.remindTime).getTime() - (t.reminder === 'due' ? 0 : Number(t.reminder)) * 60000);
+                },
+                addTodoQuick() {
+                    const title = this.newTaskTitle.trim(); if (!title) return;
+                    const id = this.todoListId, p = { title, created: Date.now() };
+                    if (this.isCustomList) p.listId = id;
+                    if (id === 'myday') p.myDay = this.today;
+                    if (id === 'important') p.important = true;
+                    if (id === 'planned') p.due = this.today;
+                    this.todos.push(newTodo(p)); this.newTaskTitle = ''; this.saveAllData();
+                },
+                nextDue(t) {
+                    const d = parseDate(t.due || this.today), day = d.getDate();
+                    if (t.repeat === 'daily') d.setDate(day + 1);
+                    else if (t.repeat === 'weekly') d.setDate(day + 7);
+                    else if (t.repeat === 'weekdays') { do d.setDate(d.getDate() + 1); while ([0, 6].includes(d.getDay())); }
+                    else { d.setDate(1); d.setMonth(d.getMonth() + (t.repeat === 'monthly' ? 1 : 12)); d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate())); }
+                    return fmt(d);
+                },
+                spawnNext(t) { // wiederkehrende Aufgabe: nächste Instanz anlegen
+                    const due = this.nextDue(t), delta = (parseDate(due) - parseDate(t.due || this.today)) / 864e5;
+                    let remindAt = '';
+                    if (t.reminder === 'custom' && t.remindAt) { const r = addDays(new Date(t.remindAt), delta); remindAt = `${fmt(r)}T${pad(r.getHours())}:${pad(r.getMinutes())}`; }
+                    this.todos.push({ ...JSON.parse(JSON.stringify(t)), id: uid(), done: false, doneAt: 0, due, myDay: '', remindAt, created: Date.now(), steps: t.steps.map(s => ({ ...s, id: uid(), done: false })) });
+                },
+                toggleTodo(id) {
+                    const t = this.todos.find(x => x.id === id); if (!t) return;
+                    if (!t.done && t.repeat) { this.spawnNext(t); this.toast('Nächste Wiederholung angelegt'); }
+                    t.done = !t.done; t.doneAt = t.done ? Date.now() : 0; this.saveAllData();
+                },
+                toggleImportant(id) { const t = this.todos.find(x => x.id === id); if (t) { t.important = !t.important; this.saveAllData(); } },
+                openTaskModal(t) { this.currentTodo = JSON.parse(JSON.stringify(t)); this.newStep = ''; this.showTodoModalState = true; },
+                addStep() { const s = this.newStep.trim(); if (s) this.currentTodo.steps.push({ id: uid(), t: s, done: false }); this.newStep = ''; },
+                saveTodo() {
+                    this.addStep();
+                    const t = { ...this.currentTodo, title: this.currentTodo.title.trim() };
+                    if (!t.title) return;
+                    t.steps = t.steps.filter(s => s.t.trim());
+                    if (!t.due) t.dueTime = '';
+                    if (t.repeat && !t.due) t.due = this.today;
+                    if (t.reminder && t.reminder !== 'custom' && !t.due) t.reminder = '';
+                    if (t.reminder !== 'custom') t.remindAt = '';
+                    const i = this.todos.findIndex(x => x.id === t.id);
+                    if (i !== -1) {
+                        if (!this.todos[i].done && t.done && t.repeat) this.spawnNext(t);
+                        if (this.todos[i].done !== t.done) t.doneAt = t.done ? Date.now() : 0;
+                        this.todos[i] = t;
+                    } else this.todos.push(t);
+                    this.saveAllData(); this.showTodoModalState = false;
+                },
+                deleteTodo(id) {
+                    if (!this.ask('Aufgabe wirklich löschen?')) return;
+                    this.todos = this.todos.filter(x => x.id !== id); this.saveAllData();
+                },
+                openListModal(l) {
+                    this.currentList = l ? { ...l } : { id: null, name: '', emoji: '📋' };
+                    this.showListModal = true; this.$nextTick(() => this.$refs.listName?.focus());
+                },
+                saveList() {
+                    const name = this.currentList.name.trim(); if (!name) return;
+                    const l = { id: this.currentList.id || 'l' + uid(), name, emoji: this.currentList.emoji || '📋' };
+                    const i = this.todoLists.findIndex(x => x.id === l.id);
+                    if (i !== -1) this.todoLists[i] = l; else this.todoLists.push(l);
+                    this.saveAllData(); this.showListModal = false; if (i === -1) this.selectTodoList(l.id);
+                },
+                deleteList(id) {
+                    if (id === 'inbox') return this.toast('Die Standardliste kann nicht gelöscht werden');
+                    if (!this.ask('Liste löschen? Die Aufgaben wandern in „Aufgaben“.')) return;
+                    this.todos.forEach(t => { if (t.listId === id) t.listId = 'inbox'; });
+                    this.todoLists = this.todoLists.filter(l => l.id !== id);
+                    if (this.todoListId === id) this.selectTodoList('myday');
+                    this.saveAllData(); this.showListModal = false;
+                },
+
+                /* ---------- Einkauf ---------- */
+                get shopOpen() { return this.shoppingItems.filter(i => !i.done); },
+                get shopDone() { return this.shoppingItems.filter(i => i.done); },
+                get shopGroups() {
+                    if (!this.cfg.shopGroup) return this.shopOpen.length ? [{ cat: 'Alle Artikel', items: this.shopOpen }] : [];
+                    return CATEGORIES.map(cat => ({ cat, items: this.shopOpen.filter(i => i.category === cat) })).filter(g => g.items.length);
+                },
+                get catalogView() {
+                    const q = this.shopQuery.trim().toLowerCase();
+                    if (q) return CATALOG.filter(p => p.name.toLowerCase().includes(q));
+                    return this.shopCat === 'all' ? CATALOG : CATALOG.filter(p => p.category === this.shopCat);
+                },
+                get exactProduct() { const q = this.shopQuery.trim().toLowerCase(); return CATALOG.some(p => p.name.toLowerCase() === q); },
+                openQty(name) { const q = this.shopOpen.filter(i => i.name.toLowerCase() === name.toLowerCase()).reduce((s, i) => s + i.qty, 0); return q || ''; },
+                qtyLabel(i) { return i.qty > 1 || i.unit ? String(i.qty).replace('.', ',') + (i.unit ? ' ' + i.unit : '') : ''; },
+                tapProduct(p) { const ex = this.shopOpen.find(i => i.name.toLowerCase() === p.name.toLowerCase()); ex ? this.openShopModal(ex) : this.addShopItem(p); },
+                addShopItem(p) {
+                    this.shoppingItems.push(normShop({ ...p, id: uid() }));
+                    this.saveAllData(); this.toast(p.name + ' hinzugefügt');
+                },
+                addFromQuery() {
+                    const q = this.shopQuery.trim(); if (!q) return;
+                    const known = CATALOG.find(p => p.name.toLowerCase() === q.toLowerCase());
+                    const ex = this.shopOpen.find(i => i.name.toLowerCase() === q.toLowerCase());
+                    if (ex) this.openShopModal(ex); else this.addShopItem(known || { name: q.charAt(0).toUpperCase() + q.slice(1) });
+                    this.shopQuery = '';
+                },
+                toggleBought(id) { const i = this.shoppingItems.find(x => x.id === id); if (i) { i.done = !i.done; this.saveAllData(); } },
+                clearBought() { this.shoppingItems = this.shoppingItems.filter(i => !i.done); this.saveAllData(); },
+                openShopModal(i) { this.currentShop = { ...i }; this.showShopModal = true; },
+                saveShopItem() {
+                    const s = normShop({ ...this.currentShop, name: this.currentShop.name.trim() });
+                    const i = this.shoppingItems.findIndex(x => x.id === s.id);
+                    if (i !== -1) this.shoppingItems[i] = s;
+                    this.saveAllData(); this.showShopModal = false;
+                },
+                deleteShopItem(id) { this.shoppingItems = this.shoppingItems.filter(x => x.id !== id); this.saveAllData(); this.showShopModal = false; },
+                variantsOf(name) { return VARIANTS[name] || []; },
+                noteParts() { return (this.currentShop.note || '').split(',').map(s => s.trim()).filter(Boolean); },
+                hasVariant(v) { return this.noteParts().includes(v); },
+                toggleVariant(v) { const p = this.noteParts(); this.currentShop.note = (p.includes(v) ? p.filter(x => x !== v) : [...p, v]).join(', '); },
+
+                /* ---------- Tresor ---------- */
+                get mpStrength() {
+                    const p = this.mpInput; let s = 0;
+                    if (p.length >= 8) s++;
+                    if (p.length >= 12) s++;
+                    if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++;
+                    if (/\d/.test(p) && /[^A-Za-z0-9]/.test(p)) s++;
+                    return { label: ['Sehr schwach', 'Schwach', 'Okay', 'Gut', 'Stark'][s], color: ['#e11d48', '#f97316', '#eab308', '#22c55e', '#10b981'][s], pct: p ? (s + 1) * 20 : 0 };
+                },
+                validateNewMaster() {
+                    if (this.mpInput.length < 8) return 'Das Master-Passwort muss mindestens 8 Zeichen lang sein.';
+                    return this.mpInput !== this.mpConfirm ? 'Die Passwörter stimmen nicht überein.' : '';
+                },
+                async persistVault() {
+                    const entries = this.passwords.map(({ id, title, url, username, password, folder }) => ({ id, title, url, username, password, folder }));
+                    const rec = await encryptJSON(vaultKey, { entries, folders: this.vaultFolders });
+                    localStorage.setItem(VAULT_KEY, JSON.stringify({ v: 2, vid: vaultMeta.vid, iter: vaultMeta.iter, salt: vaultMeta.salt, ...rec }));
+                    this.touchSync();
+                },
+                normPw(p, i = 0) { return { id: p.id ?? uid() + i, title: p.title || 'Ohne Titel', url: p.url || '', username: p.username || '', password: p.password || '', folder: p.folder ?? '' }; },
+                async setupVault() {
+                    this.vaultError = '';
+                    if (!window.crypto?.subtle) { this.vaultError = 'Verschlüsselung wird in diesem Browser nicht unterstützt.'; return; }
+                    const err = this.validateNewMaster();
+                    if (err) { this.vaultError = err; return; }
+                    this.vaultBusy = true;
+                    try {
+                        const salt = crypto.getRandomValues(new Uint8Array(16));
+                        vaultKey = await deriveKey(this.mpInput, salt, PBKDF2_ITER);
+                        vaultMeta = { salt: toB64(salt), iter: PBKDF2_ITER, vid: uid() + uid() };
+                        this.passwords = legacyEntries.map((p, i) => this.normPw({ ...p, folder: p.folder || 'Privat' }, i));
+                        this.vaultFolders = [...DEFAULT_FOLDERS];
+                        await this.persistVault();
+                        localStorage.removeItem('organizer_passwords');
+                        legacyEntries = []; this.legacyCount = 0;
+                        this.vaultState = 'unlocked'; this.mpInput = this.mpConfirm = '';
+                        this.touchIdle(); this.toast('Tresor eingerichtet');
+                    } catch (e) { this.vaultError = 'Einrichtung fehlgeschlagen.'; vaultKey = null; }
+                    finally { this.vaultBusy = false; }
+                },
+                async unlockVault() {
+                    const wait = Math.ceil((this.cooldownUntil - Date.now()) / 1000);
+                    if (wait > 0) { this.vaultError = `Zu viele Versuche. Bitte ${wait} s warten.`; return; }
+                    this.vaultBusy = true; this.vaultError = '';
+                    try {
+                        const rec = readJSON(VAULT_KEY, null);
+                        if (!validVaultRecord(rec)) throw new Error('corrupt');
+                        const key = await deriveKey(this.mpInput, fromB64(rec.salt), rec.iter);
+                        const data = await decryptJSON(key, rec);
+                        vaultKey = key; vaultMeta = { salt: rec.salt, iter: rec.iter, vid: rec.vid || uid() + uid() };
+                        this.passwords = (data.entries || []).map((p, i) => this.normPw(p, i));
+                        this.vaultFolders = Array.isArray(data.folders) ? data.folders : [...DEFAULT_FOLDERS];
+                        this.vaultState = 'unlocked'; this.failCount = 0; this.mpInput = '';
+                        this.touchIdle();
+                    } catch (e) {
+                        this.failCount++;
+                        if (this.failCount >= 3) this.cooldownUntil = Date.now() + Math.min(60, (this.failCount - 2) * 5) * 1000;
+                        this.vaultError = 'Falsches Master-Passwort.';
+                    } finally { this.vaultBusy = false; }
+                },
+                lockVault(manual = false) {
+                    clearTimeout(this._idleTimer);
+                    if (this.vaultState !== 'unlocked') return;
+                    vaultKey = null; vaultMeta = null;
+                    this.passwords = []; this.revealed = {}; this.vaultFolders = [...DEFAULT_FOLDERS]; this.pwFolderFilter = 'all'; this.pwSearch = '';
+                    this.showPasswordModalState = this.showChangeMaster = this.showFolders = false;
+                    this.currentPassword = { id: null, title: '', url: '', username: '', password: '', folder: 'Privat' };
+                    this.vaultState = 'locked'; this.mpInput = ''; this.vaultError = '';
+                    this.toast(manual ? 'Tresor gesperrt' : 'Tresor automatisch gesperrt');
+                },
+                touchIdle() {
+                    if (this.vaultState !== 'unlocked') return;
+                    clearTimeout(this._idleTimer);
+                    this._idleTimer = setTimeout(() => this.lockVault(false), this.cfg.vaultLockMin * 60000);
+                },
+                openChangeMaster() { this.mpCurrent = this.mpInput = this.mpConfirm = ''; this.vaultError = ''; this.showChangeMaster = true; },
+                async changeMaster() {
+                    this.vaultError = '';
+                    const err = this.validateNewMaster();
+                    if (err) { this.vaultError = err; return; }
+                    this.vaultBusy = true;
+                    try {
+                        const rec = readJSON(VAULT_KEY, null);
+                        try { await decryptJSON(await deriveKey(this.mpCurrent, fromB64(rec.salt), rec.iter), rec); }
+                        catch (e) { this.vaultError = 'Das aktuelle Master-Passwort ist falsch.'; return; }
+                        const salt = crypto.getRandomValues(new Uint8Array(16));
+                        vaultKey = await deriveKey(this.mpInput, salt, PBKDF2_ITER);
+                        vaultMeta = { salt: toB64(salt), iter: PBKDF2_ITER, vid: vaultMeta?.vid || rec.vid || uid() + uid() };
+                        await this.persistVault();
+                        this.showChangeMaster = false; this.mpCurrent = this.mpInput = this.mpConfirm = '';
+                        this.toast('Master-Passwort geändert');
+                    } catch (e) { this.vaultError = 'Änderung fehlgeschlagen.'; }
+                    finally { this.vaultBusy = false; }
+                },
+                openReset() { this.resetConfirm = ''; this.showResetModal = true; },
+                resetVault() {
+                    if (this.resetConfirm.trim().toUpperCase() !== 'LÖSCHEN') return;
+                    clearTimeout(this._idleTimer);
+                    localStorage.removeItem(VAULT_KEY); localStorage.removeItem('organizer_passwords');
+                    vaultKey = null; vaultMeta = null; legacyEntries = [];
+                    Object.assign(this, { legacyCount: 0, passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], failCount: 0, cooldownUntil: 0, mpInput: '', mpConfirm: '', vaultError: '', vaultState: 'none', showResetModal: false });
+                    this.touchSync();
+                    this.toast('Tresor zurückgesetzt – bitte neues Master-Passwort festlegen');
+                    this.switchTab('passwords');
+                },
+
+                /* Gruppen */
+                openFolders() { this.folderDraft = this.vaultFolders.map(f => ({ key: uid(), old: f, name: f })); this.vaultError = ''; this.showFolders = true; },
+                async saveFolders() {
+                    const names = this.folderDraft.map(f => f.name.trim());
+                    if (names.some(n => !n)) { this.vaultError = 'Gruppennamen dürfen nicht leer sein.'; return; }
+                    if (new Set(names.map(n => n.toLowerCase())).size !== names.length) { this.vaultError = 'Gruppennamen müssen eindeutig sein.'; return; }
+                    const rename = {}; this.folderDraft.forEach((f, i) => { if (f.old !== null) rename[f.old] = names[i]; });
+                    this.passwords.forEach(p => { p.folder = p.folder in rename ? rename[p.folder] : ''; });
+                    this.vaultFolders = names; this.pwFolderFilter = 'all'; this.vaultBusy = true;
+                    try { await this.persistVault(); this.showFolders = false; this.toast('Gruppen gespeichert'); }
+                    catch (e) { this.vaultError = 'Speichern fehlgeschlagen.'; }
+                    finally { this.vaultBusy = false; }
+                },
+
+                /* Einträge */
+                openPasswordModal() {
+                    this.currentPassword = { id: null, title: '', url: '', username: '', password: '', folder: this.vaultFolders.includes(this.pwFolderFilter) ? this.pwFolderFilter : (this.vaultFolders[0] || '') };
+                    this.showPasswordModalState = true; this.$nextTick(() => this.$refs.pwTitle?.focus());
+                },
+                editPassword(pw) { this.currentPassword = { ...pw }; this.showPasswordModalState = true; },
+                generatePassword() {
+                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_?';
+                    const limit = Math.floor(0x100000000 / chars.length) * chars.length;
+                    let pwd = '';
+                    while (pwd.length < this.cfg.genLength) { const [r] = crypto.getRandomValues(new Uint32Array(1)); if (r < limit) pwd += chars[r % chars.length]; }
+                    this.currentPassword.password = pwd;
+                },
+                siteUrl(pw) {
+                    const u = (pw.url || '').trim(); if (!u) return '';
+                    try { const x = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(u) ? u : 'https://' + u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch (e) { return ''; }
+                },
+                hostOf(u) { const s = this.siteUrl({ url: u }); return s ? new URL(s).hostname.replace(/^www\./, '') : ''; },
+                logoUrl(pw) { const h = this.hostOf(pw.url); return h.includes('.') ? `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(h)}` : ''; },
+                async savePassword() {
+                    const p = this.normPw({ ...this.currentPassword, title: this.currentPassword.title.trim(), url: (this.currentPassword.url || '').trim() });
+                    if (!this.currentPassword.title.trim() || !p.password || !vaultKey) return;
+                    this.vaultBusy = true;
+                    try {
+                        const i = this.passwords.findIndex(x => x.id === this.currentPassword.id);
+                        if (i !== -1) this.passwords[i] = { ...p, id: this.currentPassword.id }; else this.passwords.push({ ...p, id: uid() });
+                        await this.persistVault();
+                        this.showPasswordModalState = false; this.toast('Im Tresor gespeichert');
+                    } catch (e) { this.toast('Speichern fehlgeschlagen'); }
+                    finally { this.vaultBusy = false; }
+                },
+                async deletePassword(id) {
+                    const p = this.passwords.find(x => x.id === id);
+                    if (!p || !this.ask(`Eintrag „${p.title}“ wirklich löschen?`)) return;
+                    this.passwords = this.passwords.filter(x => x.id !== id);
+                    await this.persistVault();
+                },
+                get filteredPasswords() {
+                    const q = this.pwSearch.trim().toLowerCase(), f = this.pwFolderFilter;
+                    return this.passwords.filter(pw => (f === 'all' || (f === '__none' ? !pw.folder : pw.folder === f)) && (!q || [pw.title, pw.username, pw.url].some(s => (s || '').toLowerCase().includes(q))));
+                },
+
+                /* ---------- Speichern / Backup ---------- */
+                saveAllData() {
+                    try {
+                        localStorage.setItem('organizer_events', JSON.stringify(this.events.filter(e => !e.isGoogle)));
+                        localStorage.setItem('organizer_todos', JSON.stringify(this.todos));
+                        localStorage.setItem('organizer_todo_lists', JSON.stringify(this.todoLists));
+                        localStorage.setItem('organizer_shopping', JSON.stringify(this.shoppingItems));
+                        localStorage.removeItem('organizer_todo_groups');
+                    } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
+                    this.touchSync();
+                },
+                exportData() {
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, cfg: this.cfg, vault: readJSON(VAULT_KEY, null) };
+                    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+                    const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
+                    document.body.appendChild(a); a.click(); a.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                },
+                importData(e) {
+                    const input = e.target, file = input.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = async (evt) => {
+                        try {
+                            const data = JSON.parse(evt.target.result);
+                            if (Array.isArray(data.events)) this.events = [...this.events.filter(x => x.isGoogle), ...data.events.map(normEvent).filter(x => x.startDate)];
+                            if (Array.isArray(data.todos)) this.loadTodoData(data.todos, data.todoLists, data.todoLists ? null : data.todoGroups);
+                            if (Array.isArray(data.shoppingItems)) this.shoppingItems = data.shoppingItems.filter(i => i && i.name).map(normShop);
+                            if (data.cfg && typeof data.cfg === 'object') { this.cfg = { ...DEFAULT_CFG, ...data.cfg, views: { ...DEFAULT_CFG.views, ...(data.cfg.views || {}) } }; this.saveCfg(); this.applyCfg(); this.calendarView = this.cfg.calView; }
+                            this.saveAllData();
+
+                            let note = '';
+                            if (validVaultRecord(data.vault)) {
+                                if (this.vaultState === 'none' || confirm('Das Backup enthält einen Tresor. Den aktuellen Tresor ersetzen? (Danach gilt das Master-Passwort aus dem Backup.)')) {
+                                    this.lockVault(false);
+                                    localStorage.setItem(VAULT_KEY, JSON.stringify(data.vault));
+                                    this.vaultState = 'locked'; this.touchSync();
+                                    note = ' Tresor importiert – mit dem Master-Passwort des Backups entsperren.';
+                                }
+                            } else if (Array.isArray(data.passwords) && data.passwords.length) {
+                                if (this.vaultState === 'unlocked') {
+                                    data.passwords.forEach((p, i) => this.passwords.push(this.normPw({ ...p, id: undefined, folder: p.folder || 'Privat' }, i)));
+                                    await this.persistVault();
+                                    note = ' Alte Tresor-Einträge wurden verschlüsselt übernommen.';
+                                } else note = ' Alte Tresor-Einträge wurden NICHT importiert – bitte Tresor entsperren und erneut importieren.';
+                            }
+                            this.toast('Import erfolgreich.' + note);
+                        } catch (err) { this.toast('Fehler beim Import – ungültige Datei'); }
+                    };
+                    reader.readAsText(file);
+                    input.value = '';
+                }
+            };
+        }
+    </script>
+</body>
+</html>
