@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-6">
-    <meta name="theme-color" content="#0b0f19">
+    <meta name="app-version" content="2026.11.13-7">
+    <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Space">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M43.1 22.8A16 16 0 1 0 43.1 41.2' fill='none' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='46.5' cy='32' r='3.8' fill='white'/%3E%3C/svg%3E">
     <title>Christopher’s All in One App</title>
     <script>
         // Theme, Akzentfarbe und Dichte vor dem ersten Rendern setzen (verhindert Aufblitzen)
         try {
-            const r = document.documentElement, t = localStorage.getItem('organizer_theme'), c = JSON.parse(localStorage.getItem('organizer_cfg') || '{}');
-            r.dataset.theme = ['midnight', 'white', 'ocean', 'emerald', 'nord', 'graphite', 'sunset', 'aurora', 'paper', 'rose'].includes(t) ? t : 'midnight';
+            const r = document.documentElement;
+            let t = localStorage.getItem('organizer_theme'), c = JSON.parse(localStorage.getItem('organizer_cfg') || '{}');
+            // Einmalige Umstellung auf das neue helle Design (wer danach ein dunkles wählt, behält es)
+            if (!localStorage.getItem('organizer_look2')) {
+                localStorage.setItem('organizer_look2', '1');
+                if (!t || t === 'midnight') { t = 'daylight'; localStorage.setItem('organizer_theme', t); }
+                if (!c.font || c.font === 'system') { c.font = 'default'; localStorage.setItem('organizer_cfg', JSON.stringify(c)); }
+            }
+            r.dataset.theme = ['daylight', 'sky', 'mint', 'white', 'paper', 'rose', 'midnight', 'ocean', 'emerald', 'nord', 'graphite', 'sunset', 'aurora'].includes(t) ? t : 'daylight';
             if (c.accent) r.style.setProperty('--accent', c.accent);
             if (c.density) r.dataset.density = c.density;
             if (c.fontSize) r.dataset.fsize = c.fontSize;
@@ -24,7 +31,7 @@
             if (c.cardStyle) r.dataset.card = c.cardStyle;
             if (c.bgStyle) r.dataset.bg = c.bgStyle;
             if (c.reduceMotion) r.dataset.motion = 'reduce';
-        } catch (e) { document.documentElement.dataset.theme = 'midnight'; }
+        } catch (e) { document.documentElement.dataset.theme = 'daylight'; }
     </script>
     <script>
         // App-Icon für den Home-Bildschirm (iOS/Android) zur Laufzeit erzeugen
@@ -39,6 +46,9 @@
             const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.appendChild(l);
         } catch (e) {}
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -46,23 +56,29 @@
         [x-cloak] { display: none !important; }
 
         /* ---------- Themes (alle Farben laufen über Variablen) ---------- */
-        :root, [data-theme="midnight"] { --bg:#0b0f19; --surface:#131c2e; --surface2:#0e1524; --border:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --hover:#1a2740; --accent:#6366f1; color-scheme: dark; }
-        [data-theme="white"]   { --bg:#f1f5f9; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0; --text:#0f172a; --muted:#586579; --hover:#f8fafc; --accent:#4f46e5; color-scheme: light; }
-        [data-theme="ocean"]   { --bg:#0f172a; --surface:#1e293b; --surface2:#162033; --border:#334155; --text:#f8fafc; --muted:#94a3b8; --hover:#27354d; --accent:#6366f1; color-scheme: dark; }
-        [data-theme="emerald"] { --bg:#022c22; --surface:#064e3b; --surface2:#053f31; --border:#047857; --text:#ecfdf5; --muted:#a7d8c3; --hover:#075e47; --accent:#059669; color-scheme: dark; }
-        [data-theme="nord"]     { --bg:#2e3440; --surface:#3b4252; --surface2:#343a48; --border:#4c566a; --text:#eceff4; --muted:#aab4c8; --hover:#434c5e; --accent:#5e81ac; color-scheme: dark; }
-        [data-theme="graphite"] { --bg:#111214; --surface:#1b1c1f; --surface2:#151618; --border:#2b2d31; --text:#f4f4f5; --muted:#9a9ca3; --hover:#232529; --accent:#6b7280; color-scheme: dark; }
-        [data-theme="sunset"]   { --bg:#1a1013; --surface:#2a1820; --surface2:#211219; --border:#4a2a35; --text:#fdf2f0; --muted:#d3aaaa; --hover:#35202a; --accent:#ea580c; color-scheme: dark; }
-        [data-theme="aurora"]   { --bg:#0a1020; --surface:#121c36; --surface2:#0d1630; --border:#24335c; --text:#eef4ff; --muted:#a0b1d8; --hover:#192646; --accent:#8b5cf6; color-scheme: dark; }
-        [data-theme="paper"]    { --bg:#f6f1e7; --surface:#fffdf8; --surface2:#f3ede0; --border:#e4dccb; --text:#2b2417; --muted:#74684f; --hover:#faf5ea; --accent:#b45309; color-scheme: light; }
-        [data-theme="rose"]     { --bg:#fdf2f4; --surface:#ffffff; --surface2:#fbe8ec; --border:#f0cdd5; --text:#3b1220; --muted:#85556a; --hover:#fff5f7; --accent:#be185d; color-scheme: light; }
+        :root, [data-theme="daylight"] { --bg:#f4f6fb; --surface:#ffffff; --surface2:#eef1f8; --border:#dde3ef; --text:#111828; --muted:#5b6478; --hover:#e9edf7; --accent:#4f46e5; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
+        [data-theme="sky"]      { --bg:#eef6fd; --surface:#ffffff; --surface2:#e3effb; --border:#cfe2f3; --text:#0d2234; --muted:#4e6480; --hover:#ddecfa; --accent:#0369a1; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
+        [data-theme="mint"]     { --bg:#f0f8f4; --surface:#ffffff; --surface2:#e4f2ea; --border:#cde5d8; --text:#0f2a20; --muted:#4c6b5c; --hover:#def0e7; --accent:#047857; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
+        [data-theme="white"]    { --bg:#f1f5f9; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0; --text:#0f172a; --muted:#586579; --hover:#f8fafc; --accent:#4f46e5; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
+        [data-theme="paper"]    { --bg:#f6f1e7; --surface:#fffdf8; --surface2:#f3ede0; --border:#e4dccb; --text:#2b2417; --muted:#74684f; --hover:#faf5ea; --accent:#b45309; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
+        [data-theme="rose"]     { --bg:#fdf2f4; --surface:#ffffff; --surface2:#fbe8ec; --border:#f0cdd5; --text:#3b1220; --muted:#85556a; --hover:#fff5f7; --accent:#be185d; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
+        [data-theme="midnight"] { --bg:#0b0f19; --surface:#131c2e; --surface2:#0e1524; --border:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --hover:#1a2740; --accent:#6366f1; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        [data-theme="ocean"]    { --bg:#0f172a; --surface:#1e293b; --surface2:#162033; --border:#334155; --text:#f8fafc; --muted:#94a3b8; --hover:#27354d; --accent:#6366f1; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        [data-theme="emerald"]  { --bg:#022c22; --surface:#064e3b; --surface2:#053f31; --border:#047857; --text:#ecfdf5; --muted:#a7d8c3; --hover:#075e47; --accent:#059669; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        [data-theme="nord"]     { --bg:#2e3440; --surface:#3b4252; --surface2:#343a48; --border:#4c566a; --text:#eceff4; --muted:#aab4c8; --hover:#434c5e; --accent:#5e81ac; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        [data-theme="graphite"] { --bg:#111214; --surface:#1b1c1f; --surface2:#151618; --border:#2b2d31; --text:#f4f4f5; --muted:#9a9ca3; --hover:#232529; --accent:#6b7280; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        [data-theme="sunset"]   { --bg:#1a1013; --surface:#2a1820; --surface2:#211219; --border:#4a2a35; --text:#fdf2f0; --muted:#d3aaaa; --hover:#35202a; --accent:#ea580c; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        [data-theme="aurora"]   { --bg:#0a1020; --surface:#121c36; --surface2:#0d1630; --border:#24335c; --text:#eef4ff; --muted:#a0b1d8; --hover:#192646; --accent:#8b5cf6; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
         :root { --row-pad: .9rem 1rem; }
         [data-density="compact"] { --row-pad: .45rem .8rem; }
 
         html, body { min-height: 100dvh; }
-        body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; -webkit-tap-highlight-color: transparent;
+               font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; letter-spacing: -.011em; }
+        h1, h2, h3, .num { font-feature-settings: 'ss01'; }
+        .num, .tnum { font-variant-numeric: tabular-nums; }
 
-        .card   { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: 0 12px 32px -16px rgba(0,0,0,.45); }
+        .card   { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: var(--shadow); }
         .inner  { background: var(--surface2); border: 1px solid var(--border); border-radius: 1rem; }
         .row    { padding: var(--row-pad); }
         .muted  { color: var(--muted); }
@@ -74,7 +90,7 @@
 
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .7rem 1.1rem; border-radius: .9rem; font-size: .75rem; font-weight: 700; transition: all .15s; cursor: pointer; white-space: nowrap; }
         .btn:disabled { opacity: .45; cursor: not-allowed; }
-        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 20px -8px var(--accent); }
+        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 16px -10px var(--accent); }
         .btn-primary:not(:disabled):hover { filter: brightness(1.12); }
         .btn-soft   { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
         .btn-soft:hover { background: var(--hover); }
@@ -89,9 +105,10 @@
         .seg { display: inline-flex; gap: .2rem; padding: .3rem; border-radius: 1rem; background: var(--surface2); border: 1px solid var(--border); }
         .seg > button { padding: .5rem .85rem; border-radius: .7rem; font-size: .75rem; font-weight: 700; color: var(--muted); transition: all .15s; }
         .seg > button:hover { color: var(--text); }
-        .seg > button.on { background: var(--accent); color: #fff; box-shadow: 0 6px 16px -8px var(--accent); }
+        .seg > button.on { background: var(--accent); color: #fff; box-shadow: 0 4px 12px -8px var(--accent); }
 
-        .label { font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+        .label { display: block; font-size: .78rem; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
+        .label .ct { color: var(--muted); font-weight: 600; }
         .chip { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .6rem; border-radius: .6rem; font-size: .68rem; font-weight: 700; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
         button.chip { cursor: pointer; transition: all .15s; }
         button.chip.on { background: var(--accent); color: #fff; }
@@ -123,12 +140,18 @@
         .switch.on { background: var(--accent); }
         .switch.on::after { transform: translateX(1.1rem); }
 
-        .evblock { position: absolute; border-radius: .5rem; padding: .2rem .4rem; font-size: .68rem; font-weight: 600; line-height: 1.2; overflow: hidden; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 28%, var(--surface)); box-shadow: 0 2px 8px -4px rgba(0,0,0,.5); z-index: 2; text-align: left; }
+        .evblock { position: absolute; border-radius: .5rem; padding: .2rem .4rem; font-size: .68rem; font-weight: 600; line-height: 1.2; overflow: hidden; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 22%, var(--surface)); box-shadow: var(--shadow-s); z-index: 2; text-align: left; }
         .mfold { display: flex; align-items: center; gap: .6rem; padding: .5rem .75rem; border-radius: .8rem; font-size: .82rem; font-weight: 700; color: var(--muted); text-align: left; white-space: nowrap; flex: none; }
         .mfold:hover { background: var(--hover); color: var(--text); }
         .mfold.on { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
         @media (min-width: 1024px) { .mfold { width: 100%; } }
-        .mrow { display: flex; gap: .7rem; padding: .7rem .85rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; width: 100%; align-items: flex-start; }
+        .mrow { position: relative; display: flex; gap: .7rem; padding: .7rem .85rem .7rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; width: 100%; align-items: flex-start; }
+        .mrow.unread::before { content: ''; position: absolute; left: 0; top: .55rem; bottom: .55rem; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+        .mgrp { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .5rem; padding: .4rem .9rem; font-size: .7rem; font-weight: 800; color: var(--muted); background: var(--surface2); border-bottom: 1px solid var(--border); }
+        .cmd { display: flex; align-items: center; gap: .15rem; overflow-x: auto; }
+        .cmd .btn { padding: .5rem .7rem; font-size: .72rem; }
+        .cmd .sep { width: 1px; align-self: stretch; margin: .25rem .4rem; background: var(--border); flex: none; }
+        .mhead { display: flex; align-items: flex-start; gap: .85rem; padding: .9rem 1rem; }
         .mrow:hover { background: var(--hover); }
         .mrow.on { background: color-mix(in srgb, var(--accent) 12%, transparent); }
         .mrow .ms { font-size: .82rem; color: var(--muted); }
@@ -138,6 +161,7 @@
         .mstar { color: var(--muted); } .mstar.on { color: #fbbf24; }
         /* ---------- Stil-Optionen (Einstellungen → Darstellung) ---------- */
         [data-fsize="large"] { font-size: 112.5%; } [data-fsize="xl"] { font-size: 125%; }
+        [data-font="system"] body { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         [data-font="rounded"] body { font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif; }
         [data-font="serif"] body { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif; }
         [data-font="mono"] body { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; letter-spacing: -.01em; }
@@ -152,7 +176,7 @@
         [data-bg="gradient"] body { background-image: radial-gradient(1100px 560px at 8% -8%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 62%), radial-gradient(900px 480px at 100% 0%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 60%); background-attachment: fixed; }
         [data-motion="reduce"] *, [data-motion="reduce"] *::before, [data-motion="reduce"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
-        .backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; background: rgba(2, 6, 23, .7); backdrop-filter: blur(8px); overflow-y: auto; }
+        .backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; background: var(--scrim); backdrop-filter: blur(8px); overflow-y: auto; }
         .backdrop > * { margin-block: auto; }
         .swatch { width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 2px solid transparent; transition: transform .15s; flex-shrink: 0; }
         .swatch.on { border-color: var(--text); transform: scale(1.12); }
@@ -166,29 +190,37 @@
         /* Tresor-Liste & Menüs */
         .vrow { display: flex; align-items: center; gap: .75rem; padding: .7rem 1rem; border-top: 1px solid var(--border); transition: background .15s; }
         .vrow:hover { background: var(--hover); }
-        .menu { position: absolute; right: 0; top: calc(100% + .25rem); z-index: 30; min-width: 13.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: .9rem; padding: .35rem; box-shadow: 0 16px 40px -12px rgba(0,0,0,.6); }
+        .menu { position: absolute; right: 0; top: calc(100% + .25rem); z-index: 30; min-width: 13.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: .9rem; padding: .35rem; box-shadow: var(--shadow); }
         .menu button, .menu a { display: flex; width: 100%; align-items: center; gap: .7rem; padding: .55rem .7rem; border-radius: .6rem; font-size: .78rem; font-weight: 600; text-align: left; }
         .menu button:hover, .menu a:hover { background: var(--hover); }
         .menu .danger { color: #f43f5e; }
         .menu hr { border: 0; border-top: 1px solid var(--border); margin: .3rem 0; }
         .chip.run  { background: rgba(16,185,129,.15); color: #34d399; border-color: rgba(16,185,129,.3); }
         .chip.soon { background: rgba(245,158,11,.15); color: #fbbf24; border-color: rgba(245,158,11,.3); }
-        /* Einkaufs-Kacheln (Bring!-Stil: Farbe je Kategorie) */
-        .ptile { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; min-width: 0; min-height: 5.8rem; padding: .7rem .35rem .55rem; border-radius: 1rem; text-align: center; cursor: pointer;
-                 background: color-mix(in srgb, var(--cc) 16%, var(--surface2)); border: 1px solid color-mix(in srgb, var(--cc) 40%, var(--border)); transition: transform .15s, filter .15s; }
-        .ptile:hover { transform: translateY(-1px); filter: brightness(1.08); }
-        .ptile .pi { display: flex; align-items: center; justify-content: center; width: 2.7rem; height: 2.7rem; border-radius: 9999px; background: color-mix(in srgb, var(--cc) 24%, transparent); }
-        .ptile .em { font-size: 1.65rem; line-height: 1; }
-        .ptile .ltr { font-family: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive; font-size: 1.6rem; font-weight: 700; line-height: 1; color: var(--cc); }
-        .ptile .nm { font-size: .72rem; font-weight: 700; line-height: 1.15; max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
-        .ptile .sub { font-size: .62rem; font-weight: 600; opacity: .85; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .ptile .badge { position: absolute; top: .3rem; left: .3rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 9999px; background: var(--cc); color: #fff; font-size: .62rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-        .ptile.solid { background: var(--cc); border-color: transparent; color: #fff; box-shadow: 0 8px 18px -10px var(--cc); }
-        .ptile.solid .pi { background: rgba(255,255,255,.22); }
-        .ptile.solid .ltr { color: #fff; }
-        .ptile.off { opacity: .5; }
-        .pdot { display: flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; border-radius: 9999px; background: var(--cc); color: #fff; flex-shrink: 0; }
-        .pdot .ltr { font-family: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive; font-weight: 700; font-size: 1.2rem; line-height: 1; }
+        /* Einkauf: Katalog-Kacheln ruhig, Artikel auf der Liste farbig (Bring!-Stil) */
+        .ptile { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: .45rem; min-width: 0; min-height: 6rem; padding: .75rem .4rem .6rem; border-radius: 1.1rem; text-align: center; cursor: pointer;
+                 background: var(--surface2); border: 1px solid var(--border); transition: transform .15s, background .15s, border-color .15s; }
+        .ptile:hover { transform: translateY(-1px); background: var(--hover); border-color: color-mix(in srgb, var(--cc) 45%, var(--border)); }
+        .ptile .pi { position: relative; display: flex; align-items: center; justify-content: center; width: 2.8rem; height: 2.8rem; border-radius: 9999px; background: color-mix(in srgb, var(--cc) 20%, transparent); }
+        .ptile .em { font-size: 1.6rem; line-height: 1; }
+        .ptile .bg { position: absolute; right: -.2rem; bottom: -.2rem; font-size: .75rem; line-height: 1; padding: .12rem; border-radius: 9999px; background: var(--surface); box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--cc) 30%, var(--border)); }
+        .ptile .ltr { font-size: 1.35rem; font-weight: 800; line-height: 1; color: var(--cc); }
+        .ptile .nm { font-size: .72rem; font-weight: 700; line-height: 1.2; max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
+        .ptile .sub { font-size: .62rem; font-weight: 600; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ptile .badge { position: absolute; top: .35rem; left: .35rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 9999px; background: var(--cc); color: #fff; font-size: .62rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        /* Artikel, die auf der Liste stehen */
+        .ptile.pick { background: color-mix(in srgb, var(--cc) 13%, var(--surface)); border-color: color-mix(in srgb, var(--cc) 35%, transparent); }
+        .ptile.pick:hover { background: color-mix(in srgb, var(--cc) 20%, var(--surface)); }
+        .ptile.pick .pi { background: color-mix(in srgb, var(--cc) 26%, transparent); }
+        .ptile.pick .bg { background: color-mix(in srgb, var(--cc) 8%, var(--surface)); box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--cc) 30%, transparent); }
+        .ptile.off { opacity: .55; filter: saturate(.35); }
+        .ptile.off .nm { text-decoration: line-through; }
+        .prow { display: flex; align-items: center; gap: .85rem; padding: .6rem .7rem; border-radius: .9rem; cursor: pointer; transition: background .15s; }
+        .prow:hover { background: var(--hover); }
+        .pdot { position: relative; display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 9999px; flex-shrink: 0; background: color-mix(in srgb, var(--cc) 20%, transparent); }
+        .pdot .em { font-size: 1.45rem; line-height: 1; }
+        .pdot .ltr { font-weight: 800; font-size: 1.2rem; line-height: 1; color: var(--cc); }
+        .pdot .bg { position: absolute; right: -.15rem; bottom: -.15rem; font-size: .72rem; line-height: 1; padding: .08rem; border-radius: 9999px; background: var(--surface); box-shadow: 0 0 0 1px var(--border); }
         /* Datum-/Zeit-Auswahl */
         .pickbtn { display: flex; align-items: center; gap: .6rem; text-align: left; cursor: pointer; min-width: 0; }
         .pickbtn:disabled { opacity: .45; cursor: not-allowed; }
@@ -345,7 +377,7 @@
                     <div x-show="cfg.todayShop" class="card p-5 sm:p-6 space-y-3">
                         <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-bag-shopping mr-2"></i>Einkauf</p><button class="text-[11px] font-bold accent" @click="switchTab('shopping')">Liste öffnen</button></div>
                         <p x-show="!shopAll.length" class="muted text-sm py-2">Die Einkaufsliste ist leer.</p>
-                        <div class="flex flex-wrap gap-2"><template x-for="i in shopAll.slice(0, 14)" :key="i.id"><span class="chip !py-1.5 !px-3"><span x-text="i.emoji || '•'"></span><span x-text="i.name"></span></span></template></div>
+                        <div class="flex flex-wrap gap-2"><template x-for="i in shopAll.slice(0, 14)" :key="i.id"><span class="chip !py-1.5 !px-3"><span x-text="(i.emoji || '•') + (badgeOf(i) || '')"></span><span x-text="i.name"></span></span></template></div>
                         <p x-show="shopAll.length > 14" class="text-[11px] muted" x-text="'… und ' + (shopAll.length - 14) + ' weitere'"></p>
                     </div>
                 </div>
@@ -582,153 +614,212 @@
             </section>
 
             <!-- ================= EINKAUF (Bring!-Stil) ================= -->
-            <section x-show="activeTab === 'shopping'" x-cloak class="space-y-5">
+            <section x-show="activeTab === 'shopping'" x-cloak class="space-y-4">
+                <!-- Listen -->
                 <div class="flex gap-2 overflow-x-auto pb-1" aria-label="Einkaufslisten">
                     <button @click="shopListId = ''" class="chip !py-2 !px-3.5 !text-xs shrink-0" :class="shopListId === '' ? 'on' : ''">🛒 Einkauf<span class="opacity-70" x-text="shopListCount('') || ''"></span></button>
                     <template x-for="l in shopLists" :key="l.id"><button @click="shopListId = l.id" class="chip !py-2 !px-3.5 !text-xs shrink-0" :class="shopListId === l.id ? 'on' : ''"><span x-text="l.emoji"></span><span x-text="l.name"></span><span class="opacity-70" x-text="shopListCount(l.id) || ''"></span></button></template>
                     <button @click="openShopList()" class="chip !py-2 !px-3.5 !text-xs shrink-0 !border-dashed" title="Neue Liste"><i class="fa-solid fa-plus"></i>Liste</button>
                 </div>
-                <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight" x-text="shopListName"></h2>
-                        <p class="muted text-xs mt-1 font-medium"><span x-text="shopOpen.length"></span> Artikel offen · <span x-text="shopDone.length"></span> im Warenkorb</p>
+
+                <!-- Kopfzeile -->
+                <div class="card p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight truncate" x-text="shopListName"></h2>
+                        <p class="muted text-xs mt-1 font-semibold"><span x-text="shopOpen.length"></span> offen · <span x-text="shopDone.length"></span> im Wagen</p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2.5">
+                    <div class="flex items-center gap-2">
                         <div class="seg">
-                            <button @click="setView('shopping', 'tiles')" :class="cfg.views.shopping === 'tiles' ? 'on' : ''" title="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
-                            <button @click="setView('shopping', 'list')" :class="cfg.views.shopping === 'list' ? 'on' : ''" title="Liste"><i class="fa-solid fa-list"></i></button>
+                            <button @click="setView('shopping', 'tiles')" :class="cfg.views.shopping === 'tiles' ? 'on' : ''" title="Kacheln" aria-label="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
+                            <button @click="setView('shopping', 'list')" :class="cfg.views.shopping === 'list' ? 'on' : ''" title="Liste" aria-label="Liste"><i class="fa-solid fa-list"></i></button>
                         </div>
-                        <button @click="shareShopList()" class="btn btn-soft" title="Liste als Text teilen oder kopieren"><i class="fa-solid fa-share-nodes"></i><span class="hidden sm:inline">Teilen</span></button>
-                        <button x-show="shopListId" @click="openShopList(shopLists.find(l => l.id === shopListId))" class="btn btn-soft" title="Liste bearbeiten"><i class="fa-solid fa-pen"></i></button>
-                        <button x-show="shopDone.length" @click="clearBought()" class="btn btn-soft"><i class="fa-solid fa-broom"></i>Gekauftes entfernen</button>
+                        <button @click="shareShopList()" class="icon-btn" title="Liste teilen" aria-label="Liste teilen"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button x-show="shopListId" @click="openShopList(shopLists.find(l => l.id === shopListId))" class="icon-btn" title="Liste bearbeiten" aria-label="Liste bearbeiten"><i class="fa-solid fa-pen"></i></button>
                     </div>
                 </div>
 
-                <!-- Hinzufügen & Katalog -->
-                <div class="card p-5 sm:p-6 space-y-4">
-                    <form @submit.prevent="addFromQuery()" class="flex gap-2">
-                        <input type="text" x-model="shopQuery" placeholder="Artikel suchen oder neu eingeben…" class="field" aria-label="Artikel">
-                        <button type="submit" class="btn btn-primary" :disabled="!shopQuery.trim()"><i class="fa-solid fa-plus"></i></button>
-                    </form>
-                    <div class="flex gap-2 overflow-x-auto pb-1" x-show="!shopQuery.trim()">
-                        <button @click="shopCat = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === 'all' ? 'on' : ''">Alle</button>
-                        <template x-for="c in shopCategories" :key="c"><button @click="shopCat = c" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === c ? 'on' : ''" x-text="c"></button></template>
-                    </div>
-                    <div x-show="cfg.showRecent && !shopQuery.trim() && recentView.length" class="space-y-2">
-                        <p class="label">Zuletzt verwendet</p>
-                        <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2">
-                            <template x-for="p in recentView" :key="'r' + p.name">
-                                <button @click="tapProduct(p)" class="ptile" :style="'--cc:' + catColor(p.category)">
-                                    <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
-                                    <span class="pi"><span class="em" x-show="hasEmoji(p)" x-text="p.emoji"></span><span class="ltr" x-show="!hasEmoji(p)" x-text="initial(p.name)"></span></span>
-                                    <span class="nm" x-text="p.name"></span>
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2 max-h-[28rem] overflow-y-auto pr-1">
-                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="ptile !border-dashed" :style="'--cc:' + catColor(guessCategory(shopQuery))">
-                            <span class="pi"><span class="ltr" x-text="initial(shopQuery)"></span></span><span class="nm" x-text="'„' + shopQuery.trim() + '“'"></span>
-                        </button>
-                        <template x-for="p in catalogView" :key="p.name">
-                            <button @click="tapProduct(p)" class="ptile" :style="'--cc:' + catColor(p.category)">
-                                <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
-                                <span class="pi"><span class="em" x-text="p.emoji"></span></span><span class="nm" x-text="p.name"></span>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Liste -->
-                <div class="space-y-5">
+                <!-- Was gekauft werden soll -->
+                <div x-show="shopOpen.length" class="card p-5 sm:p-6 space-y-5">
                     <template x-for="g in shopGroups" :key="g.cat">
-                        <div class="card p-5 sm:p-6 space-y-3">
-                            <p class="label flex items-center gap-2" x-show="cfg.shopGroup"><span x-text="g.cat"></span><span x-text="g.items.length"></span></p>
-                            <div :class="cfg.views.shopping === 'tiles' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5' : 'space-y-2'">
+                        <div class="space-y-2.5">
+                            <p class="label flex items-center gap-2" x-show="cfg.shopGroup"><span class="w-2 h-2 rounded-full shrink-0" :style="'background:' + catColor(g.cat)"></span><span x-text="g.cat"></span><span class="ct" x-text="g.items.length"></span></p>
+                            <div :class="cfg.views.shopping === 'tiles' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5' : 'space-y-1'">
                                 <template x-for="i in g.items" :key="i.id">
-                                    <div @click="toggleBought(i.id)" :style="'--cc:' + catColor(i.category)" :class="cfg.views.shopping === 'tiles' ? 'ptile solid' : 'inner row flex items-center gap-3 cursor-pointer hover:brightness-110'">
-                                        <button @click.stop="openShopModal(i)" class="icon-btn !w-7 !h-7" :class="cfg.views.shopping === 'tiles' ? 'absolute top-1 right-1 !text-white/80 hover:!bg-white/20' : 'order-last'" aria-label="Details"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                                        <span x-show="cfg.views.shopping === 'tiles'" class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span></span>
-                                        <span x-show="cfg.views.shopping !== 'tiles'" class="pdot"><span class="text-xl leading-none" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span></span>
+                                    <div @click="toggleBought(i.id)" :style="'--cc:' + catColor(i.category)" :class="cfg.views.shopping === 'tiles' ? 'ptile pick' : 'prow'">
+                                        <template x-if="cfg.views.shopping === 'tiles'"><span class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span><span class="bg" x-show="badgeOf(i)" x-text="badgeOf(i)"></span></span></template><template x-if="cfg.views.shopping !== 'tiles'"><span class="pdot" :style="'--cc:' + catColor(i.category)"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span><span class="bg" x-show="badgeOf(i)" x-text="badgeOf(i)"></span></span></template>
                                         <div :class="cfg.views.shopping === 'tiles' ? 'w-full min-w-0' : 'flex-1 min-w-0'">
                                             <p :class="cfg.views.shopping === 'tiles' ? 'nm' : 'text-sm font-bold truncate'" x-text="i.name"></p>
-                                            <p :class="cfg.views.shopping === 'tiles' ? 'sub' : 'text-[10px] muted font-semibold truncate'" x-show="qtyLabel(i) || i.note" x-text="[qtyLabel(i), i.note].filter(Boolean).join(' · ')"></p>
+                                            <p :class="cfg.views.shopping === 'tiles' ? 'sub' : 'text-[11px] muted font-semibold truncate'" x-show="qtyLabel(i) || i.note" x-text="[qtyLabel(i), i.note].filter(Boolean).join(' · ')"></p>
                                         </div>
+                                        <button @click.stop="openShopModal(i)" class="icon-btn !w-7 !h-7" :class="cfg.views.shopping === 'tiles' ? 'absolute top-1 right-1' : ''" aria-label="Menge und Notiz"><i class="fa-solid fa-ellipsis text-xs"></i></button>
                                     </div>
                                 </template>
                             </div>
                         </div>
                     </template>
-                    <p x-show="!shopOpen.length" class="muted text-sm font-medium text-center py-8"><i class="fa-solid fa-basket-shopping text-3xl block mb-3 opacity-60"></i>Die Liste ist leer – tippe oben auf ein Produkt.</p>
+                </div>
+                <div x-show="!shopOpen.length" class="card p-8 text-center">
+                    <i class="fa-solid fa-basket-shopping text-3xl accent opacity-70"></i>
+                    <p class="text-sm font-bold mt-3">Die Liste ist leer</p>
+                    <p class="muted text-xs mt-1">Tippe unten ein Produkt an, dann landet es hier.</p>
+                </div>
 
-                    <div x-show="shopDone.length" class="card p-5 sm:p-6 space-y-3">
-                        <p class="label">Im Warenkorb · antippen zum Zurücklegen</p>
-                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
-                            <template x-for="i in shopDone" :key="i.id">
-                                <div @click="toggleBought(i.id)" class="ptile off" :style="'--cc:' + catColor(i.category)"><span class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span></span><span class="nm line-through" x-text="i.name"></span></div>
+                <!-- Wagen -->
+                <div x-show="shopDone.length" class="card p-5 sm:p-6 space-y-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <button type="button" @click="shopCartOpen = !shopCartOpen" class="flex items-center gap-2 label min-w-0" :aria-expanded="shopCartOpen">
+                            <i class="fa-solid fa-chevron-right text-[10px] transition-transform" :class="shopCartOpen ? 'rotate-90' : ''"></i>
+                            <span>Im Wagen</span><span class="ct" x-text="shopDone.length"></span>
+                        </button>
+                        <button type="button" @click="clearBought()" class="btn btn-ghost !py-1.5 !px-2.5"><i class="fa-solid fa-broom"></i>Entfernen</button>
+                    </div>
+                    <div x-show="shopCartOpen" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
+                        <template x-for="i in shopDone" :key="i.id">
+                            <div @click="toggleBought(i.id)" class="ptile pick off" :style="'--cc:' + catColor(i.category)" title="Zurück auf die Liste">
+                                <span class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span><span class="bg" x-show="badgeOf(i)" x-text="badgeOf(i)"></span></span><span class="nm" x-text="i.name"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Artikel hinzufügen -->
+                <div class="card p-5 sm:p-6 space-y-4">
+                    <p class="label">Artikel hinzufügen</p>
+                    <form @submit.prevent="addFromQuery()" class="flex gap-2">
+                        <input type="text" x-model="shopQuery" placeholder="Suchen oder eigenen Artikel eingeben…" class="field" aria-label="Artikel suchen">
+                        <button type="submit" class="btn btn-primary" :disabled="!shopQuery.trim()" aria-label="Hinzufügen"><i class="fa-solid fa-plus"></i></button>
+                    </form>
+                    <div x-show="cfg.showRecent && !shopQuery.trim() && recentView.length" class="space-y-2">
+                        <p class="label">Zuletzt gekauft</p>
+                        <div class="flex gap-2 overflow-x-auto pb-1">
+                            <template x-for="p in recentView" :key="'r' + p.name">
+                                <button @click="tapProduct(p)" class="chip !py-2 !px-3 !text-xs shrink-0" :style="'--cc:' + catColor(p.category)">
+                                    <span x-show="hasEmoji(p)" x-text="p.emoji"></span><span x-text="p.name"></span><span class="opacity-70" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
+                                </button>
                             </template>
                         </div>
+                    </div>
+                    <div class="flex gap-2 overflow-x-auto pb-1" x-show="!shopQuery.trim()">
+                        <button @click="shopCat = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === 'all' ? 'on' : ''">Alle</button>
+                        <template x-for="c in shopCategories" :key="c"><button @click="shopCat = c" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === c ? 'on' : ''" x-text="c"></button></template>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2 max-h-[26rem] overflow-y-auto pr-1">
+                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="ptile !border-dashed" :style="'--cc:' + catColor(guessCategory(shopQuery))">
+                            <span class="pi"><span class="ltr" x-text="initial(shopQuery)"></span></span><span class="nm" x-text="'„' + shopQuery.trim() + '“ anlegen'"></span>
+                        </button>
+                        <template x-for="p in catalogView" :key="p.name">
+                            <button @click="tapProduct(p)" class="ptile" :class="openQty(p.name) ? 'pick' : ''" :style="'--cc:' + catColor(p.category)">
+                                <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
+                                <span class="pi"><span class="em" x-text="p.emoji"></span><span class="bg" x-show="p.badge" x-text="p.badge"></span></span>
+                                <span class="nm" x-text="p.name"></span>
+                            </button>
+                        </template>
+                        <p x-show="!catalogView.length" class="muted text-xs col-span-full py-6 text-center">Kein Produkt gefunden – mit „+“ eigenen Artikel anlegen.</p>
                     </div>
                 </div>
             </section>
 
             <!-- ================= TRESOR ================= -->
             <!-- ================= E-MAIL ================= -->
-            <section x-show="activeTab === 'mail'" x-cloak class="space-y-4">
-                <div class="card p-4 sm:p-5 flex flex-wrap items-center gap-2">
-                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3 mr-auto"><i class="fa-solid fa-envelope text-sky-400"></i>E-Mail</h2>
-                    <button x-show="mailCfg.accounts.length" @click="mailNew()" class="btn btn-primary"><i class="fa-solid fa-pen"></i>Neue E-Mail</button>
-                    <button x-show="mailCfg.accounts.length" @click="mailRefresh({ manual: true })" class="btn btn-soft" title="Aktualisieren" aria-label="Aktualisieren"><i class="fa-solid fa-rotate" :class="mailLoading ? 'spin' : ''"></i></button>
-                    <button @click="openMailSetup()" class="btn btn-soft"><i class="fa-solid fa-gear"></i><span x-text="mailCfg.accounts.length ? 'Postfächer' : 'Postfach verbinden'"></span></button>
+            <section x-show="activeTab === 'mail'" x-cloak class="space-y-3">
+                <!-- Befehlsleiste -->
+                <div class="card p-2 sm:p-2.5">
+                    <div class="cmd">
+                        <button x-show="mailCfg.accounts.length" @click="mailNew()" class="btn btn-primary shrink-0"><i class="fa-solid fa-pen-to-square"></i>Neu</button>
+                        <span x-show="mailCfg.accounts.length" class="sep"></span>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailReplyTo(mailThread.msgs.length - 1, false)"><i class="fa-solid fa-reply"></i><span class="hidden sm:inline">Antworten</span></button>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailReplyTo(mailThread.msgs.length - 1, true)" title="Allen antworten" aria-label="Allen antworten"><i class="fa-solid fa-reply-all"></i></button>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailForward(mailThread.msgs.length - 1)" title="Weiterleiten" aria-label="Weiterleiten"><i class="fa-solid fa-share"></i></button>
+                        <span x-show="mailCfg.accounts.length" class="sep"></span>
+                        <button x-show="mailCfg.accounts.length && mailFolder !== 'trash'" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailMove('d')" title="Löschen" aria-label="Löschen"><i class="fa-solid fa-trash-can"></i></button>
+                        <button x-show="mailCfg.accounts.length && mailFolder !== 'archive'" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailMove('a')" title="Archivieren" aria-label="Archivieren"><i class="fa-solid fa-box-archive"></i></button>
+                        <button x-show="mailCfg.accounts.length && (mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive')" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailMove('i')" title="In den Posteingang" aria-label="In den Posteingang"><i class="fa-solid fa-inbox"></i></button>
+                        <button x-show="mailCfg.accounts.length && mailFolder !== 'spam' && mailFolder !== 'trash'" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailMove('sp')" title="Als Spam melden" aria-label="Als Spam melden"><i class="fa-solid fa-ban"></i></button>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost mstar shrink-0" :class="mailCurRow.star ? 'on' : ''" :disabled="!mailSel" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren" aria-label="Markieren"><i :class="mailCurRow.star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
+                        <span x-show="mailCfg.accounts.length" class="sep"></span>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailToTodo()" title="Als Aufgabe merken"><i class="fa-solid fa-list-check"></i><span class="hidden lg:inline">Aufgabe</span></button>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailToEvent()" title="Als Termin eintragen"><i class="fa-regular fa-calendar-plus"></i><span class="hidden lg:inline">Termin</span></button>
+                        <span class="flex-1 min-w-[.5rem]"></span>
+                        <button x-show="mailCfg.accounts.length" @click="mailRefresh({ manual: true })" class="btn btn-ghost shrink-0" title="Aktualisieren" aria-label="Aktualisieren"><i class="fa-solid fa-rotate" :class="mailLoading ? 'spin' : ''"></i></button>
+                        <button @click="openMailSetup()" class="btn btn-ghost shrink-0" title="Postfächer verwalten"><i class="fa-solid fa-gear"></i><span class="hidden sm:inline" x-text="mailCfg.accounts.length ? '' : 'Postfach verbinden'"></span></button>
+                    </div>
                 </div>
 
                 <!-- noch kein Postfach -->
                 <div x-show="!mailCfg.accounts.length" class="card p-6 sm:p-8 space-y-4 text-sm">
                     <p class="font-bold text-base">Deine E-Mails direkt in der App</p>
-                    <p class="muted leading-relaxed">Verbinde dein Gmail-Postfach über ein eigenes kleines Google-Script (dauert ca. 3 Minuten). Danach liest, beantwortest und sortierst du deine Mails wie in Outlook – und Gelesen-/Stern-/Archiv-Status werden auf alle deine Geräte abgeglichen (Google &amp; P2P).</p>
-                    <p class="muted leading-relaxed text-xs">Andere Adressen (GMX, web.de, Outlook.com, iCloud …) kannst du nur über Gmail einbinden: Richte bei deinem Anbieter eine <em>automatische Weiterleitung</em> an deine Gmail-Adresse ein. (Der POP-Abruf „E-Mails von anderen Konten abrufen“ wurde von Google 2026 eingestellt.) Antworten werden dann von der Gmail-Adresse gesendet.</p>
+                    <p class="muted leading-relaxed">Verbinde dein Gmail-Postfach über ein eigenes kleines Google-Script (dauert ca. 3 Minuten). Danach liest, beantwortest und sortierst du deine Mails wie in Outlook – und Gelesen-Status sowie Markierungen gleichen sich mit deinen anderen Geräten ab.</p>
+                    <p class="muted leading-relaxed text-xs">Andere Adressen (GMX, web.de, Outlook.com, iCloud …) kannst du nur über Gmail einbinden: Richte bei deinem Anbieter eine <em>automatische Weiterleitung</em> an deine Gmail-Adresse ein.</p>
                     <button @click="openMailSetup()" class="btn btn-primary"><i class="fa-solid fa-plug"></i>Jetzt verbinden</button>
                 </div>
 
-                <div x-show="mailCfg.accounts.length" class="grid gap-4 lg:grid-cols-[12.5rem_minmax(0,23rem)_minmax(0,1fr)] items-start">
+                <div x-show="mailCfg.accounts.length" class="grid gap-3 lg:grid-cols-[13.5rem_minmax(0,24rem)_minmax(0,1fr)] items-start">
                     <!-- Ordner -->
-                    <aside :class="mailSel ? 'hidden lg:block' : ''" class="card p-2 sm:p-3 space-y-2">
-                        <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0" x-show="mailCfg.accounts.length > 1">
-                            <button class="mfold" :class="mailAcc === 'all' ? 'on' : ''" @click="mailSetAcc('all')"><i class="fa-solid fa-layer-group w-4 text-center"></i>Alle Postfächer</button>
-                            <template x-for="a in mailCfg.accounts" :key="a.id">
-                                <button class="mfold" :class="mailAcc === a.id ? 'on' : ''" @click="mailSetAcc(a.id)"><i class="fa-regular fa-envelope w-4 text-center"></i><span class="truncate max-w-[9rem]" x-text="a.name"></span></button>
-                            </template>
+                    <aside :class="mailSel ? 'hidden lg:block' : ''" class="card p-2.5 space-y-3">
+                        <div>
+                            <p class="label px-2 pb-1.5">Favoriten</p>
+                            <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
+                                <template x-for="f in mailFavFolders" :key="'f' + f.id">
+                                    <button class="mfold" :class="mailFolder === f.id ? 'on' : ''" @click="mailSetFolder(f.id)">
+                                        <i class="fa-solid w-4 text-center" :class="f.icon"></i><span x-text="f.label"></span>
+                                        <span x-show="mailBadge(f.id) > 0" class="ml-auto text-[10px] font-black px-1.5 rounded-full" style="background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent)" x-text="mailBadge(f.id)"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
-                        <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
-                            <template x-for="f in mailFolders" :key="f.id">
-                                <button class="mfold" :class="mailFolder === f.id ? 'on' : ''" @click="mailSetFolder(f.id)">
-                                    <i class="fa-solid w-4 text-center" :class="f.icon"></i><span x-text="f.label"></span>
-                                    <span x-show="mailBadge(f.id) > 0" class="ml-auto text-[10px] font-black px-1.5 rounded-full bg-sky-500/20 text-sky-400" x-text="mailBadge(f.id)"></span>
-                                </button>
+                        <div class="pt-2 border-t divider space-y-1.5">
+                            <button x-show="mailCfg.accounts.length > 1" class="mfold w-full" :class="mailAcc === 'all' ? 'on' : ''" @click="mailSetAcc('all')"><i class="fa-solid fa-layer-group w-4 text-center"></i>Alle Postfächer</button>
+                            <template x-for="a in mailCfg.accounts" :key="a.id">
+                                <div>
+                                    <button class="mfold w-full" :class="mailAcc === a.id ? 'on' : ''" @click="mailSetAcc(a.id)">
+                                        <i class="fa-regular fa-envelope w-4 text-center"></i><span class="truncate" x-text="a.name"></span>
+                                    </button>
+                                    <div x-show="mailAcc === a.id || mailCfg.accounts.length === 1" class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:pl-3 lg:ml-2 lg:border-l divider mt-1">
+                                        <template x-for="f in mailFolders" :key="a.id + f.id">
+                                            <button class="mfold" :class="mailFolder === f.id ? 'on' : ''" @click="mailSetAcc(a.id); mailSetFolder(f.id)">
+                                                <i class="fa-solid w-4 text-center" :class="f.icon"></i><span x-text="f.label"></span>
+                                                <span x-show="mailBadge(f.id) > 0" class="ml-auto text-[10px] font-black px-1.5 rounded-full" style="background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent)" x-text="mailBadge(f.id)"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
                             </template>
                         </div>
                     </aside>
 
                     <!-- Liste -->
                     <div :class="mailSel ? 'hidden lg:block' : ''" class="card overflow-hidden">
-                        <div class="p-3 border-b divider flex gap-2">
-                            <input type="search" x-model="mailQuery" @keydown.enter="mailRefresh({ manual: true })" placeholder="Suchen (z. B. von:anna)" class="field !py-2" aria-label="E-Mails durchsuchen">
-                            <button type="button" @click="mailUnreadOnly = !mailUnreadOnly; mailRefresh({ manual: true })" class="btn" :class="mailUnreadOnly ? 'btn-primary' : 'btn-soft'" title="Nur ungelesene" aria-label="Nur ungelesene"><i class="fa-solid fa-envelope-open-text"></i></button>
+                        <div class="px-3 pt-3 pb-2 flex items-center gap-2">
+                            <p class="font-black text-base truncate mr-auto" x-text="mailFolderLabel"></p>
+                            <button type="button" @click="mailUnreadOnly = !mailUnreadOnly; mailRefresh({ manual: true })" class="icon-btn" :class="mailUnreadOnly ? 'accent' : ''" :title="mailUnreadOnly ? 'Alle anzeigen' : 'Nur ungelesene'" :aria-pressed="mailUnreadOnly"><i class="fa-solid fa-filter"></i></button>
+                            <button type="button" @click="mailNewestFirst = !mailNewestFirst" class="icon-btn" :title="mailNewestFirst ? 'Älteste zuerst' : 'Neueste zuerst'"><i class="fa-solid" :class="mailNewestFirst ? 'fa-arrow-down-wide-short' : 'fa-arrow-up-wide-short'"></i></button>
                         </div>
-                        <p x-show="mailError" class="px-4 py-3 text-xs font-bold text-rose-400 border-b divider" x-text="mailError"></p>
-                        <div x-show="mailLoading && !mailList.length" class="p-8 text-center muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade E-Mails …</div>
-                        <div x-show="!mailLoading && !mailRows.length && !mailError" class="p-8 text-center muted text-sm">Keine E-Mails in diesem Ordner.</div>
-                        <div class="max-h-[70vh] overflow-y-auto">
-                            <template x-for="r in mailRows" :key="r.key">
-                                <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '']" @click="mailOpen(r)" @keydown.enter.self="mailOpen(r)">
-                                    <span class="mav" :style="'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" x-text="initial(mailWho(r))"></span>
-                                    <span class="min-w-0 flex-1">
-                                        <span class="flex items-baseline gap-2"><span class="mw text-sm truncate flex-1" x-text="mailWho(r)"></span><span class="text-[11px] muted shrink-0" x-text="mailDateShort(r.date)"></span></span>
-                                        <span class="block ms truncate" x-text="(r.subj || '(kein Betreff)') + (r.n > 1 ? ' (' + r.n + ')' : '')"></span>
-                                        <span x-show="mailCfg.settings.preview" class="block text-[11px] muted truncate" x-text="mailSnippet(r)"></span>
-                                        <span x-show="mailAcc === 'all' && mailCfg.accounts.length > 1" class="chip mt-1" x-text="(mailAccount(r.acc) || {}).name"></span>
-                                    </span>
-                                    <button type="button" class="mstar p-1 -mr-1" :class="r.star ? 'on' : ''" @click.stop="mailSet([r], { s: r.star ? 0 : 1 })" :aria-label="r.star ? 'Markierung entfernen' : 'Markieren'"><i :class="r.star ? 'fa-solid' : 'fa-regular'" class="fa-star"></i></button>
+                        <div class="px-3 pb-3">
+                            <input type="search" x-model="mailQuery" @keydown.enter="mailRefresh({ manual: true })" placeholder="Suchen (z. B. von:anna)" class="field !py-2" aria-label="E-Mails durchsuchen">
+                        </div>
+                        <p x-show="mailError" class="px-4 py-3 text-xs font-bold text-rose-400 border-t divider" x-text="mailError"></p>
+                        <div x-show="mailLoading && !mailList.length" class="p-8 text-center muted text-sm border-t divider"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade E-Mails …</div>
+                        <div x-show="!mailLoading && !mailRows.length && !mailError" class="p-8 text-center muted text-sm border-t divider" x-text="mailUnreadOnly ? 'Keine ungelesenen E-Mails.' : 'Keine E-Mails in diesem Ordner.'"></div>
+                        <div class="max-h-[70vh] overflow-y-auto border-t divider">
+                            <template x-for="g in mailGroups" :key="g.label">
+                                <div>
+                                    <p class="mgrp"><span x-text="g.label"></span><span class="ml-auto font-bold" x-text="g.rows.length"></span></p>
+                                    <template x-for="r in g.rows" :key="r.key">
+                                        <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '']" @click="mailOpen(r)" @keydown.enter.self="mailOpen(r)">
+                                            <span class="mav" :style="'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" x-text="initial(mailWho(r))"></span>
+                                            <span class="min-w-0 flex-1">
+                                                <span class="flex items-baseline gap-2"><span class="mw text-sm truncate flex-1" x-text="mailWho(r)"></span><span class="text-[11px] muted shrink-0 tnum" x-text="mailDateShort(r.date)"></span></span>
+                                                <span class="block ms truncate" x-text="(r.subj || '(kein Betreff)') + (r.n > 1 ? ' (' + r.n + ')' : '')"></span>
+                                                <span x-show="mailCfg.settings.preview" class="block text-[11px] muted truncate" x-text="mailSnippet(r)"></span>
+                                                <span x-show="mailAcc === 'all' && mailCfg.accounts.length > 1" class="chip mt-1" x-text="(mailAccount(r.acc) || {}).name"></span>
+                                            </span>
+                                            <span class="flex flex-col items-center gap-1.5 shrink-0">
+                                                <button type="button" class="mstar p-1" :class="r.star ? 'on' : ''" @click.stop="mailSet([r], { s: r.star ? 0 : 1 })" :aria-label="r.star ? 'Markierung entfernen' : 'Markieren'"><i :class="r.star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
+                                                <i x-show="r.att" class="fa-solid fa-paperclip text-[11px] muted"></i>
+                                            </span>
+                                        </div>
+                                    </template>
                                 </div>
                             </template>
                             <button x-show="mailMoreOk" @click="mailRefresh({ more: true })" class="btn btn-ghost w-full !rounded-none py-3" :disabled="mailLoading">Mehr laden</button>
@@ -737,36 +828,32 @@
 
                     <!-- Lesebereich -->
                     <div :class="mailSel ? '' : 'hidden lg:block'" class="card overflow-hidden min-h-[50vh]">
-                        <div x-show="!mailSel" class="p-10 text-center muted text-sm"><i class="fa-regular fa-envelope-open text-3xl mb-3 block"></i>Wähle eine E-Mail aus.</div>
+                        <div x-show="!mailSel" class="p-10 text-center muted text-sm"><i class="fa-regular fa-envelope-open text-3xl mb-3 block opacity-70"></i>Wähle links eine E-Mail aus.</div>
                         <div x-show="mailSel">
-                            <div class="p-3 border-b divider flex flex-wrap items-center gap-1.5">
-                                <button class="btn btn-ghost lg:hidden" @click="mailBack()"><i class="fa-solid fa-arrow-left"></i>Zurück</button>
-                                <button class="btn btn-soft" @click="mailReplyTo(mailThread.msgs.length - 1, false)" :disabled="!mailThread.msgs.length"><i class="fa-solid fa-reply"></i><span class="hidden sm:inline">Antworten</span></button>
-                                <button class="btn btn-soft" @click="mailReplyTo(mailThread.msgs.length - 1, true)" :disabled="!mailThread.msgs.length" title="Allen antworten"><i class="fa-solid fa-reply-all"></i></button>
-                                <button class="btn btn-soft" @click="mailForward(mailThread.msgs.length - 1)" :disabled="!mailThread.msgs.length" title="Weiterleiten"><i class="fa-solid fa-share"></i></button>
-                                <span class="flex-1"></span>
-                                <button class="btn btn-ghost" @click="mailToTodo()" title="Als Aufgabe merken"><i class="fa-solid fa-list-check"></i></button>
-                                <button class="btn btn-ghost" @click="mailToEvent()" title="Als Termin eintragen"><i class="fa-regular fa-calendar-plus"></i></button>
-                                <button class="btn btn-ghost" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
-                                <button class="btn btn-ghost mstar" :class="mailCurRow.star ? 'on' : ''" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren"><i :class="mailCurRow.star ? 'fa-solid' : 'fa-regular'" class="fa-star"></i></button>
-                                <button x-show="mailFolder !== 'archive'" class="btn btn-ghost" @click="mailMove('a')" title="Archivieren"><i class="fa-solid fa-box-archive"></i></button>
-                                <button x-show="mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive'" class="btn btn-ghost" @click="mailMove('i')" title="In den Posteingang"><i class="fa-solid fa-inbox"></i></button>
-                                <button x-show="mailFolder !== 'trash'" class="btn btn-ghost" @click="mailMove('d')" title="Löschen"><i class="fa-solid fa-trash-can"></i></button>
-                                <button x-show="mailFolder !== 'spam' && mailFolder !== 'trash'" class="btn btn-ghost" @click="mailMove('sp')" title="Als Spam melden"><i class="fa-solid fa-ban"></i></button>
+                            <div class="px-4 pt-4 pb-3 border-b divider">
+                                <button class="btn btn-ghost lg:hidden mb-2 -ml-2" @click="mailBack()"><i class="fa-solid fa-arrow-left"></i>Zurück</button>
+                                <h3 class="font-black text-xl leading-snug break-words" x-text="mailCur ? (mailCur.subj || '(kein Betreff)') : ''"></h3>
                             </div>
-                            <h3 class="px-4 pt-4 pb-1 font-black text-lg break-words" x-text="mailCur ? (mailCur.subj || '(kein Betreff)') : ''"></h3>
                             <div x-show="mailThread.loading" class="p-8 text-center muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade …</div>
                             <p x-show="mailThread.error" class="px-4 py-3 text-xs font-bold text-rose-400" x-text="mailThread.error"></p>
                             <template x-for="m in mailThread.msgs" :key="m.i">
-                                <div class="border-t divider first:border-t-0">
-                                    <button type="button" class="w-full flex items-center gap-3 p-4 text-left" @click="mailToggleMsg(m.i)">
-                                        <span class="mav" :style="'background:hsl(' + mailHue(m.from) + ' 55% 42%)'" x-text="initial(senderName(m.from))"></span>
-                                        <span class="min-w-0 flex-1">
-                                            <span class="block font-bold text-sm truncate" x-text="senderName(m.from)"></span>
+                                <div class="border-b divider last:border-b-0">
+                                    <div class="mhead">
+                                        <button type="button" class="shrink-0" @click="mailToggleMsg(m.i)" :aria-label="mailThread.open[m.i] ? 'Nachricht einklappen' : 'Nachricht ausklappen'">
+                                            <span class="mav" :style="'background:hsl(' + mailHue(m.from) + ' 55% 42%)'" x-text="initial(senderName(m.from))"></span>
+                                        </button>
+                                        <button type="button" class="min-w-0 flex-1 text-left" @click="mailToggleMsg(m.i)">
+                                            <span class="block font-bold text-sm truncate"><span x-text="senderName(m.from)"></span><span class="muted font-semibold" x-show="mailAddr(m.from)" x-text="' <' + mailAddr(m.from) + '>'"></span></span>
                                             <span class="block text-[11px] muted truncate" x-text="mailThread.open[m.i] ? 'An: ' + (m.to || '—') + (m.cc ? ' · Cc: ' + m.cc : '') : mailText(m).slice(0, 120)"></span>
-                                        </span>
-                                        <span class="text-[11px] muted shrink-0" x-text="mailDateLong(m.date)"></span>
-                                    </button>
+                                        </button>
+                                        <div class="flex items-center gap-1 shrink-0">
+                                            <span class="text-[11px] muted hidden sm:block tnum mr-1" x-text="mailDateLong(m.date)"></span>
+                                            <button type="button" class="icon-btn" @click="mailReplyTo(m.i, false)" title="Antworten" aria-label="Antworten"><i class="fa-solid fa-reply"></i></button>
+                                            <button type="button" class="icon-btn hidden sm:inline-flex" @click="mailReplyTo(m.i, true)" title="Allen antworten" aria-label="Allen antworten"><i class="fa-solid fa-reply-all"></i></button>
+                                            <button type="button" class="icon-btn" @click="mailForward(m.i)" title="Weiterleiten" aria-label="Weiterleiten"><i class="fa-solid fa-share"></i></button>
+                                        </div>
+                                    </div>
+                                    <p class="px-4 -mt-2 pb-2 text-[11px] muted sm:hidden tnum" x-show="mailThread.open[m.i]" x-text="mailDateLong(m.date)"></p>
                                     <div x-show="mailThread.open[m.i]" class="px-4 pb-5 space-y-3">
                                         <div x-show="m.html && mailHasRemote(m) && !mailImagesOk" class="inner p-3 text-xs flex flex-wrap items-center gap-2">
                                             <i class="fa-solid fa-image muted"></i><span class="flex-1 min-w-[10rem]">Externe Bilder wurden blockiert (Schutz vor Tracking).</span>
@@ -780,11 +867,6 @@
                                                 <button type="button" class="chip !py-1.5 !px-3 cursor-pointer" @click="mailDownload(m, a)"><i class="fa-solid fa-paperclip"></i><span x-text="a.name"></span><span class="muted font-medium" x-text="mailBytes(a.size)"></span></button>
                                             </template>
                                         </div>
-                                        <div class="flex flex-wrap gap-2 pt-1">
-                                            <button class="btn btn-soft" @click="mailReplyTo(m.i, false)"><i class="fa-solid fa-reply"></i>Antworten</button>
-                                            <button class="btn btn-soft" @click="mailReplyTo(m.i, true)"><i class="fa-solid fa-reply-all"></i>Allen</button>
-                                            <button class="btn btn-soft" @click="mailForward(m.i)"><i class="fa-solid fa-share"></i>Weiterleiten</button>
-                                        </div>
                                     </div>
                                 </div>
                             </template>
@@ -794,11 +876,21 @@
             </section>
 
             <section x-show="activeTab === 'passwords'" x-cloak class="space-y-5">
+                <div class="flex gap-2 overflow-x-auto pb-1" aria-label="Tresore">
+                    <template x-for="v in vaults" :key="v.id">
+                        <button @click="switchVault(v.id)" class="chip !py-2 !px-3.5 !text-xs shrink-0" :class="vaultId === v.id ? 'on' : ''">
+                            <i :class="v.icon"></i><span x-text="v.name"></span>
+                            <i class="fa-solid text-[9px] opacity-70" :class="vaultId === v.id && vaultState === 'unlocked' ? 'fa-lock-open' : 'fa-lock'"></i>
+                        </button>
+                    </template>
+                    <button x-show="vaults.length < 8" @click="openVaultEdit()" class="chip !py-2 !px-3.5 !text-xs shrink-0 !border-dashed" title="Neuen Tresor anlegen"><i class="fa-solid fa-plus"></i>Tresor</button>
+                </div>
                 <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="flex items-center gap-4 min-w-0">
                         <svg class="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
                         <div class="min-w-0">
-                            <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Tresor</h2>
+                            <h2 class="text-2xl sm:text-3xl font-black tracking-tight truncate flex items-center gap-2.5"><span x-text="vaultName"></span>
+                                <button type="button" class="icon-btn !w-7 !h-7" @click="openVaultEdit(vaults.find(v => v.id === vaultId))" title="Tresor umbenennen" aria-label="Tresor umbenennen"><i class="fa-solid fa-pen text-[11px]"></i></button></h2>
                             <p class="muted text-xs mt-1 font-medium">Mit Master-Passwort verschlüsselt (AES-256-GCM) – nur auf deinen Geräten.</p>
                         </div>
                     </div>
@@ -815,10 +907,10 @@
                 <div x-show="vaultState === 'none'" class="card p-6 sm:p-8 max-w-xl mx-auto w-full space-y-5">
                     <div class="text-center space-y-2">
                         <svg class="w-16 h-16 mx-auto rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
-                        <h3 class="text-lg font-black">Master-Passwort festlegen</h3>
+                        <h3 class="text-lg font-black">Master-Passwort für <span x-text="vaultName"></span> festlegen</h3>
                         <p class="muted text-xs leading-relaxed">Dieses Passwort schützt alle Tresor-Einträge. Du brauchst es bei jedem Entsperren.</p>
                     </div>
-                    <p x-show="legacyCount > 0" class="inner p-3 text-xs font-semibold text-emerald-400"><i class="fa-solid fa-circle-info mr-1.5"></i><span x-text="legacyCount"></span> bestehende Einträge werden dabei automatisch verschlüsselt übernommen.</p>
+                    <p x-show="legacyCount > 0 && vaultId === 'main'" class="inner p-3 text-xs font-semibold text-emerald-400"><i class="fa-solid fa-circle-info mr-1.5"></i><span x-text="legacyCount"></span> bestehende Einträge werden dabei automatisch verschlüsselt übernommen.</p>
                     <form @submit.prevent="setupVault()" class="space-y-3">
                         <div class="relative">
                             <input :type="mpShow ? 'text' : 'password'" x-model="mpInput" autocomplete="new-password" placeholder="Master-Passwort (mind. 8 Zeichen)" class="field !pr-11" required>
@@ -839,7 +931,7 @@
                 <div x-show="vaultState === 'locked'" class="card p-6 sm:p-8 max-w-md mx-auto w-full space-y-5">
                     <div class="text-center space-y-2">
                         <svg class="w-16 h-16 mx-auto rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
-                        <h3 class="text-lg font-black">Tresor gesperrt</h3>
+                        <h3 class="text-lg font-black"><span x-text="vaultName"></span> gesperrt</h3>
                         <p class="muted text-xs">Gib dein Master-Passwort ein, um fortzufahren.</p>
                     </div>
                     <form @submit.prevent="unlockVault()" class="space-y-3">
@@ -1159,7 +1251,7 @@
                     <div class="space-y-3 pt-6 border-t divider">
                         <p class="label text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gefahrenzone</p>
                         <div class="flex flex-wrap gap-3">
-                            <button x-show="vaultState !== 'none'" @click="openReset()" class="btn btn-soft text-rose-400">Tresor zurücksetzen</button>
+                            <button x-show="vaultState !== 'none'" @click="openReset()" class="btn btn-soft text-rose-400"><span x-text="vaultName"></span> zurücksetzen</button>
                             <button @click="resetAll()" class="btn btn-soft text-rose-400">Alle Daten löschen</button>
                         </div>
                     </div>
@@ -1575,7 +1667,9 @@
     <div x-show="showMailCompose" x-transition.opacity x-cloak class="backdrop" @click.self="mailCloseCompose()">
         <form @submit.prevent="mailSend()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-3">
             <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-pen accent"></i><span x-text="{ new: 'Neue E-Mail', reply: 'Antworten', replyAll: 'Allen antworten', forward: 'Weiterleiten' }[mailComp.mode]"></span></h3>
-            <label x-show="mailCfg.accounts.length > 1" class="block"><span class="label">Von</span>
+            <label x-show="mailCompAliases.length > 1" class="block"><span class="label">Von</span>
+                <select x-model="mailComp.from" class="field mt-1"><template x-for="e in mailCompAliases" :key="e"><option :value="e" x-text="e"></option></template></select></label>
+            <label x-show="mailCfg.accounts.length > 1" class="block"><span class="label" x-text="mailCompAliases.length > 1 ? 'Postfach' : 'Von'"></span>
                 <select x-model="mailComp.acc" class="field mt-1" :disabled="mailComp.mode === 'reply' || mailComp.mode === 'replyAll'"><template x-for="a in mailCfg.accounts" :key="a.id"><option :value="a.id" x-text="a.name + (a.email ? ' (' + a.email + ')' : '')"></option></template></select></label>
             <template x-if="mailComp.mode === 'new' || mailComp.mode === 'forward'">
                 <label class="block"><span class="label">An</span><input type="text" x-model="mailComp.to" placeholder="name@beispiel.de, …" class="field mt-1" autocomplete="off" inputmode="email"></label>
@@ -1601,6 +1695,31 @@
     </div>
 
     <!-- Tresor: Passwort-Check -->
+    <!-- Tresor anlegen / umbenennen -->
+    <div x-show="showVaultEdit" x-transition.opacity x-cloak class="backdrop" @click.self="showVaultEdit = false">
+        <form @submit.prevent="saveVaultEntry()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-vault accent"></i><span x-text="vaultDraft.id ? 'Tresor umbenennen' : 'Neuer Tresor'"></span></h3>
+            <p x-show="!vaultDraft.id" class="muted text-xs leading-relaxed">Ein zweiter Tresor hat ein eigenes Master-Passwort und eigene Einträge – zum Beispiel einer für privat und einer für die Arbeit.</p>
+            <label class="block"><span class="label">Name</span>
+                <input type="text" x-model="vaultDraft.name" maxlength="30" placeholder="z. B. Arbeit" class="field mt-1" required></label>
+            <div>
+                <span class="label">Symbol</span>
+                <div class="flex flex-wrap gap-1.5 mt-1.5">
+                    <template x-for="ic in vaultIcons" :key="ic">
+                        <button type="button" class="icon-btn" :class="vaultDraft.icon === ic ? 'accent' : ''" :style="vaultDraft.icon === ic ? 'background: color-mix(in srgb, var(--accent) 16%, transparent)' : ''" @click="vaultDraft.icon = ic" :aria-label="'Symbol ' + ic"><i :class="ic"></i></button>
+                    </template>
+                </div>
+            </div>
+            <p x-show="vaultError" class="text-xs font-bold text-rose-400" x-text="vaultError"></p>
+            <div class="flex justify-between gap-2 pt-1">
+                <button type="button" x-show="vaultDraft.id" @click="deleteVaultEntry()" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i><span x-text="vaultDraft.id === 'main' ? 'Zurücksetzen' : 'Löschen'"></span></button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showVaultEdit = false" class="btn btn-ghost">Abbrechen</button>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </div>
+        </form>
+    </div>
+
     <div x-show="showVaultHealth" x-transition.opacity x-cloak class="backdrop" @click.self="showVaultHealth = false">
         <div class="card w-full max-w-lg p-6 sm:p-8 space-y-4">
             <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-shield-heart accent"></i>Passwort-Check</h3>
@@ -1767,7 +1886,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'system', bgStyle: 'plain',
+            fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -1802,24 +1921,32 @@
 
         /* ============ Einkaufskatalog (Bring!-Stil) ============ */
         const RAW_CATALOG = {
-            'Obst & Gemüse': '🍎 Äpfel,🍐 Birnen,🍌 Bananen,🍊 Orangen,🍊 Mandarinen,🍋 Zitronen,🍋 Limetten,🍇 Trauben,🍓 Erdbeeren,🍓 Himbeeren,🍇 Heidelbeeren,🍒 Kirschen,🍑 Pfirsiche,🍑 Nektarinen,🍑 Pflaumen,🍍 Ananas,🥭 Mango,🥥 Kokosnuss,🥝 Kiwi,🍉 Melone,🍈 Honigmelone,🍅 Tomaten,🍅 Cherrytomaten,🥒 Gurke,🥒 Zucchini,🥕 Karotten,🥕 Radieschen,🥔 Kartoffeln,🍠 Süßkartoffeln,🧅 Zwiebeln,🧅 Lauchzwiebeln,🧅 Lauch,🧄 Knoblauch,🥦 Brokkoli,🥦 Blumenkohl,🌶️ Paprika,🌶️ Chili,🥬 Salat,🥬 Spinat,🥬 Rucola,🥬 Kohl,🥬 Rosenkohl,🍄 Champignons,🥑 Avocado,🌽 Mais,🍆 Aubergine,🎃 Kürbis,🌱 Sellerie,🌱 Spargel,🌱 Fenchel,🌱 Ingwer,🌿 Petersilie,🌿 Basilikum,🌿 Schnittlauch,🌿 Dill,🌿 Minze,🌿 Rosmarin,🌿 Thymian',
-            'Brot & Backwaren': '🍞 Brot,🍞 Vollkornbrot,🍞 Toast,🥖 Baguette,🥖 Ciabatta,🥐 Croissants,🥐 Plundergebäck,🥯 Brötchen,🥯 Bagels,🥨 Brezeln,🥨 Laugenbrötchen,🍰 Kuchen,🥧 Apfelkuchen,🧁 Muffins,🍩 Donuts,🥞 Pfannkuchen,🧇 Waffeln,🌯 Wraps,🍔 Burgerbrötchen,🍕 Pizzateig,🍘 Knäckebrot,🍪 Zwieback',
-            'Milch & Käse': '🥛 Milch,🥛 Hafermilch,🥛 Sojamilch,🥛 Mandelmilch,🥛 Buttermilch,🥛 Kondensmilch,🍶 Sahne,🍶 Schlagsahne,🧈 Butter,🧈 Margarine,🧀 Käse,🧀 Gouda,🧀 Emmentaler,🧀 Mozzarella,🧀 Parmesan,🧀 Feta,🧀 Camembert,🧀 Frischkäse,🧀 Streukäse,🥚 Eier,🥣 Joghurt,🥣 Fruchtjoghurt,🥣 Skyr,🥣 Quark,🥣 Schmand,🥣 Crème fraîche,🍮 Pudding',
-            'Fleisch & Fisch': '🍗 Hähnchen,🍗 Hähnchenbrust,🍗 Hähnchenschenkel,🍗 Pute,🍖 Hackfleisch,🥩 Rindfleisch,🥩 Rindersteak,🥩 Schweinefleisch,🥩 Schnitzel,🥩 Gulasch,🥓 Speck,🥓 Salami,🌭 Würstchen,🌭 Bratwurst,🌭 Leberwurst,🥪 Aufschnitt,🍖 Schinken,🍖 Leberkäse,🍖 Lammfleisch,🐟 Lachs,🐟 Thunfisch,🐟 Forelle,🐟 Fischfilet,🐟 Matjes,🍤 Garnelen,🦑 Tintenfisch',
-            'Tiefkühl': '🍕 Pizza,🍟 Pommes,🥦 TK-Gemüse,🥬 TK-Spinat,🥬 TK-Erbsen,🌽 TK-Mais,🍓 TK-Beeren,🍦 Eiscreme,🍨 Eisbecher,🐟 Fischstäbchen,🍤 TK-Garnelen,🍗 Chicken Nuggets,🍔 Burger-Patties,🥟 Maultaschen,🥟 Teigtaschen,🥐 Aufbackbrötchen,🥧 Blätterteig,🍲 TK-Fertiggericht,🌿 TK-Kräuter,🧊 Eiswürfel',
-            'Getränke': '💧 Wasser,💧 Mineralwasser,🥤 Cola,🥤 Limonade,🥤 Eistee,🥤 Energy Drink,🥤 Smoothie,🧃 Saft,🧃 Orangensaft,🧃 Apfelsaft,🧃 Schorle,☕ Kaffee,☕ Kaffeekapseln,☕ Kakao,🍵 Tee,🍵 Grüntee,🍵 Kräutertee,🧉 Mate,🍺 Bier,🍺 Radler,🍺 Alkoholfreies Bier,🍷 Wein,🍷 Rotwein,🥂 Weißwein,🥂 Sekt,🍾 Prosecco,🥃 Whisky,🍸 Gin',
-            'Vorräte': '🍝 Nudeln,🍝 Spaghetti,🍝 Penne,🍚 Reis,🍚 Basmatireis,🍚 Couscous,🌾 Haferflocken,🌾 Quinoa,🌾 Grieß,🌾 Linsen,🥣 Müsli,🥣 Cornflakes,🥜 Nüsse,🥜 Mandeln,🥜 Walnüsse,🥜 Cashews,🥜 Erdnussbutter,🍇 Rosinen,🍫 Nuss-Nougat-Creme,🍓 Marmelade,🍯 Honig,🍯 Ahornsirup,🍜 Instantnudeln,🥔 Kartoffelpüree,🥔 Knödel,🍘 Reiswaffeln,🥥 Kokosmilch',
-            'Konserven & Fertiggerichte': '🥫 Dosentomaten,🥫 Passierte Tomaten,🥫 Dosenmais,🥫 Bohnen,🥫 Kidneybohnen,🥫 Kichererbsen,🥫 Dosenobst,🥫 Thunfisch (Dose),🥫 Sardinen,🥫 Ravioli,🥫 Eintopf,🍲 Suppe,🍜 Asia-Nudeln,🥘 Fertiggericht,🥫 Sauerkraut,🥫 Rotkohl,🥒 Gewürzgurken,🥫 Oliven,🥫 Dosenpilze',
-            'Backen & Kochen': '🌾 Mehl,🌾 Dinkelmehl,🍬 Zucker,🍬 Puderzucker,🍬 Vanillezucker,🍬 Brauner Zucker,🥄 Backpulver,🥄 Hefe,🥄 Natron,🥄 Speisestärke,🥄 Gelatine,🍫 Backschokolade,🍫 Kuvertüre,🍫 Schokostreusel,🥥 Kokosraspeln,🍞 Paniermehl,🥣 Puddingpulver,🧁 Backmischung,🥧 Tortenguss,🥣 Sahnesteif',
-            'Gewürze & Soßen': '🧂 Salz,🌶️ Pfeffer,🌶️ Paprikapulver,🌶️ Chiliflocken,🌿 Oregano,🌿 Kräuter,🌿 Lorbeerblätter,🌿 Majoran,🍂 Zimt,🌰 Muskat,🟡 Curry,🟡 Kurkuma,🧄 Knoblauchpulver,🍅 Ketchup,🌭 Senf,🥫 Tomatenmark,🍾 Essig,🍾 Balsamico,🍾 Olivenöl,🛢️ Rapsöl,🛢️ Sonnenblumenöl,🍲 Brühe,🥚 Mayonnaise,🥫 Sojasoße,🍝 Pesto,🍝 Pastasoße,🌶️ Sambal,🌶️ Sriracha,🍖 Grillsoße,🥗 Dressing',
-            'Snacks & Süßes': '🍫 Schokolade,🍫 Schokoriegel,🍫 Pralinen,🍫 Müsliriegel,🍪 Kekse,🍪 Lebkuchen,🍪 Spekulatius,🥔 Chips,🍿 Popcorn,🍬 Gummibärchen,🍬 Bonbons,🍬 Lakritz,🍭 Lutscher,🥜 Erdnüsse,🥜 Studentenfutter,🥨 Salzstangen,🥨 Cracker,🍘 Reiscracker,🍰 Torte',
-            'Haushalt': '🧻 Toilettenpapier,🧻 Küchenrolle,🧻 Servietten,🧴 Spülmittel,🍽️ Spülmaschinentabs,🧂 Spülmaschinensalz,🧴 Waschmittel,🧴 Weichspüler,🧴 Allzweckreiniger,🧴 Glasreiniger,🚽 WC-Reiniger,🧴 Entkalker,🧽 Schwämme,🧽 Putzlappen,🧹 Besen,🗑️ Müllbeutel,🛍️ Gefrierbeutel,📜 Backpapier,📦 Alufolie,🎞️ Frischhaltefolie,🕯️ Kerzen,🔋 Batterien,💡 Glühbirnen,🔥 Streichhölzer,🔥 Feuerzeug',
-            'Drogerie': '🧼 Seife,🧼 Flüssigseife,🦷 Zahnpasta,🦷 Zahnbürste,🦷 Zahnseide,🧴 Mundspülung,🧴 Shampoo,🧴 Spülung,🚿 Duschgel,🧴 Deo,🧴 Bodylotion,🧴 Handcreme,🧴 Gesichtscreme,🧴 Sonnencreme,🪒 Rasierer,🪒 Rasierschaum,🤧 Taschentücher,🧴 Haargel,💨 Haarspray,💄 Make-up,💅 Nagellack,🩹 Pflaster,💊 Schmerztabletten,💊 Vitamine,🌡️ Fieberthermometer,😷 Masken,🧴 Desinfektionsmittel',
-            'Tier & Baby': '🐕 Hundefutter,🐕 Hundeleckerli,🦴 Kauknochen,🐈 Katzenfutter,🐈 Katzenstreu,🐟 Fischfutter,🐦 Vogelfutter,🐹 Nagerfutter,🍼 Babynahrung,🍼 Milchpulver,🥣 Babybrei,🧷 Windeln,🧴 Feuchttücher,🧴 Babycreme'
+            'Obst & Gemüse': '🍎 Äpfel,🍏 Grüne Äpfel,🍐 Birnen,🍌 Bananen,🍊 Orangen,🍊+🍃 Mandarinen,🍊+🌸 Grapefruit,🍋 Zitronen,🍋+🟢 Limetten,🍇 Trauben,🍓 Erdbeeren,🍓+🌸 Himbeeren,🫐 Heidelbeeren,🍒 Kirschen,🍑 Pfirsiche,🍑+🟠 Nektarinen,🍑+🟣 Pflaumen,🍑+🟤 Feigen,🍎+💎 Granatapfel,🌴 Datteln,🍍 Ananas,🥭 Mango,🥭+🟠 Papaya,🥭+🟣 Passionsfrucht,🥥 Kokosnuss,🥝 Kiwi,🍉 Melone,🍈 Honigmelone,🍅 Tomaten,🍅+🍒 Cherrytomaten,🥒 Gurke,🥒+🌼 Zucchini,🥕 Karotten,🥕+🔴 Radieschen,🥕+🟣 Rote Bete,🥔 Kartoffeln,🍠 Süßkartoffeln,🧅 Zwiebeln,🧅+🔴 Rote Zwiebeln,🧅+🌿 Lauchzwiebeln,🧅+🟢 Lauch,🧄 Knoblauch,🧄+🔥 Ingwer,🥦 Brokkoli,🥦+⚪ Blumenkohl,🥦+🟢 Kohlrabi,🫑 Paprika,🌶️ Chili,🥬 Salat,🥬+❄️ Eisbergsalat,🥗 Salatmix,🥗+🌱 Feldsalat,🥬+🍃 Spinat,🥬+🌿 Rucola,🥬+⚪ Kohl,🥬+🌹 Rosenkohl,🥬+🟢 Grünkohl,🥬+🥢 Pak Choi,🥬+🌈 Mangold,🫘+🟢 Grüne Bohnen,🍄 Champignons,🍄+🟡 Pfifferlinge,🥑 Avocado,🌽 Mais,🍆 Aubergine,🎃 Kürbis,🌱 Sellerie,🌱+🤍 Spargel,🌱+⚪ Fenchel,🌱+✨ Sprossen,🌱+🥚 Kresse,🌿 Petersilie,🌿+🍝 Basilikum,🌿+🧅 Schnittlauch,🌿+🐟 Dill,🌿+❄️ Minze,🌿+🌲 Rosmarin,🌿+🔸 Thymian,🌿+🍜 Koriander',
+            'Brot & Backwaren': '🍞 Brot,🍞+🌾 Vollkornbrot,🍞+🔥 Toast,🍞+🧈 Brioche,🍞+🎄 Stollen,🥖 Baguette,🥖+🫒 Ciabatta,🫓 Fladenbrot,🫓+🌾 Knäckebrot,🥐 Croissants,🥐+🍒 Plundergebäck,🍥 Zimtschnecken,🥯 Brötchen,🥯+🌾 Vollkornbrötchen,🥯+🌻 Körnerbrötchen,🥯+⚫ Mohnbrötchen,🥯+🧀 Bagels,🥨 Brezeln,🥨+🟤 Laugenbrötchen,🍰 Kuchen,🥧+🍎 Apfelkuchen,🧁 Muffins,🍩 Donuts,🍩+🍓 Berliner,🥞 Pfannkuchen,🧇 Waffeln,🌯 Wraps,🌮 Taco-Schalen,🍔 Burgerbrötchen,🍕+🌾 Pizzateig,🍪+🍞 Zwieback',
+            'Milch & Käse': '🥛 Milch,🥛+🚫 Laktosefreie Milch,🥛+🌾 Hafermilch,🥛+🫘 Sojamilch,🥛+🌰 Mandelmilch,🥛+🟡 Buttermilch,🥛+🥫 Kondensmilch,🥛+🫧 Kefir,🥛+🍫 Kakaomilch,🍶 Sahne,🍶+☁️ Schlagsahne,🍶+🍳 Kochsahne,🧈 Butter,🧈+🌻 Margarine,🧈+🌿 Kräuterbutter,🧀 Käse,🧀+🌷 Gouda,🧀+🏔️ Emmentaler,🧀+⚪ Mozzarella,🧀+🍝 Parmesan,🧀+🫒 Feta,🧀+🥖 Camembert,🧀+🥯 Frischkäse,🧀+🍕 Streukäse,🧀+🐐 Ziegenkäse,🧀+🔥 Halloumi,🧀+🍰 Mascarpone,🥚 Eier,🥣 Joghurt,🥣+🍓 Fruchtjoghurt,🥣+🏛️ Griechischer Joghurt,🥣+🫘 Sojajoghurt,🥣+🏔️ Skyr,🥣+🧀 Quark,🥣+🥔 Schmand,🥣+🥖 Crème fraîche,🍮 Pudding,🍚+🥛 Milchreis,🫘+⬜ Tofu',
+            'Fleisch & Fisch': '🍗 Hähnchen,🐔 Hähnchenbrust,🍗+🦵 Hähnchenschenkel,🍗+🌶️ Chicken Wings,🦃 Pute,🦃+🥪 Putenaufschnitt,🦆 Ente,🥩+🍝 Hackfleisch,🥩+🌱 Veggie-Hack,🥩+🧅 Mett,🐄 Rindfleisch,🥩 Rindersteak,🐖 Schweinefleisch,🐖+🟤 Kassler,🥩+🍋 Schnitzel,🥩+🌶️ Gulasch,🧆+🥩 Frikadellen,🐑 Lammfleisch,🦌 Wildfleisch,🥓 Speck,🥓+🍕 Salami,🌭 Würstchen,🌭+🔥 Bratwurst,🌭+🍞 Leberwurst,🌭+🌶️ Chorizo,🥪 Aufschnitt,🍖 Schinken,🍖+🥨 Leberkäse,🍔+🌱 Veggie-Burger,🍣 Lachs,🍣+💨 Räucherlachs,🐟 Thunfisch,🐟+🌊 Forelle,🐟+🍋 Fischfilet,🐟+🧅 Matjes,🍤 Garnelen,🦑 Tintenfisch,🦪 Muscheln,🦀 Krabben',
+            'Tiefkühl': '🍕 Pizza,🥖+🧊 Pizza-Baguette,🍟 Pommes,🥔+🧊 Kroketten,🍳+🥔 Rösti,🥦+🧊 TK-Gemüse,🥘+🧊 Gemüsepfanne,🥬+🧊 TK-Spinat,🫘+🧊 TK-Erbsen,🌽+🧊 TK-Mais,🫐+🧊 TK-Beeren,🍨 Eiscreme,🍦 Eisbecher,🍧 Wassereis,🐟+🧊 Fischstäbchen,🍤+🧊 TK-Garnelen,🐔+🧊 Chicken Nuggets,🍔+🧊 Burger-Patties,🥟 Maultaschen,🥟+🥢 Teigtaschen,🌯+🧊 Frühlingsrollen,🥯+🧊 Aufbackbrötchen,🥧+🧊 Blätterteig,🍝+🧊 Lasagne,🍲+🧊 TK-Fertiggericht,🌿+🧊 TK-Kräuter,🧊 Eiswürfel',
+            'Getränke': '💧 Wasser,💧+🫧 Mineralwasser,💧+🔵 Stilles Wasser,🥥+💧 Kokoswasser,🥤 Cola,🥤+⚫ Cola Zero,🥤+🍋 Limonade,🍵+🧊 Eistee,🥤+⚡ Energy Drink,🥤+🍌 Smoothie,🧃 Saft,🧃+🍊 Orangensaft,🧃+🍎 Apfelsaft,🧃+🌈 Multivitaminsaft,🧃+🫧 Schorle,☕ Kaffee,☕+🔘 Kaffeekapseln,☕+⚫ Espresso,☕+🍫 Kakao,🫖 Tee,🍵 Grüntee,🫖+🌿 Kräutertee,🫖+🍓 Früchtetee,🫖+🍃 Pfefferminztee,🧉 Mate,🍺 Bier,🍺+🍋 Radler,🍺+🚫 Alkoholfreies Bier,🍺+🌾 Weizenbier,🍺+🟤 Malzbier,🍷 Wein,🍷+🍇 Rotwein,🥂 Weißwein,🍷+🌸 Roséwein,🍷+🔥 Glühwein,🥂+✨ Sekt,🍾 Prosecco,🍹 Aperol,🥃 Whisky,🥃+🌴 Rum,🥃+❄️ Wodka,🍸 Gin,🍸+🫧 Tonic Water',
+            'Vorräte': '🍝 Nudeln,🍝+🍅 Spaghetti,🍝+🔶 Penne,🍝+🥚 Spätzle,🍝+🟨 Lasagneplatten,🥟+🧀 Tortellini,🥔+🍝 Gnocchi,🍚 Reis,🍚+✨ Basmatireis,🍚+🧀 Risottoreis,🍚+🟡 Couscous,🌾 Haferflocken,🌾+🔴 Quinoa,🌾+🟡 Bulgur,🌾+🥛 Grieß,🌾+⚫ Chiasamen,🌾+🟫 Leinsamen,🌽+🟡 Polenta,🫘+🟠 Linsen,🥣+🥜 Müsli,🥣+🍯 Knuspermüsli,🥣+🌽 Cornflakes,🌰 Nüsse,🌰+🌸 Mandeln,🌰+🧠 Walnüsse,🌰+🟫 Haselnüsse,🌰+🌙 Cashews,🌰+🟢 Pistazien,🌻 Sonnenblumenkerne,🎃+🟢 Kürbiskerne,🥜+🍞 Erdnussbutter,🍇+🟤 Rosinen,🍫+🍞 Nuss-Nougat-Creme,🫙+🍓 Marmelade,🫙+🌱 Veganer Aufstrich,🍯 Honig,🍁 Ahornsirup,🍜 Instantnudeln,🥔+☁️ Kartoffelpüree,🍡 Knödel,🍘 Reiswaffeln,🥥+🥛 Kokosmilch',
+            'Konserven & Fertiggerichte': '🥫+🍅 Dosentomaten,🍅+🫙 Passierte Tomaten,🥫+🌽 Dosenmais,🫘 Bohnen,🫘+🔴 Kidneybohnen,🫘+⚪ Weiße Bohnen,🫘+🟡 Kichererbsen,🥫+🥕 Erbsen & Möhren,🥫+🍑 Dosenobst,🍎+🥄 Apfelmus,🥫+🐟 Thunfisch (Dose),🐟+🥫 Sardinen,🥫+🥟 Ravioli,🥫+🥔 Eintopf,🥫+🌶️ Chili con Carne,🍲 Suppe,🍲+🍅 Tomatensuppe,🍲+⚡ Instant-Suppe,🍜+🥢 Asia-Nudeln,🥘 Fertiggericht,🍛 Curry-Fertiggericht,🍱 Sushi,🧆 Falafel,🫘+🫓 Hummus,🥗+🍝 Nudelsalat,🥗+🥔 Kartoffelsalat,🥫+🥬 Sauerkraut,🥫+🟣 Rotkohl,🫙+🟣 Rote Bete (Glas),🥒+🫙 Gewürzgurken,🫒 Oliven,🫒+🫙 Antipasti,🫙+🟢 Kapern,🥫+🍄 Dosenpilze',
+            'Backen & Kochen': '🌾+⚪ Mehl,🌾+🟤 Dinkelmehl,🌾+🍞 Vollkornmehl,🧂+🍬 Zucker,🧂+☁️ Puderzucker,🧂+🌼 Vanillezucker,🧂+🟤 Brauner Zucker,🍯+🌵 Agavendicksaft,🥄+🎈 Backpulver,🍞+🫧 Hefe,🥄+🧪 Natron,🥄+🌽 Speisestärke,🥄+🔷 Gelatine,🍫+🧁 Backschokolade,🍫+🟫 Backkakao,🍫+💧 Kuvertüre,🍫+✨ Schokostreusel,🥥+❄️ Kokosraspeln,🌰+🥄 Gemahlene Mandeln,🌰+🍬 Marzipan,🍞+🟡 Paniermehl,🍮+📦 Puddingpulver,🧁+📦 Backmischung,🧁+🎀 Muffinförmchen,🎨 Lebensmittelfarbe,🥧+💧 Tortenguss,🍶+🥄 Sahnesteif',
+            'Gewürze & Soßen': '🧂 Salz,🧂+🌊 Meersalz,🧂+⚫ Pfeffer,🫑+🧂 Paprikapulver,🌶️+🧂 Chiliflocken,🌿+🍕 Oregano,🌿+🫙 Kräuter,🍃 Lorbeerblätter,🌿+🌭 Majoran,🍂 Zimt,🌰+🧂 Muskat,🍛+🧂 Curry,🧂+🟡 Kurkuma,🧂+🟫 Kreuzkümmel,🧄+🧂 Knoblauchpulver,🍅+🍟 Ketchup,🌭+🟡 Senf,🍯+🟡 Honigsenf,🍅+🧴 Tomatenmark,🍾+🍏 Essig,🍾+🍇 Balsamico,🫒+💧 Olivenöl,🛢️+🌼 Rapsöl,🛢️+🌻 Sonnenblumenöl,🥥+🫙 Kokosöl,🍲+💧 Brühe,🍖+💧 Bratensoße,🥚+🫙 Mayonnaise,🥚+🥒 Remoulade,🧄+🥚 Aioli,🥚+🧈 Sauce Hollandaise,🥒+🥣 Tzatziki,🍶+🫘 Sojasoße,🍝+🌿 Pesto,🍝+🫙 Pastasoße,🌶️+🫙 Sambal,🌶️+🐓 Sriracha,🌶️+💧 Tabasco,🌶️+🍯 Süße Chilisoße,🍖+🫙 Grillsoße,🥗+💧 Dressing,🍋+💧 Zitronensaft',
+            'Snacks & Süßes': '🍫 Schokolade,🍫+🥜 Schokoriegel,🍫+🎁 Pralinen,🍫+☁️ Schokoküsse,🍫+💪 Proteinriegel,🌾+🍫 Müsliriegel,🍪 Kekse,🍪+☕ Gebäck,🍪+❤️ Lebkuchen,🍪+🎄 Spekulatius,🥔+🧂 Chips,🌽+🧂 Tortilla-Chips,🍿 Popcorn,🧸 Gummibärchen,🍬+🍓 Fruchtgummi,🍬 Bonbons,🍬+🍃 Hustenbonbons,🍬+⚫ Lakritz,🍬+☁️ Marshmallows,🫧 Kaugummi,🍭 Lutscher,🥜 Erdnüsse,🥜+🟡 Erdnussflips,🥜+🍇 Studentenfutter,🥨+🧂 Salzstangen,🍘+🧀 Cracker,🍘+🍚 Reiscracker,🥣+🌶️ Dip,🎂 Torte',
+            'Haushalt': '🧻 Toilettenpapier,🧻+🍽️ Küchenrolle,🧻+🎀 Servietten,🧴+🍽️ Spülmittel,🍽️ Spülmaschinentabs,🧂+🍽️ Spülmaschinensalz,🍽️+✨ Klarspüler,🧺 Waschmittel,🧺+🌸 Weichspüler,🧺+✨ Fleckentferner,🧺+🧷 Wäscheklammern,🧴+✨ Allzweckreiniger,🧴+🪟 Glasreiniger,🚽 WC-Reiniger,🧴+🚿 Entkalker,🚰 Abflussreiniger,🧽 Schwämme,🧽+🟦 Putzlappen,🧽+✨ Mikrofasertücher,🧤 Gummihandschuhe,🪣 Eimer,🧹 Besen,🗑️ Müllbeutel,🗑️+🌱 Biomüllbeutel,🛍️+🧊 Gefrierbeutel,📜 Backpapier,📜+✨ Alufolie,🎞️ Frischhaltefolie,🕯️ Kerzen,🕯️+⚪ Teelichter,🕯️+🌸 Duftkerze,🌬️+🌸 Lufterfrischer,🦟 Insektenspray,🔋 Batterien,💡 Glühbirnen,🔦 Taschenlampe,🔥 Streichhölzer,🔥+⛽ Feuerzeug,🔥+⬛ Grillkohle,🪴 Blumenerde,👞 Schuhcreme',
+            'Drogerie': '🧼 Seife,🧼+💧 Flüssigseife,🦷 Zahnpasta,🪥 Zahnbürste,🪥+⚡ Aufsteckbürsten,🦷+🧵 Zahnseide,🦷+💧 Mundspülung,🧴 Shampoo,🧴+🌸 Spülung,🚿 Duschgel,🛁 Badezusatz,🧴+💨 Deo,🧴+🤲 Bodylotion,🧴+✋ Handcreme,🧴+🙂 Gesichtscreme,🧴+☀️ Sonnencreme,🦶 Fußcreme,🧴+💇 Haargel,💨 Haarspray,🎀 Haargummis,🪒 Rasierer,🪒+🔷 Rasierklingen,🪒+🫧 Rasierschaum,🤧 Taschentücher,☁️ Wattepads,☁️+🥢 Wattestäbchen,🌸 Damenhygiene,💄 Make-up,👁️ Wimperntusche,💋 Lippenpflege,💅 Nagellack,🌹 Parfüm,🩹 Pflaster,💊 Schmerztabletten,💊+🍊 Vitamine,💊+🤧 Allergietabletten,👃 Nasenspray,👂 Ohrstöpsel,👓 Kontaktlinsenmittel,🌡️ Fieberthermometer,😷 Masken,🧴+🦠 Desinfektionsmittel',
+            'Tier & Baby': '🐕 Hundefutter,🐕+🍪 Hundeleckerli,🦴 Kauknochen,🐕+🗑️ Hundekotbeutel,🐈 Katzenfutter,🐈+🐟 Katzenleckerli,🐈+🪨 Katzenstreu,🐈+🧶 Katzenspielzeug,🐠 Fischfutter,🐦 Vogelfutter,🐹 Nagerfutter,🐇 Kaninchenfutter,🍼 Babynahrung,🍼+🥛 Milchpulver,🥣+🍼 Babybrei,🧷 Windeln,🧻+💧 Feuchttücher,🧴+👶 Babycreme,🛁+👶 Babyshampoo,👶 Schnuller'
         };
         const CAT_COLORS = { 'Obst & Gemüse': '#2e9e4f', 'Brot & Backwaren': '#b9772f', 'Milch & Käse': '#2f7de1', 'Fleisch & Fisch': '#e04646', 'Tiefkühl': '#1ba7bd', 'Getränke': '#7c5cf0', 'Vorräte': '#d98a0b', 'Konserven & Fertiggerichte': '#e2672f', 'Backen & Kochen': '#c24fc0', 'Gewürze & Soßen': '#ea7a1a', 'Snacks & Süßes': '#e0407f', 'Haushalt': '#5b6b82', 'Drogerie': '#139b8a', 'Tier & Baby': '#7d9a1e', 'Sonstiges': '#6b7a90' };
         const CATEGORIES = [...Object.keys(RAW_CATALOG), 'Sonstiges'];
-        const CATALOG = Object.entries(RAW_CATALOG).flatMap(([category, s]) => s.split(',').map(x => { const i = x.indexOf(' '); return { emoji: x.slice(0, i), name: x.slice(i + 1), category }; }));
+        // Jedes Produkt hat ein eigenes Symbol: Haupt-Emoji, bei ähnlichen Produkten plus kleines Zusatzzeichen („🥛+🌾 Hafermilch“)
+        const CATALOG = Object.entries(RAW_CATALOG).flatMap(([category, s]) => s.split(',').map(x => { const i = x.indexOf(' '), [emoji, badge = ''] = x.slice(0, i).split('+'); return { emoji, badge, name: x.slice(i + 1), category }; }));
+        const CATALOG_BY_NAME = new Map(CATALOG.map(p => [p.name.toLowerCase(), p]));
+        /* Zusatzzeichen für einen Artikel – nur wenn er das Katalog-Symbol trägt (eigene Symbole bekommen keins) */
+        function badgeOf(i) {
+            if (!i || i.emojiSet || !i.name) return '';
+            const k = CATALOG_BY_NAME.get(String(i.name).toLowerCase()) || matchProduct(i.name);
+            return k && k.emoji === i.emoji ? k.badge : '';
+        }
         const VARIANTS = {
             Milch: ['3,5 % Fett', '1,5 % Fett', 'Laktosefrei', 'Bio'],
             Hafermilch: ['Barista', 'Ungesüßt'],
@@ -1889,7 +2016,7 @@
         function matchProduct(name) {
             const n = (name || '').trim().toLowerCase(); if (!n) return null;
             const words = t => t.split(/[\s-]+/);
-            return CATALOG.find(p => p.name.toLowerCase() === n)
+            return CATALOG_BY_NAME.get(n)
                 || CATALOG.find(p => { const pn = p.name.toLowerCase(); return words(pn).includes(n) || words(n).includes(pn); })
                 || (n.length >= 4 ? CATALOG.find(p => { const pn = p.name.toLowerCase(); return pn.includes(n) || (pn.length >= 4 && n.includes(pn)); }) : null) || null;
         }
@@ -1903,6 +2030,27 @@
 
         /* ============ Tresor-Kryptografie (WebCrypto) ============ */
         const VAULT_KEY = 'organizer_vault';
+        /* Mehrere Tresore: der erste heißt „main“ und liegt weiterhin unter organizer_vault (so bleiben alte Daten erhalten) */
+        const VAULTS_KEY = 'organizer_vaults';
+        const VAULT_ICONS = ['fa-solid fa-vault', 'fa-solid fa-briefcase', 'fa-solid fa-house', 'fa-solid fa-building-columns', 'fa-solid fa-users', 'fa-solid fa-heart', 'fa-solid fa-gamepad', 'fa-solid fa-plane'];
+        const DEFAULT_VAULTS = [{ id: 'main', name: 'Tresor', icon: VAULT_ICONS[0] }];
+        const vaultStoreKey = id => (!id || id === 'main') ? VAULT_KEY : VAULT_KEY + '_' + id;
+        const vaultSyncKey = id => (!id || id === 'main') ? 'vault' : 'vault@' + id;
+        const vaultIdOfSync = k => k === 'vault' ? 'main' : k.slice(6);
+        const isVaultKey = k => k === 'vault' || k.startsWith('vault@');
+        function normVaults(v) {
+            const out = [], seen = new Set();
+            for (const x of Array.isArray(v) ? v : []) {
+                if (!x || typeof x !== 'object') continue;
+                const id = String(x.id || '');
+                if (!/^[a-z0-9]{3,16}$/.test(id) || seen.has(id)) continue;
+                seen.add(id);
+                out.push({ id, name: String(x.name || '').slice(0, 30) || 'Tresor', icon: VAULT_ICONS.includes(x.icon) ? x.icon : VAULT_ICONS[0] });
+                if (out.length >= 8) break;
+            }
+            if (!out.some(x => x.id === 'main')) out.unshift({ ...DEFAULT_VAULTS[0] });
+            return out;
+        }
         const PBKDF2_ITER = 600000;
         const te = new TextEncoder(), td = new TextDecoder();
         let vaultKey = null;    // nur im Speicher, nie gespeichert
@@ -2073,7 +2221,8 @@ function listBackups_(room) {
             for (const a of Array.isArray(v.accounts) ? v.accounts : []) {
                 if (!a || typeof a !== 'object' || !/^[a-z0-9]{3,12}$/.test(String(a.id)) || !MAIL_URL_RE.test(String(a.url)) || !/^[a-f0-9]{32}$/.test(String(a.token)) || seen.has(a.id)) continue;
                 seen.add(a.id);
-                accounts.push({ id: a.id, name: String(a.name || '').slice(0, 40) || 'Postfach', email: String(a.email || '').slice(0, 120), url: a.url, token: a.token });
+                const aliases = (Array.isArray(a.aliases) ? a.aliases : []).map(x => String(x || '').slice(0, 120)).filter(x => x.includes('@')).slice(0, 10);
+                accounts.push({ id: a.id, name: String(a.name || '').slice(0, 40) || 'Postfach', email: String(a.email || '').slice(0, 120), url: a.url, token: a.token, ...(aliases.length ? { aliases } : {}) });
                 if (accounts.length >= 8) break;
             }
             const s = v.settings && typeof v.settings === 'object' ? v.settings : {};
@@ -2126,7 +2275,7 @@ function doPost(e) {
   try { p = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'Ungueltige Anfrage' }); }
   if (!TOKEN || TOKEN.length < 16 || p.token !== TOKEN) return out_({ ok: false, error: 'Falscher Schluessel' });
   try {
-    if (p.action === 'ping') return out_({ ok: true, email: me_(), unread: counts_() });
+    if (p.action === 'ping') return out_({ ok: true, email: me_(), unread: counts_(), aliases: aliases_() });
     if (p.action === 'counts') return out_({ ok: true, unread: counts_() });
     if (p.action === 'list') return out_(list_(p));
     if (p.action === 'thread') return out_(thread_(p));
@@ -2148,8 +2297,23 @@ function me_() {
   try { return Session.getEffectiveUser().getEmail(); } catch (err) { return ''; }
 }
 
+function aliases_() {
+  try {
+    var me = me_(), out = me ? [me] : [], al = GmailApp.getAliases() || [];
+    for (var i = 0; i < al.length && out.length < 10; i++) if (al[i] && out.indexOf(al[i]) === -1) out.push(al[i]);
+    return out;
+  } catch (err) { return []; }
+}
+
 function counts_() {
   return { inbox: GmailApp.getInboxUnreadCount(), spam: GmailApp.getSpamUnreadCount() };
+}
+
+function hasAtt_(ms) {
+  try {
+    for (var i = 0; i < ms.length; i++) if (ms[i].getAttachments({ includeInlineImages: false, includeAttachments: true }).length > 0) return true;
+  } catch (err) {}
+  return false;
 }
 
 function list_(p) {
@@ -2175,6 +2339,7 @@ function list_(p) {
       unread: t.isUnread(),
       star: t.hasStarredMessages(),
       n: ms.length,
+      att: hasAtt_(ms),
       snip: m.getPlainBody().slice(0, 300)
     });
   }
@@ -2268,6 +2433,9 @@ function blobs_(list) {
 
 function opts_(p) {
   var o = {};
+  var from = clean_(p.from);
+  if (from && from !== me_() && (GmailApp.getAliases() || []).indexOf(from) !== -1) o.from = from;
+  if (from && p.fromName) o.name = clean_(p.fromName).slice(0, 80);
   var cc = clean_(p.cc);
   var bcc = clean_(p.bcc);
   var at = blobs_(p.attachments);
@@ -2311,8 +2479,11 @@ function reply_(p) {
                     { id: 'settings', label: 'Settings', icon: 'fa-solid fa-sliders' }
                 ],
                 themes: [
+                    { id: 'daylight', label: 'Tageslicht', bg: '#f4f6fb', accent: '#4f46e5' },
+                    { id: 'sky', label: 'Himmel', bg: '#eef6fd', accent: '#0369a1' },
+                    { id: 'mint', label: 'Minze', bg: '#f0f8f4', accent: '#047857' },
+                    { id: 'white', label: 'Reinweiß', bg: '#ffffff', accent: '#4f46e5' },
                     { id: 'midnight', label: 'Mitternacht', bg: '#0b0f19', accent: '#6366f1' },
-                    { id: 'white', label: 'Clean White', bg: '#ffffff', accent: '#4f46e5' },
                     { id: 'ocean', label: 'Ozean Blau', bg: '#1e293b', accent: '#6366f1' },
                     { id: 'emerald', label: 'Emerald Grün', bg: '#064e3b', accent: '#059669' },
                     { id: 'nord', label: 'Nordlicht', bg: '#2e3440', accent: '#5e81ac' },
@@ -2349,7 +2520,7 @@ function reply_(p) {
                     { cat: 'design', k: 'radius', type: 'select', label: 'Ecken', o: [['soft', 'Weich (Standard)'], ['sharp', 'Eckig'], ['round', 'Sehr rund']] },
                     { cat: 'design', k: 'cardStyle', type: 'select', label: 'Kartenstil', desc: 'Glas wirkt am besten mit Farbverlauf-Hintergrund', o: [['solid', 'Gefüllt'], ['glass', 'Glas'], ['flat', 'Flach (ohne Schatten)'], ['outline', 'Nur Umrandung']] },
                     { cat: 'design', k: 'bgStyle', type: 'select', label: 'Hintergrund', o: [['plain', 'Einfarbig'], ['gradient', 'Sanfter Farbverlauf']] },
-                    { cat: 'design', k: 'font', type: 'select', label: 'Schriftart', o: [['system', 'System'], ['rounded', 'Rund'], ['serif', 'Serif'], ['mono', 'Monospace']] },
+                    { cat: 'design', k: 'font', type: 'select', label: 'Schriftart', o: [['default', 'Jakarta (Standard)'], ['system', 'System'], ['rounded', 'Rund'], ['serif', 'Serif'], ['mono', 'Monospace']] },
                     { cat: 'today', k: 'todayEvents', type: 'toggle', label: 'Termine anzeigen' },
                     { cat: 'today', k: 'todayTodos', type: 'toggle', label: 'Aufgaben anzeigen', desc: 'Überfällig, heute fällig und „Mein Tag“' },
                     { cat: 'today', k: 'todayMail', type: 'toggle', label: 'Ungelesene E-Mails anzeigen' },
@@ -2372,7 +2543,7 @@ function reply_(p) {
                     { cat: 'todos', k: 'showDone', type: 'toggle', label: 'Erledigte Aufgaben standardmäßig ausklappen' },
                     { cat: 'todos', k: 'hideDoneDays', type: 'select', label: 'Erledigte ausblenden nach', desc: 'Nur ausgeblendet, nicht gelöscht – sie bleiben in „Alle Aufgaben“ unverändert gespeichert', o: [[0, 'Nie'], [1, '1 Tag'], [7, '7 Tagen'], [30, '30 Tagen']] },
                     { cat: 'shopping', k: 'shopGroup', type: 'toggle', label: 'Nach Kategorien gruppieren' },
-                    { cat: 'shopping', k: 'showRecent', type: 'toggle', label: '„Zuletzt verwendet“ anzeigen' },
+                    { cat: 'shopping', k: 'showRecent', type: 'toggle', label: '„Zuletzt gekauft“ anzeigen', desc: 'Zeile mit deinen häufigsten Artikeln über dem Katalog' },
                     { cat: 'mail', src: 'mail', k: 'poll', type: 'select', label: 'Neue Mails automatisch prüfen', o: [[0, 'Aus'], [2, 'Alle 2 Minuten'], [5, 'Alle 5 Minuten'], [15, 'Alle 15 Minuten']] },
                     { cat: 'mail', src: 'mail', k: 'notify', type: 'toggle', label: 'Bei neuen Mails benachrichtigen', desc: 'Hinweis in der App, bei aktivierten Benachrichtigungen auch als Systemhinweis' },
                     { cat: 'mail', src: 'mail', k: 'preview', type: 'toggle', label: 'Vorschautext in der Liste zeigen' },
@@ -2425,20 +2596,21 @@ function reply_(p) {
                 showListModal: false, currentList: { id: null, name: '', emoji: '📋' },
 
                 /* Einkauf */
-                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: CATEGORIES[0],
+                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: CATEGORIES[0], shopCartOpen: true,
                 showShopModal: false, currentShop: {},
 
                 /* Tresor */
                 vaultState: 'none', vaultBusy: false, vaultError: '', legacyCount: 0,
+                vaults: [...DEFAULT_VAULTS], vaultId: 'main', showVaultEdit: false, vaultDraft: { id: null, name: '', icon: VAULT_ICONS[0] }, vaultIcons: VAULT_ICONS,
                 mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
                 passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
                 pwSearch: '', pwFolderFilter: 'all', pwType: 'all', newMenu: false, pwMenu: null, pwEditShow: false,
-                mailFolders: MAIL_FOLDERS, mailCfg: { accounts: [], settings: { poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
+                mailFolders: MAIL_FOLDERS, mailNewestFirst: true, mailCfg: { accounts: [], settings: { poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
                 mailList: [], mailLoading: false, mailError: '', mailMoreOk: false, mailCounts: {}, mailSel: null, mailCur: null, mailLoaded: 0, mailLastPoll: 0, mailReq: 0, mailThreadReq: 0,
                 mailThread: { loading: false, error: '', msgs: [], open: {}, imgs: false },
                 showSearch: false, gq: '', gSel: 0, todayTask: '', mailCountsAt: 0,
                 showMailSetup: false, mailSetup: { id: '', name: '', url: '', token: '', busy: false, error: '' },
-                showMailCompose: false, mailComp: { mode: 'new', acc: '', to: '', cc: '', bcc: '', subject: '', body: '', att: [], busy: false, error: '', showCc: false, refId: '', refMi: 0, all: false, info: '', initBody: '' },
+                showMailCompose: false, mailComp: { mode: 'new', acc: '', from: '', to: '', cc: '', bcc: '', subject: '', body: '', att: [], busy: false, error: '', showCc: false, refId: '', refMi: 0, all: false, info: '', initBody: '' },
                 totpCodes: {}, totpCache: {}, showVaultHealth: false, health: { total: 0, weak: [], reused: [], breached: [], checked: false, busy: false, error: '', score: 100 },
                 showVaultIO: false, vio: { plainOk: false, needPw: false, pw: '', rec: null, file: '', items: [], folders: [], error: '', busy: false, info: '', nNew: 0, nDup: 0 },
                 showGenerator: false, gen: { length: 20, upper: true, lower: true, digits: true, symbols: true, result: '' },
@@ -2460,7 +2632,7 @@ function reply_(p) {
                     this.applyCfg();
 
                     const th = localStorage.getItem('organizer_theme');
-                    this.themeSettings = this.themes.some(t => t.id === th) ? th : 'midnight';
+                    this.themeSettings = this.themes.some(t => t.id === th) ? th : 'daylight';
                     const last = localStorage.getItem('organizer_start_tab');
                     const start = this.cfg.startTab === 'last' ? last : this.cfg.startTab;
                     this.activeTab = this.tabs.some(t => t.id === start) ? start : 'calendar';
@@ -2488,9 +2660,14 @@ function reply_(p) {
                     legacyEntries = readJSON('organizer_passwords', []);
                     if (!Array.isArray(legacyEntries)) legacyEntries = [];
                     this.legacyCount = legacyEntries.length;
-                    const vr0 = readJSON(VAULT_KEY, null);
-                    this.vaultState = validVaultRecord(vr0) ? 'locked' : 'none';
-                    if (validVaultRecord(vr0) && !vr0.vid) { vr0.vid = uid() + uid(); try { localStorage.setItem(VAULT_KEY, JSON.stringify(vr0)); } catch (e) {} } // Tresor-Kennung für den Abgleich
+                    this.vaults = normVaults(readJSON(VAULTS_KEY, null) || DEFAULT_VAULTS);
+                    const curV = localStorage.getItem('organizer_vault_cur') || 'main';
+                    this.vaultId = this.vaults.some(v => v.id === curV) ? curV : 'main';
+                    for (const v of this.vaults) { // Tresor-Kennung für den Abgleich nachtragen
+                        const r = readJSON(vaultStoreKey(v.id), null);
+                        if (validVaultRecord(r) && !r.vid) { r.vid = uid() + uid(); try { localStorage.setItem(vaultStoreKey(v.id), JSON.stringify(r)); } catch (e) {} }
+                    }
+                    this.vaultState = validVaultRecord(readJSON(vaultStoreKey(this.vaultId), null)) ? 'locked' : 'none';
                     if (!window.crypto?.subtle) this.vaultError = 'Dieser Browser/Kontext unterstützt keine Verschlüsselung (WebCrypto).';
 
                     ['click', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, () => this.touchIdle(), { passive: true }));
@@ -2519,13 +2696,21 @@ function reply_(p) {
                     if (tab === 'passwords' && this.vaultState === 'locked') this.$nextTick(() => this.$refs.unlockInput?.focus());
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
-                setTheme(theme) { this.themeSettings = theme; localStorage.setItem('organizer_theme', theme); document.documentElement.dataset.theme = theme; },
+                setTheme(theme) { this.themeSettings = theme; localStorage.setItem('organizer_theme', theme); document.documentElement.dataset.theme = theme; this.syncThemeColor(); },
+                /* Farbe der Systemleiste auf Mobilgeräten an das Design angleichen */
+                syncThemeColor() {
+                    try {
+                        const m = document.querySelector('meta[name="theme-color"]');
+                        if (m) m.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f4f6fb';
+                    } catch (e) {}
+                },
                 get today() { void this.nowTick; return fmt(new Date()); },
                 addDaysStr(ds, n) { return fmt(addDays(parseDate(ds), n)); },
                 longDate(ds) { return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); },
                 toast(msg) { this.toastMsg = msg; clearTimeout(this._toastTimer); this._toastTimer = setTimeout(() => this.toastMsg = '', 2800); },
                 ask(msg) { return !this.cfg.confirmDelete || confirm(msg); },
                 closeModals() {
+                    this.showVaultEdit = false;
                     if (this.picker.open) { this.picker.open = false; return; } // Esc schließt zuerst nur die Datum-/Zeit-Auswahl
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
                     this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = this.showSearch = this.showShopList = this.showVaultHealth = false;
@@ -2693,13 +2878,18 @@ function reply_(p) {
                     }
                     const ch = this.cfgHashOf(this.cfgPicked()), cm = syncMeta.cfg;
                     if (cm ? cm.h !== ch : ch !== this.cfgHashOf(Object.fromEntries(SYNC_CFG_KEYS.map(k => [k, DEFAULT_CFG[k]])))) { syncMeta.cfg = { u: now, h: ch }; changed = true; } // erst stempeln, wenn jemand etwas geändert hat (ein neues Gerät mit Standardwerten überschreibt nichts)
-                    const vraw = localStorage.getItem(VAULT_KEY), vm = syncMeta.vault;
-                    if (vraw) { const h = hashStr(vraw); if (!vm || vm.d || vm.h !== h) { syncMeta.vault = { u: now, h }; changed = true; } }
-                    else if (vm && !vm.d) { syncMeta.vault = { u: now, d: 1 }; changed = true; }
+                    const vids = new Set(['main', ...this.vaults.map(v => v.id), ...Object.keys(syncMeta).filter(isVaultKey).map(vaultIdOfSync)]);
+                    for (const vid of vids) {
+                        const sk = vaultSyncKey(vid), vraw = localStorage.getItem(vaultStoreKey(vid)), vm = syncMeta[sk];
+                        if (vraw) { const h = hashStr(vraw); if (!vm || vm.d || vm.h !== h) { syncMeta[sk] = { u: now, h }; changed = true; } }
+                        else if (vm && !vm.d) { syncMeta[sk] = { u: now, d: 1 }; changed = true; }
+                    }
+                    const lh = hashStr(JSON.stringify(this.vaults)), lm = syncMeta.vaults;
+                    if (lm ? lm.h !== lh : lh !== hashStr(JSON.stringify(DEFAULT_VAULTS))) { syncMeta.vaults = { u: now, h: lh }; changed = true; }
                     const mh = hashStr(JSON.stringify(this.mailCfg)), mm = syncMeta.mailcfg;
                     if (mm ? (mm.d || mm.h !== mh) : this.mailCfg.accounts.length) { syncMeta.mailcfg = { u: now, h: mh }; changed = true; }
                     for (const k of Object.keys(syncMeta)) {
-                        if (k === 'vault' || k === 'cfg' || k === 'mailcfg') continue;
+                        if (isVaultKey(k) || k === 'vaults' || k === 'cfg' || k === 'mailcfg') continue;
                         const m = syncMeta[k];
                         if (m.d) { if (now - m.u > TOMBSTONE_MS) delete syncMeta[k]; }
                         else if (!seen.has(k)) { syncMeta[k] = { u: now, d: 1 }; changed = true; }
@@ -2718,7 +2908,7 @@ function reply_(p) {
                     const items = {};
                     for (const [k, m] of Object.entries(syncMeta)) {
                         if (m.d) { if (!forBackup) items[k] = { u: m.u, d: 1 }; continue; }
-                        const v = k === 'vault' ? readJSON(VAULT_KEY, null) : k === 'cfg' ? this.cfgPicked() : k === 'mailcfg' ? this.mailCfg : maps[k.slice(0, 2)]?.get(k.slice(3));
+                        const v = isVaultKey(k) ? readJSON(vaultStoreKey(vaultIdOfSync(k)), null) : k === 'vaults' ? this.vaults : k === 'cfg' ? this.cfgPicked() : k === 'mailcfg' ? this.mailCfg : maps[k.slice(0, 2)]?.get(k.slice(3));
                         if (v) items[k] = { u: m.u, v };
                     }
                     return { v: 1, items };
@@ -2738,7 +2928,7 @@ function reply_(p) {
                     for (const [k, r] of Object.entries(items)) {
                         if (!r || !Number.isFinite(r.u)) continue;
                         const l = syncMeta[k];
-                        const vclash = k === 'vault' && !r.d && validVaultRecord(r.v) && (() => { const lv = readJSON(VAULT_KEY, null); return validVaultRecord(lv) && !(lv.vid && lv.vid === r.v.vid) && lv.salt !== r.v.salt; })();
+                        const vclash = isVaultKey(k) && !r.d && validVaultRecord(r.v) && (() => { const lv = readJSON(vaultStoreKey(vaultIdOfSync(k)), null); return validVaultRecord(lv) && !(lv.vid && lv.vid === r.v.vid) && lv.salt !== r.v.salt; })();
                         if (!vclash && l && l.u >= r.u) { if (l.u > r.u) needPush = true; continue; }
                         if (k === 'cfg') {
                             if (!r.d && r.v && typeof r.v === 'object') { this.applyRemoteCfg(r.v); syncMeta.cfg = { u: r.u, h: this.cfgHashOf(this.cfgPicked()) }; changed++; }
@@ -2748,8 +2938,16 @@ function reply_(p) {
                             if (!r.d && r.v && typeof r.v === 'object') { this.mailCfg = normMailCfg(r.v); this.persistMailCfg(); syncMeta.mailcfg = { u: r.u, h: hashStr(JSON.stringify(this.mailCfg)) }; changed++; mailCfgChanged = true; }
                             continue;
                         }
-                        if (k === 'vault') {
-                            const res = this.applyRemoteVault(r);
+                        if (k === 'vaults') {
+                            if (!r.d && Array.isArray(r.v)) {
+                                this.vaults = normVaults(r.v); this.persistVaults();
+                                if (!this.vaults.some(v => v.id === this.vaultId)) this.switchVault('main');
+                                syncMeta.vaults = { u: r.u, h: hashStr(JSON.stringify(this.vaults)) }; changed++;
+                            }
+                            continue;
+                        }
+                        if (isVaultKey(k)) {
+                            const res = this.applyRemoteVault(r, vaultIdOfSync(k));
                             if (res === 'push') needPush = true; else if (res === 'changed') changed++;
                             continue;
                         }
@@ -2787,25 +2985,30 @@ function reply_(p) {
                     }
                     return { needPush, changed };
                 },
-                applyRemoteVault(r) {
-                    const cur = readJSON(VAULT_KEY, null);
-                    const keepLocal = () => { const raw = localStorage.getItem(VAULT_KEY); syncMeta.vault = raw ? { u: Date.now(), h: hashStr(raw) } : { u: Date.now(), d: 1 }; return 'push'; };
+                applyRemoteVault(r, vid = 'main') {
+                    const sk = vaultSyncKey(vid), store = vaultStoreKey(vid), active = vid === this.vaultId;
+                    const nameOf = () => { const v = this.vaults.find(x => x.id === vid); return v ? '„' + v.name + '“' : 'Der Tresor'; };
+                    const cur = readJSON(store, null);
+                    const keepLocal = () => { const raw = localStorage.getItem(store); syncMeta[sk] = raw ? { u: Date.now(), h: hashStr(raw) } : { u: Date.now(), d: 1 }; return 'push'; };
                     if (r.d) {
-                        if (!cur) { syncMeta.vault = { u: r.u, d: 1 }; return 'ok'; }
-                        if (!confirm('Der Tresor wurde auf einem anderen Gerät gelöscht bzw. zurückgesetzt. Auch auf diesem Gerät löschen?')) return keepLocal();
-                        this.lockVault(false); localStorage.removeItem(VAULT_KEY); this.vaultState = 'none';
-                        syncMeta.vault = { u: r.u, d: 1 }; this.toast('Tresor wurde auf einem anderen Gerät zurückgesetzt'); return 'changed';
+                        if (!cur) { syncMeta[sk] = { u: r.u, d: 1 }; return 'ok'; }
+                        if (!confirm(nameOf() + ' wurde auf einem anderen Gerät gelöscht bzw. zurückgesetzt. Auch auf diesem Gerät löschen?')) return keepLocal();
+                        if (active) this.lockVault(false, true);
+                        localStorage.removeItem(store);
+                        if (active) this.vaultState = 'none';
+                        syncMeta[sk] = { u: r.u, d: 1 }; this.toast(nameOf() + ' wurde auf einem anderen Gerät zurückgesetzt'); return 'changed';
                     }
                     const v = r.v;
                     if (!validVaultRecord(v)) return 'ok';
-                    if (cur && cur.salt === v.salt && cur.iv === v.iv && cur.data === v.data) { syncMeta.vault = { u: r.u, h: hashStr(localStorage.getItem(VAULT_KEY)) }; return 'ok'; }
+                    if (cur && cur.salt === v.salt && cur.iv === v.iv && cur.data === v.data) { syncMeta[sk] = { u: r.u, h: hashStr(localStorage.getItem(store)) }; return 'ok'; }
                     const same = cur && ((cur.vid && cur.vid === v.vid) || cur.salt === v.salt);
-                    if (cur && !same && !confirm('Auf einem anderen Gerät gibt es einen anderen Tresor (anderes Master-Passwort). Diesen übernehmen und den Tresor auf diesem Gerät ersetzen? (Abbrechen = dein Tresor ersetzt den anderen.)')) return keepLocal();
-                    this.lockVault(false);
+                    if (cur && !same && !confirm('Auf einem anderen Gerät gibt es für ' + nameOf() + ' einen anderen Tresor (anderes Master-Passwort). Diesen übernehmen und den Tresor auf diesem Gerät ersetzen? (Abbrechen = dein Tresor ersetzt den anderen.)')) return keepLocal();
+                    if (active) this.lockVault(false, true);
                     const raw = JSON.stringify(v);
-                    localStorage.setItem(VAULT_KEY, raw); this.vaultState = 'locked';
-                    syncMeta.vault = { u: r.u, h: hashStr(raw) };
-                    this.toast('Der Tresor wurde auf einem anderen Gerät geändert – bitte neu entsperren');
+                    localStorage.setItem(store, raw);
+                    if (active) this.vaultState = 'locked';
+                    syncMeta[sk] = { u: r.u, h: hashStr(raw) };
+                    this.toast(nameOf() + ' wurde auf einem anderen Gerät geändert' + (active ? ' – bitte neu entsperren' : ''));
                     return 'changed';
                 },
                 async encryptSnap() { return JSON.stringify(await encryptJSON(await this.getSyncKey(), this.buildSnapshot())); },
@@ -2920,11 +3123,13 @@ function reply_(p) {
                 },
                 /* Ersetzt den lokalen Stand komplett durch eine Sicherung; stampChanges() markiert danach alles als „jetzt geändert“, damit der Stand auch alle anderen Geräte überschreibt. */
                 applySnapshotReplace(snap) {
-                    const items = snap.items || {}, cols = {}; let cfgV = null, mailV = null, vaultV = null;
+                    const items = snap.items || {}, cols = {}; let cfgV = null, mailV = null, listV = null; const vaultV = {};
                     for (const [p] of SYNC_COLLECTIONS) cols[p] = [];
                     for (const [k, r] of Object.entries(items)) {
                         if (!r || r.d || !r.v || typeof r.v !== 'object') continue;
-                        if (k === 'cfg') cfgV = r.v; else if (k === 'mailcfg') mailV = r.v; else if (k === 'vault') vaultV = r.v;
+                        if (k === 'cfg') cfgV = r.v; else if (k === 'mailcfg') mailV = r.v;
+                        else if (k === 'vaults') { if (Array.isArray(r.v)) listV = r.v; }
+                        else if (isVaultKey(k)) vaultV[vaultIdOfSync(k)] = r.v;
                         else if (k[2] === ':' && cols[k.slice(0, 2)]) cols[k.slice(0, 2)].push(this.normIncoming(k.slice(0, 2), { ...r.v, id: k.slice(3) }));
                     }
                     this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
@@ -2935,7 +3140,15 @@ function reply_(p) {
                     if (this.isCustomList && !cols.ls.some(l => l.id === this.todoListId)) this.selectTodoList('myday');
                     if (cfgV) this.applyRemoteCfg(cfgV);
                     if (mailV) { this.mailCfg = normMailCfg(mailV); this.persistMailCfg(); this.mailAfterCfg(); }
-                    if (vaultV && validVaultRecord(vaultV)) { this.lockVault(false); localStorage.setItem(VAULT_KEY, JSON.stringify(vaultV)); this.vaultState = 'locked'; delete syncMeta.vault; } // fehlt der Tresor in der Sicherung, bleibt der aktuelle unangetastet
+                    if (listV) { this.vaults = normVaults(listV); this.persistVaults(); }
+                    for (const [vid, rec] of Object.entries(vaultV)) { // fehlt ein Tresor in der Sicherung, bleibt der aktuelle unangetastet
+                        if (!validVaultRecord(rec)) continue;
+                        if (vid === this.vaultId && this.vaultState === 'unlocked') this.lockVault(false, true);
+                        localStorage.setItem(vaultStoreKey(vid), JSON.stringify(rec));
+                        delete syncMeta[vaultSyncKey(vid)];
+                    }
+                    if (!this.vaults.some(v => v.id === this.vaultId)) this.vaultId = 'main';
+                    this.vaultState = this.vaultExists(this.vaultId) ? 'locked' : 'none';
                     this.saveAllData();
                     this.stampChanges();
                 },
@@ -3521,6 +3734,7 @@ function reply_(p) {
                 catColor(c) { return CAT_COLORS[c] || CAT_COLORS['Sonstiges']; },
                 guessCategory(n) { return guessCategory(n); },
                 hasEmoji(i) { return !!(i.emoji && i.emoji !== '🛒'); },
+                badgeOf(i) { return badgeOf(i); },
                 initial(n) { const m = /[A-Za-zÄÖÜäöüß0-9]/.exec(String(n || '')); return m ? m[0].toUpperCase() : '•'; },
                 noteRecent(it) {
                     const e = { name: it.name, emoji: it.emoji, category: it.category };
@@ -3548,7 +3762,7 @@ function reply_(p) {
                 async persistVault() {
                     const entries = this.passwords.map(p => Object.fromEntries(Object.entries(p).filter(([k, v]) => k === 'id' || k === 'title' || (v !== '' && v !== false && v != null))));
                     const rec = await encryptJSON(vaultKey, { entries, folders: this.vaultFolders });
-                    localStorage.setItem(VAULT_KEY, JSON.stringify({ v: 2, vid: vaultMeta.vid, iter: vaultMeta.iter, salt: vaultMeta.salt, ...rec }));
+                    localStorage.setItem(vaultStoreKey(this.vaultId), JSON.stringify({ v: 2, vid: vaultMeta.vid, iter: vaultMeta.iter, salt: vaultMeta.salt, ...rec }));
                     this.touchSync();
                 },
                 blankPw(type = 'login', folder = '') {
@@ -3570,11 +3784,10 @@ function reply_(p) {
                         const salt = crypto.getRandomValues(new Uint8Array(16));
                         vaultKey = await deriveKey(this.mpInput, salt, PBKDF2_ITER);
                         vaultMeta = { salt: toB64(salt), iter: PBKDF2_ITER, vid: uid() + uid() };
-                        this.passwords = legacyEntries.map((p, i) => this.normPw({ ...p, folder: p.folder || 'Privat' }, i));
+                        this.passwords = this.vaultId === 'main' ? legacyEntries.map((p, i) => this.normPw({ ...p, folder: p.folder || 'Privat' }, i)) : [];
                         this.vaultFolders = [...DEFAULT_FOLDERS];
                         await this.persistVault();
-                        localStorage.removeItem('organizer_passwords');
-                        legacyEntries = []; this.legacyCount = 0;
+                        if (this.vaultId === 'main') { localStorage.removeItem('organizer_passwords'); legacyEntries = []; this.legacyCount = 0; }
                         this.vaultState = 'unlocked'; this.mpInput = this.mpConfirm = '';
                         this.touchIdle(); this.toast('Tresor eingerichtet');
                     } catch (e) { this.vaultError = 'Einrichtung fehlgeschlagen.'; vaultKey = null; }
@@ -3585,7 +3798,7 @@ function reply_(p) {
                     if (wait > 0) { this.vaultError = `Zu viele Versuche. Bitte ${wait} s warten.`; return; }
                     this.vaultBusy = true; this.vaultError = '';
                     try {
-                        const rec = readJSON(VAULT_KEY, null);
+                        const rec = readJSON(vaultStoreKey(this.vaultId), null);
                         if (!validVaultRecord(rec)) throw new Error('corrupt');
                         const key = await deriveKey(this.mpInput, fromB64(rec.salt), rec.iter);
                         const data = await decryptJSON(key, rec);
@@ -3600,7 +3813,7 @@ function reply_(p) {
                         this.vaultError = 'Falsches Master-Passwort.';
                     } finally { this.vaultBusy = false; }
                 },
-                lockVault(manual = false) {
+                lockVault(manual = false, silent = false) {
                     clearTimeout(this._idleTimer);
                     if (this.vaultState !== 'unlocked') return;
                     vaultKey = null; vaultMeta = null;
@@ -3609,7 +3822,7 @@ function reply_(p) {
                     this.newMenu = false; this.pwMenu = null; this.pwEditShow = false; this.gen.result = ''; this.vio = this.blankVio();
                     this.currentPassword = this.blankPw('login', 'Privat');
                     this.vaultState = 'locked'; this.mpInput = ''; this.vaultError = '';
-                    this.toast(manual ? 'Tresor gesperrt' : 'Tresor automatisch gesperrt');
+                    if (!silent) this.toast(manual ? 'Tresor gesperrt' : 'Tresor automatisch gesperrt');
                 },
                 touchIdle() {
                     if (this.vaultState !== 'unlocked') return;
@@ -3623,7 +3836,7 @@ function reply_(p) {
                     if (err) { this.vaultError = err; return; }
                     this.vaultBusy = true;
                     try {
-                        const rec = readJSON(VAULT_KEY, null);
+                        const rec = readJSON(vaultStoreKey(this.vaultId), null);
                         try { await decryptJSON(await deriveKey(this.mpCurrent, fromB64(rec.salt), rec.iter), rec); }
                         catch (e) { this.vaultError = 'Das aktuelle Master-Passwort ist falsch.'; return; }
                         const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -3635,11 +3848,53 @@ function reply_(p) {
                     } catch (e) { this.vaultError = 'Änderung fehlgeschlagen.'; }
                     finally { this.vaultBusy = false; }
                 },
+                /* --- Mehrere Tresore --- */
+                get vaultName() { return (this.vaults.find(v => v.id === this.vaultId) || DEFAULT_VAULTS[0]).name; },
+                get vaultIcon() { return (this.vaults.find(v => v.id === this.vaultId) || DEFAULT_VAULTS[0]).icon; },
+                vaultExists(id) { return validVaultRecord(readJSON(vaultStoreKey(id), null)); },
+                persistVaults() { try { localStorage.setItem(VAULTS_KEY, JSON.stringify(this.vaults)); } catch (e) {} },
+                switchVault(id) {
+                    if (!this.vaults.some(v => v.id === id)) id = 'main';
+                    if (id === this.vaultId && this.vaultState !== 'none') return;
+                    if (this.vaultState === 'unlocked') this.lockVault(false, true);
+                    this.vaultId = id;
+                    try { localStorage.setItem('organizer_vault_cur', id); } catch (e) {}
+                    this.vaultState = this.vaultExists(id) ? 'locked' : 'none';
+                    this.mpInput = this.mpConfirm = ''; this.vaultError = ''; this.failCount = 0; this.cooldownUntil = 0;
+                    if (this.vaultState === 'locked') this.$nextTick(() => this.$refs.unlockInput?.focus());
+                },
+                openVaultEdit(v) { this.vaultDraft = v ? { ...v } : { id: null, name: '', icon: VAULT_ICONS[0] }; this.vaultError = ''; this.showVaultEdit = true; },
+                saveVaultEntry() {
+                    const d = this.vaultDraft, name = d.name.trim().slice(0, 30);
+                    if (!name) { this.vaultError = 'Bitte einen Namen eingeben.'; return; }
+                    if (d.id) this.vaults = this.vaults.map(v => v.id === d.id ? { ...v, name, icon: d.icon } : v);
+                    else {
+                        if (this.vaults.length >= 8) { this.vaultError = 'Mehr als 8 Tresore sind nicht möglich.'; return; }
+                        let id; do { id = Math.random().toString(36).slice(2, 8); } while (id.length < 3 || this.vaults.some(v => v.id === id));
+                        this.vaults = [...this.vaults, { id, name, icon: d.icon }];
+                        this.persistVaults(); this.touchSync(); this.showVaultEdit = false;
+                        this.switchVault(id);
+                        this.toast('Tresor angelegt – jetzt Master-Passwort festlegen');
+                        return;
+                    }
+                    this.persistVaults(); this.touchSync(); this.showVaultEdit = false;
+                },
+                deleteVaultEntry() {
+                    const d = this.vaultDraft; if (!d.id) return;
+                    if (d.id === 'main') { this.showVaultEdit = false; this.switchVault('main'); this.openReset(); return; }
+                    if (!confirm('Tresor „' + d.name + '“ mit allen darin gespeicherten Daten löschen? Das lässt sich nicht rückgängig machen.')) return;
+                    if (this.vaultId === d.id && this.vaultState === 'unlocked') this.lockVault(false, true);
+                    localStorage.removeItem(vaultStoreKey(d.id));
+                    this.vaults = this.vaults.filter(v => v.id !== d.id);
+                    this.persistVaults(); this.showVaultEdit = false;
+                    if (this.vaultId === d.id) this.switchVault('main'); else this.touchSync();
+                    this.touchSync(); this.toast('Tresor gelöscht');
+                },
                 openReset() { this.resetConfirm = ''; this.showResetModal = true; },
                 resetVault() {
                     if (this.resetConfirm.trim().toUpperCase() !== 'LÖSCHEN') return;
                     clearTimeout(this._idleTimer);
-                    localStorage.removeItem(VAULT_KEY); localStorage.removeItem('organizer_passwords');
+                    localStorage.removeItem(vaultStoreKey(this.vaultId)); if (this.vaultId === 'main') localStorage.removeItem('organizer_passwords');
                     vaultKey = null; vaultMeta = null; legacyEntries = [];
                     Object.assign(this, { pwType: 'all', pwFolderFilter: 'all', legacyCount: 0, passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], failCount: 0, cooldownUntil: 0, mpInput: '', mpConfirm: '', vaultError: '', vaultState: 'none', showResetModal: false });
                     this.touchSync();
@@ -3831,6 +4086,23 @@ function reply_(p) {
                     }
                     return out;
                 },
+                get mailFolderLabel() { return (MAIL_FOLDERS.find(f => f.id === this.mailFolder) || { label: 'E-Mail' }).label; },
+                get mailFavFolders() { return MAIL_FOLDERS.filter(f => ['inbox', 'starred', 'sent'].includes(f.id)); },
+                mailAddr(s) { const m = String(s || '').match(/<([^>]+)>/); return m ? m[1].trim() : (String(s || '').includes('@') ? String(s).trim() : ''); },
+                /* Nachrichtenliste wie in Outlook nach Zeitraum gruppieren */
+                get mailGroups() {
+                    const rows = [...this.mailRows].sort((a, b) => this.mailNewestFirst ? b.date - a.date : a.date - b.date);
+                    const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+                    const day = 86400000, today = d0.getTime(), week = today - ((d0.getDay() + 6) % 7) * day;
+                    const bucket = ms => ms >= today ? 0 : ms >= today - day ? 1 : ms >= week ? 2 : ms >= week - 7 * day ? 3 : ms >= today - 30 * day ? 4 : 5;
+                    const labels = ['Heute', 'Gestern', 'Diese Woche', 'Letzte Woche', 'Diesen Monat', 'Älter'];
+                    const out = [];
+                    for (const r of rows) {
+                        const b = bucket(r.date), last = out[out.length - 1];
+                        if (last && last.b === b) last.rows.push(r); else out.push({ b, label: labels[b], rows: [r] });
+                    }
+                    return out;
+                },
                 get mailCurRow() { return this.mailRows.find(r => r.key === this.mailSel) || { ...(this.mailCur || {}), key: this.mailSel, unread: false, star: false, ft: 0 }; },
                 /* Status ändern: sofort lokal (Überlagerung, wird über Google/P2P abgeglichen) + im Gmail-Postfach */
                 async mailSet(rows, patch) {
@@ -3914,8 +4186,9 @@ function reply_(p) {
                 mailNew(init = {}) {
                     const acc = init.acc || (this.mailAcc !== 'all' ? this.mailAcc : ((this.mailCfg.accounts[0] || {}).id || ''));
                     const body = init.body !== undefined ? init.body : this.mailSigBlock();
-                    this.mailComp = { mode: init.mode || 'new', acc, to: init.to || '', cc: '', bcc: '', subject: init.subject || '', body, att: [], busy: false, error: '', showCc: false, refId: init.refId || '', refMi: init.refMi || 0, all: !!init.all, info: init.info || '', initBody: body };
+                    this.mailComp = { mode: init.mode || 'new', acc, from: init.from || (this.mailAccount(acc) || {}).email || '', to: init.to || '', cc: '', bcc: '', subject: init.subject || '', body, att: [], busy: false, error: '', showCc: false, refId: init.refId || '', refMi: init.refMi || 0, all: !!init.all, info: init.info || '', initBody: body };
                     this.showMailCompose = true;
+                    this.mailLoadAliases(acc);
                     this.$nextTick(() => { const t = this.$refs.mailBody; if (t && this.mailComp.body) { t.focus(); t.setSelectionRange(0, 0); } });
                 },
                 mailQuote(m) { return 'Am ' + this.mailDateLong(m.date) + ' schrieb ' + this.senderName(m.from) + ':\n' + this.mailBodyText(m).slice(0, 4000).split('\n').map(l => '> ' + l).join('\n'); },
@@ -3923,10 +4196,16 @@ function reply_(p) {
                     if (m.plain) return String(m.plain).replace(/\r/g, '');
                     try { return (new DOMParser().parseFromString(m.html || '', 'text/html').body.innerText || new DOMParser().parseFromString(m.html || '', 'text/html').body.textContent || '').trim(); } catch (e) { return ''; }
                 },
+                /* Beim Antworten die Adresse vorschlagen, an die die Mail ging */
+                mailReplyFrom(m, acc) {
+                    const mine = this.mailAliases(acc).map(x => x.toLowerCase());
+                    const hit = [m.to, m.cc].join(',').split(',').map(x => this.mailAddr(x).toLowerCase()).find(x => x && mine.includes(x));
+                    return hit ? this.mailAliases(acc).find(x => x.toLowerCase() === hit) : '';
+                },
                 mailReplyTo(mi, all) {
                     const m = this.mailThread.msgs.find(x => x.i === mi), cur = this.mailCur; if (!m || !cur) return;
                     const s = m.subj || cur.subj || '';
-                    this.mailNew({ mode: all ? 'replyAll' : 'reply', acc: cur.acc, refId: cur.id, refMi: m.i, all, subject: /^(re|aw)\s*:/i.test(s) ? s : 'Re: ' + s, body: this.mailSigBlock() + '\n\n' + this.mailQuote(m), info: all ? 'Antwort an alle Empfänger der Nachricht von ' + this.senderName(m.from) : 'Antwort an ' + m.from });
+                    this.mailNew({ mode: all ? 'replyAll' : 'reply', acc: cur.acc, from: this.mailReplyFrom(m, cur.acc), refId: cur.id, refMi: m.i, all, subject: /^(re|aw)\s*:/i.test(s) ? s : 'Re: ' + s, body: this.mailSigBlock() + '\n\n' + this.mailQuote(m), info: all ? 'Antwort an alle Empfänger der Nachricht von ' + this.senderName(m.from) : 'Antwort an ' + m.from });
                 },
                 mailForward(mi) {
                     const m = this.mailThread.msgs.find(x => x.i === mi), cur = this.mailCur; if (!m || !cur) return;
@@ -3950,6 +4229,19 @@ function reply_(p) {
                     if (this.showMailCompose && dirty && !confirm('Die Nachricht verwerfen?')) return;
                     this.showMailCompose = false;
                 },
+                /* Adressen, die Gmail unter „Senden als“ erlaubt */
+                mailAliases(acc) { const a = this.mailAccount(acc); return a ? (a.aliases || (a.email ? [a.email] : [])) : []; },
+                get mailCompAliases() { return this.mailAliases(this.mailComp.acc); },
+                /* Beim ersten Verfassen einmal nachsehen, welche Absender es gibt */
+                async mailLoadAliases(acc) {
+                    const a = this.mailAccount(acc); if (!a || a.aliases) return;
+                    try {
+                        const j = await this.mailCall(a, { action: 'ping' }, 30000);
+                        if (!Array.isArray(j.aliases) || !j.aliases.length) return;
+                        a.aliases = j.aliases; if (!a.email) a.email = j.email || '';
+                        this.mailCfg = { ...this.mailCfg, accounts: [...this.mailCfg.accounts] }; this.saveMailCfg();
+                    } catch (e) {}
+                },
                 async mailSend() {
                     const c = this.mailComp, a = this.mailAccount(c.acc); if (c.busy) return;
                     if (!a) { c.error = 'Bitte ein Postfach wählen.'; return; }
@@ -3959,7 +4251,7 @@ function reply_(p) {
                     if (!c.body.trim() && !c.att.length && !confirm('Die Nachricht ist leer. Trotzdem senden?')) return;
                     c.busy = true; c.error = '';
                     try {
-                        const common = { body: c.body, cc: this.mailNormAddrs(c.cc), bcc: this.mailNormAddrs(c.bcc), attachments: c.att.map(x => ({ name: x.name, type: x.type, b64: x.b64 })) };
+                        const common = { body: c.body, cc: this.mailNormAddrs(c.cc), bcc: this.mailNormAddrs(c.bcc), attachments: c.att.map(x => ({ name: x.name, type: x.type, b64: x.b64 })), ...(c.from ? { from: c.from } : {}) };
                         if (isNew) await this.mailCall(a, { action: 'send', to: this.mailNormAddrs(c.to), subject: c.subject, ...common }, 120000);
                         else await this.mailCall(a, { action: 'reply', id: c.refId, mi: c.refMi, all: c.all, ...common }, 120000);
                         this.toast('E-Mail gesendet'); this.showMailCompose = false;
@@ -3994,7 +4286,7 @@ function reply_(p) {
                     s.busy = true;
                     try {
                         const j = await this.mailCall({ url, token: s.token }, { action: 'ping' }, 45000);
-                        const acc = { id: s.id || this.mailNewId(), name: name || j.email || 'Postfach', email: j.email || '', url, token: s.token };
+                        const acc = { id: s.id || this.mailNewId(), name: name || j.email || 'Postfach', email: j.email || '', url, token: s.token, ...(Array.isArray(j.aliases) && j.aliases.length > 1 ? { aliases: j.aliases } : {}) };
                         const accounts = [...this.mailCfg.accounts], i = accounts.findIndex(a => a.id === acc.id);
                         if (i >= 0) accounts[i] = acc; else accounts.push(acc);
                         this.mailCfg = { ...this.mailCfg, accounts }; this.saveMailCfg();
@@ -4065,7 +4357,7 @@ function reply_(p) {
                 },
                 csvCell(v) { v = String(v ?? ''); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; },
                 exportEncrypted() {
-                    const rec = readJSON(VAULT_KEY, null);
+                    const rec = readJSON(vaultStoreKey(this.vaultId), null);
                     if (!validVaultRecord(rec)) return this.toast('Export nicht möglich');
                     this.downloadText(`tresor-verschluesselt-${fmt(new Date())}.json`, JSON.stringify({ format: 'space-vault', v: 1, exported: new Date().toISOString(), vault: rec }, null, 2));
                     this.toast('Verschlüsselter Export gespeichert');
@@ -4278,7 +4570,8 @@ function reply_(p) {
                     this.touchSync();
                 },
                 exportData() {
-                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, vault: readJSON(VAULT_KEY, null) };
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, vault: readJSON(VAULT_KEY, null),
+                        vaults: this.vaults, vaultRecords: Object.fromEntries(this.vaults.filter(v => v.id !== 'main').map(v => [v.id, readJSON(vaultStoreKey(v.id), null)]).filter(([, r]) => validVaultRecord(r))) };
                     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
                     const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
                     document.body.appendChild(a); a.click(); a.remove();
@@ -4299,12 +4592,16 @@ function reply_(p) {
                             this.saveAllData();
 
                             let note = '';
-                            if (validVaultRecord(data.vault)) {
-                                if (this.vaultState === 'none' || confirm('Das Backup enthält einen Tresor. Den aktuellen Tresor ersetzen? (Danach gilt das Master-Passwort aus dem Backup.)')) {
-                                    this.lockVault(false);
-                                    localStorage.setItem(VAULT_KEY, JSON.stringify(data.vault));
-                                    this.vaultState = 'locked'; this.touchSync();
-                                    note = ' Tresor importiert – mit dem Master-Passwort des Backups entsperren.';
+                            const recs = Object.entries(data.vaultRecords || {}).filter(([, r]) => validVaultRecord(r));
+                            if (validVaultRecord(data.vault) || recs.length) {
+                                if (this.vaultState === 'none' || confirm('Das Backup enthält Tresore. Die Tresore auf diesem Gerät ersetzen? (Danach gelten die Master-Passwörter aus dem Backup.)')) {
+                                    this.lockVault(false, true);
+                                    if (Array.isArray(data.vaults)) { this.vaults = normVaults(data.vaults); this.persistVaults(); }
+                                    if (validVaultRecord(data.vault)) localStorage.setItem(VAULT_KEY, JSON.stringify(data.vault));
+                                    for (const [vid, r] of recs) if (this.vaults.some(v => v.id === vid)) localStorage.setItem(vaultStoreKey(vid), JSON.stringify(r));
+                                    if (!this.vaults.some(v => v.id === this.vaultId)) this.vaultId = 'main';
+                                    this.vaultState = this.vaultExists(this.vaultId) ? 'locked' : 'none'; this.touchSync();
+                                    note = ' Tresore importiert – mit dem Master-Passwort des Backups entsperren.';
                                 }
                             } else if (Array.isArray(data.passwords) && data.passwords.length) {
                                 if (this.vaultState === 'unlocked') {
