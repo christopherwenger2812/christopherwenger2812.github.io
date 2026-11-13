@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-5">
+    <meta name="app-version" content="2026.11.13-6">
     <meta name="theme-color" content="#0b0f19">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,9 +15,15 @@
         // Theme, Akzentfarbe und Dichte vor dem ersten Rendern setzen (verhindert Aufblitzen)
         try {
             const r = document.documentElement, t = localStorage.getItem('organizer_theme'), c = JSON.parse(localStorage.getItem('organizer_cfg') || '{}');
-            r.dataset.theme = ['midnight', 'white', 'ocean', 'emerald'].includes(t) ? t : 'midnight';
+            r.dataset.theme = ['midnight', 'white', 'ocean', 'emerald', 'nord', 'graphite', 'sunset', 'aurora', 'paper', 'rose'].includes(t) ? t : 'midnight';
             if (c.accent) r.style.setProperty('--accent', c.accent);
             if (c.density) r.dataset.density = c.density;
+            if (c.fontSize) r.dataset.fsize = c.fontSize;
+            if (c.font) r.dataset.font = c.font;
+            if (c.radius) r.dataset.radius = c.radius;
+            if (c.cardStyle) r.dataset.card = c.cardStyle;
+            if (c.bgStyle) r.dataset.bg = c.bgStyle;
+            if (c.reduceMotion) r.dataset.motion = 'reduce';
         } catch (e) { document.documentElement.dataset.theme = 'midnight'; }
     </script>
     <script>
@@ -41,9 +47,15 @@
 
         /* ---------- Themes (alle Farben laufen über Variablen) ---------- */
         :root, [data-theme="midnight"] { --bg:#0b0f19; --surface:#131c2e; --surface2:#0e1524; --border:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --hover:#1a2740; --accent:#6366f1; color-scheme: dark; }
-        [data-theme="white"]   { --bg:#f1f5f9; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0; --text:#0f172a; --muted:#64748b; --hover:#f8fafc; --accent:#4f46e5; color-scheme: light; }
+        [data-theme="white"]   { --bg:#f1f5f9; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0; --text:#0f172a; --muted:#586579; --hover:#f8fafc; --accent:#4f46e5; color-scheme: light; }
         [data-theme="ocean"]   { --bg:#0f172a; --surface:#1e293b; --surface2:#162033; --border:#334155; --text:#f8fafc; --muted:#94a3b8; --hover:#27354d; --accent:#6366f1; color-scheme: dark; }
-        [data-theme="emerald"] { --bg:#022c22; --surface:#064e3b; --surface2:#053f31; --border:#047857; --text:#ecfdf5; --muted:#a7d8c3; --hover:#075e47; --accent:#10b981; color-scheme: dark; }
+        [data-theme="emerald"] { --bg:#022c22; --surface:#064e3b; --surface2:#053f31; --border:#047857; --text:#ecfdf5; --muted:#a7d8c3; --hover:#075e47; --accent:#059669; color-scheme: dark; }
+        [data-theme="nord"]     { --bg:#2e3440; --surface:#3b4252; --surface2:#343a48; --border:#4c566a; --text:#eceff4; --muted:#aab4c8; --hover:#434c5e; --accent:#5e81ac; color-scheme: dark; }
+        [data-theme="graphite"] { --bg:#111214; --surface:#1b1c1f; --surface2:#151618; --border:#2b2d31; --text:#f4f4f5; --muted:#9a9ca3; --hover:#232529; --accent:#6b7280; color-scheme: dark; }
+        [data-theme="sunset"]   { --bg:#1a1013; --surface:#2a1820; --surface2:#211219; --border:#4a2a35; --text:#fdf2f0; --muted:#d3aaaa; --hover:#35202a; --accent:#ea580c; color-scheme: dark; }
+        [data-theme="aurora"]   { --bg:#0a1020; --surface:#121c36; --surface2:#0d1630; --border:#24335c; --text:#eef4ff; --muted:#a0b1d8; --hover:#192646; --accent:#8b5cf6; color-scheme: dark; }
+        [data-theme="paper"]    { --bg:#f6f1e7; --surface:#fffdf8; --surface2:#f3ede0; --border:#e4dccb; --text:#2b2417; --muted:#74684f; --hover:#faf5ea; --accent:#b45309; color-scheme: light; }
+        [data-theme="rose"]     { --bg:#fdf2f4; --surface:#ffffff; --surface2:#fbe8ec; --border:#f0cdd5; --text:#3b1220; --muted:#85556a; --hover:#fff5f7; --accent:#be185d; color-scheme: light; }
         :root { --row-pad: .9rem 1rem; }
         [data-density="compact"] { --row-pad: .45rem .8rem; }
 
@@ -124,6 +136,22 @@
         .mav { width: 2.4rem; height: 2.4rem; border-radius: 999px; display: grid; place-items: center; font-weight: 800; font-size: .85rem; color: #fff; flex: none; }
         .mframe { display: block; width: 100%; border: 0; background: #fff; border-radius: .8rem; min-height: 60px; }
         .mstar { color: var(--muted); } .mstar.on { color: #fbbf24; }
+        /* ---------- Stil-Optionen (Einstellungen → Darstellung) ---------- */
+        [data-fsize="large"] { font-size: 112.5%; } [data-fsize="xl"] { font-size: 125%; }
+        [data-font="rounded"] body { font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif; }
+        [data-font="serif"] body { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif; }
+        [data-font="mono"] body { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; letter-spacing: -.01em; }
+        [data-radius="sharp"] .card { border-radius: .6rem; } [data-radius="sharp"] .inner { border-radius: .45rem; }
+        [data-radius="sharp"] .btn, [data-radius="sharp"] .field, [data-radius="sharp"] .seg, [data-radius="sharp"] .seg > button { border-radius: .4rem; }
+        [data-radius="round"] .card { border-radius: 2.2rem; } [data-radius="round"] .inner { border-radius: 1.5rem; }
+        [data-radius="round"] .btn { border-radius: 999px; } [data-radius="round"] .field { border-radius: 1.2rem; }
+        [data-card="glass"] .card { background: color-mix(in srgb, var(--surface) 68%, transparent); backdrop-filter: blur(16px) saturate(1.25); -webkit-backdrop-filter: blur(16px) saturate(1.25); }
+        [data-card="flat"] .card { box-shadow: none; }
+        [data-card="outline"] .card { background: transparent; box-shadow: none; border-width: 1.5px; }
+        [data-card="outline"] .inner { background: color-mix(in srgb, var(--surface) 45%, transparent); }
+        [data-bg="gradient"] body { background-image: radial-gradient(1100px 560px at 8% -8%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 62%), radial-gradient(900px 480px at 100% 0%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 60%); background-attachment: fixed; }
+        [data-motion="reduce"] *, [data-motion="reduce"] *::before, [data-motion="reduce"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
         .backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; background: rgba(2, 6, 23, .7); backdrop-filter: blur(8px); overflow-y: auto; }
         .backdrop > * { margin-block: auto; }
         .swatch { width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 2px solid transparent; transition: transform .15s; flex-shrink: 0; }
@@ -178,7 +206,7 @@
         @media (min-width: 1280px) { .calgrid.up { grid-template-columns: minmax(0, 1fr) 21rem; } }
     </style>
 </head>
-<body class="font-sans antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()">
+<body class="font-sans antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
 
     <!-- Eigene Logos: App („C“ mit Umlauf-Punkt) und Tresor (Safe-Wählscheibe mit Schlüsselloch) -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -243,11 +271,14 @@
                         </p>
                     </div>
                 </div>
-                <nav class="hidden md:flex seg" aria-label="Hauptnavigation">
+                <div class="hidden md:flex items-center gap-3 shrink-0">
+                <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <nav class="flex seg" aria-label="Hauptnavigation">
                     <template x-for="t in tabs" :key="t.id">
-                        <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
+                        <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden xl:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
                     </template>
                 </nav>
+                </div>
             </div>
         </header>
 
@@ -258,6 +289,67 @@
         </nav>
 
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12">
+
+            <!-- ================= HEUTE ================= -->
+            <section x-show="activeTab === 'today'" x-cloak class="space-y-5">
+                <div class="card p-5 sm:p-7 flex flex-wrap items-center gap-4">
+                    <div class="mr-auto min-w-0">
+                        <p class="label" x-text="longDate(today)"></p>
+                        <h2 class="text-2xl sm:text-4xl font-black tracking-tight mt-1" x-text="greeting"></h2>
+                        <p class="muted text-xs mt-1.5 font-medium" x-text="todaySummary"></p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button @click="openEventModal({ startDate: today })" class="btn btn-soft"><i class="fa-regular fa-calendar-plus"></i>Termin</button>
+                        <button @click="openSearch()" class="btn btn-soft"><i class="fa-solid fa-magnifying-glass"></i>Suchen</button>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-5 items-start">
+                    <div x-show="cfg.todayEvents" class="card p-5 sm:p-6 space-y-3">
+                        <div class="flex items-center justify-between"><p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Termine heute</p><button class="text-[11px] font-bold accent" @click="switchTab('calendar')">Kalender öffnen</button></div>
+                        <p x-show="!todayEventList.length" class="muted text-sm py-3">Heute stehen keine Termine an.</p>
+                        <template x-for="e in todayEventList" :key="e.id">
+                            <button type="button" class="inner w-full p-3 flex items-center gap-3 text-left hover:brightness-110" @click="switchTab('calendar'); anchor = today; editEvent(e)">
+                                <span class="w-1.5 self-stretch rounded-full shrink-0" :style="'background:' + e.color"></span>
+                                <span class="min-w-0 flex-1"><span class="block text-sm font-bold truncate" x-text="e.title"></span><span class="block text-[11px] muted" x-text="e.allDay ? 'Ganztägig' : e.startTime + ' – ' + e.endTime"></span></span>
+                            </button>
+                        </template>
+                        <div x-show="tomorrowEventList.length" class="pt-3 border-t divider space-y-1.5">
+                            <p class="label">Morgen</p>
+                            <template x-for="e in tomorrowEventList" :key="e.id"><p class="text-xs flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" :style="'background:' + e.color"></span><span class="muted shrink-0" x-text="e.allDay ? 'ganztägig' : e.startTime"></span><span class="truncate font-semibold" x-text="e.title"></span></p></template>
+                        </div>
+                    </div>
+
+                    <div x-show="cfg.todayTodos" class="card p-5 sm:p-6 space-y-3">
+                        <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-list-check mr-2"></i>Aufgaben</p><button class="text-[11px] font-bold accent" @click="switchTab('todos')">To-Dos öffnen</button></div>
+                        <form @submit.prevent="todayAddTask()" class="flex gap-2"><input type="text" x-model="todayTask" placeholder="Aufgabe für heute…" class="field !py-2" aria-label="Neue Aufgabe für heute"><button class="btn btn-primary" :disabled="!todayTask.trim()" aria-label="Hinzufügen"><i class="fa-solid fa-plus"></i></button></form>
+                        <p x-show="!todayTodoList.length" class="muted text-sm py-2">Nichts offen für heute – gut gemacht.</p>
+                        <template x-for="t in todayTodoList" :key="t.id">
+                            <div class="inner p-3 flex items-center gap-3">
+                                <button @click="toggleTodo(t.id)" class="check shrink-0" :aria-label="'Erledigen: ' + t.title"><i class="fa-solid fa-check text-[10px]"></i></button>
+                                <button type="button" class="min-w-0 flex-1 text-left" @click="openTaskModal(t)"><span class="block text-sm font-bold truncate" x-text="t.title"></span><span x-show="t.due" class="block text-[11px]" :class="dueClass(t) || 'muted'" x-text="dueLabel(t)"></span></button>
+                                <i x-show="t.important" class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div x-show="cfg.todayMail" class="card p-5 sm:p-6 space-y-3">
+                        <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-envelope mr-2"></i>E-Mail</p><button class="text-[11px] font-bold accent" @click="switchTab('mail')">Posteingang öffnen</button></div>
+                        <p x-show="!mailCfg.accounts.length" class="muted text-sm py-2">Noch kein Postfach verbunden. <button class="font-bold accent" @click="openMailSetup()">Jetzt verbinden</button></p>
+                        <template x-for="a in mailCfg.accounts" :key="a.id">
+                            <div class="inner p-3 flex items-center gap-3"><i class="fa-regular fa-envelope muted"></i><span class="min-w-0 flex-1 text-sm font-bold truncate" x-text="a.name"></span>
+                                <span class="chip" :class="((mailCounts[a.id] || {}).inbox || 0) ? 'run' : ''" x-text="(((mailCounts[a.id] || {}).inbox) || 0) + ' ungelesen'"></span></div>
+                        </template>
+                    </div>
+
+                    <div x-show="cfg.todayShop" class="card p-5 sm:p-6 space-y-3">
+                        <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-bag-shopping mr-2"></i>Einkauf</p><button class="text-[11px] font-bold accent" @click="switchTab('shopping')">Liste öffnen</button></div>
+                        <p x-show="!shopAll.length" class="muted text-sm py-2">Die Einkaufsliste ist leer.</p>
+                        <div class="flex flex-wrap gap-2"><template x-for="i in shopAll.slice(0, 14)" :key="i.id"><span class="chip !py-1.5 !px-3"><span x-text="i.emoji || '•'"></span><span x-text="i.name"></span></span></template></div>
+                        <p x-show="shopAll.length > 14" class="text-[11px] muted" x-text="'… und ' + (shopAll.length - 14) + ' weitere'"></p>
+                    </div>
+                </div>
+            </section>
 
             <!-- ================= KALENDER ================= -->
             <section x-show="activeTab === 'calendar'" x-cloak class="calgrid" :class="cfg.showUpcoming ? 'up' : ''">
@@ -491,9 +583,14 @@
 
             <!-- ================= EINKAUF (Bring!-Stil) ================= -->
             <section x-show="activeTab === 'shopping'" x-cloak class="space-y-5">
+                <div class="flex gap-2 overflow-x-auto pb-1" aria-label="Einkaufslisten">
+                    <button @click="shopListId = ''" class="chip !py-2 !px-3.5 !text-xs shrink-0" :class="shopListId === '' ? 'on' : ''">🛒 Einkauf<span class="opacity-70" x-text="shopListCount('') || ''"></span></button>
+                    <template x-for="l in shopLists" :key="l.id"><button @click="shopListId = l.id" class="chip !py-2 !px-3.5 !text-xs shrink-0" :class="shopListId === l.id ? 'on' : ''"><span x-text="l.emoji"></span><span x-text="l.name"></span><span class="opacity-70" x-text="shopListCount(l.id) || ''"></span></button></template>
+                    <button @click="openShopList()" class="chip !py-2 !px-3.5 !text-xs shrink-0 !border-dashed" title="Neue Liste"><i class="fa-solid fa-plus"></i>Liste</button>
+                </div>
                 <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Einkaufsliste</h2>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight" x-text="shopListName"></h2>
                         <p class="muted text-xs mt-1 font-medium"><span x-text="shopOpen.length"></span> Artikel offen · <span x-text="shopDone.length"></span> im Warenkorb</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2.5">
@@ -501,6 +598,8 @@
                             <button @click="setView('shopping', 'tiles')" :class="cfg.views.shopping === 'tiles' ? 'on' : ''" title="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
                             <button @click="setView('shopping', 'list')" :class="cfg.views.shopping === 'list' ? 'on' : ''" title="Liste"><i class="fa-solid fa-list"></i></button>
                         </div>
+                        <button @click="shareShopList()" class="btn btn-soft" title="Liste als Text teilen oder kopieren"><i class="fa-solid fa-share-nodes"></i><span class="hidden sm:inline">Teilen</span></button>
+                        <button x-show="shopListId" @click="openShopList(shopLists.find(l => l.id === shopListId))" class="btn btn-soft" title="Liste bearbeiten"><i class="fa-solid fa-pen"></i></button>
                         <button x-show="shopDone.length" @click="clearBought()" class="btn btn-soft"><i class="fa-solid fa-broom"></i>Gekauftes entfernen</button>
                     </div>
                 </div>
@@ -515,7 +614,7 @@
                         <button @click="shopCat = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === 'all' ? 'on' : ''">Alle</button>
                         <template x-for="c in shopCategories" :key="c"><button @click="shopCat = c" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === c ? 'on' : ''" x-text="c"></button></template>
                     </div>
-                    <div x-show="!shopQuery.trim() && recentView.length" class="space-y-2">
+                    <div x-show="cfg.showRecent && !shopQuery.trim() && recentView.length" class="space-y-2">
                         <p class="label">Zuletzt verwendet</p>
                         <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2">
                             <template x-for="p in recentView" :key="'r' + p.name">
@@ -626,7 +725,7 @@
                                     <span class="min-w-0 flex-1">
                                         <span class="flex items-baseline gap-2"><span class="mw text-sm truncate flex-1" x-text="mailWho(r)"></span><span class="text-[11px] muted shrink-0" x-text="mailDateShort(r.date)"></span></span>
                                         <span class="block ms truncate" x-text="(r.subj || '(kein Betreff)') + (r.n > 1 ? ' (' + r.n + ')' : '')"></span>
-                                        <span class="block text-[11px] muted truncate" x-text="mailSnippet(r)"></span>
+                                        <span x-show="mailCfg.settings.preview" class="block text-[11px] muted truncate" x-text="mailSnippet(r)"></span>
                                         <span x-show="mailAcc === 'all' && mailCfg.accounts.length > 1" class="chip mt-1" x-text="(mailAccount(r.acc) || {}).name"></span>
                                     </span>
                                     <button type="button" class="mstar p-1 -mr-1" :class="r.star ? 'on' : ''" @click.stop="mailSet([r], { s: r.star ? 0 : 1 })" :aria-label="r.star ? 'Markierung entfernen' : 'Markieren'"><i :class="r.star ? 'fa-solid' : 'fa-regular'" class="fa-star"></i></button>
@@ -646,6 +745,8 @@
                                 <button class="btn btn-soft" @click="mailReplyTo(mailThread.msgs.length - 1, true)" :disabled="!mailThread.msgs.length" title="Allen antworten"><i class="fa-solid fa-reply-all"></i></button>
                                 <button class="btn btn-soft" @click="mailForward(mailThread.msgs.length - 1)" :disabled="!mailThread.msgs.length" title="Weiterleiten"><i class="fa-solid fa-share"></i></button>
                                 <span class="flex-1"></span>
+                                <button class="btn btn-ghost" @click="mailToTodo()" title="Als Aufgabe merken"><i class="fa-solid fa-list-check"></i></button>
+                                <button class="btn btn-ghost" @click="mailToEvent()" title="Als Termin eintragen"><i class="fa-regular fa-calendar-plus"></i></button>
                                 <button class="btn btn-ghost" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
                                 <button class="btn btn-ghost mstar" :class="mailCurRow.star ? 'on' : ''" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren"><i :class="mailCurRow.star ? 'fa-solid' : 'fa-regular'" class="fa-star"></i></button>
                                 <button x-show="mailFolder !== 'archive'" class="btn btn-ghost" @click="mailMove('a')" title="Archivieren"><i class="fa-solid fa-box-archive"></i></button>
@@ -702,6 +803,7 @@
                         </div>
                     </div>
                     <div x-show="vaultState === 'unlocked'" class="flex flex-wrap gap-2.5">
+                        <button @click="openVaultHealth()" class="btn btn-soft" title="Passwörter prüfen"><i class="fa-solid fa-shield-heart"></i><span class="hidden sm:inline">Passwort-Check</span></button>
                         <button @click="openVaultIO()" class="btn btn-soft" title="Tresor exportieren / importieren"><i class="fa-solid fa-file-export"></i><span class="hidden sm:inline">Import/Export</span></button>
                         <button @click="openFolders()" class="btn btn-soft" title="Ordner verwalten"><i class="fa-solid fa-folder-tree"></i><span class="hidden sm:inline">Ordner</span></button>
                         <button @click="openChangeMaster()" class="btn btn-soft" title="Master-Passwort ändern"><i class="fa-solid fa-key"></i></button>
@@ -814,6 +916,7 @@
                                         <div class="min-w-0">
                                             <p class="text-sm font-bold flex items-center gap-1.5 min-w-0"><span class="truncate" x-text="pw.title"></span><i x-show="pw.fav" class="fa-solid fa-star text-[10px] text-amber-400 shrink-0"></i></p>
                                             <p class="text-[11px] muted truncate" x-text="pwSub(pw)"></p>
+                                            <button type="button" x-show="totpCodes[pw.id] && totpCodes[pw.id].code" @click.stop="copyTotp(pw)" class="chip run mt-1 font-mono" title="2FA-Code kopieren"><i class="fa-solid fa-shield-halved"></i><span x-text="fmtCode((totpCodes[pw.id] || {}).code)"></span><span class="opacity-70" x-text="((totpCodes[pw.id] || {}).left || 0) + ' s'"></span></button>
                                         </div>
                                     </div>
                                     <span x-show="pw.folder" class="chip hidden md:inline-flex shrink-0 max-w-[9rem]"><span class="truncate" x-text="pw.folder"></span></span>
@@ -829,6 +932,7 @@
                                                 <template x-if="pw.type === 'login'"><div>
                                                     <button x-show="pw.username" @click="pwMenu = null; copyText(pw.username, 'Benutzername kopiert')"><i class="fa-regular fa-user fa-fw text-xs"></i>Benutzername kopieren</button>
                                                     <button @click="pwMenu = null; copyText(pw.password, 'Passwort kopiert', true)"><i class="fa-solid fa-key fa-fw text-xs"></i>Passwort kopieren</button>
+                                                    <button x-show="pw.totp" @click="pwMenu = null; copyTotp(pw)"><i class="fa-solid fa-shield-halved fa-fw text-xs"></i>2FA-Code kopieren</button>
                                                 </div></template>
                                                 <template x-if="pw.type === 'card'"><div>
                                                     <button x-show="pw.cardNumber" @click="pwMenu = null; copyText(pw.cardNumber, 'Kartennummer kopiert', true)"><i class="fa-regular fa-credit-card fa-fw text-xs"></i>Kartennummer kopieren</button>
@@ -855,12 +959,53 @@
 
             <!-- ================= SETTINGS ================= -->
             <section x-show="activeTab === 'settings'" x-cloak class="space-y-5">
-                <div class="card p-5 sm:p-6">
-                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3"><i class="fa-solid fa-sliders text-indigo-400"></i>Einstellungen</h2>
-                    <p class="muted text-xs mt-1 font-medium">Alles wird automatisch gespeichert.</p>
+                <div class="card p-5 sm:p-6 flex flex-wrap items-center gap-3">
+                    <div class="mr-auto">
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3"><i class="fa-solid fa-sliders text-indigo-400"></i>Einstellungen</h2>
+                        <p class="muted text-xs mt-1 font-medium">Alles wird automatisch gespeichert.</p>
+                    </div>
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs muted"></i>
+                        <input type="search" x-model="setQuery" placeholder="Einstellung suchen…" class="field !pl-9" aria-label="Einstellungen durchsuchen">
+                    </div>
                 </div>
 
-                <div class="card p-5 sm:p-6 space-y-5">
+                <div class="grid lg:grid-cols-[14.5rem_minmax(0,1fr)] gap-5 items-start">
+                    <nav class="card p-2 sm:p-3 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:sticky lg:top-24" aria-label="Einstellungs-Kategorien">
+                        <template x-for="c in settingsCats" :key="c.id">
+                            <button type="button" class="mfold" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'data') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
+                        </template>
+                    </nav>
+
+                    <div class="space-y-5 min-w-0">
+                        <!-- Treffer der Suche -->
+                        <div x-show="setQuery.trim()" class="card p-5 sm:p-6 space-y-1">
+                            <p class="label mb-3"><i class="fa-solid fa-magnifying-glass mr-2"></i>Suchergebnisse</p>
+                            <p x-show="!settingsShown.length" class="muted text-sm py-4">Keine passende Einstellung gefunden.</p>
+                        </div>
+
+                        <!-- Generische Einstellungen (Kategorie oder Suchtreffer) -->
+                        <div x-show="settingsShown.length" class="card p-5 sm:p-6 space-y-1" :class="setQuery.trim() ? '!mt-0' : ''">
+                            <p x-show="!setQuery.trim()" class="label mb-3"><i :class="(settingsCats.find(c => c.id === setCat) || {}).icon" class="mr-2"></i><span x-text="(settingsCats.find(c => c.id === setCat) || {}).label"></span></p>
+                            <template x-for="it in settingsShown" :key="it.cat + it.k">
+                                <div class="flex items-center justify-between gap-4 py-3 border-t divider first:border-t-0" x-show="!it.if || cfg[it.if]">
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-bold" x-text="it.label"></p>
+                                        <p class="text-[11px] muted mt-0.5" x-show="it.desc" x-text="it.desc"></p>
+                                        <button type="button" x-show="setQuery.trim()" class="text-[10px] font-bold accent mt-0.5" @click="setQuery = ''; setCat = it.cat" x-text="'in ' + (settingsCats.find(c => c.id === it.cat) || {}).label"></button>
+                                    </div>
+                                    <button x-show="it.type === 'toggle'" type="button" role="switch" :aria-checked="!!settingVal(it)" class="switch" :class="settingVal(it) ? 'on' : ''" @click="toggleSetting(it)" :aria-label="it.label"></button>
+                                    <select x-show="it.type === 'select'" class="field !w-auto max-w-[11rem] sm:max-w-none" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
+                                        <template x-for="o in it.o" :key="o[0]"><option :value="o[0]" :selected="String(o[0]) === String(settingVal(it))" x-text="o[1]"></option></template>
+                                    </select>
+                                    <button x-show="it.type === 'time'" type="button" class="field pickbtn !w-auto" @click="pickTime(cfg, it.k, { cb: 'saveCfg', title: it.label })"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="cfg[it.k]"></span></button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Kategorie-spezifische Bereiche -->
+                        <div x-show="!setQuery.trim() && setCat === 'design'" class="space-y-5">
+<div class="card p-5 sm:p-6 space-y-5">
                     <p class="label"><i class="fa-solid fa-palette mr-2"></i>Design</p>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <template x-for="t in themes" :key="t.id">
@@ -878,27 +1023,33 @@
                     </div>
                 </div>
 
-                <!-- Generische Einstellungen -->
-                <template x-for="sec in settingsDef" :key="sec.title">
-                    <div class="card p-5 sm:p-6 space-y-1">
-                        <p class="label mb-3"><i :class="sec.icon" class="mr-2"></i><span x-text="sec.title"></span></p>
-                        <template x-for="it in sec.items" :key="it.k">
-                            <div class="flex items-center justify-between gap-4 py-3 border-t divider first:border-t-0">
-                                <div class="min-w-0">
-                                    <p class="text-sm font-bold" x-text="it.label"></p>
-                                    <p class="text-[11px] muted mt-0.5" x-show="it.desc" x-text="it.desc"></p>
-                                </div>
-                                <button x-show="it.type === 'toggle'" type="button" role="switch" :aria-checked="!!cfg[it.k]" class="switch" :class="cfg[it.k] ? 'on' : ''" @click="toggleCfg(it.k)"></button>
-                                <select x-show="it.type === 'select'" class="field !w-auto max-w-[11rem] sm:max-w-none" @change="selectCfg(it, $event.target.value)">
-                                    <template x-for="o in it.o" :key="o[0]"><option :value="o[0]" :selected="String(o[0]) === String(cfg[it.k])" x-text="o[1]"></option></template>
-                                </select>
-                                <button x-show="it.type === 'time'" type="button" class="field pickbtn !w-auto" @click="pickTime(cfg, it.k, { cb: 'saveCfg', title: it.label })"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="cfg[it.k]"></span></button>
-                            </div>
-                        </template>
-                    </div>
-                </template>
 
-                <div class="card p-5 sm:p-6 space-y-5">
+                        </div>
+                        <div x-show="!setQuery.trim() && setCat === 'calendar'" class="card p-5 sm:p-6 space-y-3">
+                    <div class="space-y-3">
+                        <p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Google-Kalender importieren (Apps-Script-URL)</p>
+                        <input type="url" x-model="googleScriptUrlInput" placeholder="https://script.google.com/macros/s/…/exec" class="field">
+                        <div class="flex justify-end"><button @click="saveGoogleScriptUrl()" class="btn btn-primary">URL speichern</button></div>
+                    </div>
+                        </div>
+                        <div x-show="!setQuery.trim() && setCat === 'mail'" class="card p-5 sm:p-6 space-y-4">
+                            <p class="label"><i class="fa-solid fa-signature mr-2"></i>Signatur &amp; Textbausteine</p>
+                            <label class="block"><span class="text-sm font-bold">Signatur</span><span class="block text-[11px] muted mb-1.5">Wird neuen Mails und Antworten automatisch angehängt.</span>
+                                <textarea x-model="mailCfg.settings.signature" @change="saveMailCfg()" rows="4" maxlength="1500" class="field font-mono !text-[13px]" placeholder="Viele Grüße&#10;Christopher"></textarea></label>
+                            <div class="space-y-2">
+                                <p class="text-sm font-bold">Textbausteine</p>
+                                <template x-for="(t, i) in mailCfg.settings.templates" :key="i">
+                                    <div class="inner p-3 space-y-2">
+                                        <div class="flex gap-2"><input type="text" x-model="t.name" @change="saveMailCfg()" maxlength="40" placeholder="Name" class="field !py-2" aria-label="Name des Bausteins"><button type="button" class="icon-btn" @click="mailCfg.settings.templates.splice(i, 1); saveMailCfg()" aria-label="Baustein löschen"><i class="fa-solid fa-trash-can text-rose-400"></i></button></div>
+                                        <textarea x-model="t.text" @change="saveMailCfg()" rows="3" maxlength="3000" class="field !text-[13px]" placeholder="Text …" aria-label="Text des Bausteins"></textarea>
+                                    </div>
+                                </template>
+                                <button type="button" class="btn btn-soft" x-show="mailCfg.settings.templates.length < 12" @click="mailCfg.settings.templates.push({ name: 'Neuer Baustein', text: '' }); saveMailCfg()"><i class="fa-solid fa-plus"></i>Baustein hinzufügen</button>
+                            </div>
+                            <div class="pt-3 border-t divider"><button type="button" class="btn btn-soft" @click="openMailSetup()"><i class="fa-solid fa-plug"></i>Postfächer verwalten</button></div>
+                        </div>
+                        <div x-show="!setQuery.trim() && setCat === 'sync'" class="space-y-5">
+<div class="card p-5 sm:p-6 space-y-5">
                     <div>
                         <p class="label"><i class="fa-solid fa-arrows-rotate mr-2"></i>Geräte-Abgleich</p>
                         <p class="text-[11px] muted mt-1.5 leading-relaxed">Hält Termine, Aufgaben, Einkauf, Tresor und Einstellungen auf deinen Geräten synchron. Alles wird mit deinem Sync-Passwort verschlüsselt, bevor es das Gerät verlässt. Nur pro Gerät bleiben Design/Akzent, Dichte, Startseite, Ansichten, Benachrichtigungen und die Update-Prüfung sowie die Google-Kalender-URL.</p>
@@ -967,6 +1118,55 @@
                     </div>
                 </div>
 
+
+                        </div>
+                        <div x-show="!setQuery.trim() && setCat === 'data'" class="space-y-5">
+                            <div class="card p-5 sm:p-6 space-y-6">
+                    <div class="space-y-3">
+                        <p class="label"><i class="fa-solid fa-floppy-disk mr-2"></i>Backup</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button @click="exportData()" class="btn btn-soft"><i class="fa-solid fa-download"></i>Exportieren</button>
+                            <label class="btn btn-soft"><i class="fa-solid fa-upload"></i>Importieren<input type="file" @change="importData($event)" accept=".json,application/json" class="hidden"></label>
+                        </div>
+                        <p class="text-[11px] muted">Der Tresor wird im Backup nur verschlüsselt gespeichert – ohne Master-Passwort ist er nicht lesbar.</p>
+                    </div>
+                    <div class="space-y-3 pt-6 border-t divider">
+                        <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
+                        <template x-if="!backupReady()">
+                            <p class="text-[11px] muted">Dafür muss der Google-Abgleich eingerichtet sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zum Geräte-Abgleich</button></p>
+                        </template>
+                        <template x-if="backupReady()">
+                            <div class="space-y-3">
+                                <div class="flex flex-wrap gap-3 items-center">
+                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="makeBackup()"><i class="fa-solid fa-cloud-arrow-up"></i>Jetzt sichern</button>
+                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="loadBackups()"><i class="fa-solid fa-rotate"></i>Liste aktualisieren</button>
+                                    <span class="text-[11px] muted" x-show="backupLast" x-text="'Letzte Sicherung: ' + backupLabel({ ts: backupLast })"></span>
+                                </div>
+                                <p class="text-[11px] !text-rose-400" x-show="backupMsg" x-text="backupMsg"></p>
+                                <p class="text-[11px] muted" x-show="!backups.length &amp;&amp; !backupMsg">Noch keine Sicherung vorhanden (oder Liste noch nicht geladen).</p>
+                                <div class="space-y-2">
+                                    <template x-for="b in backups" :key="b.id">
+                                        <div class="inner p-3 flex items-center justify-between gap-3">
+                                            <div class="min-w-0"><p class="text-sm font-bold" x-text="backupLabel(b)"></p><p class="text-[11px] muted" x-text="Math.max(1, Math.round(b.size / 1024)) + ' KB · verschlüsselt'"></p></div>
+                                            <button type="button" class="btn btn-soft shrink-0" :disabled="backupBusy" @click="restoreBackup(b)"><i class="fa-solid fa-clock-rotate-left"></i>Wiederherstellen</button>
+                                        </div>
+                                    </template>
+                                </div>
+                                <p class="text-[11px] muted">Sicherungen sind mit deinem Sync-Passwort verschlüsselt und liegen als Dateien <code>space-backup-…</code> in deinem Google Drive. Vor jeder Wiederherstellung wird automatisch der aktuelle Stand gesichert.</p>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="space-y-3 pt-6 border-t divider">
+                        <p class="label text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gefahrenzone</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button x-show="vaultState !== 'none'" @click="openReset()" class="btn btn-soft text-rose-400">Tresor zurücksetzen</button>
+                            <button @click="resetAll()" class="btn btn-soft text-rose-400">Alle Daten löschen</button>
+                        </div>
+                    </div>
+
+                            </div>
+                        </div>
+                        <div x-show="!setQuery.trim() && setCat === 'about'" class="space-y-5">
                 <div class="card p-5 sm:p-6 space-y-3">
                     <p class="label"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>App &amp; Updates</p>
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -981,25 +1181,7 @@
                     </div>
                 </div>
 
-                <div class="card p-5 sm:p-6 space-y-6">
-                    <div class="space-y-3">
-                        <p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Google-Kalender importieren (Apps-Script-URL)</p>
-                        <input type="url" x-model="googleScriptUrlInput" placeholder="https://script.google.com/macros/s/…/exec" class="field">
-                        <div class="flex justify-end"><button @click="saveGoogleScriptUrl()" class="btn btn-primary">URL speichern</button></div>
-                    </div>
-                    <div class="space-y-3 pt-6 border-t divider">
-                        <p class="label"><i class="fa-solid fa-floppy-disk mr-2"></i>Backup</p>
-                        <div class="flex flex-wrap gap-3">
-                            <button @click="exportData()" class="btn btn-soft"><i class="fa-solid fa-download"></i>Exportieren</button>
-                            <label class="btn btn-soft"><i class="fa-solid fa-upload"></i>Importieren<input type="file" @change="importData($event)" accept=".json,application/json" class="hidden"></label>
-                        </div>
-                        <p class="text-[11px] muted">Der Tresor wird im Backup nur verschlüsselt gespeichert – ohne Master-Passwort ist er nicht lesbar.</p>
-                    </div>
-                    <div class="space-y-3 pt-6 border-t divider">
-                        <p class="label text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gefahrenzone</p>
-                        <div class="flex flex-wrap gap-3">
-                            <button x-show="vaultState !== 'none'" @click="openReset()" class="btn btn-soft text-rose-400">Tresor zurücksetzen</button>
-                            <button @click="resetAll()" class="btn btn-soft text-rose-400">Alle Daten löschen</button>
+
                         </div>
                     </div>
                 </div>
@@ -1038,6 +1220,7 @@
                     <option value="30">30 Minuten vorher</option><option value="60">1 Stunde vorher</option><option value="1440">1 Tag vorher</option>
                 </select>
             </div>
+            <textarea x-model="currentEvent.notes" rows="2" class="field" placeholder="Notizen (optional)" aria-label="Notizen"></textarea>
             <div>
                 <p class="label mb-2">Farbe</p>
                 <div class="flex gap-2.5"><template x-for="c in eventColors" :key="c"><button type="button" @click="currentEvent.color = c" class="swatch" :class="currentEvent.color === c ? 'on' : ''" :style="'background:' + c" :aria-label="'Farbe ' + c"></button></template></div>
@@ -1132,6 +1315,21 @@
                 <button type="button" x-show="currentList.id" @click="deleteList(currentList.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
                 <span x-show="!currentList.id"></span>
                 <div class="flex gap-2"><button type="button" @click="showListModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Einkaufsliste anlegen / bearbeiten -->
+    <div x-show="showShopList" x-transition.opacity x-cloak class="backdrop" @click.self="showShopList = false">
+        <form @submit.prevent="saveShopList()" class="card w-full max-w-sm p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg" x-text="shopListDraft.id ? 'Liste bearbeiten' : 'Neue Einkaufsliste'"></h3>
+            <input type="text" x-model="shopListDraft.name" maxlength="40" required placeholder="Name (z. B. Baumarkt)" class="field" aria-label="Name der Liste">
+            <div class="flex flex-wrap gap-2"><template x-for="e in ['🛒','🧺','🔨','🌱','🐶','🎉','💊','🍕','📦','🎁']" :key="e"><button type="button" @click="shopListDraft.emoji = e" class="w-10 h-10 rounded-xl inner text-lg" :class="shopListDraft.emoji === e ? '!border-indigo-500 ring-2 ring-indigo-500/30' : ''" x-text="e"></button></template></div>
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <button type="button" x-show="shopListDraft.id" @click="deleteShopList()" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showShopList = false" class="btn btn-ghost">Abbrechen</button>
+                <button type="submit" class="btn btn-primary" :disabled="!shopListDraft.name.trim()">Speichern</button>
             </div>
         </form>
     </div>
@@ -1243,6 +1441,11 @@
 
             <template x-if="currentPassword.type === 'login'"><div class="space-y-4">
                 <input type="text" x-model="currentPassword.url" placeholder="Website (z. B. netflix.com)" autocomplete="off" inputmode="url" class="field">
+                <div x-show="currentPassword.type === 'login'" class="space-y-1">
+                    <input type="text" x-model="currentPassword.totp" placeholder="2FA-Schlüssel (optional, Base32 oder otpauth://…)" autocomplete="off" autocapitalize="none" spellcheck="false" class="field font-mono !text-xs" aria-label="2FA-Schlüssel">
+                    <p x-show="currentPassword.totp && !totpOk(currentPassword.totp)" class="text-[11px] font-bold text-rose-400">Der 2FA-Schlüssel ist ungültig.</p>
+                    <p x-show="currentPassword.id && totpCodes[currentPassword.id] && totpCodes[currentPassword.id].code && totpOk(currentPassword.totp)" class="text-xs font-mono font-bold"><i class="fa-solid fa-shield-halved mr-1.5 accent"></i>Aktueller Code: <span x-text="fmtCode((totpCodes[currentPassword.id] || {}).code)"></span> <span class="muted font-normal" x-text="'(' + ((totpCodes[currentPassword.id] || {}).left || 0) + ' s)'"></span></p>
+                </div>
                 <input type="text" x-model="currentPassword.username" placeholder="Benutzername / E-Mail" autocomplete="off" class="field">
                 <div class="flex gap-2">
                     <div class="relative flex-1">
@@ -1301,6 +1504,29 @@
                 <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.symbols" @change="regen()">!@#$%</label>
             </div>
             <div class="flex justify-end"><button type="button" @click="showGenerator = false" class="btn btn-primary">Fertig</button></div>
+        </div>
+    </div>
+
+    <!-- Globale Suche -->
+    <div x-show="showSearch" x-transition.opacity x-cloak class="backdrop" @click.self="showSearch = false">
+        <div class="card w-full max-w-xl overflow-hidden !p-0">
+            <div class="p-3 border-b divider flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass muted ml-2"></i>
+                <input x-ref="gInput" type="text" x-model="gq" @input="gSel = 0" @keydown.down.prevent="gSel = Math.min(gSel + 1, searchHits.length - 1)" @keydown.up.prevent="gSel = Math.max(gSel - 1, 0)" @keydown.enter.prevent="searchGo(searchHits[gSel])"
+                       placeholder="Termine, Aufgaben, Einkauf, Tresor, Mails, Einstellungen …" class="field !border-0 !bg-transparent !shadow-none" autocomplete="off" aria-label="Alles durchsuchen">
+                <button type="button" class="icon-btn" @click="showSearch = false" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto">
+                <template x-for="(h, i) in searchHits" :key="h.key">
+                    <button type="button" class="mrow items-center" :class="gSel === i ? 'on' : ''" @click="searchGo(h)" @mousemove="gSel = i">
+                        <span class="w-8 h-8 rounded-xl grid place-items-center shrink-0 inner"><i :class="h.icon" class="text-xs accent"></i></span>
+                        <span class="min-w-0 flex-1"><span class="block text-sm font-bold truncate" x-text="h.title"></span><span class="block text-[11px] muted truncate" x-text="h.sub"></span></span>
+                        <span class="chip" x-text="h.kind"></span>
+                    </button>
+                </template>
+                <p x-show="gq.trim().length > 1 && !searchHits.length" class="p-6 text-center muted text-sm">Nichts gefunden.</p>
+                <p x-show="gq.trim().length < 2" class="p-6 text-center muted text-xs leading-relaxed">Tippe mindestens zwei Zeichen. Durchsucht werden Termine, Aufgaben, Einkauf, Einstellungen, der entsperrte Tresor (nur Titel, Benutzername, Adresse) und die zuletzt geladene Mail-Liste. Tastenkürzel: <b>Strg/⌘ + K</b></p>
+            </div>
         </div>
     </div>
 
@@ -1364,6 +1590,7 @@
             <div class="flex flex-wrap items-center gap-2">
                 <template x-for="(a, i) in mailComp.att" :key="a.name + i"><span class="chip !py-1.5 !px-3"><i class="fa-solid fa-paperclip"></i><span x-text="a.name"></span><span class="muted" x-text="mailBytes(a.size)"></span><button type="button" @click="mailComp.att.splice(i, 1)" class="ml-1" aria-label="Anhang entfernen"><i class="fa-solid fa-xmark"></i></button></span></template>
                 <label class="btn btn-soft cursor-pointer"><i class="fa-solid fa-paperclip"></i>Anhang<input type="file" multiple class="hidden" @change="mailAttach($event)"></label>
+                <select x-show="mailCfg.settings.templates.length" @change="mailInsertTemplate($event.target.value); $event.target.value = ''" class="field !w-auto !py-2" aria-label="Textbaustein einfügen"><option value="">Textbaustein …</option><template x-for="(t, i) in mailCfg.settings.templates" :key="i"><option :value="i" x-text="t.name || 'Baustein ' + (i + 1)"></option></template></select>
             </div>
             <p x-show="mailComp.error" class="text-xs font-bold text-rose-400" x-text="mailComp.error"></p>
             <div class="flex justify-end gap-2 pt-1">
@@ -1371,6 +1598,33 @@
                 <button type="submit" class="btn btn-primary" :disabled="mailComp.busy"><i class="fa-solid" :class="mailComp.busy ? 'fa-circle-notch spin' : 'fa-paper-plane'"></i>Senden</button>
             </div>
         </form>
+    </div>
+
+    <!-- Tresor: Passwort-Check -->
+    <div x-show="showVaultHealth" x-transition.opacity x-cloak class="backdrop" @click.self="showVaultHealth = false">
+        <div class="card w-full max-w-lg p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-shield-heart accent"></i>Passwort-Check</h3>
+            <div class="inner p-4 flex items-center gap-4">
+                <div class="text-4xl font-black" :class="health.score >= 80 ? 'text-emerald-400' : health.score >= 50 ? 'text-amber-400' : 'text-rose-400'" x-text="health.score"></div>
+                <p class="text-xs muted leading-relaxed">Sicherheitswert von 100 für <b x-text="health.total"></b> Zugangsdaten mit Passwort. Geprüft wird nur auf diesem Gerät: schwache, mehrfach verwendete und (optional) bekannte geleakte Passwörter.</p>
+            </div>
+            <div class="space-y-4 max-h-[45vh] overflow-y-auto pr-1">
+                <div x-show="health.weak.length" class="space-y-1.5"><p class="label text-rose-400" x-text="'Schwache Passwörter (' + health.weak.length + ')'"></p>
+                    <template x-for="p in health.weak" :key="'w' + p.id"><button type="button" class="inner w-full p-3 text-left flex items-center gap-3" @click="healthEdit(p)"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="min-w-0 flex-1"><span class="block text-sm font-bold truncate" x-text="p.title"></span><span class="block text-[11px] muted truncate" x-text="p.username || p.url"></span></span><i class="fa-solid fa-chevron-right text-xs muted"></i></button></template></div>
+                <div x-show="health.reused.length" class="space-y-1.5"><p class="label text-amber-400" x-text="'Mehrfach verwendet (' + health.reused.length + ' Gruppen)'"></p>
+                    <template x-for="(g, gi) in health.reused" :key="'g' + gi"><div class="inner p-3 space-y-1.5"><p class="text-[11px] muted">Dasselbe Passwort bei:</p>
+                        <template x-for="p in g" :key="'r' + p.id"><button type="button" class="chip cursor-pointer" @click="healthEdit(p)" x-text="p.title"></button></template></div></template></div>
+                <div x-show="health.checked" class="space-y-1.5"><p class="label" :class="health.breached.length ? 'text-rose-400' : 'text-emerald-400'" x-text="health.breached.length ? 'In Datenlecks gefunden (' + health.breached.length + ')' : 'Keines der Passwörter ist in bekannten Datenlecks aufgetaucht'"></p>
+                    <template x-for="b in health.breached" :key="'b' + b.entry.id"><button type="button" class="inner w-full p-3 text-left flex items-center gap-3" @click="healthEdit(b.entry)"><i class="fa-solid fa-skull-crossbones text-rose-400"></i><span class="min-w-0 flex-1"><span class="block text-sm font-bold truncate" x-text="b.entry.title"></span><span class="block text-[11px] muted" x-text="b.count.toLocaleString('de-DE') + '× in Leaks gesehen – bitte ändern'"></span></span></button></template></div>
+                <p x-show="!health.weak.length && !health.reused.length && !health.checked" class="text-sm text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1.5"></i>Keine schwachen oder doppelten Passwörter gefunden.</p>
+            </div>
+            <div class="pt-3 border-t divider space-y-2">
+                <button type="button" class="btn btn-soft w-full" @click="checkBreaches()" :disabled="health.busy || !health.total"><i class="fa-solid" :class="health.busy ? 'fa-circle-notch spin' : 'fa-magnifying-glass-chart'"></i>Auf bekannte Datenlecks prüfen</button>
+                <p class="text-[11px] muted leading-relaxed">Dabei wird für jedes Passwort nur der Anfang (5 Zeichen) seiner SHA-1-Prüfsumme an den Dienst „Have I Been Pwned“ gesendet (k-Anonymität). Das Passwort selbst verlässt dein Gerät nie.</p>
+                <p x-show="health.error" class="text-xs font-bold text-rose-400" x-text="health.error"></p>
+            </div>
+            <div class="flex justify-end"><button type="button" @click="showVaultHealth = false" class="btn btn-ghost">Schließen</button></div>
+        </div>
     </div>
 
     <!-- Tresor exportieren / importieren -->
@@ -1513,6 +1767,10 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
+            fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'system', bgStyle: 'plain',
+            defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
+            todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
+            autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
             views: { todos: 'list', shopping: 'tiles', vault: 'grid' }
         };
         const DEFAULT_FOLDERS = ['Privat', 'Arbeit', 'Finanzen', 'Sonstiges'];
@@ -1640,7 +1898,7 @@
             const known = matchProduct(i.name), own = i.emoji && i.emoji !== '🛒' ? i.emoji : '';
             const emoji = own && (i.emojiSet || !known) ? own : (known?.emoji || '');
             return { id: String(i.id ?? uid()), name: i.name, emoji, ...(i.emojiSet && emoji ? { emojiSet: true } : {}), category: CATEGORIES.includes(i.category) ? i.category : (known?.category || 'Sonstiges'),
-                     qty: Number(i.qty) || 1, unit: i.unit || '', note: i.note || '', done: !!(i.done ?? i.completed) };
+                     qty: Number(i.qty) || 1, unit: i.unit || '', note: i.note || '', done: !!(i.done ?? i.completed), ...(i.list ? { list: String(i.list) } : {}) };
         }
 
         /* ============ Tresor-Kryptografie (WebCrypto) ============ */
@@ -1666,8 +1924,49 @@
         }
         const validVaultRecord = r => r && typeof r === 'object' && r.salt && r.iv && r.data && Number.isFinite(r.iter);
 
+        /* ============ 2FA-Codes (TOTP, RFC 6238) ============ */
+        function b32decode(str) {
+            const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let bits = 0, val = 0; const out = [];
+            for (const c of String(str).toUpperCase().replace(/[\s=-]/g, '')) {
+                const i = A.indexOf(c); if (i < 0) throw new Error('Ungültiger Schlüssel');
+                val = ((val << 5) | i) & 0xffff; bits += 5;
+                if (bits >= 8) { out.push((val >>> (bits - 8)) & 255); bits -= 8; }
+            }
+            if (!out.length) throw new Error('Ungültiger Schlüssel');
+            return new Uint8Array(out);
+        }
+        function totpParse(input) {
+            const t = String(input || '').trim(); let secret = t, digits = 6, period = 30, algo = 'SHA-1';
+            if (/^otpauth:\/\//i.test(t)) {
+                const q = new URL(t.replace(/^otpauth:\/\/(\w+)/i, 'https://x/$1')).searchParams;
+                secret = q.get('secret') || ''; digits = Number(q.get('digits')) || 6; period = Number(q.get('period')) || 30;
+                const a = (q.get('algorithm') || 'SHA1').toUpperCase().replace('SHA-', 'SHA'); algo = { SHA1: 'SHA-1', SHA256: 'SHA-256', SHA512: 'SHA-512' }[a] || 'SHA-1';
+            }
+            if (![6, 7, 8].includes(digits) || period < 10 || period > 120) throw new Error('Ungültige Parameter');
+            return { key: b32decode(secret), digits, period, algo };
+        }
+        async function totpCode(input, now = Date.now()) {
+            const { key, digits, period, algo } = totpParse(input);
+            const ctr = Math.floor(now / 1000 / period), buf = new ArrayBuffer(8), dv = new DataView(buf);
+            dv.setUint32(0, Math.floor(ctr / 4294967296)); dv.setUint32(4, ctr >>> 0);
+            const k = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: algo }, false, ['sign']);
+            const sig = new Uint8Array(await crypto.subtle.sign('HMAC', k, buf)), o = sig[sig.length - 1] & 15;
+            const n = ((sig[o] & 0x7f) << 24) | (sig[o + 1] << 16) | (sig[o + 2] << 8) | sig[o + 3];
+            return String(n % 10 ** digits).padStart(digits, '0');
+        }
+        const totpPeriod = input => { try { return totpParse(input).period; } catch (e) { return 30; } };
+        /* ============ Passwort-Check ============ */
+        const COMMON_PW = ['password', 'passwort', '123456', '12345678', 'qwertz', 'qwerty', 'abc123', 'letmein', 'iloveyou', 'admin', 'welcome', 'monkey', 'dragon', 'hallo123', 'test1234', 'passw0rd', 'geheim'];
+        function pwBits(pw) {
+            const s = String(pw || ''); if (!s) return 0;
+            const pool = (/[a-zäöüß]/.test(s) ? 26 : 0) + (/[A-ZÄÖÜ]/.test(s) ? 26 : 0) + (/\d/.test(s) ? 10 : 0) + (/[^A-Za-z0-9äöüßÄÖÜ]/.test(s) ? 32 : 0);
+            return Math.min(s.length, new Set(s).size * 2) * Math.log2(Math.max(pool, 2));
+        }
+        const isWeakPw = pw => { const l = String(pw || '').toLowerCase(); return !!l && (pwBits(l) < 50 || (l.length < 14 && COMMON_PW.some(c => l.includes(c))) || /^(.)\1+$/.test(l)); };
+        async function sha1Hex(str) { return [...new Uint8Array(await crypto.subtle.digest('SHA-1', te.encode(str)))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
+
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['ml', 'mailStatus']];
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus']];
         const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
@@ -1719,10 +2018,43 @@ function handle_(p) {
       if (file) file.setContent(next); else DriveApp.createFile(name, next, MimeType.PLAIN_TEXT);
       return out_({ ok: true, rev: (cur.rev || 0) + 1 });
     }
+    if (p.action === 'backup') {
+      if (typeof p.blob !== 'string' || p.blob.length > 20000000) return out_({ ok: false, error: 'Ungültige Daten' });
+      var stamp = Utilities.formatDate(new Date(), 'UTC', 'yyyyMMdd-HHmmss');
+      var bname = 'space-backup-' + room + '-' + stamp + '.json';
+      DriveApp.createFile(bname, p.blob, MimeType.PLAIN_TEXT);
+      var all = listBackups_(room);
+      for (var i = 8; i < all.length; i++) all[i].file.setTrashed(true);
+      return out_({ ok: true, name: bname, count: Math.min(all.length, 8) });
+    }
+    if (p.action === 'backups') {
+      var list = listBackups_(room), res = [];
+      for (var j = 0; j < list.length && j < 8; j++) {
+        res.push({ id: list[j].file.getId(), name: list[j].name, ts: list[j].ts, size: list[j].file.getSize() });
+      }
+      return out_({ ok: true, backups: res });
+    }
+    if (p.action === 'getbackup') {
+      var f;
+      try { f = DriveApp.getFileById(String(p.id)); } catch (err) { return out_({ ok: false, error: 'Sicherung nicht gefunden' }); }
+      if (f.isTrashed() || f.getName().indexOf('space-backup-' + room + '-') !== 0) return out_({ ok: false, error: 'Sicherung nicht gefunden' });
+      return out_({ ok: true, blob: f.getBlob().getDataAsString() });
+    }
     return out_({ ok: false, error: 'Unbekannte Aktion' });
   } finally {
     lock.releaseLock();
   }
+}
+
+function listBackups_(room) {
+  var it = DriveApp.searchFiles("title contains 'space-backup-" + room + "-' and trashed = false");
+  var arr = [];
+  while (it.hasNext()) {
+    var f = it.next();
+    arr.push({ file: f, name: f.getName(), ts: f.getDateCreated().getTime() });
+  }
+  arr.sort(function (a, b) { return b.ts - a.ts; });
+  return arr;
 }
 `;
 
@@ -1745,7 +2077,8 @@ function handle_(p) {
                 if (accounts.length >= 8) break;
             }
             const s = v.settings && typeof v.settings === 'object' ? v.settings : {};
-            return { accounts, settings: { poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, images: !!s.images } };
+            const templates = (Array.isArray(s.templates) ? s.templates : []).filter(t => t && typeof t === 'object').slice(0, 12).map(t => ({ name: String(t.name || '').slice(0, 40), text: String(t.text || '').slice(0, 3000) }));
+            return { accounts, settings: { poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, images: !!s.images, notify: s.notify !== false, preview: s.preview !== false, signature: String(s.signature || '').slice(0, 1500), templates } };
         }
         const normOverlay = v => ({ id: String(v.id), t: Number(v.t) || 0, ...(v.r === 0 || v.r === 1 ? { r: v.r } : {}), ...(v.s === 0 || v.s === 1 ? { s: v.s } : {}), ...(['a', 'd', 'i', 'sp'].includes(v.x) ? { x: v.x } : {}) });
         /* Macht fremdes HTML zum Anzeigen sicher: keine Skripte/Frames/Formulare, keine Weiterleitungen; Bilder nur auf Wunsch. */
@@ -1969,6 +2302,7 @@ function reply_(p) {
         function organizerApp() {
             return {
                 tabs: [
+                    { id: 'today', label: 'Heute', icon: 'fa-solid fa-sun' },
                     { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
                     { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
@@ -1980,7 +2314,13 @@ function reply_(p) {
                     { id: 'midnight', label: 'Mitternacht', bg: '#0b0f19', accent: '#6366f1' },
                     { id: 'white', label: 'Clean White', bg: '#ffffff', accent: '#4f46e5' },
                     { id: 'ocean', label: 'Ozean Blau', bg: '#1e293b', accent: '#6366f1' },
-                    { id: 'emerald', label: 'Emerald Grün', bg: '#064e3b', accent: '#10b981' }
+                    { id: 'emerald', label: 'Emerald Grün', bg: '#064e3b', accent: '#059669' },
+                    { id: 'nord', label: 'Nordlicht', bg: '#2e3440', accent: '#5e81ac' },
+                    { id: 'graphite', label: 'Graphit', bg: '#111214', accent: '#6b7280' },
+                    { id: 'sunset', label: 'Abendrot', bg: '#2a1820', accent: '#ea580c' },
+                    { id: 'aurora', label: 'Aurora', bg: '#121c36', accent: '#8b5cf6' },
+                    { id: 'paper', label: 'Papier', bg: '#f6f1e7', accent: '#b45309' },
+                    { id: 'rose', label: 'Rosé', bg: '#fdf2f4', accent: '#be185d' }
                 ],
                 accents: ['#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f59e0b', '#10b981', '#06b6d4'],
                 eventColors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'],
@@ -1990,41 +2330,64 @@ function reply_(p) {
                 shopUnits: ['', 'Stk', 'g', 'kg', 'ml', 'l', 'Pkg', 'Bund', 'Dose', 'Flasche'],
 
                 /* Einstellungen: werden generisch gerendert */
+                settingsCats: [
+                    { id: 'general', label: 'Allgemein', icon: 'fa-solid fa-gear' }, { id: 'design', label: 'Darstellung', icon: 'fa-solid fa-palette' },
+                    { id: 'today', label: 'Heute', icon: 'fa-solid fa-sun' }, { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
+                    { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' }, { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
+                    { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' }, { id: 'vault', label: 'Tresor', icon: 'fa-solid fa-vault' },
+                    { id: 'notify', label: 'Benachrichtigungen', icon: 'fa-solid fa-bell' }, { id: 'sync', label: 'Geräte-Abgleich', icon: 'fa-solid fa-arrows-rotate' },
+                    { id: 'data', label: 'Daten & Backup', icon: 'fa-solid fa-floppy-disk' }, { id: 'about', label: 'App & Updates', icon: 'fa-solid fa-cloud-arrow-down' }
+                ],
+                setCat: 'general', setQuery: '',
                 settingsDef: [
-                    { title: 'Allgemein', icon: 'fa-solid fa-gear', items: [
-                        { k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
-                        { k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
-                        { k: 'confirmDelete', type: 'toggle', label: 'Vor dem Löschen nachfragen' },
-                        { k: 'notifications', type: 'toggle', label: 'Browser-Benachrichtigungen', desc: 'Erinnerungen zusätzlich als Systemhinweis (nur bei geöffnetem Tab)' },
-                        { k: 'autoUpdate', type: 'toggle', label: 'Automatisch nach Updates suchen', desc: 'Nur bei online gehosteter Version; Prüfung beim Start, beim Zurückkehren in die App und alle 15 Minuten' }
-                    ] },
-                    { title: 'Kalender', icon: 'fa-regular fa-calendar-days', items: [
-                        { k: 'calView', type: 'select', label: 'Standardansicht', o: [['month', 'Monat'], ['week', 'Woche'], ['day', 'Tag'], ['year', 'Jahr']] },
-                        { k: 'weekStart', type: 'select', label: 'Wochenbeginn', o: [[1, 'Montag'], [0, 'Sonntag']] },
-                        { k: 'hourFrom', type: 'select', label: 'Stundenraster ab', o: Array.from({ length: 12 }, (_, h) => [h, pad(h) + ':00']) },
-                        { k: 'hourTo', type: 'select', label: 'Stundenraster bis', o: Array.from({ length: 13 }, (_, i) => [i + 12, pad((i + 12) % 24) + ':00' + (i + 12 === 24 ? ' (Mitternacht)' : '')]) },
-                        { k: 'defaultDuration', type: 'select', label: 'Standarddauer neuer Termine', o: [[15, '15 Minuten'], [30, '30 Minuten'], [60, '1 Stunde'], [90, '1,5 Stunden'], [120, '2 Stunden']] },
-                        { k: 'defaultReminder', type: 'select', label: 'Standard-Erinnerung für Termine', o: [['', 'Keine'], ['0', 'Zur Startzeit'], ['15', '15 Min. vorher'], ['60', '1 Std. vorher'], ['1440', '1 Tag vorher']] },
-                        { k: 'state', type: 'select', label: 'Bundesland', desc: 'Für die Anzeige der Feiertage', o: STATES },
-                        { k: 'showHolidays', type: 'toggle', label: 'Feiertage anzeigen' },
-                        { k: 'showTasksInCal', type: 'toggle', label: 'Aufgaben mit Fälligkeit im Kalender zeigen' },
-                        { k: 'showUpcoming', type: 'toggle', label: 'Liste „Nächste Termine“ anzeigen', desc: 'Mit Countdown, neben bzw. über dem Kalender' },
-                        { k: 'upcomingCount', type: 'select', label: 'Anzahl der nächsten Termine', o: [[3, '3'], [5, '5'], [8, '8'], [10, '10']] }
-                    ] },
-                    { title: 'To-Dos', icon: 'fa-solid fa-list-check', items: [
-                        { k: 'remindTime', type: 'time', label: 'Standard-Erinnerungszeit', desc: 'Für Aufgaben mit Datum, aber ohne Uhrzeit' },
-                        { k: 'newOnTop', type: 'toggle', label: 'Neue Aufgaben oben einsortieren' },
-                        { k: 'showDone', type: 'toggle', label: 'Erledigte Aufgaben standardmäßig ausklappen' }
-                    ] },
-                    { title: 'Einkauf', icon: 'fa-solid fa-bag-shopping', items: [
-                        { k: 'shopGroup', type: 'toggle', label: 'Nach Kategorien gruppieren' }
-                    ] },
-                    { title: 'Tresor', icon: 'fa-solid fa-vault', items: [
-                        { k: 'vaultLockMin', type: 'select', label: 'Automatisch sperren nach', o: [[1, '1 Minute'], [2, '2 Minuten'], [5, '5 Minuten'], [10, '10 Minuten'], [15, '15 Minuten'], [30, '30 Minuten']] },
-                        { k: 'clipboardClear', type: 'select', label: 'Zwischenablage leeren nach', desc: 'Nach dem Kopieren eines Passworts', o: [[0, 'Nie'], [15, '15 Sekunden'], [30, '30 Sekunden'], [60, '60 Sekunden']] },
-                        { k: 'genLength', type: 'select', label: 'Länge generierter Passwörter', o: [[12, '12'], [16, '16'], [20, '20'], [24, '24'], [32, '32']] },
-                        { k: 'showLogos', type: 'toggle', label: 'Website-Logos anzeigen', desc: 'Lädt Icons über den Google-Favicon-Dienst – dabei wird nur die Domain übermittelt' }
-                    ] }
+                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Heute'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
+                    { cat: 'general', k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
+                    { cat: 'general', k: 'fontSize', type: 'select', label: 'Schriftgröße', desc: 'Skaliert die gesamte App', o: [['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']] },
+                    { cat: 'general', k: 'reduceMotion', type: 'toggle', label: 'Weniger Animationen', desc: 'Schaltet Übergänge und Bewegungen weitgehend ab' },
+                    { cat: 'general', k: 'confirmDelete', type: 'toggle', label: 'Vor dem Löschen nachfragen' },
+                    { cat: 'general', k: 'autoUpdate', type: 'toggle', label: 'Automatisch nach Updates suchen', desc: 'Nur bei online gehosteter Version; Prüfung beim Start, beim Zurückkehren in die App und alle 15 Minuten' },
+                    { cat: 'design', k: 'radius', type: 'select', label: 'Ecken', o: [['soft', 'Weich (Standard)'], ['sharp', 'Eckig'], ['round', 'Sehr rund']] },
+                    { cat: 'design', k: 'cardStyle', type: 'select', label: 'Kartenstil', desc: 'Glas wirkt am besten mit Farbverlauf-Hintergrund', o: [['solid', 'Gefüllt'], ['glass', 'Glas'], ['flat', 'Flach (ohne Schatten)'], ['outline', 'Nur Umrandung']] },
+                    { cat: 'design', k: 'bgStyle', type: 'select', label: 'Hintergrund', o: [['plain', 'Einfarbig'], ['gradient', 'Sanfter Farbverlauf']] },
+                    { cat: 'design', k: 'font', type: 'select', label: 'Schriftart', o: [['system', 'System'], ['rounded', 'Rund'], ['serif', 'Serif'], ['mono', 'Monospace']] },
+                    { cat: 'today', k: 'todayEvents', type: 'toggle', label: 'Termine anzeigen' },
+                    { cat: 'today', k: 'todayTodos', type: 'toggle', label: 'Aufgaben anzeigen', desc: 'Überfällig, heute fällig und „Mein Tag“' },
+                    { cat: 'today', k: 'todayMail', type: 'toggle', label: 'Ungelesene E-Mails anzeigen' },
+                    { cat: 'today', k: 'todayShop', type: 'toggle', label: 'Einkaufsliste anzeigen' },
+                    { cat: 'calendar', k: 'calView', type: 'select', label: 'Standardansicht', o: [['month', 'Monat'], ['week', 'Woche'], ['day', 'Tag'], ['year', 'Jahr']] },
+                    { cat: 'calendar', k: 'weekStart', type: 'select', label: 'Wochenbeginn', o: [[1, 'Montag'], [0, 'Sonntag']] },
+                    { cat: 'calendar', k: 'hourFrom', type: 'select', label: 'Stundenraster ab', o: Array.from({ length: 12 }, (_, h) => [h, pad(h) + ':00']) },
+                    { cat: 'calendar', k: 'hourTo', type: 'select', label: 'Stundenraster bis', o: Array.from({ length: 13 }, (_, i) => [i + 12, pad((i + 12) % 24) + ':00' + (i + 12 === 24 ? ' (Mitternacht)' : '')]) },
+                    { cat: 'calendar', k: 'defaultDuration', type: 'select', label: 'Standarddauer neuer Termine', o: [[15, '15 Minuten'], [30, '30 Minuten'], [60, '1 Stunde'], [90, '1,5 Stunden'], [120, '2 Stunden']] },
+                    { cat: 'calendar', k: 'defaultReminder', type: 'select', label: 'Standard-Erinnerung für Termine', o: [['', 'Keine'], ['0', 'Zur Startzeit'], ['15', '15 Min. vorher'], ['60', '1 Std. vorher'], ['1440', '1 Tag vorher']] },
+                    { cat: 'calendar', k: 'defaultEventColor', type: 'select', label: 'Standardfarbe neuer Termine', o: [['#6366f1', 'Indigo'], ['#10b981', 'Grün'], ['#f59e0b', 'Orange'], ['#ef4444', 'Rot'], ['#06b6d4', 'Türkis'], ['#ec4899', 'Rosa']] },
+                    { cat: 'calendar', k: 'state', type: 'select', label: 'Bundesland', desc: 'Für die Anzeige der Feiertage', o: STATES },
+                    { cat: 'calendar', k: 'showHolidays', type: 'toggle', label: 'Feiertage anzeigen' },
+                    { cat: 'calendar', k: 'showTasksInCal', type: 'toggle', label: 'Aufgaben mit Fälligkeit im Kalender zeigen' },
+                    { cat: 'calendar', k: 'showUpcoming', type: 'toggle', label: 'Liste „Nächste Termine“ anzeigen', desc: 'Mit Countdown, neben bzw. über dem Kalender' },
+                    { cat: 'calendar', k: 'upcomingCount', type: 'select', label: 'Anzahl der nächsten Termine', o: [[3, '3'], [5, '5'], [8, '8'], [10, '10']] },
+                    { cat: 'todos', k: 'remindTime', type: 'time', label: 'Standard-Erinnerungszeit', desc: 'Für Aufgaben mit Datum, aber ohne Uhrzeit' },
+                    { cat: 'todos', k: 'todoSortDefault', type: 'select', label: 'Standard-Sortierung', o: [['created', 'Erstellt'], ['due', 'Fälligkeit'], ['important', 'Wichtigkeit'], ['alpha', 'Alphabetisch']] },
+                    { cat: 'todos', k: 'newOnTop', type: 'toggle', label: 'Neue Aufgaben oben einsortieren' },
+                    { cat: 'todos', k: 'showDone', type: 'toggle', label: 'Erledigte Aufgaben standardmäßig ausklappen' },
+                    { cat: 'todos', k: 'hideDoneDays', type: 'select', label: 'Erledigte ausblenden nach', desc: 'Nur ausgeblendet, nicht gelöscht – sie bleiben in „Alle Aufgaben“ unverändert gespeichert', o: [[0, 'Nie'], [1, '1 Tag'], [7, '7 Tagen'], [30, '30 Tagen']] },
+                    { cat: 'shopping', k: 'shopGroup', type: 'toggle', label: 'Nach Kategorien gruppieren' },
+                    { cat: 'shopping', k: 'showRecent', type: 'toggle', label: '„Zuletzt verwendet“ anzeigen' },
+                    { cat: 'mail', src: 'mail', k: 'poll', type: 'select', label: 'Neue Mails automatisch prüfen', o: [[0, 'Aus'], [2, 'Alle 2 Minuten'], [5, 'Alle 5 Minuten'], [15, 'Alle 15 Minuten']] },
+                    { cat: 'mail', src: 'mail', k: 'notify', type: 'toggle', label: 'Bei neuen Mails benachrichtigen', desc: 'Hinweis in der App, bei aktivierten Benachrichtigungen auch als Systemhinweis' },
+                    { cat: 'mail', src: 'mail', k: 'preview', type: 'toggle', label: 'Vorschautext in der Liste zeigen' },
+                    { cat: 'mail', src: 'mail', k: 'images', type: 'toggle', label: 'Externe Bilder immer laden', desc: 'Absender können dann sehen, dass du die Mail geöffnet hast' },
+                    { cat: 'data', k: 'autoBackup', type: 'toggle', label: 'Automatische Sicherung in Google Drive', desc: 'Legt regelmäßig eine verschlüsselte Sicherung an (die letzten 8 bleiben erhalten). Benötigt den Google-Abgleich.' },
+                    { cat: 'data', k: 'backupEvery', type: 'select', if: 'autoBackup', label: 'Sicherung erstellen', o: [[1, 'Täglich'], [7, 'Wöchentlich'], [30, 'Monatlich']] },
+                    { cat: 'vault', k: 'vaultLockMin', type: 'select', label: 'Automatisch sperren nach', o: [[1, '1 Minute'], [2, '2 Minuten'], [5, '5 Minuten'], [10, '10 Minuten'], [15, '15 Minuten'], [30, '30 Minuten']] },
+                    { cat: 'vault', k: 'lockOnHide', type: 'toggle', label: 'Sofort sperren, wenn die App im Hintergrund ist', desc: 'Beim Wechsel in einen anderen Tab oder eine andere App' },
+                    { cat: 'vault', k: 'clipboardClear', type: 'select', label: 'Zwischenablage leeren nach', desc: 'Nach dem Kopieren eines Passworts', o: [[0, 'Nie'], [15, '15 Sekunden'], [30, '30 Sekunden'], [60, '60 Sekunden']] },
+                    { cat: 'vault', k: 'genLength', type: 'select', label: 'Länge generierter Passwörter', o: [[12, '12'], [16, '16'], [20, '20'], [24, '24'], [32, '32']] },
+                    { cat: 'vault', k: 'showLogos', type: 'toggle', label: 'Website-Logos anzeigen', desc: 'Lädt Icons über den Google-Favicon-Dienst – dabei wird nur die Domain übermittelt' },
+                    { cat: 'notify', k: 'notifications', type: 'toggle', label: 'Browser-Benachrichtigungen', desc: 'Erinnerungen zusätzlich als Systemhinweis (nur bei geöffnetem Tab)' },
+                    { cat: 'notify', k: 'quietOn', type: 'toggle', label: 'Ruhezeiten', desc: 'In dieser Zeit gibt es keine Systemhinweise (Hinweise in der App bleiben)' },
+                    { cat: 'notify', k: 'quietFrom', type: 'time', label: 'Ruhezeit von', if: 'quietOn' },
+                    { cat: 'notify', k: 'quietTo', type: 'time', label: 'Ruhezeit bis', if: 'quietOn' }
                 ],
 
                 activeTab: 'calendar',
@@ -2035,6 +2398,8 @@ function reply_(p) {
                 syncCfg: { room: '', pass: '', google: false, p2p: false, url: '' },
                 syncRoomInput: '', syncPassInput: '', syncPassShow: false, syncError: '',
                 gBusy: false, gError: '', gLast: 0, _syncToastAt: 0,
+                backups: [], backupBusy: false, backupMsg: '', _backupTry: 0,
+                backupLast: (() => { try { return Number(localStorage.getItem('organizer_backup_last')) || 0; } catch (e) { return 0; } })(),
                 p2p: { status: 'off', role: '', peers: 0, error: '' },
                 picker: { open: false, kind: 'date', target: null, key: '', cb: '', clear: false, title: '', min: '', dateVal: '', hh: 9, mm: 0, vy: 2026, vm: 0 },
                 banners: [], toastMsg: '', nowTick: 0, _toastTimer: null, _idleTimer: null,
@@ -2060,7 +2425,7 @@ function reply_(p) {
                 showListModal: false, currentList: { id: null, name: '', emoji: '📋' },
 
                 /* Einkauf */
-                shoppingItems: [], shopQuery: '', shopCat: CATEGORIES[0],
+                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: CATEGORIES[0],
                 showShopModal: false, currentShop: {},
 
                 /* Tresor */
@@ -2068,11 +2433,13 @@ function reply_(p) {
                 mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
                 passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
                 pwSearch: '', pwFolderFilter: 'all', pwType: 'all', newMenu: false, pwMenu: null, pwEditShow: false,
-                mailFolders: MAIL_FOLDERS, mailCfg: { accounts: [], settings: { poll: 5, images: false } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
+                mailFolders: MAIL_FOLDERS, mailCfg: { accounts: [], settings: { poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
                 mailList: [], mailLoading: false, mailError: '', mailMoreOk: false, mailCounts: {}, mailSel: null, mailCur: null, mailLoaded: 0, mailLastPoll: 0, mailReq: 0, mailThreadReq: 0,
                 mailThread: { loading: false, error: '', msgs: [], open: {}, imgs: false },
+                showSearch: false, gq: '', gSel: 0, todayTask: '', mailCountsAt: 0,
                 showMailSetup: false, mailSetup: { id: '', name: '', url: '', token: '', busy: false, error: '' },
                 showMailCompose: false, mailComp: { mode: 'new', acc: '', to: '', cc: '', bcc: '', subject: '', body: '', att: [], busy: false, error: '', showCc: false, refId: '', refMi: 0, all: false, info: '', initBody: '' },
+                totpCodes: {}, totpCache: {}, showVaultHealth: false, health: { total: 0, weak: [], reused: [], breached: [], checked: false, busy: false, error: '', score: 100 },
                 showVaultIO: false, vio: { plainOk: false, needPw: false, pw: '', rec: null, file: '', items: [], folders: [], error: '', busy: false, info: '', nNew: 0, nDup: 0 },
                 showGenerator: false, gen: { length: 20, upper: true, lower: true, digits: true, symbols: true, result: '' },
                 vaultTypes: [
@@ -2113,6 +2480,7 @@ function reply_(p) {
                     const groups = readJSON('organizer_todo_groups', null), lists = readJSON('organizer_todo_lists', null);
                     this.loadTodoData(readJSON('organizer_todos', []), lists, lists ? null : (groups ?? ['Arbeit', 'Privat', 'Haushalt']));
                     this.shoppingItems = readJSON('organizer_shopping', []).filter(i => i && i.name).map(normShop);
+                    this.shopLists = (readJSON('organizer_shop_lists', []) || []).filter(l => l && l.id).map(l => this.normIncoming('sl', l));
                     this.mailCfg = normMailCfg(readJSON('organizer_mailcfg', null));
                     this.mailStatus = (readJSON('organizer_mail_status', []) || []).filter(o => o && o.id && o.t).map(normOverlay);
                     this.mailPrune(false);
@@ -2132,11 +2500,12 @@ function reply_(p) {
 
                     if (this.googleScriptUrl) this.fetchGoogleEvents();
                     this.lastUpdateCheck = Number(localStorage.getItem('organizer_update_check')) || 0;
-                    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.onVisible(); });
+                    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.onVisible(); else if (this.cfg.lockOnHide && this.vaultState === 'unlocked') this.lockVault(true); });
                     setTimeout(() => this.maybeAutoCheck(), 3000);
                     setTimeout(() => { this.mailLastPoll = Date.now(); this.mailPollCounts(); if (this.activeTab === 'mail') this.mailEnter(); }, 4000);
                     this.startSync();
                     setInterval(() => { this.nowTick++; this.checkReminders(); this.maybeAutoCheck(); this.mailTick(); }, 30000);
+                    setInterval(() => this.totpTick(), 1000);
                     this.checkReminders();
                     this.scrollGrid();
                 },
@@ -2146,6 +2515,7 @@ function reply_(p) {
                     this.activeTab = tab;
                     localStorage.setItem('organizer_start_tab', tab);
                     if (tab === 'mail') this.mailEnter();
+                    if (tab === 'today') this.todayEnter();
                     if (tab === 'passwords' && this.vaultState === 'locked') this.$nextTick(() => this.$refs.unlockInput?.focus());
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
@@ -2158,7 +2528,7 @@ function reply_(p) {
                 closeModals() {
                     if (this.picker.open) { this.picker.open = false; return; } // Esc schließt zuerst nur die Datum-/Zeit-Auswahl
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
-                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = false;
+                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = this.showSearch = this.showShopList = this.showVaultHealth = false;
                     if (this.showMailCompose) this.mailCloseCompose();
                     this.newMenu = false; this.pwMenu = null;
                 },
@@ -2189,7 +2559,20 @@ function reply_(p) {
                     const r = document.documentElement;
                     r.dataset.density = this.cfg.density;
                     if (this.cfg.accent) r.style.setProperty('--accent', this.cfg.accent); else r.style.removeProperty('--accent');
+                    r.dataset.fsize = this.cfg.fontSize; r.dataset.font = this.cfg.font; r.dataset.radius = this.cfg.radius; r.dataset.card = this.cfg.cardStyle; r.dataset.bg = this.cfg.bgStyle;
+                    if (this.cfg.reduceMotion) r.dataset.motion = 'reduce'; else delete r.dataset.motion;
                 },
+                get settingsShown() {
+                    const q = this.setQuery.trim().toLowerCase();
+                    if (!q) return this.settingsDef.filter(i => i.cat === this.setCat);
+                    return this.settingsDef.filter(i => (i.label + ' ' + (i.desc || '') + ' ' + ((this.settingsCats.find(c => c.id === i.cat) || {}).label || '')).toLowerCase().includes(q));
+                },
+                settingVal(it) { return it.src === 'mail' ? this.mailCfg.settings[it.k] : this.cfg[it.k]; },
+                setSetting(it, v) {
+                    if (it.src === 'mail') { this.mailCfg.settings[it.k] = v; this.saveMailCfg(); } else this.setCfg(it.k, v);
+                },
+                selectSetting(it, v) { const o = it.o.find(x => String(x[0]) === v); this.setSetting(it, o ? o[0] : v); },
+                toggleSetting(it) { if (it.src === 'mail') this.setSetting(it, !this.mailCfg.settings[it.k]); else this.toggleCfg(it.k); },
                 setCfg(k, v) {
                     this.cfg[k] = v; this.saveCfg(); this.applyCfg();
                     if (k === 'calView') this.calendarView = v;
@@ -2329,12 +2712,12 @@ function reply_(p) {
                     clearTimeout(syncRt.sendTimer); syncRt.sendTimer = setTimeout(() => this.p2pBroadcast(), 600);
                     if (this.syncCfg.google && this.syncCfg.url) { clearTimeout(syncRt.gTimer); syncRt.gTimer = setTimeout(() => this.syncGoogle(), 2500); }
                 },
-                buildSnapshot() {
+                buildSnapshot(forBackup) {
                     const maps = {};
                     for (const [p, prop, filt] of SYNC_COLLECTIONS) maps[p] = new Map(this[prop].filter(it => !filt || filt(it)).map(it => [String(it.id), it]));
                     const items = {};
                     for (const [k, m] of Object.entries(syncMeta)) {
-                        if (m.d) { items[k] = { u: m.u, d: 1 }; continue; }
+                        if (m.d) { if (!forBackup) items[k] = { u: m.u, d: 1 }; continue; }
                         const v = k === 'vault' ? readJSON(VAULT_KEY, null) : k === 'cfg' ? this.cfgPicked() : k === 'mailcfg' ? this.mailCfg : maps[k.slice(0, 2)]?.get(k.slice(3));
                         if (v) items[k] = { u: m.u, v };
                     }
@@ -2344,6 +2727,7 @@ function reply_(p) {
                     if (p === 'ev') return normEvent({ ...v });
                     if (p === 'td') return normTodo({ ...v }, {});
                     if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋' };
+                    if (p === 'sl') return { id: String(v.id), name: String(v.name || 'Liste').slice(0, 40), emoji: String(v.emoji || '🛒').slice(0, 8) };
                     if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
@@ -2388,6 +2772,7 @@ function reply_(p) {
                         if (dirty.has('td')) this.todos = cols.td;
                         if (dirty.has('sh')) this.shoppingItems = cols.sh;
                         if (dirty.has('ml')) this.mailStatus = cols.ml;
+                        if (dirty.has('sl')) { this.shopLists = cols.sl; if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = ''; }
                         if (dirty.has('ls')) {
                             if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
                             this.todoLists = cols.ls;
@@ -2465,10 +2850,94 @@ function reply_(p) {
                         if (!done) throw new Error('Zu viele gleichzeitige Änderungen – bitte später erneut versuchen.');
                         this.gError = ''; this.gLast = Date.now();
                         if (manual) this.toast('Mit Google abgeglichen');
+                        this.maybeAutoBackup();
                     } catch (e) {
                         this.gError = e.name === 'AbortError' ? 'Zeitüberschreitung' : e instanceof TypeError ? 'Keine Verbindung zum Script (offline, oder Zugriff nicht auf „Jeder“ gestellt?)' : (e.message || 'Unbekannter Fehler');
                         if (manual) this.toast('Abgleich fehlgeschlagen');
                     } finally { this.gBusy = false; }
+                },
+
+                /* --- Sicherung in Google Drive (verschlüsselt mit dem Sync-Passwort, die letzten 8 bleiben) --- */
+                backupReady() { return !!(this.syncReady && this.syncCfg.google && this.syncCfg.url); },
+                backupErrText(e) {
+                    const m = (e && e.message) || '';
+                    if (/Unbekannte Aktion/.test(m)) return 'Das Google-Script ist veraltet – bitte unter „Geräte-Abgleich“ das neue Script kopieren, einfügen und die Web-App als neue Version bereitstellen.';
+                    return e && e.name === 'AbortError' ? 'Zeitüberschreitung' : e instanceof TypeError ? 'Keine Verbindung zum Script' : (m || 'Unbekannter Fehler');
+                },
+                async loadBackups(silent) {
+                    if (!this.backupReady()) return;
+                    try {
+                        const r = await this.gCall({ action: 'backups' });
+                        if (!r.ok) throw new Error(r.error || 'Serverfehler');
+                        this.backups = Array.isArray(r.backups) ? r.backups : []; this.backupMsg = '';
+                    } catch (e) { this.backupMsg = this.backupErrText(e); }
+                },
+                async makeBackup(manual = true) {
+                    if (!this.backupReady()) { if (manual) this.toast('Bitte zuerst den Google-Abgleich einrichten'); return false; }
+                    if (this.backupBusy) return false;
+                    this.backupBusy = true; this.backupMsg = '';
+                    try {
+                        this.stampChanges();
+                        const blob = JSON.stringify(await encryptJSON(await this.getSyncKey(), this.buildSnapshot(true)));
+                        const r = await this.gCall({ action: 'backup', blob });
+                        if (!r.ok) throw new Error(r.error || 'Serverfehler');
+                        this.backupLast = Date.now();
+                        try { localStorage.setItem('organizer_backup_last', String(this.backupLast)); } catch (e) {}
+                        await this.loadBackups(true);
+                        if (manual) this.toast('Sicherung in Google Drive angelegt');
+                        return true;
+                    } catch (e) { this.backupMsg = this.backupErrText(e); if (manual) this.toast('Sicherung fehlgeschlagen'); return false; }
+                    finally { this.backupBusy = false; }
+                },
+                async maybeAutoBackup() {
+                    if (!this.cfg.autoBackup || !this.backupReady() || this.backupBusy) return;
+                    const every = Math.max(1, Number(this.cfg.backupEvery) || 7) * 86400000, now = Date.now();
+                    if (now - this.backupLast < every || now - this._backupTry < 3600000) return;
+                    this._backupTry = now;
+                    try {
+                        const r = await this.gCall({ action: 'backups' }); // ein anderes Gerät war eventuell schon dran
+                        if (!r.ok) throw new Error(r.error || 'Serverfehler');
+                        this.backups = r.backups || [];
+                        const newest = this.backups[0];
+                        if (newest && now - newest.ts < every) { this.backupLast = newest.ts; try { localStorage.setItem('organizer_backup_last', String(newest.ts)); } catch (e) {} return; }
+                    } catch (e) { this.backupMsg = this.backupErrText(e); return; }
+                    await this.makeBackup(false);
+                },
+                backupLabel(b) { return new Date(b.ts).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); },
+                async restoreBackup(b) {
+                    if (this.backupBusy || !this.backupReady()) return;
+                    if (!confirm('Sicherung vom ' + this.backupLabel(b) + ' wiederherstellen?\n\nDer aktuelle Stand wird dadurch ersetzt und danach auf alle verbundenen Geräte übertragen. Vorher wird automatisch eine Sicherung des jetzigen Stands angelegt.')) return;
+                    if (!(await this.makeBackup(false))) { this.toast('Wiederherstellung abgebrochen – die Vorab-Sicherung ist fehlgeschlagen'); return; }
+                    this.backupBusy = true;
+                    try {
+                        const r = await this.gCall({ action: 'getbackup', id: b.id });
+                        if (!r.ok) throw new Error(r.error || 'Serverfehler');
+                        const snap = await this.decryptSnap(r.blob);
+                        this.applySnapshotReplace(snap);
+                        this.toast('Sicherung wiederhergestellt');
+                    } catch (e) { this.backupMsg = this.backupErrText(e); this.toast('Wiederherstellung fehlgeschlagen'); }
+                    finally { this.backupBusy = false; }
+                },
+                /* Ersetzt den lokalen Stand komplett durch eine Sicherung; stampChanges() markiert danach alles als „jetzt geändert“, damit der Stand auch alle anderen Geräte überschreibt. */
+                applySnapshotReplace(snap) {
+                    const items = snap.items || {}, cols = {}; let cfgV = null, mailV = null, vaultV = null;
+                    for (const [p] of SYNC_COLLECTIONS) cols[p] = [];
+                    for (const [k, r] of Object.entries(items)) {
+                        if (!r || r.d || !r.v || typeof r.v !== 'object') continue;
+                        if (k === 'cfg') cfgV = r.v; else if (k === 'mailcfg') mailV = r.v; else if (k === 'vault') vaultV = r.v;
+                        else if (k[2] === ':' && cols[k.slice(0, 2)]) cols[k.slice(0, 2)].push(this.normIncoming(k.slice(0, 2), { ...r.v, id: k.slice(3) }));
+                    }
+                    this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
+                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl;
+                    if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = '';
+                    if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
+                    this.todoLists = cols.ls;
+                    if (this.isCustomList && !cols.ls.some(l => l.id === this.todoListId)) this.selectTodoList('myday');
+                    if (cfgV) this.applyRemoteCfg(cfgV);
+                    if (mailV) { this.mailCfg = normMailCfg(mailV); this.persistMailCfg(); this.mailAfterCfg(); }
+                    if (vaultV && validVaultRecord(vaultV)) { this.lockVault(false); localStorage.setItem(VAULT_KEY, JSON.stringify(vaultV)); this.vaultState = 'locked'; delete syncMeta.vault; } // fehlt der Tresor in der Sicherung, bleibt der aktuelle unangetastet
+                    this.saveAllData();
+                    this.stampChanges();
                 },
 
                 /* --- P2P (PeerJS): ein Gerät wird „Hub“, die anderen verbinden sich mit ihm --- */
@@ -2612,9 +3081,14 @@ function reply_(p) {
                 },
 
                 /* ---------- Erinnerungen ---------- */
+                inQuietHours(d = new Date()) {
+                    if (!this.cfg.quietOn) return false;
+                    const m = d.getHours() * 60 + d.getMinutes(), a = toMin(this.cfg.quietFrom || '22:00'), b = toMin(this.cfg.quietTo || '07:00');
+                    return a === b ? false : a < b ? (m >= a && m < b) : (m >= a || m < b);
+                },
                 fire(kind, title, info) {
                     this.banners = [...this.banners.slice(-3), { id: uid(), kind, title, info }];
-                    if (this.cfg.notifications && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body: info });
+                    if (this.cfg.notifications && !this.inQuietHours() && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body: info });
                 },
                 checkReminders() {
                     const fired = new Set(readJSON('organizer_fired', [])), now = Date.now();
@@ -2810,7 +3284,7 @@ function reply_(p) {
                     const st = p.startTime || minToTime((d === this.today ? Math.min(new Date().getHours() + 1, 23) : 9) * 60);
                     const end = addMin(d, st, this.cfg.defaultDuration);
                     this.evDur = this.cfg.defaultDuration;
-                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.eventColors[0], reminder: this.cfg.defaultReminder };
+                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.cfg.defaultEventColor || this.eventColors[0], reminder: this.cfg.defaultReminder, notes: '' };
                     this.showEventModal = true;
                     this.$nextTick(() => this.$refs.evTitle?.focus());
                 },
@@ -2859,7 +3333,7 @@ function reply_(p) {
                 get isSmartList() { return this.smartLists.some(l => l.id === this.todoListId); },
                 get isCustomList() { return !this.isSmartList; },
                 listOf(t) { return this.todoLists.find(l => l.id === t.listId); },
-                selectTodoList(id) { this.todoListId = id; this.todoSort = id === 'planned' ? 'due' : 'created'; this.todoSearch = ''; },
+                selectTodoList(id) { this.todoListId = id; this.todoSort = id === 'planned' ? 'due' : (this.cfg.todoSortDefault || 'created'); this.todoSearch = ''; },
                 todosOf(id) {
                     const today = this.today;
                     return this.todos.filter(t => id === 'myday' ? t.myDay === today : id === 'important' ? t.important : id === 'planned' ? !!t.due : id === 'all' ? true : t.listId === id);
@@ -2878,7 +3352,7 @@ function reply_(p) {
                 get todoSections() {
                     const q = this.todoSearch.trim().toLowerCase();
                     const items = this.todosOf(this.todoListId).filter(t => !q || t.title.toLowerCase().includes(q));
-                    const open = this.sortTodos(items.filter(t => !t.done)), done = items.filter(t => t.done).sort((a, b) => b.doneAt - a.doneAt);
+                    const hideMs = (this.cfg.hideDoneDays || 0) * 864e5, open = this.sortTodos(items.filter(t => !t.done)), done = items.filter(t => t.done && (!hideMs || Date.now() - (t.doneAt || 0) < hideMs)).sort((a, b) => b.doneAt - a.doneAt);
                     const secs = [];
                     if (this.todoListId === 'planned' && this.todoSort === 'due') {
                         const diff = t => Math.round((parseDate(t.due) - parseDate(this.today)) / 864e5);
@@ -2977,8 +3451,11 @@ function reply_(p) {
                 },
 
                 /* ---------- Einkauf ---------- */
-                get shopOpen() { return this.shoppingItems.filter(i => !i.done); },
-                get shopDone() { return this.shoppingItems.filter(i => i.done); },
+                shopHere(i) { return (i.list || '') === this.shopListId; },
+                get shopOpen() { return this.shoppingItems.filter(i => !i.done && this.shopHere(i)); },
+                get shopDone() { return this.shoppingItems.filter(i => i.done && this.shopHere(i)); },
+                get shopListName() { return this.shopListId ? ((this.shopLists.find(l => l.id === this.shopListId) || {}).name || 'Liste') : 'Einkaufsliste'; },
+                shopListCount(id) { return this.shoppingItems.filter(i => !i.done && (i.list || '') === id).length; },
                 get shopGroups() {
                     if (!this.cfg.shopGroup) return this.shopOpen.length ? [{ cat: 'Alle Artikel', items: this.shopOpen }] : [];
                     return CATEGORIES.map(cat => ({ cat, items: this.shopOpen.filter(i => i.category === cat) })).filter(g => g.items.length);
@@ -2993,7 +3470,7 @@ function reply_(p) {
                 qtyLabel(i) { return i.qty > 1 || i.unit ? String(i.qty).replace('.', ',') + (i.unit ? ' ' + i.unit : '') : ''; },
                 tapProduct(p) { const ex = this.shopOpen.find(i => i.name.toLowerCase() === p.name.toLowerCase()); ex ? this.openShopModal(ex) : this.addShopItem(p); },
                 addShopItem(p) {
-                    const it = normShop({ ...p, id: uid() });
+                    const it = normShop({ ...p, id: uid(), list: this.shopListId });
                     this.shoppingItems.push(it); this.noteRecent(it);
                     this.saveAllData(); this.toast(p.name + ' hinzugefügt');
                 },
@@ -3005,7 +3482,33 @@ function reply_(p) {
                     this.shopQuery = '';
                 },
                 toggleBought(id) { const i = this.shoppingItems.find(x => x.id === id); if (i) { i.done = !i.done; this.saveAllData(); } },
-                clearBought() { this.shoppingItems = this.shoppingItems.filter(i => !i.done); this.saveAllData(); },
+                openShopList(l) { this.shopListDraft = l ? { ...l } : { id: null, name: '', emoji: '🛒' }; this.showShopList = true; },
+                saveShopList() {
+                    const d = this.shopListDraft, name = d.name.trim().slice(0, 40); if (!name) return;
+                    if (d.id) this.shopLists = this.shopLists.map(l => l.id === d.id ? { ...l, name, emoji: d.emoji } : l);
+                    else { const id = uid(); this.shopLists = [...this.shopLists, { id, name, emoji: d.emoji }]; this.shopListId = id; }
+                    this.saveAllData(); this.showShopList = false;
+                },
+                deleteShopList() {
+                    const d = this.shopListDraft; if (!d.id) return;
+                    const n = this.shoppingItems.filter(i => i.list === d.id).length;
+                    if (!this.ask(`Liste „${d.name}“` + (n ? ` mit ${n} Artikel${n > 1 ? 'n' : ''}` : '') + ' löschen?')) return;
+                    this.shoppingItems = this.shoppingItems.filter(i => i.list !== d.id); this.shopLists = this.shopLists.filter(l => l.id !== d.id);
+                    if (this.shopListId === d.id) this.shopListId = '';
+                    this.saveAllData(); this.showShopList = false;
+                },
+                shopListText() {
+                    const open = this.shopOpen, lines = [(this.shopListId ? (this.shopLists.find(l => l.id === this.shopListId) || {}).emoji : '🛒') + ' ' + this.shopListName + ` (${open.length} Artikel)`];
+                    for (const cat of CATEGORIES) { const it = open.filter(i => i.category === cat); if (!it.length) continue; lines.push('', cat); for (const i of it) lines.push('- ' + (this.qtyLabel(i) ? this.qtyLabel(i) + ' ' : '') + i.name + (i.note ? ' (' + i.note + ')' : '')); }
+                    return lines.join('\n');
+                },
+                async shareShopList() {
+                    if (!this.shopOpen.length) return this.toast('Die Liste ist leer');
+                    const text = this.shopListText();
+                    if (navigator.share) { try { await navigator.share({ title: this.shopListName, text }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+                    this.copyText(text, 'Liste als Text kopiert');
+                },
+                clearBought() { this.shoppingItems = this.shoppingItems.filter(i => !(i.done && this.shopHere(i))); this.saveAllData(); },
                 openShopModal(i) { this.currentShop = { ...i }; this.showShopModal = true; },
                 saveShopItem() {
                     const s = normShop({ ...this.currentShop, name: this.currentShop.name.trim() });
@@ -3049,7 +3552,7 @@ function reply_(p) {
                     this.touchSync();
                 },
                 blankPw(type = 'login', folder = '') {
-                    return { id: null, type, title: '', url: '', username: '', password: '', notes: '', fav: false, folder, cardHolder: '', cardNumber: '', cardExp: '', cardCvv: '', firstName: '', lastName: '', email: '', phone: '', address: '' };
+                    return { id: null, type, title: '', url: '', username: '', password: '', totp: '', notes: '', fav: false, folder, cardHolder: '', cardNumber: '', cardExp: '', cardCvv: '', firstName: '', lastName: '', email: '', phone: '', address: '' };
                 },
                 normPw(p, i = 0) {
                     const type = this.vaultTypes.some(t => t.id === p.type) ? p.type : 'login', b = this.blankPw(type), o = { ...b, id: p.id ?? uid() + i };
@@ -3180,6 +3683,62 @@ function reply_(p) {
                 generatePassword() { this.currentPassword.password = this.makePassword(); this.pwEditShow = true; },
                 openGenerator() { this.gen.length = this.cfg.genLength; this.regen(); this.showGenerator = true; },
                 regen() { this.gen.result = this.makePassword(this.gen); },
+                /* ---------- Heute ---------- */
+                get greeting() { void this.nowTick; const h = new Date().getHours(); return (h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 14 ? 'Guten Tag' : h < 18 ? 'Schönen Nachmittag' : 'Guten Abend') + ', Christopher'; },
+                get todayEventList() { return this.eventsOnDate(this.today); },
+                get tomorrowEventList() { return this.eventsOnDate(fmt(addDays(parseDate(this.today), 1))).slice(0, 4); },
+                get todayTodoList() {
+                    const d = this.today, key = t => (t.due || d) + (t.dueTime || '23:59');
+                    return this.todos.filter(t => !t.done && ((t.due && t.due <= d) || t.myDay === d)).sort((a, b) => key(a).localeCompare(key(b)) || Number(b.important) - Number(a.important));
+                },
+                get shopAll() { return this.shoppingItems.filter(i => !i.done); },
+                get todaySummary() {
+                    const e = this.todayEventList.length, t = this.todayTodoList.length, m = this.mailUnread, h = this.holidayFor(this.today);
+                    return [h, e ? `${e} Termin${e > 1 ? 'e' : ''}` : 'keine Termine', t ? `${t} offene Aufgabe${t > 1 ? 'n' : ''}` : 'keine offenen Aufgaben', m ? `${m} ungelesene Mail${m > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ');
+                },
+                todayAddTask() {
+                    const title = this.todayTask.trim(); if (!title) return;
+                    this.todos.push(newTodo({ title, myDay: this.today, created: Date.now() })); this.todayTask = ''; this.saveAllData();
+                },
+                todayEnter() { if (this.cfg.todayMail && this.mailCfg.accounts.length && Date.now() - this.mailCountsAt > 120000) this.mailPollCounts(); },
+                /* ---------- Globale Suche ---------- */
+                openSearch() { this.gq = ''; this.gSel = 0; this.showSearch = true; this.$nextTick(() => this.$refs.gInput && this.$refs.gInput.focus()); },
+                get searchHits() {
+                    const q = this.gq.trim().toLowerCase(); if (q.length < 2) return [];
+                    const has = (...f) => f.some(x => String(x || '').toLowerCase().includes(q)), out = [], cap = (arr, n = 7) => arr.slice(0, n);
+                    for (const e of cap(this.events.filter(e => has(e.title, e.notes)).sort((a, b) => b.startDate.localeCompare(a.startDate)))) out.push({ key: 'e' + e.id, kind: 'Termin', icon: 'fa-regular fa-calendar', title: e.title, sub: this.fmtPickDate ? (this.fmtPickDate(e.startDate) + (e.allDay ? '' : ' · ' + e.startTime)) : e.startDate, type: 'event', ref: e });
+                    for (const t of cap(this.todos.filter(t => has(t.title, t.note)))) out.push({ key: 't' + t.id, kind: 'Aufgabe', icon: 'fa-solid fa-list-check', title: t.title, sub: (t.done ? 'Erledigt' : t.due ? 'Fällig: ' + this.dueLabel(t) : 'Offen'), type: 'todo', ref: t });
+                    for (const i of cap(this.shoppingItems.filter(i => has(i.name, i.note)))) out.push({ key: 's' + i.id, kind: 'Einkauf', icon: 'fa-solid fa-bag-shopping', title: i.name, sub: i.category + (i.done ? ' · im Warenkorb' : ''), type: 'shop', ref: i });
+                    if (this.vaultState === 'unlocked') for (const v of cap(this.passwords.filter(v => has(v.title, v.username, v.url, v.email)))) out.push({ key: 'v' + v.id, kind: 'Tresor', icon: 'fa-solid fa-vault', title: v.title, sub: v.username || v.url || v.email || '', type: 'vault', ref: v.id });
+                    for (const r of cap(this.mailRows.filter(r => has(r.subj, r.from, r.snip)))) out.push({ key: 'm' + r.key, kind: 'Mail', icon: 'fa-solid fa-envelope', title: r.subj || '(kein Betreff)', sub: this.senderName(r.from), type: 'mail', ref: r });
+                    for (const it of cap(this.settingsDef.filter(i => has(i.label, i.desc)), 5)) out.push({ key: 'c' + it.cat + it.k, kind: 'Einstellung', icon: 'fa-solid fa-sliders', title: it.label, sub: (this.settingsCats.find(c => c.id === it.cat) || {}).label, type: 'setting', ref: it });
+                    return out;
+                },
+                searchGo(h) {
+                    if (!h) return; this.showSearch = false;
+                    if (h.type === 'event') { this.switchTab('calendar'); this.anchor = h.ref.startDate; this.editEvent(h.ref); }
+                    else if (h.type === 'todo') { this.switchTab('todos'); this.openTaskModal(h.ref); }
+                    else if (h.type === 'shop') { this.switchTab('shopping'); this.openShopModal(h.ref); }
+                    else if (h.type === 'vault') { const v = this.passwords.find(x => x.id === h.ref); if (v) { this.switchTab('passwords'); this.editPassword(v); } }
+                    else if (h.type === 'mail') { this.switchTab('mail'); this.mailOpen(h.ref); }
+                    else if (h.type === 'setting') { this.setQuery = ''; this.setCat = h.ref.cat; this.switchTab('settings'); }
+                },
+                /* ---------- Mail → Aufgabe / Termin, Signatur, Bausteine ---------- */
+                mailLink(cur) { const a = this.mailAccount(cur.acc); return 'https://mail.google.com/mail/' + (a && a.email ? '?authuser=' + encodeURIComponent(a.email) : '') + '#all/' + cur.id; },
+                mailToTodo() {
+                    const cur = this.mailCur; if (!cur) return; const m = this.mailThread.msgs[this.mailThread.msgs.length - 1];
+                    this.openTaskModal(newTodo({ title: (cur.subj || 'E-Mail').slice(0, 200), note: (m ? 'Von: ' + m.from + '\n' : '') + this.mailLink(cur), created: Date.now() }));
+                },
+                mailToEvent() {
+                    const cur = this.mailCur; if (!cur) return; const m = this.mailThread.msgs[this.mailThread.msgs.length - 1];
+                    this.openEventModal({ startDate: this.today }); this.currentEvent.title = (cur.subj || 'E-Mail').slice(0, 200); this.currentEvent.notes = (m ? 'Von: ' + m.from + '\n' : '') + this.mailLink(cur);
+                },
+                mailSigBlock() { const g = String(this.mailCfg.settings.signature || '').trim(); return g ? '\n\n-- \n' + g + '\n' : ''; },
+                mailInsertTemplate(i) {
+                    const t = this.mailCfg.settings.templates[Number(i)]; if (!t) return;
+                    const el = this.$refs.mailBody, c = this.mailComp, pos = el && Number.isFinite(el.selectionStart) ? el.selectionStart : c.body.length;
+                    c.body = c.body.slice(0, pos) + t.text + c.body.slice(pos);
+                },
                 /* ---------- E-Mail ---------- */
                 mailAccount(id) { return this.mailCfg.accounts.find(a => a.id === id) || null; },
                 get mailUnread() { return Object.values(this.mailCounts).reduce((s, c) => s + ((c && c.inbox) || 0), 0); },
@@ -3222,8 +3781,8 @@ function reply_(p) {
                 noteCounts(a, u) {
                     if (!u || typeof u !== 'object') return;
                     const prev = this.mailCounts[a.id], n = { inbox: Number(u.inbox) || 0, spam: Number(u.spam) || 0 };
-                    if (prev && n.inbox > prev.inbox) { const d = n.inbox - prev.inbox; this.toast(`${d} neue E-Mail${d > 1 ? 's' : ''} – ${a.name}`); }
-                    this.mailCounts = { ...this.mailCounts, [a.id]: n };
+                    if (prev && n.inbox > prev.inbox && this.mailCfg.settings.notify) { const d = n.inbox - prev.inbox, msg = `${d} neue E-Mail${d > 1 ? 's' : ''} – ${a.name}`; this.toast(msg); if (this.cfg.notifications && !this.inQuietHours() && 'Notification' in window && Notification.permission === 'granted') new Notification('E-Mail', { body: msg }); }
+                    this.mailCounts = { ...this.mailCounts, [a.id]: n }; this.mailCountsAt = Date.now();
                 },
                 async mailPollCounts() {
                     await Promise.allSettled(this.mailCfg.accounts.map(async a => { const j = await this.mailCall(a, { action: 'counts' }, 30000); this.noteCounts(a, j.unread); }));
@@ -3354,9 +3913,10 @@ function reply_(p) {
                 /* --- Schreiben --- */
                 mailNew(init = {}) {
                     const acc = init.acc || (this.mailAcc !== 'all' ? this.mailAcc : ((this.mailCfg.accounts[0] || {}).id || ''));
-                    this.mailComp = { mode: init.mode || 'new', acc, to: init.to || '', cc: '', bcc: '', subject: init.subject || '', body: init.body || '', att: [], busy: false, error: '', showCc: false, refId: init.refId || '', refMi: init.refMi || 0, all: !!init.all, info: init.info || '', initBody: init.body || '' };
+                    const body = init.body !== undefined ? init.body : this.mailSigBlock();
+                    this.mailComp = { mode: init.mode || 'new', acc, to: init.to || '', cc: '', bcc: '', subject: init.subject || '', body, att: [], busy: false, error: '', showCc: false, refId: init.refId || '', refMi: init.refMi || 0, all: !!init.all, info: init.info || '', initBody: body };
                     this.showMailCompose = true;
-                    this.$nextTick(() => { const t = this.$refs.mailBody; if (t && init.body) { t.focus(); t.setSelectionRange(0, 0); } });
+                    this.$nextTick(() => { const t = this.$refs.mailBody; if (t && this.mailComp.body) { t.focus(); t.setSelectionRange(0, 0); } });
                 },
                 mailQuote(m) { return 'Am ' + this.mailDateLong(m.date) + ' schrieb ' + this.senderName(m.from) + ':\n' + this.mailBodyText(m).slice(0, 4000).split('\n').map(l => '> ' + l).join('\n'); },
                 mailBodyText(m) {
@@ -3366,12 +3926,12 @@ function reply_(p) {
                 mailReplyTo(mi, all) {
                     const m = this.mailThread.msgs.find(x => x.i === mi), cur = this.mailCur; if (!m || !cur) return;
                     const s = m.subj || cur.subj || '';
-                    this.mailNew({ mode: all ? 'replyAll' : 'reply', acc: cur.acc, refId: cur.id, refMi: m.i, all, subject: /^(re|aw)\s*:/i.test(s) ? s : 'Re: ' + s, body: '\n\n' + this.mailQuote(m), info: all ? 'Antwort an alle Empfänger der Nachricht von ' + this.senderName(m.from) : 'Antwort an ' + m.from });
+                    this.mailNew({ mode: all ? 'replyAll' : 'reply', acc: cur.acc, refId: cur.id, refMi: m.i, all, subject: /^(re|aw)\s*:/i.test(s) ? s : 'Re: ' + s, body: this.mailSigBlock() + '\n\n' + this.mailQuote(m), info: all ? 'Antwort an alle Empfänger der Nachricht von ' + this.senderName(m.from) : 'Antwort an ' + m.from });
                 },
                 mailForward(mi) {
                     const m = this.mailThread.msgs.find(x => x.i === mi), cur = this.mailCur; if (!m || !cur) return;
                     const s = m.subj || cur.subj || '';
-                    this.mailNew({ mode: 'forward', acc: cur.acc, subject: /^(fwd|wg)\s*:/i.test(s) ? s : 'Fwd: ' + s, body: '\n\n---------- Weitergeleitete Nachricht ----------\nVon: ' + m.from + '\nDatum: ' + this.mailDateLong(m.date) + '\nBetreff: ' + s + '\nAn: ' + (m.to || '') + '\n\n' + this.mailBodyText(m).slice(0, 20000) });
+                    this.mailNew({ mode: 'forward', acc: cur.acc, subject: /^(fwd|wg)\s*:/i.test(s) ? s : 'Fwd: ' + s, body: this.mailSigBlock() + '\n\n---------- Weitergeleitete Nachricht ----------\nVon: ' + m.from + '\nDatum: ' + this.mailDateLong(m.date) + '\nBetreff: ' + s + '\nAn: ' + (m.to || '') + '\n\n' + this.mailBodyText(m).slice(0, 20000) });
                 },
                 mailBadAddr(str) {
                     for (const p of String(str || '').split(/[,;]/).map(x => x.trim()).filter(Boolean)) if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(this.addrOf(p))) return p;
@@ -3448,6 +4008,52 @@ function reply_(p) {
                     this.mailCfg = { ...this.mailCfg, accounts: this.mailCfg.accounts.filter(x => x.id !== a.id) };
                     this.mailStatus = this.mailStatus.filter(o => o.id.split('.')[0] !== a.id); this.persistMailStatus(); this.saveMailCfg(); this.mailAfterCfg();
                 },
+                /* ---------- Tresor: 2FA-Codes ---------- */
+                async totpTick() {
+                    if (this.vaultState !== 'unlocked' || (this.activeTab !== 'passwords' && !this.showPasswordModalState)) { if (Object.keys(this.totpCodes).length) { this.totpCodes = {}; this.totpCache = {}; } return; }
+                    const now = Date.now(), out = {};
+                    for (const pw of this.passwords) {
+                        if (pw.type !== 'login' || !pw.totp) continue;
+                        const per = totpPeriod(pw.totp), ctr = Math.floor(now / 1000 / per), c = this.totpCache[pw.id];
+                        if (!c || c.ctr !== ctr || c.src !== pw.totp) { let code = null; try { code = await totpCode(pw.totp, now); } catch (e) {} this.totpCache[pw.id] = { ctr, src: pw.totp, code }; }
+                        out[pw.id] = { code: this.totpCache[pw.id].code, left: per - Math.floor(now / 1000) % per };
+                    }
+                    this.totpCodes = out;
+                },
+                fmtCode(c) { c = String(c || ''); return c.length === 6 ? c.slice(0, 3) + ' ' + c.slice(3) : c.length === 8 ? c.slice(0, 4) + ' ' + c.slice(4) : c; },
+                totpOk(v) { try { totpParse(v); return true; } catch (e) { return false; } },
+                async copyTotp(pw) { try { this.copyText(await totpCode(pw.totp), '2FA-Code kopiert', true); } catch (e) { this.toast('2FA-Schlüssel ungültig'); } },
+                /* ---------- Tresor: Passwort-Check ---------- */
+                computeHealth() {
+                    const logins = this.passwords.filter(p => p.type === 'login' && p.password), by = new Map();
+                    for (const p of logins) by.set(p.password, [...(by.get(p.password) || []), p]);
+                    const weak = logins.filter(p => isWeakPw(p.password)), reused = [...by.values()].filter(g => g.length > 1);
+                    const bad = new Set([...weak.map(p => p.id), ...reused.flat().map(p => p.id)]);
+                    return { total: logins.length, weak, reused, breached: [], checked: false, busy: false, error: '', score: logins.length ? Math.round(100 * (1 - bad.size / logins.length)) : 100 };
+                },
+                openVaultHealth() { if (this.vaultState !== 'unlocked') return this.toast('Bitte zuerst den Tresor entsperren'); this.health = this.computeHealth(); this.showVaultHealth = true; },
+                async checkBreaches() {
+                    const h = this.health; if (h.busy) return;
+                    h.busy = true; h.error = ''; h.breached = [];
+                    try {
+                        const logins = this.passwords.filter(p => p.type === 'login' && p.password), cache = new Map(), hit = new Map();
+                        for (const pw of new Set(logins.map(p => p.password))) {
+                            const sha = await sha1Hex(pw), pre = sha.slice(0, 5), suf = sha.slice(5);
+                            if (!cache.has(pre)) {
+                                const res = await fetch('https://api.pwnedpasswords.com/range/' + pre, { headers: { 'Add-Padding': 'true' }, cache: 'no-store' });
+                                if (!res.ok) throw new Error('Der Dienst antwortet mit Fehler ' + res.status);
+                                cache.set(pre, new Map((await res.text()).split(/\r?\n/).map(l => l.trim().split(':')).filter(a => a[0]).map(a => [a[0].toUpperCase(), Number(a[1]) || 0])));
+                            }
+                            const n = cache.get(pre).get(suf) || 0; if (n > 0) hit.set(pw, n);
+                        }
+                        h.breached = logins.filter(p => hit.has(p.password)).map(p => ({ entry: p, count: hit.get(p.password) }));
+                        h.checked = true;
+                        const bad = new Set([...h.weak.map(p => p.id), ...h.reused.flat().map(p => p.id), ...h.breached.map(b => b.entry.id)]);
+                        h.score = logins.length ? Math.round(100 * (1 - bad.size / logins.length)) : 100;
+                    } catch (e) { h.error = e instanceof TypeError ? 'Keine Verbindung zum Prüfdienst (offline oder blockiert).' : 'Prüfung fehlgeschlagen: ' + e.message; }
+                    finally { h.busy = false; }
+                },
+                healthEdit(p) { this.showVaultHealth = false; this.editPassword(p); },
                 /* ---------- Tresor: Export / Import ---------- */
                 blankVio() { return { plainOk: false, needPw: false, pw: '', rec: null, file: '', items: [], folders: [], error: '', busy: false, info: '', nNew: 0, nDup: 0 }; },
                 openVaultIO() { this.vio = this.blankVio(); this.showVaultIO = true; },
@@ -3472,7 +4078,7 @@ function reply_(p) {
                         let skipped = 0;
                         for (const p of this.passwords) {
                             if (p.type !== 'login' && p.type !== 'note') { skipped++; continue; }
-                            rows.push([p.folder, p.fav ? 1 : '', p.type === 'note' ? 'note' : 'login', p.title, p.notes, '', 0, p.url, p.username, p.password, '']);
+                            rows.push([p.folder, p.fav ? 1 : '', p.type === 'note' ? 'note' : 'login', p.title, p.notes, '', 0, p.url, p.username, p.password, p.totp || '']);
                         }
                         this.downloadText(`tresor-klartext-${day}.csv`, rows.map(r => r.map(c => this.csvCell(c)).join(',')).join('\r\n') + '\r\n', 'text/csv');
                         return this.toast(skipped ? `CSV gespeichert – ${skipped} Karten/Identitäten fehlen (dafür JSON nutzen)` : 'Klartext-CSV gespeichert');
@@ -3480,7 +4086,7 @@ function reply_(p) {
                     const folders = this.vaultFolders.map((name, i) => ({ id: 'f' + i, name }));
                     const items = this.passwords.map(p => {
                         const o = { id: String(p.id), organizationId: null, folderId: (folders.find(f => f.name === p.folder) || {}).id || null, type: { login: 1, note: 2, card: 3, identity: 4 }[p.type] || 1, reprompt: 0, name: p.title, notes: p.notes || null, favorite: !!p.fav, fields: [], collectionIds: null };
-                        if (p.type === 'login') o.login = { uris: p.url ? [{ match: null, uri: p.url }] : [], username: p.username || null, password: p.password || null, totp: null };
+                        if (p.type === 'login') o.login = { uris: p.url ? [{ match: null, uri: p.url }] : [], username: p.username || null, password: p.password || null, totp: p.totp || null };
                         else if (p.type === 'note') o.secureNote = { type: 0 };
                         else if (p.type === 'card') { const [m, y] = (p.cardExp || '').split('/'); o.card = { cardholderName: p.cardHolder || null, brand: null, number: p.cardNumber || null, expMonth: m || null, expYear: y ? (y.length === 2 ? '20' + y : y) : null, code: p.cardCvv || null }; }
                         else o.identity = { firstName: p.firstName || null, lastName: p.lastName || null, email: p.email || null, phone: p.phone || null, address1: p.address || null };
@@ -3507,7 +4113,7 @@ function reply_(p) {
                     if (rows.length < 2) throw new Error('Die CSV-Datei enthält keine Daten.');
                     const head = rows[0].map(h => h.trim().toLowerCase()), col = (...n) => head.findIndex(h => n.includes(h));
                     const c = { type: col('type'), title: col('name', 'title', 'account', 'account name', 'login_name'), url: col('login_uri', 'url', 'uri', 'website', 'web site', 'login url'), user: col('login_username', 'username', 'user name', 'user', 'login', 'email'),
-                                pw: col('login_password', 'password', 'pass'), notes: col('notes', 'note', 'extra', 'comments'), folder: col('folder', 'grouping', 'group', 'category'), fav: col('favorite', 'fav') };
+                                pw: col('login_password', 'password', 'pass'), totp: col('login_totp', 'totp', 'otp', 'otpauth'), notes: col('notes', 'note', 'extra', 'comments'), folder: col('folder', 'grouping', 'group', 'category'), fav: col('favorite', 'fav') };
                     if (c.pw < 0 && !(c.type >= 0 && c.notes >= 0)) throw new Error('CSV-Spalten nicht erkannt (erwartet z. B. name, url, username, password).');
                     const g = (r, i) => i >= 0 && r[i] != null ? String(r[i]).trim() : '';
                     const items = [], folders = new Set();
@@ -3518,7 +4124,7 @@ function reply_(p) {
                         if (folder) folders.add(folder);
                         const isNote = t === 'note' || t === 'securenote' || t === 'secure note';
                         if (!isNote && !g(r, c.pw) && !user && !url) continue;
-                        items.push(this.normPw({ type: isNote ? 'note' : 'login', title: g(r, c.title) || this.hostOf(url) || user, url, username: user, password: g(r, c.pw), notes: g(r, c.notes), folder, fav: ['1', 'true', 'yes'].includes(g(r, c.fav).toLowerCase()) }));
+                        items.push(this.normPw({ type: isNote ? 'note' : 'login', title: g(r, c.title) || this.hostOf(url) || user, url, username: user, password: g(r, c.pw), totp: g(r, c.totp), notes: g(r, c.notes), folder, fav: ['1', 'true', 'yes'].includes(g(r, c.fav).toLowerCase()) }));
                     }
                     return { items, folders: [...folders] };
                 },
@@ -3528,14 +4134,14 @@ function reply_(p) {
                     for (const it of o.items) {
                         if (!it || typeof it !== 'object') continue;
                         const base = { title: String(it.name || ''), notes: it.notes ? String(it.notes) : '', fav: !!it.favorite, folder: fm[it.folderId] || '' };
-                        if (it.type === 1) { const l = it.login || {}; items.push(this.normPw({ ...base, type: 'login', url: (Array.isArray(l.uris) && l.uris[0] && l.uris[0].uri) || '', username: l.username, password: l.password })); }
+                        if (it.type === 1) { const l = it.login || {}; items.push(this.normPw({ ...base, type: 'login', url: (Array.isArray(l.uris) && l.uris[0] && l.uris[0].uri) || '', username: l.username, password: l.password, totp: l.totp })); }
                         else if (it.type === 2) items.push(this.normPw({ ...base, type: 'note' }));
                         else if (it.type === 3) { const c = it.card || {}; items.push(this.normPw({ ...base, type: 'card', cardHolder: c.cardholderName, cardNumber: c.number, cardExp: c.expMonth ? pad(+c.expMonth || 0) + '/' + String(c.expYear || '').slice(-2) : '', cardCvv: c.code })); }
                         else if (it.type === 4) { const d = it.identity || {}; items.push(this.normPw({ ...base, type: 'identity', firstName: d.firstName, lastName: d.lastName, email: d.email, phone: d.phone, address: [d.address1, d.address2, d.address3, [d.postalCode, d.city].filter(Boolean).join(' '), d.country].filter(Boolean).join(', ') })); }
                     }
                     return { items, folders: Object.values(fm).filter(Boolean) };
                 },
-                dupKey(p) { return [p.type, p.title, p.username || p.email || p.cardNumber || [p.firstName, p.lastName].join(' '), p.url, p.password || p.notes].map(x => String(x || '').trim().toLowerCase()).join('\u0001'); },
+                dupKey(p) { return [p.type, p.title, p.username || p.email || p.cardNumber || [p.firstName, p.lastName].join(' '), p.url, p.password || p.notes || p.totp].map(x => String(x || '').trim().toLowerCase()).join('\u0001'); },
                 vioPreview() {
                     const v = this.vio, have = new Set(this.passwords.map(p => this.dupKey(p)));
                     v.nNew = v.items.filter(p => !have.has(this.dupKey(p))).length; v.nDup = v.items.length - v.nNew;
@@ -3665,13 +4271,14 @@ function reply_(p) {
                         localStorage.setItem('organizer_todos', JSON.stringify(this.todos));
                         localStorage.setItem('organizer_todo_lists', JSON.stringify(this.todoLists));
                         localStorage.setItem('organizer_shopping', JSON.stringify(this.shoppingItems));
+                        localStorage.setItem('organizer_shop_lists', JSON.stringify(this.shopLists));
                         localStorage.setItem('organizer_mail_status', JSON.stringify(this.mailStatus));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
                     this.touchSync();
                 },
                 exportData() {
-                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, cfg: this.cfg, vault: readJSON(VAULT_KEY, null) };
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, vault: readJSON(VAULT_KEY, null) };
                     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
                     const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
                     document.body.appendChild(a); a.click(); a.remove();
@@ -3687,6 +4294,7 @@ function reply_(p) {
                             if (Array.isArray(data.events)) this.events = [...this.events.filter(x => x.isGoogle), ...data.events.map(normEvent).filter(x => x.startDate)];
                             if (Array.isArray(data.todos)) this.loadTodoData(data.todos, data.todoLists, data.todoLists ? null : data.todoGroups);
                             if (Array.isArray(data.shoppingItems)) this.shoppingItems = data.shoppingItems.filter(i => i && i.name).map(normShop);
+                            if (Array.isArray(data.shopLists)) this.shopLists = data.shopLists.filter(l => l && l.id).map(l => this.normIncoming('sl', l));
                             if (data.cfg && typeof data.cfg === 'object') { this.cfg = { ...DEFAULT_CFG, ...data.cfg, views: { ...DEFAULT_CFG.views, ...(data.cfg.views || {}) } }; this.saveCfg(); this.applyCfg(); this.calendarView = this.cfg.calView; }
                             this.saveAllData();
 
