@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-9">
+    <meta name="app-version" content="2026.11.13-10">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -225,6 +225,13 @@
             .check { width: 1.7rem; height: 1.7rem; }
             .mstar { padding: .4rem; }
         }
+        /* Auf schmalen Bildschirmen darf kein Element die Seite breiter machen als den Bildschirm:
+           Raster- und Flex-Kinder sowie Eingabefelder dürfen schrumpfen (sonst sperrt sich ihre Mindestbreite). */
+        @media (max-width: 1023px) {
+            [class~="grid"] > *, [class~="flex"] > *, form > * { min-width: 0; }
+            .mrow > *, .mhead > *, .cmd > *, .prow > *, .vrow > *, .side > *, .ptile > *, .note > * { min-width: 0; }
+            input, select, textarea { min-width: 0; }
+        }
         @media (max-width: 640px) {
             /* Auf dem Handy etwas kompakter, damit mehr auf den Bildschirm passt */
             main[class] { padding-left: .8rem; padding-right: .8rem; }
@@ -302,7 +309,7 @@
         @media (min-width: 1280px) { .calgrid.up { grid-template-columns: minmax(0, 1fr) 21rem; } }
     </style>
 </head>
-<body class="font-sans antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
+<body class="antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
 
     <!-- Eigene Logos: App („C“ mit Umlauf-Punkt) und Tresor (Safe-Wählscheibe mit Schlüsselloch) -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
