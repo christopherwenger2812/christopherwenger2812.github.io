@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.14-1">
+    <meta name="app-version" content="2026.11.14-2">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -542,7 +542,7 @@
                 <!-- Monat -->
                 <div x-show="calendarView === 'month'" class="card overflow-hidden">
                     <div class="grid grid-cols-7 text-center text-xs font-bold py-3 muted border-b divider" style="background: var(--surface2);">
-                        <template x-for="d in dayHeads"><div x-text="d"></div></template>
+                        <template x-for="d in dayHeads" :key="d"><div x-text="d"></div></template>
                     </div>
                     <div class="grid grid-cols-7 gap-px" style="background: var(--border);">
                         <template x-for="day in calendarDays" :key="day.dateString">
@@ -620,7 +620,7 @@
                     <template x-for="(mName, mIdx) in monthNames" :key="mName">
                         <div @click="setMonth(mIdx); calendarView = 'month'" class="card p-5 cursor-pointer group hover:brightness-110 transition">
                             <h3 class="text-sm font-extrabold mb-3 text-center group-hover:text-indigo-400 transition-colors" x-text="mName"></h3>
-                            <div class="grid grid-cols-7 text-center text-[10px] font-bold muted mb-1.5"><template x-for="d in dayHeads"><div x-text="d.charAt(0)"></div></template></div>
+                            <div class="grid grid-cols-7 text-center text-[10px] font-bold muted mb-1.5"><template x-for="d in dayHeads" :key="d"><div x-text="d.charAt(0)"></div></template></div>
                             <div class="grid grid-cols-7 gap-1 text-center text-[10px]">
                                 <template x-for="(c, ci) in getYearMonthDays(mIdx)" :key="ci">
                                     <div class="py-1 rounded-md" :class="{'bg-indigo-600 text-white font-bold': c.isToday, 'text-amber-500 font-bold': c.holiday && !c.isToday, 'underline decoration-indigo-400 underline-offset-2': c.hasEvents && !c.isToday}" :title="c.holiday || ''" x-text="c.dayNum || ''"></div>
@@ -676,7 +676,7 @@
                         </div>
                         <form @submit.prevent="addTodoQuick()" class="flex gap-2">
                             <input type="text" x-model="newTaskTitle" placeholder="Aufgabe hinzufügen…" class="field" aria-label="Neue Aufgabe">
-                            <button type="submit" class="btn btn-primary" :disabled="!newTaskTitle.trim()"><i class="fa-solid fa-plus"></i></button>
+                            <button type="submit" class="btn btn-primary" aria-label="Aufgabe hinzufügen" :disabled="!newTaskTitle.trim()"><i class="fa-solid fa-plus"></i></button>
                         </form>
                         <div class="flex flex-wrap items-center gap-2.5">
                             <input type="search" x-model="todoSearch" placeholder="Suchen…" class="field !w-44 sm:!w-56">
@@ -1465,7 +1465,7 @@
                         <p class="label"><i class="fa-solid fa-floppy-disk mr-2"></i>Backup</p>
                         <div class="flex flex-wrap gap-3">
                             <button @click="exportData()" class="btn btn-soft"><i class="fa-solid fa-download"></i>Exportieren</button>
-                            <label class="btn btn-soft"><i class="fa-solid fa-upload"></i>Importieren<input type="file" @change="importData($event)" accept=".json,application/json" class="hidden"></label>
+                            <label class="btn btn-soft"><i class="fa-solid fa-upload"></i>Importieren<input type="file" @change="importData($event)" accept=".json,application/json" class="hidden" aria-label="Sicherungsdatei auswählen"></label>
                         </div>
                         <p class="text-[11px] muted">Der Tresor wird im Backup nur verschlüsselt gespeichert – ohne Master-Passwort ist er nicht lesbar.</p>
                     </div>
@@ -1557,7 +1557,7 @@
             </div>
             <input x-ref="evTitle" type="text" x-model="currentEvent.title" required placeholder="Titel hinzufügen…" class="field !text-base !font-bold">
             <label class="flex items-center justify-between text-sm font-bold">Ganztägig
-                <button type="button" role="switch" class="switch" :class="currentEvent.allDay ? 'on' : ''" @click="currentEvent.allDay = !currentEvent.allDay"></button>
+                <button type="button" role="switch" aria-label="Ganztägig" :aria-checked="currentEvent.allDay" class="switch" :class="currentEvent.allDay ? 'on' : ''" @click="currentEvent.allDay = !currentEvent.allDay"></button>
             </label>
             <div class="space-y-2">
                 <div class="flex items-center gap-2">
@@ -1573,7 +1573,7 @@
             </div>
             <div>
                 <p class="label mb-2">Erinnerung</p>
-                <select x-model="currentEvent.reminder" class="field">
+                <select x-model="currentEvent.reminder" class="field" aria-label="Erinnerung">
                     <option value="">Keine</option><option value="0">Zur Startzeit</option><option value="5">5 Minuten vorher</option><option value="15">15 Minuten vorher</option>
                     <option value="30">30 Minuten vorher</option><option value="60">1 Stunde vorher</option><option value="1440">1 Tag vorher</option>
                 </select>
@@ -1609,7 +1609,7 @@
                 <template x-for="s in currentTodo.steps" :key="s.id">
                     <div class="flex items-center gap-2">
                         <input type="checkbox" x-model="s.done" class="w-4 h-4 shrink-0">
-                        <input type="text" x-model="s.t" class="field !py-2" :class="s.done ? 'line-through opacity-60' : ''">
+                        <input type="text" x-model="s.t" class="field !py-2" aria-label="Schritt" :class="s.done ? 'line-through opacity-60' : ''">
                         <button type="button" @click="currentTodo.steps = currentTodo.steps.filter(x => x.id !== s.id)" class="icon-btn danger !w-8 !h-8"><i class="fa-solid fa-xmark text-xs"></i></button>
                     </div>
                 </template>
@@ -1640,12 +1640,12 @@
 
             <div class="grid sm:grid-cols-2 gap-3">
                 <div><p class="label mb-2">Erinnerung</p>
-                    <select x-model="currentTodo.reminder" class="field">
+                    <select x-model="currentTodo.reminder" class="field" aria-label="Erinnerung">
                         <option value="">Keine</option><option value="due">Zur Fälligkeit</option><option value="15">15 Min. vorher</option><option value="60">1 Std. vorher</option><option value="1440">1 Tag vorher</option><option value="custom">Eigener Zeitpunkt…</option>
                     </select>
                 </div>
                 <div><p class="label mb-2">Wiederholen</p>
-                    <select x-model="currentTodo.repeat" class="field">
+                    <select x-model="currentTodo.repeat" class="field" aria-label="Wiederholung">
                         <option value="">Nie</option><option value="daily">Täglich</option><option value="weekdays">Werktags</option><option value="weekly">Wöchentlich</option><option value="monthly">Monatlich</option><option value="yearly">Jährlich</option>
                     </select>
                 </div>
@@ -1742,7 +1742,7 @@
                 <input type="text" x-ref="recipeTitle" x-model="recipeDraft.title" maxlength="80" placeholder="Name des Gerichts" class="field !font-bold" required>
             </div>
             <div class="grid grid-cols-2 gap-3">
-                <label class="block"><span class="label">Portionen</span><input type="number" min="1" max="99" x-model.number="recipeDraft.servings" class="field mt-1"></label>
+                <label class="block"><span class="label">Portionen</span><input type="number" min="1" max="99" x-model.number="recipeDraft.servings" class="field mt-1" aria-label="Portionen"></label>
                 <label class="block"><span class="label">Dauer in Minuten</span><input type="number" min="0" max="999" x-model.number="recipeDraft.minutes" class="field mt-1" placeholder="z. B. 40"></label>
             </div>
             <label class="block">
@@ -1828,9 +1828,9 @@
             </div>
             <div class="grid grid-cols-[auto_1fr] gap-2 items-center">
                 <div class="seg !p-1">
-                    <button type="button" @click="currentShop.qty = Math.max(1, (Number(currentShop.qty) || 1) - 1)"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                    <button type="button" aria-label="Menge verringern" @click="currentShop.qty = Math.max(1, (Number(currentShop.qty) || 1) - 1)"><i class="fa-solid fa-minus text-[10px]"></i></button>
                     <input type="number" min="0.1" step="any" x-model.number="currentShop.qty" class="w-14 bg-transparent text-center text-sm font-black outline-none" aria-label="Menge">
-                    <button type="button" @click="currentShop.qty = (Number(currentShop.qty) || 0) + 1"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                    <button type="button" aria-label="Menge erhöhen" @click="currentShop.qty = (Number(currentShop.qty) || 0) + 1"><i class="fa-solid fa-plus text-[10px]"></i></button>
                 </div>
                 <select x-model="currentShop.unit" class="field" aria-label="Einheit"><template x-for="u in shopUnits" :key="u"><option :value="u" x-text="u || 'Ohne Einheit'"></option></template></select>
             </div>
@@ -1867,7 +1867,7 @@
                         <button type="button" class="icon-btn" @click="pickerNav(12)" aria-label="Nächstes Jahr"><i class="fa-solid fa-angles-right text-[10px]"></i></button>
                     </div>
                 </div>
-                <div class="grid grid-cols-7 text-center text-[10px] font-bold muted"><template x-for="d in dayHeads"><div x-text="d"></div></template></div>
+                <div class="grid grid-cols-7 text-center text-[10px] font-bold muted"><template x-for="d in dayHeads" :key="d"><div x-text="d"></div></template></div>
                 <div class="grid grid-cols-7 gap-1">
                     <template x-for="c in pickerDays" :key="c.ds">
                         <button type="button" @click="pickDay(c)" :disabled="c.disabled" class="pk-day" :class="{ 'sel': c.sel, 'today': c.today, 'out': !c.inMonth, 'hol': !!c.holiday }" :title="c.holiday" x-text="c.day"></button>
@@ -1886,7 +1886,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <p class="label">Minute</p>
-                        <div class="flex gap-1"><button type="button" class="chip" @click="pickerMin(-1)">−1</button><button type="button" class="chip" @click="pickerMin(1)">+1</button></div>
+                        <div class="flex gap-1"><button type="button" class="chip" aria-label="Minuten zurück" @click="pickerMin(-1)">−1</button><button type="button" class="chip" aria-label="Minuten vor" @click="pickerMin(1)">+1</button></div>
                     </div>
                     <div class="grid grid-cols-6 gap-1">
                         <template x-for="m in pickerMinutes" :key="m"><button type="button" class="pk-t" :class="picker.mm === m ? 'sel' : ''" @click="picker.mm = m" x-text="pad2(m)"></button></template>
@@ -1980,7 +1980,7 @@
             </div>
             <div>
                 <div class="flex items-center justify-between"><label class="label" for="genLen">Länge</label><span class="text-xs font-bold" x-text="gen.length"></span></div>
-                <input id="genLen" type="range" min="8" max="64" x-model.number="gen.length" @input="regen()" class="w-full mt-2">
+                <input id="genLen" type="range" min="8" max="64" x-model.number="gen.length" @input="regen()" class="w-full mt-2" aria-label="Passwortlänge">
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs font-bold">
                 <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.upper" @change="regen()">A–Z</label>
@@ -2032,7 +2032,7 @@
                 </template>
                 <div class="inner p-3 space-y-2 text-sm">
                     <label class="flex items-center justify-between gap-3 font-semibold">Neue Mails automatisch prüfen
-                        <select x-model.number="mailCfg.settings.poll" @change="saveMailCfg()" class="field !w-auto !py-1.5"><option value="0">Aus</option><option value="2">alle 2 Min.</option><option value="5">alle 5 Min.</option><option value="15">alle 15 Min.</option></select></label>
+                        <select x-model.number="mailCfg.settings.poll" @change="saveMailCfg()" class="field !w-auto !py-1.5" aria-label="Wie oft nach neuen Mails sehen"><option value="0">Aus</option><option value="2">alle 2 Min.</option><option value="5">alle 5 Min.</option><option value="15">alle 15 Min.</option></select></label>
                     <label class="flex items-start gap-2 font-semibold cursor-pointer"><input type="checkbox" x-model="mailCfg.settings.images" @change="saveMailCfg()" class="mt-0.5">Externe Bilder immer laden <span class="muted font-normal">(Absender können dann sehen, dass du die Mail geöffnet hast)</span></label>
                 </div>
             </div>
@@ -2061,9 +2061,9 @@
         <form @submit.prevent="mailSend()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-3">
             <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-pen accent"></i><span x-text="{ new: 'Neue E-Mail', reply: 'Antworten', replyAll: 'Allen antworten', forward: 'Weiterleiten' }[mailComp.mode]"></span></h3>
             <label x-show="mailCompAliases.length > 1" class="block"><span class="label">Von</span>
-                <select x-model="mailComp.from" class="field mt-1"><template x-for="e in mailCompAliases" :key="e"><option :value="e" x-text="e"></option></template></select></label>
+                <select x-model="mailComp.from" class="field mt-1" aria-label="Absenderadresse"><template x-for="e in mailCompAliases" :key="e"><option :value="e" x-text="e"></option></template></select></label>
             <label x-show="mailCfg.accounts.length > 1" class="block"><span class="label" x-text="mailCompAliases.length > 1 ? 'Postfach' : 'Von'"></span>
-                <select x-model="mailComp.acc" class="field mt-1" :disabled="mailComp.mode === 'reply' || mailComp.mode === 'replyAll'"><template x-for="a in mailCfg.accounts" :key="a.id"><option :value="a.id" x-text="a.name + (a.email ? ' (' + a.email + ')' : '')"></option></template></select></label>
+                <select x-model="mailComp.acc" class="field mt-1" aria-label="Postfach" :disabled="mailComp.mode === 'reply' || mailComp.mode === 'replyAll'"><template x-for="a in mailCfg.accounts" :key="a.id"><option :value="a.id" x-text="a.name + (a.email ? ' (' + a.email + ')' : '')"></option></template></select></label>
             <template x-if="mailComp.mode === 'new' || mailComp.mode === 'forward'">
                 <label class="block"><span class="label">An</span><input type="text" x-model="mailComp.to" placeholder="name@beispiel.de, …" class="field mt-1" autocomplete="off" inputmode="email"></label>
             </template>
@@ -2076,7 +2076,7 @@
             <textarea x-model="mailComp.body" rows="12" class="field font-mono !text-[13px]" placeholder="Nachricht …" aria-label="Nachricht" x-ref="mailBody"></textarea>
             <div class="flex flex-wrap items-center gap-2">
                 <template x-for="(a, i) in mailComp.att" :key="a.name + i"><span class="chip !py-1.5 !px-3"><i class="fa-solid fa-paperclip"></i><span x-text="a.name"></span><span class="muted" x-text="mailBytes(a.size)"></span><button type="button" @click="mailComp.att.splice(i, 1)" class="ml-1" aria-label="Anhang entfernen"><i class="fa-solid fa-xmark"></i></button></span></template>
-                <label class="btn btn-soft cursor-pointer"><i class="fa-solid fa-paperclip"></i>Anhang<input type="file" multiple class="hidden" @change="mailAttach($event)"></label>
+                <label class="btn btn-soft cursor-pointer"><i class="fa-solid fa-paperclip"></i>Anhang<input type="file" multiple class="hidden" @change="mailAttach($event)" aria-label="Anhänge auswählen"></label>
                 <select x-show="mailCfg.settings.templates.length" @change="mailInsertTemplate($event.target.value); $event.target.value = ''" class="field !w-auto !py-2" aria-label="Textbaustein einfügen"><option value="">Textbaustein …</option><template x-for="(t, i) in mailCfg.settings.templates" :key="i"><option :value="i" x-text="t.name || 'Baustein ' + (i + 1)"></option></template></select>
             </div>
             <p x-show="mailComp.error" class="text-xs font-bold text-rose-400" x-text="mailComp.error"></p>
@@ -3076,7 +3076,7 @@ function reply_(p) {
 
                 /* Einkauf */
                 notes: [], noteQuery: '', showNoteModal: false, currentNote: { id: null, title: '', text: '', color: '', pin: false },
-                recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: null, recipeIngText: '', recipeUnits: UNITS,
+                recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: normRecipe({ id: null, title: '' }), recipeIngText: '', recipeUnits: UNITS,
                 shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
 
@@ -4330,7 +4330,7 @@ function reply_(p) {
                 get recipeStepList() { return this.recipeDraft ? this.recipeDraft.steps.split(/\n+/).map(s => s.trim()).filter(Boolean) : []; },
                 openRecipe(r) { this.recipeDraft = normRecipe({ ...r }); this.recipeScale = r.servings; this.showRecipe = true; },
                 openRecipeEdit(r) {
-                    this.recipeDraft = r ? normRecipe({ ...r }) : normRecipe({ id: null, title: '', servings: 2 });
+                    this.recipeDraft = normRecipe(r ? { ...r } : { id: null, title: '', servings: 2 });
                     if (!r) this.recipeDraft.id = null;
                     this.recipeIngText = this.recipeDraft.ings.map(i => [i.qty ? fmtQty(i.qty) : '', i.unit, i.name].filter(Boolean).join(' ')).join('\n');
                     this.showRecipe = false; this.showRecipeEdit = true;
