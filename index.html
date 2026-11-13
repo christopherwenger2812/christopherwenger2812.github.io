@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-3">
+    <meta name="app-version" content="2026.11.13-5">
     <meta name="theme-color" content="#0b0f19">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -87,7 +87,7 @@
         .pill > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .holiday { font-size: .62rem; font-weight: 700; color: #f59e0b; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); padding: .05rem .4rem; border-radius: .45rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
-        .mnav { display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .7rem; border-radius: 1rem; font-size: .65rem; font-weight: 700; color: var(--muted); transition: all .15s; }
+        .mnav { display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .15rem; flex: 1 1 0; min-width: 0; border-radius: 1rem; font-size: .65rem; font-weight: 700; color: var(--muted); transition: all .15s; }
         .mnav.on { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
 
         .side { display: flex; align-items: center; gap: .7rem; width: 100%; padding: .6rem .8rem; border-radius: .8rem; font-size: .8rem; font-weight: 700; text-align: left; transition: background .15s; }
@@ -112,6 +112,18 @@
         .switch.on::after { transform: translateX(1.1rem); }
 
         .evblock { position: absolute; border-radius: .5rem; padding: .2rem .4rem; font-size: .68rem; font-weight: 600; line-height: 1.2; overflow: hidden; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 28%, var(--surface)); box-shadow: 0 2px 8px -4px rgba(0,0,0,.5); z-index: 2; text-align: left; }
+        .mfold { display: flex; align-items: center; gap: .6rem; padding: .5rem .75rem; border-radius: .8rem; font-size: .82rem; font-weight: 700; color: var(--muted); text-align: left; white-space: nowrap; flex: none; }
+        .mfold:hover { background: var(--hover); color: var(--text); }
+        .mfold.on { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+        @media (min-width: 1024px) { .mfold { width: 100%; } }
+        .mrow { display: flex; gap: .7rem; padding: .7rem .85rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; width: 100%; align-items: flex-start; }
+        .mrow:hover { background: var(--hover); }
+        .mrow.on { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+        .mrow .ms { font-size: .82rem; color: var(--muted); }
+        .mrow.unread .ms, .mrow.unread .mw { font-weight: 800; color: var(--text); }
+        .mav { width: 2.4rem; height: 2.4rem; border-radius: 999px; display: grid; place-items: center; font-weight: 800; font-size: .85rem; color: #fff; flex: none; }
+        .mframe { display: block; width: 100%; border: 0; background: #fff; border-radius: .8rem; min-height: 60px; }
+        .mstar { color: var(--muted); } .mstar.on { color: #fbbf24; }
         .backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; background: rgba(2, 6, 23, .7); backdrop-filter: blur(8px); overflow-y: auto; }
         .backdrop > * { margin-block: auto; }
         .swatch { width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 2px solid transparent; transition: transform .15s; flex-shrink: 0; }
@@ -133,6 +145,35 @@
         .menu hr { border: 0; border-top: 1px solid var(--border); margin: .3rem 0; }
         .chip.run  { background: rgba(16,185,129,.15); color: #34d399; border-color: rgba(16,185,129,.3); }
         .chip.soon { background: rgba(245,158,11,.15); color: #fbbf24; border-color: rgba(245,158,11,.3); }
+        /* Einkaufs-Kacheln (Bring!-Stil: Farbe je Kategorie) */
+        .ptile { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; min-width: 0; min-height: 5.8rem; padding: .7rem .35rem .55rem; border-radius: 1rem; text-align: center; cursor: pointer;
+                 background: color-mix(in srgb, var(--cc) 16%, var(--surface2)); border: 1px solid color-mix(in srgb, var(--cc) 40%, var(--border)); transition: transform .15s, filter .15s; }
+        .ptile:hover { transform: translateY(-1px); filter: brightness(1.08); }
+        .ptile .pi { display: flex; align-items: center; justify-content: center; width: 2.7rem; height: 2.7rem; border-radius: 9999px; background: color-mix(in srgb, var(--cc) 24%, transparent); }
+        .ptile .em { font-size: 1.65rem; line-height: 1; }
+        .ptile .ltr { font-family: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive; font-size: 1.6rem; font-weight: 700; line-height: 1; color: var(--cc); }
+        .ptile .nm { font-size: .72rem; font-weight: 700; line-height: 1.15; max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
+        .ptile .sub { font-size: .62rem; font-weight: 600; opacity: .85; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ptile .badge { position: absolute; top: .3rem; left: .3rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 9999px; background: var(--cc); color: #fff; font-size: .62rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .ptile.solid { background: var(--cc); border-color: transparent; color: #fff; box-shadow: 0 8px 18px -10px var(--cc); }
+        .ptile.solid .pi { background: rgba(255,255,255,.22); }
+        .ptile.solid .ltr { color: #fff; }
+        .ptile.off { opacity: .5; }
+        .pdot { display: flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; border-radius: 9999px; background: var(--cc); color: #fff; flex-shrink: 0; }
+        .pdot .ltr { font-family: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive; font-weight: 700; font-size: 1.2rem; line-height: 1; }
+        /* Datum-/Zeit-Auswahl */
+        .pickbtn { display: flex; align-items: center; gap: .6rem; text-align: left; cursor: pointer; min-width: 0; }
+        .pickbtn:disabled { opacity: .45; cursor: not-allowed; }
+        .pk-day { position: relative; height: 2.3rem; border-radius: .7rem; font-size: .78rem; font-weight: 700; color: var(--text); transition: all .12s; }
+        .pk-day:hover:not(:disabled) { background: var(--hover); }
+        .pk-day.out { color: var(--muted); opacity: .55; }
+        .pk-day.today { box-shadow: inset 0 0 0 1.5px var(--accent); }
+        .pk-day.sel { background: var(--accent); color: #fff; opacity: 1; box-shadow: 0 6px 14px -6px var(--accent); }
+        .pk-day.hol::after { content: ''; position: absolute; bottom: .22rem; left: 50%; width: .25rem; height: .25rem; margin-left: -.125rem; border-radius: 9999px; background: #f59e0b; }
+        .pk-day:disabled { opacity: .25; cursor: not-allowed; }
+        .pk-t { height: 2.1rem; border-radius: .65rem; font-size: .75rem; font-weight: 700; color: var(--text); background: var(--surface2); border: 1px solid var(--border); transition: all .12s; }
+        .pk-t:hover { background: var(--hover); }
+        .pk-t.sel { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 6px 14px -8px var(--accent); }
         .calgrid { display: grid; gap: 1.25rem; align-items: start; }
         @media (min-width: 1280px) { .calgrid.up { grid-template-columns: minmax(0, 1fr) 21rem; } }
     </style>
@@ -204,7 +245,7 @@
                 </div>
                 <nav class="hidden md:flex seg" aria-label="Hauptnavigation">
                     <template x-for="t in tabs" :key="t.id">
-                        <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span x-text="t.label"></span></button>
+                        <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
                     </template>
                 </nav>
             </div>
@@ -212,7 +253,7 @@
 
         <nav class="md:hidden fixed bottom-3 left-3 right-3 z-40 card px-2 pt-2 safe-bottom flex justify-around backdrop-blur-xl" aria-label="Hauptnavigation">
             <template x-for="t in tabs" :key="t.id">
-                <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="mnav"><i :class="t.icon" class="text-base"></i><span x-text="t.label"></span></button>
+                <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="mnav relative"><i :class="t.icon" class="text-base"></i><span x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="absolute top-0 right-[18%] min-w-[1rem] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
             </template>
         </nav>
 
@@ -474,14 +515,26 @@
                         <button @click="shopCat = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === 'all' ? 'on' : ''">Alle</button>
                         <template x-for="c in shopCategories" :key="c"><button @click="shopCat = c" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === c ? 'on' : ''" x-text="c"></button></template>
                     </div>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2 max-h-72 overflow-y-auto pr-1">
-                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="tile !border-dashed">
-                            <span class="em">➕</span><span class="nm" x-text="'„' + shopQuery.trim() + '“'"></span>
+                    <div x-show="!shopQuery.trim() && recentView.length" class="space-y-2">
+                        <p class="label">Zuletzt verwendet</p>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2">
+                            <template x-for="p in recentView" :key="'r' + p.name">
+                                <button @click="tapProduct(p)" class="ptile" :style="'--cc:' + catColor(p.category)">
+                                    <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
+                                    <span class="pi"><span class="em" x-show="hasEmoji(p)" x-text="p.emoji"></span><span class="ltr" x-show="!hasEmoji(p)" x-text="initial(p.name)"></span></span>
+                                    <span class="nm" x-text="p.name"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2 max-h-[28rem] overflow-y-auto pr-1">
+                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="ptile !border-dashed" :style="'--cc:' + catColor(guessCategory(shopQuery))">
+                            <span class="pi"><span class="ltr" x-text="initial(shopQuery)"></span></span><span class="nm" x-text="'„' + shopQuery.trim() + '“'"></span>
                         </button>
                         <template x-for="p in catalogView" :key="p.name">
-                            <button @click="tapProduct(p)" class="tile">
+                            <button @click="tapProduct(p)" class="ptile" :style="'--cc:' + catColor(p.category)">
                                 <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
-                                <span class="em" x-text="p.emoji"></span><span class="nm" x-text="p.name"></span>
+                                <span class="pi"><span class="em" x-text="p.emoji"></span></span><span class="nm" x-text="p.name"></span>
                             </button>
                         </template>
                     </div>
@@ -494,12 +547,13 @@
                             <p class="label flex items-center gap-2" x-show="cfg.shopGroup"><span x-text="g.cat"></span><span x-text="g.items.length"></span></p>
                             <div :class="cfg.views.shopping === 'tiles' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5' : 'space-y-2'">
                                 <template x-for="i in g.items" :key="i.id">
-                                    <div @click="toggleBought(i.id)" :class="cfg.views.shopping === 'tiles' ? 'tile' : 'inner row flex items-center gap-3 cursor-pointer hover:brightness-110'">
-                                        <button @click.stop="openShopModal(i)" class="icon-btn !w-7 !h-7" :class="cfg.views.shopping === 'tiles' ? 'absolute top-1 right-1' : 'order-last'" aria-label="Details"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                                        <span :class="cfg.views.shopping === 'tiles' ? 'em' : 'text-2xl'" x-text="i.emoji"></span>
+                                    <div @click="toggleBought(i.id)" :style="'--cc:' + catColor(i.category)" :class="cfg.views.shopping === 'tiles' ? 'ptile solid' : 'inner row flex items-center gap-3 cursor-pointer hover:brightness-110'">
+                                        <button @click.stop="openShopModal(i)" class="icon-btn !w-7 !h-7" :class="cfg.views.shopping === 'tiles' ? 'absolute top-1 right-1 !text-white/80 hover:!bg-white/20' : 'order-last'" aria-label="Details"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                        <span x-show="cfg.views.shopping === 'tiles'" class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span></span>
+                                        <span x-show="cfg.views.shopping !== 'tiles'" class="pdot"><span class="text-xl leading-none" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span></span>
                                         <div :class="cfg.views.shopping === 'tiles' ? 'w-full min-w-0' : 'flex-1 min-w-0'">
                                             <p :class="cfg.views.shopping === 'tiles' ? 'nm' : 'text-sm font-bold truncate'" x-text="i.name"></p>
-                                            <p class="text-[10px] muted font-semibold truncate" x-show="qtyLabel(i) || i.note" x-text="[qtyLabel(i), i.note].filter(Boolean).join(' · ')"></p>
+                                            <p :class="cfg.views.shopping === 'tiles' ? 'sub' : 'text-[10px] muted font-semibold truncate'" x-show="qtyLabel(i) || i.note" x-text="[qtyLabel(i), i.note].filter(Boolean).join(' · ')"></p>
                                         </div>
                                     </div>
                                 </template>
@@ -512,7 +566,7 @@
                         <p class="label">Im Warenkorb · antippen zum Zurücklegen</p>
                         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
                             <template x-for="i in shopDone" :key="i.id">
-                                <div @click="toggleBought(i.id)" class="tile off"><span class="em" x-text="i.emoji"></span><span class="nm line-through" x-text="i.name"></span></div>
+                                <div @click="toggleBought(i.id)" class="ptile off" :style="'--cc:' + catColor(i.category)"><span class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span></span><span class="nm line-through" x-text="i.name"></span></div>
                             </template>
                         </div>
                     </div>
@@ -520,6 +574,124 @@
             </section>
 
             <!-- ================= TRESOR ================= -->
+            <!-- ================= E-MAIL ================= -->
+            <section x-show="activeTab === 'mail'" x-cloak class="space-y-4">
+                <div class="card p-4 sm:p-5 flex flex-wrap items-center gap-2">
+                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3 mr-auto"><i class="fa-solid fa-envelope text-sky-400"></i>E-Mail</h2>
+                    <button x-show="mailCfg.accounts.length" @click="mailNew()" class="btn btn-primary"><i class="fa-solid fa-pen"></i>Neue E-Mail</button>
+                    <button x-show="mailCfg.accounts.length" @click="mailRefresh({ manual: true })" class="btn btn-soft" title="Aktualisieren" aria-label="Aktualisieren"><i class="fa-solid fa-rotate" :class="mailLoading ? 'spin' : ''"></i></button>
+                    <button @click="openMailSetup()" class="btn btn-soft"><i class="fa-solid fa-gear"></i><span x-text="mailCfg.accounts.length ? 'Postfächer' : 'Postfach verbinden'"></span></button>
+                </div>
+
+                <!-- noch kein Postfach -->
+                <div x-show="!mailCfg.accounts.length" class="card p-6 sm:p-8 space-y-4 text-sm">
+                    <p class="font-bold text-base">Deine E-Mails direkt in der App</p>
+                    <p class="muted leading-relaxed">Verbinde dein Gmail-Postfach über ein eigenes kleines Google-Script (dauert ca. 3 Minuten). Danach liest, beantwortest und sortierst du deine Mails wie in Outlook – und Gelesen-/Stern-/Archiv-Status werden auf alle deine Geräte abgeglichen (Google &amp; P2P).</p>
+                    <p class="muted leading-relaxed text-xs">Andere Adressen (GMX, web.de, Outlook.com, iCloud …) kannst du nur über Gmail einbinden: Richte bei deinem Anbieter eine <em>automatische Weiterleitung</em> an deine Gmail-Adresse ein. (Der POP-Abruf „E-Mails von anderen Konten abrufen“ wurde von Google 2026 eingestellt.) Antworten werden dann von der Gmail-Adresse gesendet.</p>
+                    <button @click="openMailSetup()" class="btn btn-primary"><i class="fa-solid fa-plug"></i>Jetzt verbinden</button>
+                </div>
+
+                <div x-show="mailCfg.accounts.length" class="grid gap-4 lg:grid-cols-[12.5rem_minmax(0,23rem)_minmax(0,1fr)] items-start">
+                    <!-- Ordner -->
+                    <aside :class="mailSel ? 'hidden lg:block' : ''" class="card p-2 sm:p-3 space-y-2">
+                        <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0" x-show="mailCfg.accounts.length > 1">
+                            <button class="mfold" :class="mailAcc === 'all' ? 'on' : ''" @click="mailSetAcc('all')"><i class="fa-solid fa-layer-group w-4 text-center"></i>Alle Postfächer</button>
+                            <template x-for="a in mailCfg.accounts" :key="a.id">
+                                <button class="mfold" :class="mailAcc === a.id ? 'on' : ''" @click="mailSetAcc(a.id)"><i class="fa-regular fa-envelope w-4 text-center"></i><span class="truncate max-w-[9rem]" x-text="a.name"></span></button>
+                            </template>
+                        </div>
+                        <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
+                            <template x-for="f in mailFolders" :key="f.id">
+                                <button class="mfold" :class="mailFolder === f.id ? 'on' : ''" @click="mailSetFolder(f.id)">
+                                    <i class="fa-solid w-4 text-center" :class="f.icon"></i><span x-text="f.label"></span>
+                                    <span x-show="mailBadge(f.id) > 0" class="ml-auto text-[10px] font-black px-1.5 rounded-full bg-sky-500/20 text-sky-400" x-text="mailBadge(f.id)"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </aside>
+
+                    <!-- Liste -->
+                    <div :class="mailSel ? 'hidden lg:block' : ''" class="card overflow-hidden">
+                        <div class="p-3 border-b divider flex gap-2">
+                            <input type="search" x-model="mailQuery" @keydown.enter="mailRefresh({ manual: true })" placeholder="Suchen (z. B. von:anna)" class="field !py-2" aria-label="E-Mails durchsuchen">
+                            <button type="button" @click="mailUnreadOnly = !mailUnreadOnly; mailRefresh({ manual: true })" class="btn" :class="mailUnreadOnly ? 'btn-primary' : 'btn-soft'" title="Nur ungelesene" aria-label="Nur ungelesene"><i class="fa-solid fa-envelope-open-text"></i></button>
+                        </div>
+                        <p x-show="mailError" class="px-4 py-3 text-xs font-bold text-rose-400 border-b divider" x-text="mailError"></p>
+                        <div x-show="mailLoading && !mailList.length" class="p-8 text-center muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade E-Mails …</div>
+                        <div x-show="!mailLoading && !mailRows.length && !mailError" class="p-8 text-center muted text-sm">Keine E-Mails in diesem Ordner.</div>
+                        <div class="max-h-[70vh] overflow-y-auto">
+                            <template x-for="r in mailRows" :key="r.key">
+                                <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '']" @click="mailOpen(r)" @keydown.enter.self="mailOpen(r)">
+                                    <span class="mav" :style="'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" x-text="initial(mailWho(r))"></span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex items-baseline gap-2"><span class="mw text-sm truncate flex-1" x-text="mailWho(r)"></span><span class="text-[11px] muted shrink-0" x-text="mailDateShort(r.date)"></span></span>
+                                        <span class="block ms truncate" x-text="(r.subj || '(kein Betreff)') + (r.n > 1 ? ' (' + r.n + ')' : '')"></span>
+                                        <span class="block text-[11px] muted truncate" x-text="mailSnippet(r)"></span>
+                                        <span x-show="mailAcc === 'all' && mailCfg.accounts.length > 1" class="chip mt-1" x-text="(mailAccount(r.acc) || {}).name"></span>
+                                    </span>
+                                    <button type="button" class="mstar p-1 -mr-1" :class="r.star ? 'on' : ''" @click.stop="mailSet([r], { s: r.star ? 0 : 1 })" :aria-label="r.star ? 'Markierung entfernen' : 'Markieren'"><i :class="r.star ? 'fa-solid' : 'fa-regular'" class="fa-star"></i></button>
+                                </div>
+                            </template>
+                            <button x-show="mailMoreOk" @click="mailRefresh({ more: true })" class="btn btn-ghost w-full !rounded-none py-3" :disabled="mailLoading">Mehr laden</button>
+                        </div>
+                    </div>
+
+                    <!-- Lesebereich -->
+                    <div :class="mailSel ? '' : 'hidden lg:block'" class="card overflow-hidden min-h-[50vh]">
+                        <div x-show="!mailSel" class="p-10 text-center muted text-sm"><i class="fa-regular fa-envelope-open text-3xl mb-3 block"></i>Wähle eine E-Mail aus.</div>
+                        <div x-show="mailSel">
+                            <div class="p-3 border-b divider flex flex-wrap items-center gap-1.5">
+                                <button class="btn btn-ghost lg:hidden" @click="mailBack()"><i class="fa-solid fa-arrow-left"></i>Zurück</button>
+                                <button class="btn btn-soft" @click="mailReplyTo(mailThread.msgs.length - 1, false)" :disabled="!mailThread.msgs.length"><i class="fa-solid fa-reply"></i><span class="hidden sm:inline">Antworten</span></button>
+                                <button class="btn btn-soft" @click="mailReplyTo(mailThread.msgs.length - 1, true)" :disabled="!mailThread.msgs.length" title="Allen antworten"><i class="fa-solid fa-reply-all"></i></button>
+                                <button class="btn btn-soft" @click="mailForward(mailThread.msgs.length - 1)" :disabled="!mailThread.msgs.length" title="Weiterleiten"><i class="fa-solid fa-share"></i></button>
+                                <span class="flex-1"></span>
+                                <button class="btn btn-ghost" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
+                                <button class="btn btn-ghost mstar" :class="mailCurRow.star ? 'on' : ''" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren"><i :class="mailCurRow.star ? 'fa-solid' : 'fa-regular'" class="fa-star"></i></button>
+                                <button x-show="mailFolder !== 'archive'" class="btn btn-ghost" @click="mailMove('a')" title="Archivieren"><i class="fa-solid fa-box-archive"></i></button>
+                                <button x-show="mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive'" class="btn btn-ghost" @click="mailMove('i')" title="In den Posteingang"><i class="fa-solid fa-inbox"></i></button>
+                                <button x-show="mailFolder !== 'trash'" class="btn btn-ghost" @click="mailMove('d')" title="Löschen"><i class="fa-solid fa-trash-can"></i></button>
+                                <button x-show="mailFolder !== 'spam' && mailFolder !== 'trash'" class="btn btn-ghost" @click="mailMove('sp')" title="Als Spam melden"><i class="fa-solid fa-ban"></i></button>
+                            </div>
+                            <h3 class="px-4 pt-4 pb-1 font-black text-lg break-words" x-text="mailCur ? (mailCur.subj || '(kein Betreff)') : ''"></h3>
+                            <div x-show="mailThread.loading" class="p-8 text-center muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade …</div>
+                            <p x-show="mailThread.error" class="px-4 py-3 text-xs font-bold text-rose-400" x-text="mailThread.error"></p>
+                            <template x-for="m in mailThread.msgs" :key="m.i">
+                                <div class="border-t divider first:border-t-0">
+                                    <button type="button" class="w-full flex items-center gap-3 p-4 text-left" @click="mailToggleMsg(m.i)">
+                                        <span class="mav" :style="'background:hsl(' + mailHue(m.from) + ' 55% 42%)'" x-text="initial(senderName(m.from))"></span>
+                                        <span class="min-w-0 flex-1">
+                                            <span class="block font-bold text-sm truncate" x-text="senderName(m.from)"></span>
+                                            <span class="block text-[11px] muted truncate" x-text="mailThread.open[m.i] ? 'An: ' + (m.to || '—') + (m.cc ? ' · Cc: ' + m.cc : '') : mailText(m).slice(0, 120)"></span>
+                                        </span>
+                                        <span class="text-[11px] muted shrink-0" x-text="mailDateLong(m.date)"></span>
+                                    </button>
+                                    <div x-show="mailThread.open[m.i]" class="px-4 pb-5 space-y-3">
+                                        <div x-show="m.html && mailHasRemote(m) && !mailImagesOk" class="inner p-3 text-xs flex flex-wrap items-center gap-2">
+                                            <i class="fa-solid fa-image muted"></i><span class="flex-1 min-w-[10rem]">Externe Bilder wurden blockiert (Schutz vor Tracking).</span>
+                                            <button type="button" class="btn btn-soft" @click="mailThread.imgs = true">Bilder laden</button>
+                                        </div>
+                                        <template x-if="m.html && mailThread.open[m.i]"><iframe class="mframe" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" :srcdoc="mailDoc(m)" @load="mailFit($event.target)" title="E-Mail-Inhalt"></iframe></template>
+                                        <div x-show="!m.html" class="text-sm whitespace-pre-wrap break-words" x-text="m.plain"></div>
+                                        <p x-show="m.trunc" class="text-[11px] muted">Sehr lange Nachricht – gekürzt angezeigt.</p>
+                                        <div x-show="m.att.length" class="flex flex-wrap gap-2">
+                                            <template x-for="a in m.att" :key="a.i">
+                                                <button type="button" class="chip !py-1.5 !px-3 cursor-pointer" @click="mailDownload(m, a)"><i class="fa-solid fa-paperclip"></i><span x-text="a.name"></span><span class="muted font-medium" x-text="mailBytes(a.size)"></span></button>
+                                            </template>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2 pt-1">
+                                            <button class="btn btn-soft" @click="mailReplyTo(m.i, false)"><i class="fa-solid fa-reply"></i>Antworten</button>
+                                            <button class="btn btn-soft" @click="mailReplyTo(m.i, true)"><i class="fa-solid fa-reply-all"></i>Allen</button>
+                                            <button class="btn btn-soft" @click="mailForward(m.i)"><i class="fa-solid fa-share"></i>Weiterleiten</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section x-show="activeTab === 'passwords'" x-cloak class="space-y-5">
                 <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="flex items-center gap-4 min-w-0">
@@ -530,6 +702,7 @@
                         </div>
                     </div>
                     <div x-show="vaultState === 'unlocked'" class="flex flex-wrap gap-2.5">
+                        <button @click="openVaultIO()" class="btn btn-soft" title="Tresor exportieren / importieren"><i class="fa-solid fa-file-export"></i><span class="hidden sm:inline">Import/Export</span></button>
                         <button @click="openFolders()" class="btn btn-soft" title="Ordner verwalten"><i class="fa-solid fa-folder-tree"></i><span class="hidden sm:inline">Ordner</span></button>
                         <button @click="openChangeMaster()" class="btn btn-soft" title="Master-Passwort ändern"><i class="fa-solid fa-key"></i></button>
                         <button @click="lockVault(true)" class="btn btn-soft"><i class="fa-solid fa-lock"></i>Sperren</button>
@@ -719,7 +892,7 @@
                                 <select x-show="it.type === 'select'" class="field !w-auto max-w-[11rem] sm:max-w-none" @change="selectCfg(it, $event.target.value)">
                                     <template x-for="o in it.o" :key="o[0]"><option :value="o[0]" :selected="String(o[0]) === String(cfg[it.k])" x-text="o[1]"></option></template>
                                 </select>
-                                <input x-show="it.type === 'time'" type="time" class="field !w-auto" :value="cfg[it.k]" @change="setCfg(it.k, $event.target.value || '09:00')">
+                                <button x-show="it.type === 'time'" type="button" class="field pickbtn !w-auto" @click="pickTime(cfg, it.k, { cb: 'saveCfg', title: it.label })"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="cfg[it.k]"></span></button>
                             </div>
                         </template>
                     </div>
@@ -849,13 +1022,13 @@
             <div class="space-y-2">
                 <div class="flex items-center gap-2">
                     <span class="label w-12 shrink-0">Start</span>
-                    <input type="date" x-model="currentEvent.startDate" @change="onEventStart()" required class="field flex-1 min-w-0" aria-label="Startdatum">
-                    <input x-show="!currentEvent.allDay" type="time" x-model="currentEvent.startTime" @change="onEventStart()" required class="field !w-auto" aria-label="Startzeit">
+                    <button type="button" @click="pickDate(currentEvent, 'startDate', { cb: 'onEventStart', title: 'Startdatum' })" class="field pickbtn flex-1" aria-label="Startdatum"><i class="fa-regular fa-calendar text-xs muted"></i><span class="truncate" x-text="fmtPickDate(currentEvent.startDate) || 'Datum wählen'"></span></button>
+                    <button x-show="!currentEvent.allDay" type="button" @click="pickTime(currentEvent, 'startTime', { cb: 'onEventStart', title: 'Startzeit' })" class="field pickbtn !w-auto" aria-label="Startzeit"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="currentEvent.startTime || '--:--'"></span></button>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="label w-12 shrink-0">Ende</span>
-                    <input type="date" x-model="currentEvent.endDate" @change="onEventEnd()" :min="currentEvent.startDate" required class="field flex-1 min-w-0" aria-label="Enddatum">
-                    <input x-show="!currentEvent.allDay" type="time" x-model="currentEvent.endTime" @change="onEventEnd()" required class="field !w-auto" aria-label="Endzeit">
+                    <button type="button" @click="pickDate(currentEvent, 'endDate', { cb: 'onEventEnd', title: 'Enddatum', min: currentEvent.startDate })" class="field pickbtn flex-1" aria-label="Enddatum"><i class="fa-regular fa-calendar text-xs muted"></i><span class="truncate" x-text="fmtPickDate(currentEvent.endDate) || 'Datum wählen'"></span></button>
+                    <button x-show="!currentEvent.allDay" type="button" @click="pickTime(currentEvent, 'endTime', { cb: 'onEventEnd', title: 'Endzeit' })" class="field pickbtn !w-auto" aria-label="Endzeit"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="currentEvent.endTime || '--:--'"></span></button>
                 </div>
             </div>
             <div>
@@ -915,8 +1088,8 @@
                     <button type="button" x-show="currentTodo.due" @click="currentTodo.due = ''; currentTodo.dueTime = ''" class="chip !text-rose-400">Entfernen</button>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <input type="date" x-model="currentTodo.due" class="field" aria-label="Fälligkeitsdatum">
-                    <input type="time" x-model="currentTodo.dueTime" :disabled="!currentTodo.due" class="field" aria-label="Uhrzeit">
+                    <button type="button" @click="pickDate(currentTodo, 'due', { clear: true, cb: 'onDuePicked', title: 'Fälligkeitsdatum' })" class="field pickbtn" aria-label="Fälligkeitsdatum"><i class="fa-regular fa-calendar text-xs muted"></i><span class="truncate" :class="currentTodo.due ? '' : 'muted'" x-text="fmtPickDate(currentTodo.due) || 'Kein Datum'"></span></button>
+                    <button type="button" :disabled="!currentTodo.due" @click="pickTime(currentTodo, 'dueTime', { clear: true, title: 'Uhrzeit' })" class="field pickbtn" aria-label="Uhrzeit"><i class="fa-regular fa-clock text-xs muted"></i><span class="truncate" :class="currentTodo.dueTime ? '' : 'muted'" x-text="currentTodo.dueTime || 'Keine Uhrzeit'"></span></button>
                 </div>
             </div>
 
@@ -932,7 +1105,7 @@
                     </select>
                 </div>
             </div>
-            <input x-show="currentTodo.reminder === 'custom'" type="datetime-local" x-model="currentTodo.remindAt" class="field" aria-label="Erinnerungszeitpunkt">
+            <button x-show="currentTodo.reminder === 'custom'" type="button" @click="pickDateTime(currentTodo, 'remindAt', { title: 'Erinnerungszeitpunkt' })" class="field pickbtn" aria-label="Erinnerungszeitpunkt"><i class="fa-regular fa-bell text-xs muted"></i><span class="truncate" :class="currentTodo.remindAt ? '' : 'muted'" x-text="fmtPickDT(currentTodo.remindAt) || 'Zeitpunkt wählen'"></span></button>
             <p x-show="currentTodo.reminder && currentTodo.reminder !== 'custom' && !currentTodo.due" class="text-[11px] text-amber-400 font-semibold">Für diese Erinnerung wird ein Fälligkeitsdatum benötigt.</p>
             <p x-show="currentTodo.reminder && currentTodo.reminder !== 'custom' && currentTodo.due && !currentTodo.dueTime" class="text-[11px] muted">Ohne Uhrzeit erinnert die App um <span x-text="cfg.remindTime"></span> Uhr.</p>
 
@@ -967,7 +1140,7 @@
     <div x-show="showShopModal" x-transition.opacity x-cloak class="backdrop" @click.self="showShopModal = false">
         <form @submit.prevent="saveShopItem()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
             <div class="flex items-center gap-3">
-                <input type="text" x-model="currentShop.emoji" maxlength="4" class="field !w-16 text-center !text-xl" aria-label="Symbol">
+                <input type="text" x-model="currentShop.emoji" @input="currentShop.emojiSet = true" maxlength="4" placeholder="Aa" class="field !w-16 text-center !text-xl" aria-label="Symbol">
                 <input type="text" x-model="currentShop.name" required placeholder="Artikelname" class="field !font-bold">
             </div>
             <div class="grid grid-cols-[auto_1fr] gap-2 items-center">
@@ -989,6 +1162,66 @@
                 <div class="flex gap-2"><button type="button" @click="showShopModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
             </div>
         </form>
+    </div>
+
+    <!-- Datum-/Zeit-Auswahl (eigenes Design) -->
+    <div x-show="picker.open" x-transition.opacity x-cloak class="backdrop" style="z-index: 76" @click.self="pickerClose()">
+        <div class="card w-full max-w-sm p-4 sm:p-5 space-y-4" role="dialog" :aria-label="picker.title">
+            <div class="flex items-center justify-between">
+                <p class="label" x-text="picker.title"></p>
+                <button type="button" @click="pickerClose()" class="icon-btn !w-8 !h-8" aria-label="Schließen"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+
+            <div x-show="picker.kind !== 'time'" class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex">
+                        <button type="button" class="icon-btn" @click="pickerNav(-12)" aria-label="Vorheriges Jahr"><i class="fa-solid fa-angles-left text-[10px]"></i></button>
+                        <button type="button" class="icon-btn" @click="pickerNav(-1)" aria-label="Vorheriger Monat"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+                    </div>
+                    <p class="text-sm font-black" x-text="pickerTitle"></p>
+                    <div class="flex">
+                        <button type="button" class="icon-btn" @click="pickerNav(1)" aria-label="Nächster Monat"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                        <button type="button" class="icon-btn" @click="pickerNav(12)" aria-label="Nächstes Jahr"><i class="fa-solid fa-angles-right text-[10px]"></i></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 text-center text-[10px] font-bold muted"><template x-for="d in dayHeads"><div x-text="d"></div></template></div>
+                <div class="grid grid-cols-7 gap-1">
+                    <template x-for="c in pickerDays" :key="c.ds">
+                        <button type="button" @click="pickDay(c)" :disabled="c.disabled" class="pk-day" :class="{ 'sel': c.sel, 'today': c.today, 'out': !c.inMonth, 'hol': !!c.holiday }" :title="c.holiday" x-text="c.day"></button>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="picker.kind !== 'date'" class="space-y-3" :class="picker.kind === 'datetime' ? 'pt-4 border-t divider' : ''">
+                <div class="flex items-center justify-center text-4xl font-black tabular-nums tracking-tight"><span x-text="pad2(picker.hh)"></span><span class="px-1 muted">:</span><span x-text="pad2(picker.mm)"></span></div>
+                <div>
+                    <p class="label mb-1.5">Stunde</p>
+                    <div class="grid grid-cols-8 gap-1">
+                        <template x-for="h in pickerHours" :key="h"><button type="button" class="pk-t" :class="picker.hh === h ? 'sel' : ''" @click="picker.hh = h" x-text="pad2(h)"></button></template>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <p class="label">Minute</p>
+                        <div class="flex gap-1"><button type="button" class="chip" @click="pickerMin(-1)">−1</button><button type="button" class="chip" @click="pickerMin(1)">+1</button></div>
+                    </div>
+                    <div class="grid grid-cols-6 gap-1">
+                        <template x-for="m in pickerMinutes" :key="m"><button type="button" class="pk-t" :class="picker.mm === m ? 'sel' : ''" @click="picker.mm = m" x-text="pad2(m)"></button></template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1">
+                <div class="flex gap-1">
+                    <button type="button" x-show="picker.clear" @click="pickerClear()" class="btn btn-ghost !text-rose-400 !px-3">Löschen</button>
+                    <button type="button" @click="pickerToday()" class="btn btn-ghost !px-3" x-text="picker.kind === 'date' ? 'Heute' : 'Jetzt'"></button>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" @click="pickerClose()" class="btn btn-ghost !px-3">Abbrechen</button>
+                    <button type="button" x-show="picker.kind !== 'date'" @click="pickerOk()" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Tresor-Eintrag -->
@@ -1068,6 +1301,117 @@
                 <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.symbols" @change="regen()">!@#$%</label>
             </div>
             <div class="flex justify-end"><button type="button" @click="showGenerator = false" class="btn btn-primary">Fertig</button></div>
+        </div>
+    </div>
+
+    <!-- E-Mail: Postfächer verbinden -->
+    <div x-show="showMailSetup" x-transition.opacity x-cloak class="backdrop" @click.self="showMailSetup = false">
+        <div class="card w-full max-w-xl p-6 sm:p-8 space-y-5">
+            <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-envelope accent"></i>E-Mail-Postfächer</h3>
+
+            <div x-show="mailCfg.accounts.length" class="space-y-2">
+                <p class="label">Verbunden</p>
+                <template x-for="a in mailCfg.accounts" :key="a.id">
+                    <div class="inner p-3 flex items-center gap-3 text-sm">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                        <span class="min-w-0 flex-1"><span class="block font-bold truncate" x-text="a.name"></span><span class="block text-[11px] muted truncate" x-text="a.email"></span></span>
+                        <button type="button" class="btn btn-ghost" @click="openMailSetup(a)" title="Bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" class="btn btn-ghost text-rose-400" @click="removeMailAccount(a)" title="Entfernen"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </template>
+                <div class="inner p-3 space-y-2 text-sm">
+                    <label class="flex items-center justify-between gap-3 font-semibold">Neue Mails automatisch prüfen
+                        <select x-model.number="mailCfg.settings.poll" @change="saveMailCfg()" class="field !w-auto !py-1.5"><option value="0">Aus</option><option value="2">alle 2 Min.</option><option value="5">alle 5 Min.</option><option value="15">alle 15 Min.</option></select></label>
+                    <label class="flex items-start gap-2 font-semibold cursor-pointer"><input type="checkbox" x-model="mailCfg.settings.images" @change="saveMailCfg()" class="mt-0.5">Externe Bilder immer laden <span class="muted font-normal">(Absender können dann sehen, dass du die Mail geöffnet hast)</span></label>
+                </div>
+            </div>
+
+            <div class="space-y-3 pt-4 border-t divider">
+                <p class="label" x-text="mailSetup.id ? 'Postfach bearbeiten' : 'Neues Postfach hinzufügen'"></p>
+                <ol class="text-xs space-y-1.5 list-decimal pl-5 leading-relaxed">
+                    <li>Öffne <b>script.google.com</b> mit dem Google-Konto dieser Adresse und wähle „Neues Projekt“.</li>
+                    <li>Klicke auf <b>Script kopieren</b>, ersetze den gesamten Code im Editor damit und speichere.</li>
+                    <li><b>Bereitstellen → Neue Bereitstellung → Web-App</b>: Ausführen als <b>Ich</b>, Zugriff <b>Jeder</b>. Bei der Google-Abfrage den Zugriff auf Gmail erlauben (ggf. „Erweitert → Weiter“).</li>
+                    <li>Die angezeigte <b>Web-App-URL</b> unten einfügen und „Verbinden“ klicken.</li>
+                </ol>
+                <button type="button" @click="copyMailScript()" class="btn btn-soft w-full"><i class="fa-solid fa-copy"></i>Script kopieren</button>
+                <input type="text" x-model="mailSetup.name" placeholder="Name (z. B. Privat)" maxlength="40" class="field" aria-label="Name des Postfachs">
+                <input type="url" x-model="mailSetup.url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" class="field" aria-label="Web-App-URL">
+                <p class="text-[11px] muted leading-relaxed"><i class="fa-solid fa-shield-halved mr-1"></i>Das Script ist nur mit einem geheimen Schlüssel erreichbar, der im kopierten Script steht. Gib das Script und die URL nicht weiter. Die Mails selbst werden nicht gespeichert, nur live aus Gmail geladen.</p>
+                <p x-show="mailSetup.error" class="text-xs font-bold text-rose-400" x-text="mailSetup.error"></p>
+                <button type="button" @click="saveMailAccount()" class="btn btn-primary w-full" :disabled="mailSetup.busy || !mailSetup.url.trim()"><i class="fa-solid" :class="mailSetup.busy ? 'fa-circle-notch spin' : 'fa-plug'"></i>Verbinden</button>
+            </div>
+            <div class="flex justify-end"><button type="button" @click="showMailSetup = false" class="btn btn-ghost">Schließen</button></div>
+        </div>
+    </div>
+
+    <!-- E-Mail schreiben -->
+    <div x-show="showMailCompose" x-transition.opacity x-cloak class="backdrop" @click.self="mailCloseCompose()">
+        <form @submit.prevent="mailSend()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-3">
+            <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-pen accent"></i><span x-text="{ new: 'Neue E-Mail', reply: 'Antworten', replyAll: 'Allen antworten', forward: 'Weiterleiten' }[mailComp.mode]"></span></h3>
+            <label x-show="mailCfg.accounts.length > 1" class="block"><span class="label">Von</span>
+                <select x-model="mailComp.acc" class="field mt-1" :disabled="mailComp.mode === 'reply' || mailComp.mode === 'replyAll'"><template x-for="a in mailCfg.accounts" :key="a.id"><option :value="a.id" x-text="a.name + (a.email ? ' (' + a.email + ')' : '')"></option></template></select></label>
+            <template x-if="mailComp.mode === 'new' || mailComp.mode === 'forward'">
+                <label class="block"><span class="label">An</span><input type="text" x-model="mailComp.to" placeholder="name@beispiel.de, …" class="field mt-1" autocomplete="off" inputmode="email"></label>
+            </template>
+            <p x-show="mailComp.mode === 'reply' || mailComp.mode === 'replyAll'" class="text-xs muted" x-text="mailComp.info"></p>
+            <button type="button" x-show="!mailComp.showCc" @click="mailComp.showCc = true" class="text-xs font-bold accent">Cc / Bcc hinzufügen</button>
+            <div x-show="mailComp.showCc" class="grid sm:grid-cols-2 gap-2">
+                <input type="text" x-model="mailComp.cc" placeholder="Cc" class="field" aria-label="Cc"><input type="text" x-model="mailComp.bcc" placeholder="Bcc" class="field" aria-label="Bcc">
+            </div>
+            <input type="text" x-model="mailComp.subject" placeholder="Betreff" class="field" aria-label="Betreff" :disabled="mailComp.mode === 'reply' || mailComp.mode === 'replyAll'">
+            <textarea x-model="mailComp.body" rows="12" class="field font-mono !text-[13px]" placeholder="Nachricht …" aria-label="Nachricht" x-ref="mailBody"></textarea>
+            <div class="flex flex-wrap items-center gap-2">
+                <template x-for="(a, i) in mailComp.att" :key="a.name + i"><span class="chip !py-1.5 !px-3"><i class="fa-solid fa-paperclip"></i><span x-text="a.name"></span><span class="muted" x-text="mailBytes(a.size)"></span><button type="button" @click="mailComp.att.splice(i, 1)" class="ml-1" aria-label="Anhang entfernen"><i class="fa-solid fa-xmark"></i></button></span></template>
+                <label class="btn btn-soft cursor-pointer"><i class="fa-solid fa-paperclip"></i>Anhang<input type="file" multiple class="hidden" @change="mailAttach($event)"></label>
+            </div>
+            <p x-show="mailComp.error" class="text-xs font-bold text-rose-400" x-text="mailComp.error"></p>
+            <div class="flex justify-end gap-2 pt-1">
+                <button type="button" @click="mailCloseCompose()" class="btn btn-ghost">Abbrechen</button>
+                <button type="submit" class="btn btn-primary" :disabled="mailComp.busy"><i class="fa-solid" :class="mailComp.busy ? 'fa-circle-notch spin' : 'fa-paper-plane'"></i>Senden</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tresor exportieren / importieren -->
+    <div x-show="showVaultIO" x-transition.opacity x-cloak class="backdrop" @click.self="showVaultIO = false">
+        <div class="card w-full max-w-lg p-6 sm:p-8 space-y-5">
+            <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-file-export accent"></i>Tresor exportieren &amp; importieren</h3>
+
+            <div class="space-y-3">
+                <p class="label">Export</p>
+                <button type="button" @click="exportEncrypted()" class="btn btn-primary w-full"><i class="fa-solid fa-lock"></i>Verschlüsselt exportieren (empfohlen)</button>
+                <p class="text-[11px] muted leading-relaxed">Die Datei ist mit deinem Master-Passwort verschlüsselt und lässt sich nur mit diesem Passwort wieder einlesen – z. B. als Sicherung oder für ein anderes Gerät.</p>
+                <details class="inner p-4 text-xs">
+                    <summary class="cursor-pointer font-bold">Unverschlüsselt exportieren (für andere Programme)</summary>
+                    <div class="mt-3 space-y-3">
+                        <p class="text-amber-400 font-semibold leading-relaxed"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Diese Dateien enthalten alle Passwörter im Klartext. Lösche sie nach dem Import wieder und gib sie nie weiter.</p>
+                        <label class="flex items-start gap-2 font-semibold cursor-pointer"><input type="checkbox" x-model="vio.plainOk" class="mt-0.5">Ich verstehe das Risiko und möchte trotzdem exportieren.</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" @click="exportPlain('json')" :disabled="!vio.plainOk" class="btn btn-soft"><i class="fa-solid fa-file-code"></i>JSON (Bitwarden-kompatibel)</button>
+                            <button type="button" @click="exportPlain('csv')" :disabled="!vio.plainOk" class="btn btn-soft"><i class="fa-solid fa-file-csv"></i>CSV</button>
+                        </div>
+                        <p class="muted leading-relaxed">CSV enthält nur Zugangsdaten und Notizen, JSON zusätzlich Karten und Identitäten.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="pt-5 border-t divider space-y-3">
+                <p class="label">Import</p>
+                <input type="file" accept=".json,.csv,.txt,application/json,text/csv,text/plain" @change="vioFile($event)" class="field" aria-label="Datei wählen">
+                <p class="text-[11px] muted leading-relaxed">Unterstützt: verschlüsselter Export dieser App, Bitwarden (JSON unverschlüsselt oder CSV) sowie CSV-Exporte von Chrome, Edge, Firefox, LastPass und 1Password. Bereits vorhandene Einträge werden übersprungen.</p>
+                <form x-show="vio.needPw" @submit.prevent="vioDecrypt()" class="space-y-2">
+                    <p class="text-xs font-semibold" x-text="vio.info"></p>
+                    <input type="password" x-model="vio.pw" placeholder="Master-Passwort der Datei" autocomplete="off" class="field" aria-label="Master-Passwort der Datei">
+                    <button type="submit" class="btn btn-soft w-full" :disabled="vio.busy || !vio.pw"><i class="fa-solid" :class="vio.busy ? 'fa-circle-notch spin' : 'fa-lock-open'"></i>Entschlüsseln</button>
+                </form>
+                <p x-show="vio.error" class="text-xs font-bold text-rose-400" x-text="vio.error"></p>
+                <div x-show="vio.items.length" class="inner p-4 space-y-3">
+                    <p class="text-xs font-semibold"><span x-text="vio.items.length"></span> Einträge gefunden · <span class="text-emerald-400" x-text="vio.nNew + ' neu'"></span> · <span class="muted" x-text="vio.nDup + ' bereits vorhanden'"></span></p>
+                    <button type="button" @click="vioConfirm()" class="btn btn-primary w-full" :disabled="!vio.nNew"><i class="fa-solid fa-file-import"></i>Jetzt importieren</button>
+                </div>
+            </div>
+            <div class="flex justify-end"><button type="button" @click="showVaultIO = false" class="btn btn-ghost">Schließen</button></div>
         </div>
     </div>
 
@@ -1200,32 +1544,102 @@
 
         /* ============ Einkaufskatalog (Bring!-Stil) ============ */
         const RAW_CATALOG = {
-            'Obst & Gemüse': '🍎 Äpfel,🍌 Bananen,🍊 Orangen,🍋 Zitronen,🍇 Trauben,🍓 Erdbeeren,🫐 Heidelbeeren,🍐 Birnen,🍉 Melone,🍅 Tomaten,🥒 Gurke,🥕 Karotten,🥔 Kartoffeln,🧅 Zwiebeln,🧄 Knoblauch,🥦 Brokkoli,🫑 Paprika,🥬 Salat,🍄 Champignons,🥑 Avocado,🌽 Mais,🍆 Aubergine,🥝 Kiwi',
-            'Brot & Backwaren': '🍞 Brot,🥖 Baguette,🥐 Croissants,🥯 Brötchen,🥨 Brezeln,🍰 Kuchen,🫓 Toast,🥞 Pfannkuchen',
-            'Milch & Käse': '🥛 Milch,🧈 Butter,🧀 Käse,🥚 Eier,🥣 Joghurt,🍶 Sahne,🧀 Mozzarella,🧀 Frischkäse,🥛 Quark,🥛 Hafermilch',
-            'Fleisch & Fisch': '🍗 Hähnchen,🥩 Rindfleisch,🥓 Speck,🌭 Würstchen,🍖 Hackfleisch,🐟 Lachs,🍤 Garnelen,🥪 Aufschnitt,🍖 Schinken',
-            'Tiefkühl': '🍕 Pizza,🍟 Pommes,🥦 TK-Gemüse,🍦 Eiscreme,🐟 Fischstäbchen,🫛 TK-Erbsen',
-            'Getränke': '💧 Wasser,🧃 Saft,🥤 Limonade,☕ Kaffee,🍵 Tee,🍺 Bier,🍷 Wein,🥂 Sekt,🧋 Cola',
-            'Vorräte': '🍝 Nudeln,🍚 Reis,🥫 Dosentomaten,🫘 Bohnen,🥣 Müsli,🌾 Mehl,🍬 Zucker,🫒 Olivenöl,🍯 Honig,🥜 Nüsse,🫙 Marmelade,🥔 Haferflocken,🍜 Suppe',
-            'Gewürze & Soßen': '🧂 Salz,🌶️ Pfeffer,🍅 Ketchup,🌭 Senf,🥫 Tomatenmark,🍾 Essig,🍲 Brühe,🥫 Mayonnaise,🌿 Kräuter',
-            'Snacks & Süßes': '🍫 Schokolade,🍪 Kekse,🥔 Chips,🍿 Popcorn,🍬 Gummibärchen,🥜 Erdnüsse',
-            'Haushalt': '🧻 Toilettenpapier,🧽 Spülmittel,🧴 Waschmittel,🗑️ Müllbeutel,🕯️ Kerzen,🔋 Batterien,🧻 Küchenrolle,🧹 Putzmittel,💡 Glühbirnen',
-            'Drogerie': '🧼 Seife,🪥 Zahnpasta,🧴 Shampoo,🚿 Duschgel,🪒 Rasierer,🤧 Taschentücher,🧴 Deo,🧴 Sonnencreme',
-            'Tier & Baby': '🐕 Hundefutter,🐈 Katzenfutter,🍼 Babynahrung,🧷 Windeln,🧴 Feuchttücher'
+            'Obst & Gemüse': '🍎 Äpfel,🍐 Birnen,🍌 Bananen,🍊 Orangen,🍊 Mandarinen,🍋 Zitronen,🍋 Limetten,🍇 Trauben,🍓 Erdbeeren,🍓 Himbeeren,🍇 Heidelbeeren,🍒 Kirschen,🍑 Pfirsiche,🍑 Nektarinen,🍑 Pflaumen,🍍 Ananas,🥭 Mango,🥥 Kokosnuss,🥝 Kiwi,🍉 Melone,🍈 Honigmelone,🍅 Tomaten,🍅 Cherrytomaten,🥒 Gurke,🥒 Zucchini,🥕 Karotten,🥕 Radieschen,🥔 Kartoffeln,🍠 Süßkartoffeln,🧅 Zwiebeln,🧅 Lauchzwiebeln,🧅 Lauch,🧄 Knoblauch,🥦 Brokkoli,🥦 Blumenkohl,🌶️ Paprika,🌶️ Chili,🥬 Salat,🥬 Spinat,🥬 Rucola,🥬 Kohl,🥬 Rosenkohl,🍄 Champignons,🥑 Avocado,🌽 Mais,🍆 Aubergine,🎃 Kürbis,🌱 Sellerie,🌱 Spargel,🌱 Fenchel,🌱 Ingwer,🌿 Petersilie,🌿 Basilikum,🌿 Schnittlauch,🌿 Dill,🌿 Minze,🌿 Rosmarin,🌿 Thymian',
+            'Brot & Backwaren': '🍞 Brot,🍞 Vollkornbrot,🍞 Toast,🥖 Baguette,🥖 Ciabatta,🥐 Croissants,🥐 Plundergebäck,🥯 Brötchen,🥯 Bagels,🥨 Brezeln,🥨 Laugenbrötchen,🍰 Kuchen,🥧 Apfelkuchen,🧁 Muffins,🍩 Donuts,🥞 Pfannkuchen,🧇 Waffeln,🌯 Wraps,🍔 Burgerbrötchen,🍕 Pizzateig,🍘 Knäckebrot,🍪 Zwieback',
+            'Milch & Käse': '🥛 Milch,🥛 Hafermilch,🥛 Sojamilch,🥛 Mandelmilch,🥛 Buttermilch,🥛 Kondensmilch,🍶 Sahne,🍶 Schlagsahne,🧈 Butter,🧈 Margarine,🧀 Käse,🧀 Gouda,🧀 Emmentaler,🧀 Mozzarella,🧀 Parmesan,🧀 Feta,🧀 Camembert,🧀 Frischkäse,🧀 Streukäse,🥚 Eier,🥣 Joghurt,🥣 Fruchtjoghurt,🥣 Skyr,🥣 Quark,🥣 Schmand,🥣 Crème fraîche,🍮 Pudding',
+            'Fleisch & Fisch': '🍗 Hähnchen,🍗 Hähnchenbrust,🍗 Hähnchenschenkel,🍗 Pute,🍖 Hackfleisch,🥩 Rindfleisch,🥩 Rindersteak,🥩 Schweinefleisch,🥩 Schnitzel,🥩 Gulasch,🥓 Speck,🥓 Salami,🌭 Würstchen,🌭 Bratwurst,🌭 Leberwurst,🥪 Aufschnitt,🍖 Schinken,🍖 Leberkäse,🍖 Lammfleisch,🐟 Lachs,🐟 Thunfisch,🐟 Forelle,🐟 Fischfilet,🐟 Matjes,🍤 Garnelen,🦑 Tintenfisch',
+            'Tiefkühl': '🍕 Pizza,🍟 Pommes,🥦 TK-Gemüse,🥬 TK-Spinat,🥬 TK-Erbsen,🌽 TK-Mais,🍓 TK-Beeren,🍦 Eiscreme,🍨 Eisbecher,🐟 Fischstäbchen,🍤 TK-Garnelen,🍗 Chicken Nuggets,🍔 Burger-Patties,🥟 Maultaschen,🥟 Teigtaschen,🥐 Aufbackbrötchen,🥧 Blätterteig,🍲 TK-Fertiggericht,🌿 TK-Kräuter,🧊 Eiswürfel',
+            'Getränke': '💧 Wasser,💧 Mineralwasser,🥤 Cola,🥤 Limonade,🥤 Eistee,🥤 Energy Drink,🥤 Smoothie,🧃 Saft,🧃 Orangensaft,🧃 Apfelsaft,🧃 Schorle,☕ Kaffee,☕ Kaffeekapseln,☕ Kakao,🍵 Tee,🍵 Grüntee,🍵 Kräutertee,🧉 Mate,🍺 Bier,🍺 Radler,🍺 Alkoholfreies Bier,🍷 Wein,🍷 Rotwein,🥂 Weißwein,🥂 Sekt,🍾 Prosecco,🥃 Whisky,🍸 Gin',
+            'Vorräte': '🍝 Nudeln,🍝 Spaghetti,🍝 Penne,🍚 Reis,🍚 Basmatireis,🍚 Couscous,🌾 Haferflocken,🌾 Quinoa,🌾 Grieß,🌾 Linsen,🥣 Müsli,🥣 Cornflakes,🥜 Nüsse,🥜 Mandeln,🥜 Walnüsse,🥜 Cashews,🥜 Erdnussbutter,🍇 Rosinen,🍫 Nuss-Nougat-Creme,🍓 Marmelade,🍯 Honig,🍯 Ahornsirup,🍜 Instantnudeln,🥔 Kartoffelpüree,🥔 Knödel,🍘 Reiswaffeln,🥥 Kokosmilch',
+            'Konserven & Fertiggerichte': '🥫 Dosentomaten,🥫 Passierte Tomaten,🥫 Dosenmais,🥫 Bohnen,🥫 Kidneybohnen,🥫 Kichererbsen,🥫 Dosenobst,🥫 Thunfisch (Dose),🥫 Sardinen,🥫 Ravioli,🥫 Eintopf,🍲 Suppe,🍜 Asia-Nudeln,🥘 Fertiggericht,🥫 Sauerkraut,🥫 Rotkohl,🥒 Gewürzgurken,🥫 Oliven,🥫 Dosenpilze',
+            'Backen & Kochen': '🌾 Mehl,🌾 Dinkelmehl,🍬 Zucker,🍬 Puderzucker,🍬 Vanillezucker,🍬 Brauner Zucker,🥄 Backpulver,🥄 Hefe,🥄 Natron,🥄 Speisestärke,🥄 Gelatine,🍫 Backschokolade,🍫 Kuvertüre,🍫 Schokostreusel,🥥 Kokosraspeln,🍞 Paniermehl,🥣 Puddingpulver,🧁 Backmischung,🥧 Tortenguss,🥣 Sahnesteif',
+            'Gewürze & Soßen': '🧂 Salz,🌶️ Pfeffer,🌶️ Paprikapulver,🌶️ Chiliflocken,🌿 Oregano,🌿 Kräuter,🌿 Lorbeerblätter,🌿 Majoran,🍂 Zimt,🌰 Muskat,🟡 Curry,🟡 Kurkuma,🧄 Knoblauchpulver,🍅 Ketchup,🌭 Senf,🥫 Tomatenmark,🍾 Essig,🍾 Balsamico,🍾 Olivenöl,🛢️ Rapsöl,🛢️ Sonnenblumenöl,🍲 Brühe,🥚 Mayonnaise,🥫 Sojasoße,🍝 Pesto,🍝 Pastasoße,🌶️ Sambal,🌶️ Sriracha,🍖 Grillsoße,🥗 Dressing',
+            'Snacks & Süßes': '🍫 Schokolade,🍫 Schokoriegel,🍫 Pralinen,🍫 Müsliriegel,🍪 Kekse,🍪 Lebkuchen,🍪 Spekulatius,🥔 Chips,🍿 Popcorn,🍬 Gummibärchen,🍬 Bonbons,🍬 Lakritz,🍭 Lutscher,🥜 Erdnüsse,🥜 Studentenfutter,🥨 Salzstangen,🥨 Cracker,🍘 Reiscracker,🍰 Torte',
+            'Haushalt': '🧻 Toilettenpapier,🧻 Küchenrolle,🧻 Servietten,🧴 Spülmittel,🍽️ Spülmaschinentabs,🧂 Spülmaschinensalz,🧴 Waschmittel,🧴 Weichspüler,🧴 Allzweckreiniger,🧴 Glasreiniger,🚽 WC-Reiniger,🧴 Entkalker,🧽 Schwämme,🧽 Putzlappen,🧹 Besen,🗑️ Müllbeutel,🛍️ Gefrierbeutel,📜 Backpapier,📦 Alufolie,🎞️ Frischhaltefolie,🕯️ Kerzen,🔋 Batterien,💡 Glühbirnen,🔥 Streichhölzer,🔥 Feuerzeug',
+            'Drogerie': '🧼 Seife,🧼 Flüssigseife,🦷 Zahnpasta,🦷 Zahnbürste,🦷 Zahnseide,🧴 Mundspülung,🧴 Shampoo,🧴 Spülung,🚿 Duschgel,🧴 Deo,🧴 Bodylotion,🧴 Handcreme,🧴 Gesichtscreme,🧴 Sonnencreme,🪒 Rasierer,🪒 Rasierschaum,🤧 Taschentücher,🧴 Haargel,💨 Haarspray,💄 Make-up,💅 Nagellack,🩹 Pflaster,💊 Schmerztabletten,💊 Vitamine,🌡️ Fieberthermometer,😷 Masken,🧴 Desinfektionsmittel',
+            'Tier & Baby': '🐕 Hundefutter,🐕 Hundeleckerli,🦴 Kauknochen,🐈 Katzenfutter,🐈 Katzenstreu,🐟 Fischfutter,🐦 Vogelfutter,🐹 Nagerfutter,🍼 Babynahrung,🍼 Milchpulver,🥣 Babybrei,🧷 Windeln,🧴 Feuchttücher,🧴 Babycreme'
         };
+        const CAT_COLORS = { 'Obst & Gemüse': '#2e9e4f', 'Brot & Backwaren': '#b9772f', 'Milch & Käse': '#2f7de1', 'Fleisch & Fisch': '#e04646', 'Tiefkühl': '#1ba7bd', 'Getränke': '#7c5cf0', 'Vorräte': '#d98a0b', 'Konserven & Fertiggerichte': '#e2672f', 'Backen & Kochen': '#c24fc0', 'Gewürze & Soßen': '#ea7a1a', 'Snacks & Süßes': '#e0407f', 'Haushalt': '#5b6b82', 'Drogerie': '#139b8a', 'Tier & Baby': '#7d9a1e', 'Sonstiges': '#6b7a90' };
         const CATEGORIES = [...Object.keys(RAW_CATALOG), 'Sonstiges'];
         const CATALOG = Object.entries(RAW_CATALOG).flatMap(([category, s]) => s.split(',').map(x => { const i = x.indexOf(' '); return { emoji: x.slice(0, i), name: x.slice(i + 1), category }; }));
         const VARIANTS = {
-            Milch: ['3,5 % Fett', '1,5 % Fett', 'Laktosefrei', 'Bio'], Hafermilch: ['Barista', 'Ungesüßt'], Brot: ['Vollkorn', 'Weißbrot', 'Dinkel', 'Geschnitten'], Käse: ['Gouda', 'Emmentaler', 'Bergkäse', 'Gerieben', 'Scheiben'],
-            Äpfel: ['Bio', 'Süß', 'Säuerlich'], Eier: ['10er', '6er', 'Bio', 'Freiland'], Butter: ['Gesalzen', 'Ungesalzen'], Joghurt: ['Natur', 'Griechisch', 'Frucht', 'Laktosefrei'],
-            Nudeln: ['Spaghetti', 'Penne', 'Fusilli', 'Vollkorn'], Reis: ['Basmati', 'Jasmin', 'Langkorn'], Kaffee: ['Bohnen', 'Gemahlen', 'Entkoffeiniert'], Wasser: ['Still', 'Medium', 'Sprudel'],
-            Hackfleisch: ['Gemischt', 'Rind'], Tomaten: ['Cherry', 'Rispen', 'Bio'], Kartoffeln: ['Festkochend', 'Mehligkochend'], Hähnchen: ['Brust', 'Schenkel', 'Ganz'], Zucker: ['Weiß', 'Braun', 'Puder'],
-            Mehl: ['Typ 405', 'Vollkorn'], Bananen: ['Bio'], Saft: ['Orange', 'Apfel', 'Multivitamin'], Tee: ['Schwarz', 'Grün', 'Kräuter'], Pizza: ['Margherita', 'Salami', 'Vegetarisch'], Schokolade: ['Vollmilch', 'Zartbitter', 'Weiß']
+            Milch: ['3,5 % Fett', '1,5 % Fett', 'Laktosefrei', 'Bio'],
+            Hafermilch: ['Barista', 'Ungesüßt'],
+            Brot: ['Vollkorn', 'Weißbrot', 'Dinkel', 'Geschnitten'],
+            'Käse': ['Gouda', 'Emmentaler', 'Bergkäse', 'Gerieben', 'Scheiben'],
+            'Äpfel': ['Bio', 'Süß', 'Säuerlich'],
+            Eier: ['10er', '6er', 'Bio', 'Freiland'],
+            Butter: ['Gesalzen', 'Ungesalzen'],
+            Joghurt: ['Natur', 'Griechisch', 'Frucht', 'Laktosefrei'],
+            Nudeln: ['Spaghetti', 'Penne', 'Fusilli', 'Vollkorn'],
+            Reis: ['Basmati', 'Jasmin', 'Langkorn'],
+            Kaffee: ['Bohnen', 'Gemahlen', 'Entkoffeiniert'],
+            Wasser: ['Still', 'Medium', 'Sprudel'],
+            Hackfleisch: ['Gemischt', 'Rind'],
+            Tomaten: ['Cherry', 'Rispen', 'Bio'],
+            Kartoffeln: ['Festkochend', 'Mehligkochend'],
+            'Hähnchen': ['Brust', 'Schenkel', 'Ganz'],
+            Zucker: ['Weiß', 'Braun', 'Puder'],
+            Mehl: ['Typ 405', 'Vollkorn'],
+            Bananen: ['Bio'],
+            Saft: ['Orange', 'Apfel', 'Multivitamin'],
+            Tee: ['Schwarz', 'Grün', 'Kräuter'],
+            Pizza: ['Margherita', 'Salami', 'Vegetarisch'],
+            Schokolade: ['Vollmilch', 'Zartbitter', 'Weiß'],
+            Paprika: ['Rot', 'Gelb', 'Grün', 'Spitz'],
+            Gurke: ['Salatgurke', 'Mini'],
+            Salat: ['Eisberg', 'Römer', 'Feldsalat', 'Kopfsalat'],
+            Zwiebeln: ['Gelb', 'Rot', 'Weiß'],
+            'Brötchen': ['Weizen', 'Roggen', 'Körner', 'Kaiser'],
+            Rindfleisch: ['Gulasch', 'Rouladen', 'Suppenfleisch'],
+            Lachs: ['Filet', 'Geräuchert', 'Frisch'],
+            Wein: ['Rot', 'Weiß', 'Rosé', 'Trocken'],
+            Bier: ['Pils', 'Weizen', 'Helles', 'Alkoholfrei'],
+            Cola: ['Original', 'Zero'],
+            Limonade: ['Zitrone', 'Orange', 'Zero'],
+            'Müsli': ['Schoko', 'Früchte', 'Nuss', 'Ohne Zucker'],
+            Chips: ['Paprika', 'Salz', 'Sour Cream'],
+            Waschmittel: ['Pulver', 'Flüssig', 'Color', 'Sensitiv'],
+            Zahnpasta: ['Sensitiv', 'Weiß', 'Mit Fluorid'],
+            Shampoo: ['Anti-Schuppen', 'Für trockenes Haar', 'Für fettiges Haar'],
+            'Spülmittel': ['Sensitiv', 'Zitrone'],
+            Toilettenpapier: ['3-lagig', '4-lagig', 'Recycling'],
+            Speck: ['Gewürfelt', 'Scheiben'],
+            'Würstchen': ['Wiener', 'Bockwurst', 'Geflügel'],
+            Aufschnitt: ['Geflügel', 'Schinken', 'Salami'],
+            Sahne: ['30 %', 'Kochsahne'],
+            'Olivenöl': ['Nativ extra', 'Mild'],
+            Essig: ['Apfel', 'Balsamico', 'Weißwein'],
+            Senf: ['Mittelscharf', 'Scharf', 'Süß'],
+            Ketchup: ['Curry', 'Mild'],
+            Pommes: ['Backofen', 'Frittieren'],
+            Eiscreme: ['Vanille', 'Schoko', 'Erdbeere'],
+            Honig: ['Blüte', 'Wald', 'Acker'],
+            Marmelade: ['Erdbeere', 'Aprikose', 'Kirsche'],
+            Erdnussbutter: ['Creamy', 'Crunchy'],
+            Katzenfutter: ['Nass', 'Trocken'],
+            Hundefutter: ['Nass', 'Trocken'],
+            Windeln: ['Größe 3', 'Größe 4', 'Größe 5'],
+            Pflaster: ['Wasserfest', 'Sensitiv'],
+            Brezeln: ['Frisch', 'Laugengebäck'],
+            'Kräutertee': ['Kamille', 'Pfefferminze', 'Fenchel'],
+            Mandelmilch: ['Ungesüßt'],
+            Sojamilch: ['Ungesüßt', 'Vanille'],
+            Kuchen: ['Marmor', 'Streusel', 'Käsekuchen']
         };
-        const guessCategory = name => (CATALOG.find(p => { const a = p.name.toLowerCase(), b = name.toLowerCase(); return a.includes(b) || b.includes(a); }) || { category: 'Sonstiges' }).category;
+        /* Findet das passende Katalogprodukt: exakt, dann Wortvergleich („Bio Milch“ → Milch), dann Teilstring */
+        function matchProduct(name) {
+            const n = (name || '').trim().toLowerCase(); if (!n) return null;
+            const words = t => t.split(/[\s-]+/);
+            return CATALOG.find(p => p.name.toLowerCase() === n)
+                || CATALOG.find(p => { const pn = p.name.toLowerCase(); return words(pn).includes(n) || words(n).includes(pn); })
+                || (n.length >= 4 ? CATALOG.find(p => { const pn = p.name.toLowerCase(); return pn.includes(n) || (pn.length >= 4 && n.includes(pn)); }) : null) || null;
+        }
+        const guessCategory = name => (matchProduct(name) || { category: 'Sonstiges' }).category;
         function normShop(i) {
-            const known = CATALOG.find(p => p.name.toLowerCase() === (i.name || '').toLowerCase());
-            return { id: String(i.id ?? uid()), name: i.name, emoji: i.emoji || known?.emoji || '🛒', category: CATEGORIES.includes(i.category) ? i.category : (known?.category || guessCategory(i.name || '')),
+            const known = matchProduct(i.name), own = i.emoji && i.emoji !== '🛒' ? i.emoji : '';
+            const emoji = own && (i.emojiSet || !known) ? own : (known?.emoji || '');
+            return { id: String(i.id ?? uid()), name: i.name, emoji, ...(i.emojiSet && emoji ? { emojiSet: true } : {}), category: CATEGORIES.includes(i.category) ? i.category : (known?.category || 'Sonstiges'),
                      qty: Number(i.qty) || 1, unit: i.unit || '', note: i.note || '', done: !!(i.done ?? i.completed) };
         }
 
@@ -1253,7 +1667,7 @@
         const validVaultRecord = r => r && typeof r === 'object' && r.salt && r.iv && r.data && Number.isFinite(r.iter);
 
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems']];
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['ml', 'mailStatus']];
         const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
@@ -1312,6 +1726,243 @@ function handle_(p) {
 }
 `;
 
+        /* ============ E-Mail (Gmail über eigenes Apps-Script) ============ */
+        const MAIL_URL_RE = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+        const MAIL_FOLDERS = [
+            { id: 'inbox', label: 'Posteingang', icon: 'fa-inbox' }, { id: 'starred', label: 'Markiert', icon: 'fa-star' },
+            { id: 'sent', label: 'Gesendet', icon: 'fa-paper-plane' }, { id: 'archive', label: 'Archiv', icon: 'fa-box-archive' },
+            { id: 'spam', label: 'Spam', icon: 'fa-ban' }, { id: 'trash', label: 'Papierkorb', icon: 'fa-trash-can' }
+        ];
+        const MAIL_OVERLAY_DAYS = 14;
+        const mailDocCache = new Map();
+        function normMailCfg(v) {
+            v = v && typeof v === 'object' ? v : {};
+            const seen = new Set(), accounts = [];
+            for (const a of Array.isArray(v.accounts) ? v.accounts : []) {
+                if (!a || typeof a !== 'object' || !/^[a-z0-9]{3,12}$/.test(String(a.id)) || !MAIL_URL_RE.test(String(a.url)) || !/^[a-f0-9]{32}$/.test(String(a.token)) || seen.has(a.id)) continue;
+                seen.add(a.id);
+                accounts.push({ id: a.id, name: String(a.name || '').slice(0, 40) || 'Postfach', email: String(a.email || '').slice(0, 120), url: a.url, token: a.token });
+                if (accounts.length >= 8) break;
+            }
+            const s = v.settings && typeof v.settings === 'object' ? v.settings : {};
+            return { accounts, settings: { poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, images: !!s.images } };
+        }
+        const normOverlay = v => ({ id: String(v.id), t: Number(v.t) || 0, ...(v.r === 0 || v.r === 1 ? { r: v.r } : {}), ...(v.s === 0 || v.s === 1 ? { s: v.s } : {}), ...(['a', 'd', 'i', 'sp'].includes(v.x) ? { x: v.x } : {}) });
+        /* Macht fremdes HTML zum Anzeigen sicher: keine Skripte/Frames/Formulare, keine Weiterleitungen; Bilder nur auf Wunsch. */
+        function sanitizeMailHtml(html, allowImg) {
+            const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+            doc.querySelectorAll('script,iframe,frame,frameset,object,embed,applet,meta,base,link,form,input,button,select,textarea,noscript,audio,video,source,track,svg,math,template,portal,dialog').forEach(n => n.remove());
+            doc.querySelectorAll('*').forEach(el => {
+                for (const a of [...el.attributes]) {
+                    const n = a.name.toLowerCase();
+                    if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction' || n === 'ping' || n === 'srcset' || n === 'http-equiv') el.removeAttribute(a.name);
+                }
+                if (el.tagName === 'A') {
+                    const h = (el.getAttribute('href') || '').trim();
+                    if (/^(https?:|mailto:|tel:)/i.test(h)) { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener noreferrer nofollow'); } else el.removeAttribute('href');
+                }
+            });
+            const inner = doc.head.innerHTML + '</head><body>' + doc.body.innerHTML;
+            const remote = /(src|background)\s*=\s*["']?\s*https?:|url\(\s*["']?\s*https?:/i.test(inner);
+            const csp = "default-src 'none'; img-src " + (allowImg ? 'data: https:' : 'data:') + "; style-src 'unsafe-inline'; font-src data:; form-action 'none'";
+            const base = 'html{color-scheme:light}body{margin:0;padding:14px 16px;background:#fff;color:#1b1b1f;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-wrap:anywhere}img{max-width:100%;height:auto}a{color:#2563eb}';
+            return { remote, html: '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="' + csp + '"><meta name="referrer" content="no-referrer"><style>' + base + '</style>' + inner + '</body></html>' };
+        }
+        const MAIL_SCRIPT = `/**
+ * Christophers Space - E-Mail-Script (Gmail)
+ * Gibt DEINER App Zugriff auf DEIN Gmail-Postfach. Erreichbar nur mit dem geheimen Schluessel (TOKEN).
+ * Bereitstellen als Web-App: Ausfuehren als "Ich", Zugriff "Jeder".
+ */
+var TOKEN = '__TOKEN__';
+
+var QUERIES = {
+  inbox: 'in:inbox',
+  starred: 'is:starred',
+  sent: 'in:sent',
+  archive: '-in:inbox -in:sent -in:drafts -in:trash -in:spam',
+  spam: 'in:spam',
+  trash: 'in:trash'
+};
+
+function doGet() {
+  return out_({ ok: true, info: 'Mail-Script laeuft. Bitte die App verwenden.' });
+}
+
+function doPost(e) {
+  var p = {};
+  try { p = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'Ungueltige Anfrage' }); }
+  if (!TOKEN || TOKEN.length < 16 || p.token !== TOKEN) return out_({ ok: false, error: 'Falscher Schluessel' });
+  try {
+    if (p.action === 'ping') return out_({ ok: true, email: me_(), unread: counts_() });
+    if (p.action === 'counts') return out_({ ok: true, unread: counts_() });
+    if (p.action === 'list') return out_(list_(p));
+    if (p.action === 'thread') return out_(thread_(p));
+    if (p.action === 'attachment') return out_(attachment_(p));
+    if (p.action === 'mark') return out_(mark_(p));
+    if (p.action === 'send') return out_(send_(p));
+    if (p.action === 'reply') return out_(reply_(p));
+    return out_({ ok: false, error: 'Unbekannte Aktion' });
+  } catch (err) {
+    return out_({ ok: false, error: String((err && err.message) || err) });
+  }
+}
+
+function out_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function me_() {
+  try { return Session.getEffectiveUser().getEmail(); } catch (err) { return ''; }
+}
+
+function counts_() {
+  return { inbox: GmailApp.getInboxUnreadCount(), spam: GmailApp.getSpamUnreadCount() };
+}
+
+function list_(p) {
+  var q = QUERIES[p.folder] || QUERIES.inbox;
+  if (p.unreadOnly) q += ' is:unread';
+  if (p.q) q += ' ' + String(p.q).slice(0, 200);
+  var start = Math.max(0, Number(p.start) || 0);
+  var limit = Math.min(50, Math.max(1, Number(p.limit) || 25));
+  var threads = GmailApp.search(q, start, limit);
+  var groups = threads.length ? GmailApp.getMessagesForThreads(threads) : [];
+  var items = [];
+  for (var i = 0; i < threads.length; i++) {
+    var ms = groups[i] || [];
+    var m = ms[ms.length - 1];
+    if (!m) continue;
+    var t = threads[i];
+    items.push({
+      id: t.getId(),
+      subj: t.getFirstMessageSubject() || '',
+      from: m.getFrom(),
+      to: m.getTo(),
+      date: m.getDate().getTime(),
+      unread: t.isUnread(),
+      star: t.hasStarredMessages(),
+      n: ms.length,
+      snip: m.getPlainBody().slice(0, 300)
+    });
+  }
+  return { ok: true, items: items, more: threads.length === limit, unread: counts_(), email: me_() };
+}
+
+function thread_(p) {
+  var t = GmailApp.getThreadById(String(p.id));
+  if (!t) throw new Error('Unterhaltung nicht gefunden');
+  var ms = t.getMessages();
+  var msgs = [];
+  for (var i = 0; i < ms.length; i++) {
+    var m = ms[i];
+    var atts = m.getAttachments({ includeInlineImages: false, includeAttachments: true });
+    var list = [];
+    for (var j = 0; j < atts.length; j++) {
+      list.push({ i: j, name: atts[j].getName(), type: atts[j].getContentType(), size: atts[j].getSize() });
+    }
+    var html = m.getBody() || '';
+    var plain = m.getPlainBody() || '';
+    msgs.push({
+      i: i,
+      from: m.getFrom(),
+      to: m.getTo(),
+      cc: m.getCc(),
+      date: m.getDate().getTime(),
+      subj: m.getSubject(),
+      html: html.slice(0, 600000),
+      plain: plain.slice(0, 300000),
+      trunc: html.length > 600000 || plain.length > 300000,
+      star: m.isStarred(),
+      att: list
+    });
+  }
+  return { ok: true, subj: t.getFirstMessageSubject() || '', msgs: msgs, email: me_() };
+}
+
+function attachment_(p) {
+  var t = GmailApp.getThreadById(String(p.id));
+  if (!t) throw new Error('Unterhaltung nicht gefunden');
+  var m = t.getMessages()[Number(p.mi)];
+  if (!m) throw new Error('Nachricht nicht gefunden');
+  var a = m.getAttachments({ includeInlineImages: false, includeAttachments: true })[Number(p.i)];
+  if (!a) throw new Error('Anhang nicht gefunden');
+  var bytes = a.getBytes();
+  if (bytes.length > 12 * 1024 * 1024) throw new Error('Anhang ist zu gross (max. 12 MB)');
+  return { ok: true, name: a.getName(), type: a.getContentType(), b64: Utilities.base64Encode(bytes) };
+}
+
+function mark_(p) {
+  var ids = (p.ids || []).slice(0, 100);
+  var ts = [];
+  for (var i = 0; i < ids.length; i++) {
+    var t = GmailApp.getThreadById(String(ids[i]));
+    if (t) ts.push(t);
+  }
+  if (!ts.length) return { ok: true, n: 0 };
+  if (p.r === 1) GmailApp.markThreadsRead(ts);
+  else if (p.r === 0) GmailApp.markThreadsUnread(ts);
+  if (p.s === 1 || p.s === 0) {
+    for (var k = 0; k < ts.length; k++) {
+      var ms = ts[k].getMessages();
+      if (p.s === 1) { ms[ms.length - 1].star(); }
+      else { for (var j = 0; j < ms.length; j++) { if (ms[j].isStarred()) ms[j].unstar(); } }
+    }
+  }
+  if (p.x === 'a') GmailApp.moveThreadsToArchive(ts);
+  else if (p.x === 'd') GmailApp.moveThreadsToTrash(ts);
+  else if (p.x === 'i') GmailApp.moveThreadsToInbox(ts);
+  else if (p.x === 'sp') GmailApp.moveThreadsToSpam(ts);
+  return { ok: true, n: ts.length };
+}
+
+function clean_(s) {
+  return String(s || '').split(String.fromCharCode(13)).join(' ').split(String.fromCharCode(10)).join(' ').slice(0, 1000).trim();
+}
+
+function blobs_(list) {
+  var out = [];
+  var total = 0;
+  list = (list || []).slice(0, 10);
+  for (var i = 0; i < list.length; i++) {
+    var a = list[i];
+    if (!a || typeof a.b64 !== 'string') continue;
+    total += a.b64.length;
+    if (total > 14 * 1024 * 1024) throw new Error('Anhaenge sind zu gross');
+    out.push(Utilities.newBlob(Utilities.base64Decode(a.b64), a.type || 'application/octet-stream', clean_(a.name) || 'anhang'));
+  }
+  return out;
+}
+
+function opts_(p) {
+  var o = {};
+  var cc = clean_(p.cc);
+  var bcc = clean_(p.bcc);
+  var at = blobs_(p.attachments);
+  if (cc) o.cc = cc;
+  if (bcc) o.bcc = bcc;
+  if (at.length) o.attachments = at;
+  return o;
+}
+
+function send_(p) {
+  var to = clean_(p.to);
+  if (!to) throw new Error('Empfaenger fehlt');
+  GmailApp.sendEmail(to, clean_(p.subject) || '(kein Betreff)', String(p.body || ''), opts_(p));
+  return { ok: true };
+}
+
+function reply_(p) {
+  var t = GmailApp.getThreadById(String(p.id));
+  if (!t) throw new Error('Unterhaltung nicht gefunden');
+  var ms = t.getMessages();
+  var m = ms[p.mi === undefined ? ms.length - 1 : Number(p.mi)];
+  if (!m) throw new Error('Nachricht nicht gefunden');
+  var body = String(p.body || '');
+  if (p.all) m.replyAll(body, opts_(p)); else m.reply(body, opts_(p));
+  return { ok: true };
+}
+`;
+
     </script>
 
     <script>
@@ -1321,6 +1972,7 @@ function handle_(p) {
                     { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
                     { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
+                    { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' },
                     { id: 'passwords', label: 'Tresor', icon: 'fa-solid fa-vault' },
                     { id: 'settings', label: 'Settings', icon: 'fa-solid fa-sliders' }
                 ],
@@ -1334,17 +1986,17 @@ function handle_(p) {
                 eventColors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'],
                 listEmojis: ['🏠', '💼', '🛒', '📚', '🎯', '💡', '✈️', '🎁', '💪', '🧹', '💰', '❤️'],
                 monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                shopCategories: CATEGORIES,
+                shopCategories: CATEGORIES, shopRecent: [],
                 shopUnits: ['', 'Stk', 'g', 'kg', 'ml', 'l', 'Pkg', 'Bund', 'Dose', 'Flasche'],
 
                 /* Einstellungen: werden generisch gerendert */
                 settingsDef: [
                     { title: 'Allgemein', icon: 'fa-solid fa-gear', items: [
-                        { k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['shopping', 'Einkauf'], ['passwords', 'Tresor']] },
+                        { k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
                         { k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
                         { k: 'confirmDelete', type: 'toggle', label: 'Vor dem Löschen nachfragen' },
                         { k: 'notifications', type: 'toggle', label: 'Browser-Benachrichtigungen', desc: 'Erinnerungen zusätzlich als Systemhinweis (nur bei geöffnetem Tab)' },
-                        { k: 'autoUpdate', type: 'toggle', label: 'Automatisch nach Updates suchen', desc: 'Nur bei online gehosteter Version; Prüfung beim Start, höchstens alle 6 Stunden' }
+                        { k: 'autoUpdate', type: 'toggle', label: 'Automatisch nach Updates suchen', desc: 'Nur bei online gehosteter Version; Prüfung beim Start, beim Zurückkehren in die App und alle 15 Minuten' }
                     ] },
                     { title: 'Kalender', icon: 'fa-regular fa-calendar-days', items: [
                         { k: 'calView', type: 'select', label: 'Standardansicht', o: [['month', 'Monat'], ['week', 'Woche'], ['day', 'Tag'], ['year', 'Jahr']] },
@@ -1384,6 +2036,7 @@ function handle_(p) {
                 syncRoomInput: '', syncPassInput: '', syncPassShow: false, syncError: '',
                 gBusy: false, gError: '', gLast: 0, _syncToastAt: 0,
                 p2p: { status: 'off', role: '', peers: 0, error: '' },
+                picker: { open: false, kind: 'date', target: null, key: '', cb: '', clear: false, title: '', min: '', dateVal: '', hh: 9, mm: 0, vy: 2026, vm: 0 },
                 banners: [], toastMsg: '', nowTick: 0, _toastTimer: null, _idleTimer: null,
                 updateAvailable: false, updateChecking: false, remoteVersion: '', lastUpdateCheck: 0,
 
@@ -1415,6 +2068,12 @@ function handle_(p) {
                 mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
                 passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
                 pwSearch: '', pwFolderFilter: 'all', pwType: 'all', newMenu: false, pwMenu: null, pwEditShow: false,
+                mailFolders: MAIL_FOLDERS, mailCfg: { accounts: [], settings: { poll: 5, images: false } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
+                mailList: [], mailLoading: false, mailError: '', mailMoreOk: false, mailCounts: {}, mailSel: null, mailCur: null, mailLoaded: 0, mailLastPoll: 0, mailReq: 0, mailThreadReq: 0,
+                mailThread: { loading: false, error: '', msgs: [], open: {}, imgs: false },
+                showMailSetup: false, mailSetup: { id: '', name: '', url: '', token: '', busy: false, error: '' },
+                showMailCompose: false, mailComp: { mode: 'new', acc: '', to: '', cc: '', bcc: '', subject: '', body: '', att: [], busy: false, error: '', showCc: false, refId: '', refMi: 0, all: false, info: '', initBody: '' },
+                showVaultIO: false, vio: { plainOk: false, needPw: false, pw: '', rec: null, file: '', items: [], folders: [], error: '', busy: false, info: '', nNew: 0, nDup: 0 },
                 showGenerator: false, gen: { length: 20, upper: true, lower: true, digits: true, symbols: true, result: '' },
                 vaultTypes: [
                     { id: 'login', label: 'Zugangsdaten', single: 'Zugangsdaten', icon: 'fa-solid fa-globe' },
@@ -1440,6 +2099,7 @@ function handle_(p) {
                     this.activeTab = this.tabs.some(t => t.id === start) ? start : 'calendar';
                     this.calendarView = this.cfg.calView;
                     this.doneOpen = this.cfg.showDone;
+                    this.shopRecent = (readJSON('organizer_shop_recent', []) || []).filter(r => r && r.name).slice(0, 14);
                     this.googleScriptUrl = this.googleScriptUrlInput = localStorage.getItem('organizer_gscript_url') || '';
                     const sc = readJSON(SYNC_CFG_KEY, null);
                     if (sc && typeof sc === 'object') this.syncCfg = { ...this.syncCfg, ...sc };
@@ -1453,6 +2113,9 @@ function handle_(p) {
                     const groups = readJSON('organizer_todo_groups', null), lists = readJSON('organizer_todo_lists', null);
                     this.loadTodoData(readJSON('organizer_todos', []), lists, lists ? null : (groups ?? ['Arbeit', 'Privat', 'Haushalt']));
                     this.shoppingItems = readJSON('organizer_shopping', []).filter(i => i && i.name).map(normShop);
+                    this.mailCfg = normMailCfg(readJSON('organizer_mailcfg', null));
+                    this.mailStatus = (readJSON('organizer_mail_status', []) || []).filter(o => o && o.id && o.t).map(normOverlay);
+                    this.mailPrune(false);
 
                     legacyEntries = readJSON('organizer_passwords', []);
                     if (!Array.isArray(legacyEntries)) legacyEntries = [];
@@ -1471,8 +2134,9 @@ function handle_(p) {
                     this.lastUpdateCheck = Number(localStorage.getItem('organizer_update_check')) || 0;
                     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.onVisible(); });
                     setTimeout(() => this.maybeAutoCheck(), 3000);
+                    setTimeout(() => { this.mailLastPoll = Date.now(); this.mailPollCounts(); if (this.activeTab === 'mail') this.mailEnter(); }, 4000);
                     this.startSync();
-                    setInterval(() => { this.nowTick++; this.checkReminders(); }, 30000);
+                    setInterval(() => { this.nowTick++; this.checkReminders(); this.maybeAutoCheck(); this.mailTick(); }, 30000);
                     this.checkReminders();
                     this.scrollGrid();
                 },
@@ -1481,6 +2145,7 @@ function handle_(p) {
                 switchTab(tab) {
                     this.activeTab = tab;
                     localStorage.setItem('organizer_start_tab', tab);
+                    if (tab === 'mail') this.mailEnter();
                     if (tab === 'passwords' && this.vaultState === 'locked') this.$nextTick(() => this.$refs.unlockInput?.focus());
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
@@ -1491,8 +2156,10 @@ function handle_(p) {
                 toast(msg) { this.toastMsg = msg; clearTimeout(this._toastTimer); this._toastTimer = setTimeout(() => this.toastMsg = '', 2800); },
                 ask(msg) { return !this.cfg.confirmDelete || confirm(msg); },
                 closeModals() {
+                    if (this.picker.open) { this.picker.open = false; return; } // Esc schließt zuerst nur die Datum-/Zeit-Auswahl
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
-                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = false;
+                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = false;
+                    if (this.showMailCompose) this.mailCloseCompose();
                     this.newMenu = false; this.pwMenu = null;
                 },
                 async copyText(text, msg, secret = false) {
@@ -1646,8 +2313,10 @@ function handle_(p) {
                     const vraw = localStorage.getItem(VAULT_KEY), vm = syncMeta.vault;
                     if (vraw) { const h = hashStr(vraw); if (!vm || vm.d || vm.h !== h) { syncMeta.vault = { u: now, h }; changed = true; } }
                     else if (vm && !vm.d) { syncMeta.vault = { u: now, d: 1 }; changed = true; }
+                    const mh = hashStr(JSON.stringify(this.mailCfg)), mm = syncMeta.mailcfg;
+                    if (mm ? (mm.d || mm.h !== mh) : this.mailCfg.accounts.length) { syncMeta.mailcfg = { u: now, h: mh }; changed = true; }
                     for (const k of Object.keys(syncMeta)) {
-                        if (k === 'vault' || k === 'cfg') continue;
+                        if (k === 'vault' || k === 'cfg' || k === 'mailcfg') continue;
                         const m = syncMeta[k];
                         if (m.d) { if (now - m.u > TOMBSTONE_MS) delete syncMeta[k]; }
                         else if (!seen.has(k)) { syncMeta[k] = { u: now, d: 1 }; changed = true; }
@@ -1666,7 +2335,7 @@ function handle_(p) {
                     const items = {};
                     for (const [k, m] of Object.entries(syncMeta)) {
                         if (m.d) { items[k] = { u: m.u, d: 1 }; continue; }
-                        const v = k === 'vault' ? readJSON(VAULT_KEY, null) : k === 'cfg' ? this.cfgPicked() : maps[k.slice(0, 2)]?.get(k.slice(3));
+                        const v = k === 'vault' ? readJSON(VAULT_KEY, null) : k === 'cfg' ? this.cfgPicked() : k === 'mailcfg' ? this.mailCfg : maps[k.slice(0, 2)]?.get(k.slice(3));
                         if (v) items[k] = { u: m.u, v };
                     }
                     return { v: 1, items };
@@ -1675,11 +2344,12 @@ function handle_(p) {
                     if (p === 'ev') return normEvent({ ...v });
                     if (p === 'td') return normTodo({ ...v }, {});
                     if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋' };
+                    if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
                 /* Führt den fremden Stand mit dem lokalen zusammen: pro Eintrag gewinnt die jüngere Änderung. */
                 applyRemote(remote) {
-                    const items = remote.items || {}, cols = {}, dirty = new Set(); let needPush = false, changed = 0;
+                    const items = remote.items || {}, cols = {}, dirty = new Set(), mlIds = []; let needPush = false, changed = 0, mailCfgChanged = false;
                     for (const [p, prop, filt] of SYNC_COLLECTIONS) cols[p] = this[prop].filter(it => !filt || filt(it));
                     for (const [k, r] of Object.entries(items)) {
                         if (!r || !Number.isFinite(r.u)) continue;
@@ -1688,6 +2358,10 @@ function handle_(p) {
                         if (!vclash && l && l.u >= r.u) { if (l.u > r.u) needPush = true; continue; }
                         if (k === 'cfg') {
                             if (!r.d && r.v && typeof r.v === 'object') { this.applyRemoteCfg(r.v); syncMeta.cfg = { u: r.u, h: this.cfgHashOf(this.cfgPicked()) }; changed++; }
+                            continue;
+                        }
+                        if (k === 'mailcfg') {
+                            if (!r.d && r.v && typeof r.v === 'object') { this.mailCfg = normMailCfg(r.v); this.persistMailCfg(); syncMeta.mailcfg = { u: r.u, h: hashStr(JSON.stringify(this.mailCfg)) }; changed++; mailCfgChanged = true; }
                             continue;
                         }
                         if (k === 'vault') {
@@ -1705,6 +2379,7 @@ function handle_(p) {
                             if (idx !== -1) col[idx] = item; else col.push(item);
                             syncMeta[k] = { u: r.u, h: hashStr(JSON.stringify(item)) };
                         }
+                        if (p === 'ml' && !r.d) mlIds.push(id);
                         dirty.add(p); changed++;
                     }
                     for (const k of Object.keys(syncMeta)) if (!(k in items)) needPush = true;
@@ -1712,12 +2387,15 @@ function handle_(p) {
                         if (dirty.has('ev')) this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
                         if (dirty.has('td')) this.todos = cols.td;
                         if (dirty.has('sh')) this.shoppingItems = cols.sh;
+                        if (dirty.has('ml')) this.mailStatus = cols.ml;
                         if (dirty.has('ls')) {
                             if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
                             this.todoLists = cols.ls;
                             if (this.isCustomList && !cols.ls.some(l => l.id === this.todoListId)) this.selectTodoList('myday');
                         }
                     }
+                    if (mailCfgChanged) this.mailAfterCfg();
+                    if (mlIds.length) this.mailPushOverlays(mlIds);
                     if (changed) {
                         this.saveAllData();
                         if (Date.now() - this._syncToastAt > 8000) { this._syncToastAt = Date.now(); this.toast('Daten von einem anderen Gerät aktualisiert'); }
@@ -1910,7 +2588,7 @@ function handle_(p) {
                     if (this.updateAvailable) return `Neue Version ${this.remoteVersion} verfügbar.`;
                     return this.lastUpdateCheck ? 'Aktuell · zuletzt geprüft ' + new Date(this.lastUpdateCheck).toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht geprüft.';
                 },
-                maybeAutoCheck() { if (this.cfg.autoUpdate && this.canCheckUpdate && Date.now() - this.lastUpdateCheck > 6 * 3600 * 1000) this.checkForUpdate(false); },
+                maybeAutoCheck() { if (this.cfg.autoUpdate && this.canCheckUpdate && Date.now() - this.lastUpdateCheck > 15 * 60 * 1000) this.checkForUpdate(false); },
                 async checkForUpdate(manual = false) {
                     if (!this.canCheckUpdate) { if (manual) this.toast('Update-Prüfung nur bei online gehosteter Version möglich'); return; }
                     if (this.updateChecking) return;
@@ -2011,6 +2689,49 @@ function handle_(p) {
                     out.sort((a, b) => a.s - b.s || a.e - b.e);
                     return out.slice(0, Number(this.cfg.upcomingCount) || 5).map(o => ({ ev: o.ev, ...this.countdown(o.ev, o.s, o.e, now) }));
                 },
+                /* ---------- Datum-/Zeit-Auswahl ---------- */
+                pad2(n) { return pad(n); },
+                get pickerHours() { return Array.from({ length: 24 }, (_, i) => i); },
+                get pickerMinutes() { return Array.from({ length: 12 }, (_, i) => i * 5); },
+                get pickerTitle() { return this.monthNames[this.picker.vm] + ' ' + this.picker.vy; },
+                get pickerDays() {
+                    const p = this.picker, first = new Date(p.vy, p.vm, 1), start = addDays(first, -this.weekOffset(first));
+                    return Array.from({ length: 42 }, (_, i) => { const d = addDays(start, i), ds = fmt(d); return { ds, day: d.getDate(), inMonth: d.getMonth() === p.vm, today: ds === this.today, sel: ds === p.dateVal, disabled: !!p.min && ds < p.min, holiday: this.holidayFor(ds) }; });
+                },
+                fmtPickDate(v) { return /^\d{4}-\d{2}-\d{2}$/.test(v || '') ? parseDate(v).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : ''; },
+                fmtPickDT(v) { const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(v || ''); return m ? this.fmtPickDate(m[1]) + ', ' + m[2] : ''; },
+                openPicker(kind, target, key, o = {}) {
+                    const v = String(target[key] || ''), dm = /^(\d{4}-\d{2}-\d{2})/.exec(v), tm = /(\d{2}):(\d{2})$/.exec(v);
+                    const d = dm ? parseDate(dm[1]) : new Date(), nextHour = (new Date().getHours() + 1) % 24;
+                    this.picker = { open: true, kind, target, key, cb: o.cb || '', clear: !!o.clear, title: o.title || (kind === 'date' ? 'Datum wählen' : kind === 'time' ? 'Uhrzeit wählen' : 'Datum & Uhrzeit'), min: o.min || '',
+                        dateVal: dm ? dm[1] : '', hh: tm ? +tm[1] : (kind === 'datetime' ? nextHour : 9), mm: tm ? +tm[2] : 0, vy: d.getFullYear(), vm: d.getMonth() };
+                },
+                pickDate(target, key, o) { this.openPicker('date', target, key, o); },
+                pickTime(target, key, o) { this.openPicker('time', target, key, o); },
+                pickDateTime(target, key, o) { this.openPicker('datetime', target, key, o); this.picker.dateVal = this.picker.dateVal || this.today; },
+                pickerNav(n) { const d = new Date(this.picker.vy, this.picker.vm + n, 1); this.picker.vy = d.getFullYear(); this.picker.vm = d.getMonth(); },
+                pickerMin(n) { this.picker.mm = (this.picker.mm + n + 60) % 60; },
+                pickDay(c) {
+                    if (c.disabled) return;
+                    this.picker.dateVal = c.ds;
+                    if (!c.inMonth) { const d = parseDate(c.ds); this.picker.vy = d.getFullYear(); this.picker.vm = d.getMonth(); }
+                    if (this.picker.kind === 'date') this.pickerOk();
+                },
+                pickerOk() {
+                    const p = this.picker; if (!p.target) return this.pickerClose();
+                    const v = p.kind === 'date' ? p.dateVal : p.kind === 'time' ? `${pad(p.hh)}:${pad(p.mm)}` : `${p.dateVal || this.today}T${pad(p.hh)}:${pad(p.mm)}`;
+                    if (!v) return;
+                    p.target[p.key] = v; const cb = p.cb; this.pickerClose();
+                    if (cb && typeof this[cb] === 'function') this[cb]();
+                },
+                pickerClear() { const p = this.picker; if (!p.target) return; p.target[p.key] = ''; const cb = p.cb; this.pickerClose(); if (cb && typeof this[cb] === 'function') this[cb](); },
+                pickerToday() {
+                    const p = this.picker, n = new Date();
+                    p.dateVal = this.today; p.vy = n.getFullYear(); p.vm = n.getMonth();
+                    if (p.kind !== 'date') { p.hh = n.getHours(); p.mm = n.getMinutes(); } else this.pickerOk();
+                },
+                pickerClose() { this.picker.open = false; },
+                onDuePicked() { if (!this.currentTodo.due) this.currentTodo.dueTime = ''; },
                 weekOffset(d) { return (d.getDay() - this.cfg.weekStart + 7) % 7; },
                 get calendarDays() {
                     const m = this.currentMonth, first = new Date(this.currentYear, m, 1), start = addDays(first, -this.weekOffset(first));
@@ -2264,7 +2985,7 @@ function handle_(p) {
                 },
                 get catalogView() {
                     const q = this.shopQuery.trim().toLowerCase();
-                    if (q) return CATALOG.filter(p => p.name.toLowerCase().includes(q));
+                    if (q) return CATALOG.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
                     return this.shopCat === 'all' ? CATALOG : CATALOG.filter(p => p.category === this.shopCat);
                 },
                 get exactProduct() { const q = this.shopQuery.trim().toLowerCase(); return CATALOG.some(p => p.name.toLowerCase() === q); },
@@ -2272,7 +2993,8 @@ function handle_(p) {
                 qtyLabel(i) { return i.qty > 1 || i.unit ? String(i.qty).replace('.', ',') + (i.unit ? ' ' + i.unit : '') : ''; },
                 tapProduct(p) { const ex = this.shopOpen.find(i => i.name.toLowerCase() === p.name.toLowerCase()); ex ? this.openShopModal(ex) : this.addShopItem(p); },
                 addShopItem(p) {
-                    this.shoppingItems.push(normShop({ ...p, id: uid() }));
+                    const it = normShop({ ...p, id: uid() });
+                    this.shoppingItems.push(it); this.noteRecent(it);
                     this.saveAllData(); this.toast(p.name + ' hinzugefügt');
                 },
                 addFromQuery() {
@@ -2293,6 +3015,16 @@ function handle_(p) {
                 },
                 deleteShopItem(id) { this.shoppingItems = this.shoppingItems.filter(x => x.id !== id); this.saveAllData(); this.showShopModal = false; },
                 variantsOf(name) { return VARIANTS[name] || []; },
+                catColor(c) { return CAT_COLORS[c] || CAT_COLORS['Sonstiges']; },
+                guessCategory(n) { return guessCategory(n); },
+                hasEmoji(i) { return !!(i.emoji && i.emoji !== '🛒'); },
+                initial(n) { const m = /[A-Za-zÄÖÜäöüß0-9]/.exec(String(n || '')); return m ? m[0].toUpperCase() : '•'; },
+                noteRecent(it) {
+                    const e = { name: it.name, emoji: it.emoji, category: it.category };
+                    this.shopRecent = [e, ...this.shopRecent.filter(x => x.name.toLowerCase() !== it.name.toLowerCase())].slice(0, 14);
+                    try { localStorage.setItem('organizer_shop_recent', JSON.stringify(this.shopRecent)); } catch (x) {}
+                },
+                get recentView() { return this.shopRecent.slice(0, 12).map(r => ({ ...r, ...(matchProduct(r.name) && !r.emoji ? { emoji: matchProduct(r.name).emoji } : {}) })); },
                 noteParts() { return (this.currentShop.note || '').split(',').map(s => s.trim()).filter(Boolean); },
                 hasVariant(v) { return this.noteParts().includes(v); },
                 toggleVariant(v) { const p = this.noteParts(); this.currentShop.note = (p.includes(v) ? p.filter(x => x !== v) : [...p, v]).join(', '); },
@@ -2370,8 +3102,8 @@ function handle_(p) {
                     if (this.vaultState !== 'unlocked') return;
                     vaultKey = null; vaultMeta = null;
                     this.passwords = []; this.revealed = {}; this.vaultFolders = [...DEFAULT_FOLDERS]; this.pwFolderFilter = 'all'; this.pwType = 'all'; this.pwSearch = '';
-                    this.showPasswordModalState = this.showChangeMaster = this.showFolders = this.showGenerator = false;
-                    this.newMenu = false; this.pwMenu = null; this.pwEditShow = false; this.gen.result = '';
+                    this.showPasswordModalState = this.showChangeMaster = this.showFolders = this.showGenerator = this.showVaultIO = false;
+                    this.newMenu = false; this.pwMenu = null; this.pwEditShow = false; this.gen.result = ''; this.vio = this.blankVio();
                     this.currentPassword = this.blankPw('login', 'Privat');
                     this.vaultState = 'locked'; this.mpInput = ''; this.vaultError = '';
                     this.toast(manual ? 'Tresor gesperrt' : 'Tresor automatisch gesperrt');
@@ -2448,6 +3180,416 @@ function handle_(p) {
                 generatePassword() { this.currentPassword.password = this.makePassword(); this.pwEditShow = true; },
                 openGenerator() { this.gen.length = this.cfg.genLength; this.regen(); this.showGenerator = true; },
                 regen() { this.gen.result = this.makePassword(this.gen); },
+                /* ---------- E-Mail ---------- */
+                mailAccount(id) { return this.mailCfg.accounts.find(a => a.id === id) || null; },
+                get mailUnread() { return Object.values(this.mailCounts).reduce((s, c) => s + ((c && c.inbox) || 0), 0); },
+                get mailAccs() { return this.mailAcc === 'all' ? this.mailCfg.accounts : this.mailCfg.accounts.filter(a => a.id === this.mailAcc); },
+                get mailImagesOk() { return !!(this.mailCfg.settings.images || this.mailThread.imgs); },
+                mailBadge(f) {
+                    const ids = this.mailAccs.map(a => a.id), sum = k => ids.reduce((s, id) => s + (((this.mailCounts[id] || {})[k]) || 0), 0);
+                    return f === 'inbox' ? sum('inbox') : f === 'spam' ? sum('spam') : 0;
+                },
+                persistMailCfg() { try { localStorage.setItem('organizer_mailcfg', JSON.stringify(this.mailCfg)); } catch (e) {} },
+                saveMailCfg() { this.mailCfg = normMailCfg(this.mailCfg); this.persistMailCfg(); this.touchSync(); },
+                persistMailStatus() { try { localStorage.setItem('organizer_mail_status', JSON.stringify(this.mailStatus)); } catch (e) {} },
+                mailPrune(touch = true) {
+                    const lim = Date.now() - MAIL_OVERLAY_DAYS * 864e5, keep = this.mailStatus.filter(o => o.t > lim);
+                    if (keep.length !== this.mailStatus.length) { this.mailStatus = keep; this.persistMailStatus(); if (touch) this.touchSync(); }
+                },
+                mailAfterCfg() {
+                    if (this.mailAcc !== 'all' && !this.mailAccount(this.mailAcc)) this.mailAcc = 'all';
+                    const ids = new Set(this.mailCfg.accounts.map(a => a.id));
+                    this.mailCounts = Object.fromEntries(Object.entries(this.mailCounts).filter(([k]) => ids.has(k)));
+                    this.mailList = this.mailList.filter(m => ids.has(m.acc));
+                    if (this.mailSel && !ids.has(this.mailSel.split('.')[0])) this.mailBack();
+                    if (this.mailCfg.accounts.length) { this.mailPollCounts(); if (this.activeTab === 'mail') this.mailRefresh({ silent: true }); }
+                },
+                async mailCall(acc, payload, ms = 60000) {
+                    if (!acc || !MAIL_URL_RE.test(acc.url || '')) throw new Error('Die Script-URL ist ungültig.');
+                    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), ms);
+                    try {
+                        const res = await fetch(acc.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, token: acc.token }), signal: ctl.signal });
+                        if (!res.ok) throw new Error('Das Script antwortet mit Fehler ' + res.status);
+                        let j; try { j = await res.json(); } catch (e) { throw new Error('Unerwartete Antwort – ist die Web-App für „Jeder“ freigegeben und neu bereitgestellt?'); }
+                        if (!j || !j.ok) throw new Error((j && j.error) || 'Serverfehler');
+                        return j;
+                    } catch (e) {
+                        if (e.name === 'AbortError') throw new Error('Zeitüberschreitung');
+                        if (e instanceof TypeError) throw new Error('Keine Verbindung zum Mail-Script (offline, oder Zugriff nicht auf „Jeder“ gestellt)');
+                        throw e;
+                    } finally { clearTimeout(to); }
+                },
+                noteCounts(a, u) {
+                    if (!u || typeof u !== 'object') return;
+                    const prev = this.mailCounts[a.id], n = { inbox: Number(u.inbox) || 0, spam: Number(u.spam) || 0 };
+                    if (prev && n.inbox > prev.inbox) { const d = n.inbox - prev.inbox; this.toast(`${d} neue E-Mail${d > 1 ? 's' : ''} – ${a.name}`); }
+                    this.mailCounts = { ...this.mailCounts, [a.id]: n };
+                },
+                async mailPollCounts() {
+                    await Promise.allSettled(this.mailCfg.accounts.map(async a => { const j = await this.mailCall(a, { action: 'counts' }, 30000); this.noteCounts(a, j.unread); }));
+                },
+                mailTick() {
+                    const p = this.mailCfg.settings.poll;
+                    if (!this.mailCfg.accounts.length || !p || document.visibilityState !== 'visible' || Date.now() - this.mailLastPoll < p * 60000) return;
+                    this.mailLastPoll = Date.now();
+                    if (this.activeTab === 'mail' && !this.showMailCompose) this.mailRefresh({ silent: true }); else this.mailPollCounts();
+                },
+                mailEnter() {
+                    if (this.mailCfg.accounts.length && (!this.mailLoaded || Date.now() - this.mailLoaded > 120000)) this.mailRefresh({ silent: !!this.mailList.length });
+                },
+                async mailRefresh(o = {}) {
+                    const accs = this.mailAccs; if (!accs.length) return;
+                    const req = ++this.mailReq, ft = Date.now(), more = !!o.more && accs.length === 1, start = more ? this.mailList.length : 0;
+                    this.mailLoading = true; if (!o.silent) this.mailError = '';
+                    const res = await Promise.allSettled(accs.map(a => this.mailCall(a, { action: 'list', folder: this.mailFolder, q: this.mailQuery.trim(), unreadOnly: this.mailUnreadOnly, start, limit: 25 })));
+                    if (req !== this.mailReq) return;
+                    const items = [], errs = []; let moreOk = false;
+                    res.forEach((r, i) => {
+                        const a = accs[i];
+                        if (r.status === 'fulfilled') { items.push(...(r.value.items || []).map(x => ({ ...x, acc: a.id, ft }))); moreOk = moreOk || !!r.value.more; this.noteCounts(a, r.value.unread); if (r.value.email && !a.email) { a.email = String(r.value.email); } }
+                        else errs.push((accs.length > 1 ? a.name + ': ' : '') + r.reason.message);
+                    });
+                    items.sort((x, y) => y.date - x.date);
+                    if (more) { const have = new Set(this.mailList.map(x => x.acc + '.' + x.id)); this.mailList = [...this.mailList, ...items.filter(x => !have.has(x.acc + '.' + x.id))]; }
+                    else if (errs.length < accs.length) this.mailList = items;
+                    this.mailMoreOk = accs.length === 1 && moreOk; this.mailError = errs.join(' · '); this.mailLoading = false; this.mailLoaded = Date.now(); this.mailPrune();
+                    if (o.manual && !errs.length) this.mailLastPoll = Date.now();
+                },
+                mailSetAcc(id) { this.mailAcc = id; this.mailBack(); this.mailList = []; this.mailRefresh(); },
+                mailSetFolder(f) { this.mailFolder = f; this.mailBack(); this.mailList = []; this.mailRefresh(); },
+                get mailRows() {
+                    const ov = new Map(this.mailStatus.map(o => [o.id, o])), f = this.mailFolder, out = [];
+                    for (const m of this.mailList) {
+                        const key = m.acc + '.' + m.id, o = ov.get(key), fresh = !!o && o.t > m.ft;
+                        let unread = !!m.unread, star = !!m.star, hide = false;
+                        if (fresh) {
+                            if (o.r === 0 || o.r === 1) unread = !o.r;
+                            if (o.s === 0 || o.s === 1) star = !!o.s;
+                            const tgt = { a: 'archive', d: 'trash', i: 'inbox', sp: 'spam' }[o.x];
+                            if (tgt) hide = ['inbox', 'archive', 'trash', 'spam'].includes(f) ? tgt !== f : (o.x === 'd' || o.x === 'sp');
+                        }
+                        if (!hide) out.push({ ...m, key, unread, star });
+                    }
+                    return out;
+                },
+                get mailCurRow() { return this.mailRows.find(r => r.key === this.mailSel) || { ...(this.mailCur || {}), key: this.mailSel, unread: false, star: false, ft: 0 }; },
+                /* Status ändern: sofort lokal (Überlagerung, wird über Google/P2P abgeglichen) + im Gmail-Postfach */
+                async mailSet(rows, patch) {
+                    rows = (Array.isArray(rows) ? rows : [rows]).filter(r => r && r.acc && r.id); if (!rows.length) return;
+                    const now = Date.now(), prev = new Map(), byAcc = {};
+                    for (const r of rows) {
+                        const key = r.acc + '.' + r.id, old = this.mailStatus.find(x => x.id === key);
+                        prev.set(key, old ? { ...old } : null);
+                        const n = normOverlay({ ...(old || { id: key }), ...patch, t: now });
+                        this.mailStatus = old ? this.mailStatus.map(x => x.id === key ? n : x) : [...this.mailStatus, n];
+                        (byAcc[r.acc] = byAcc[r.acc] || []).push(r.id);
+                        if (this.mailFolder === 'inbox' && this.mailCounts[r.acc]) {
+                            const c = this.mailCounts[r.acc], d = (patch.r === 1 && r.unread) || (['a', 'd', 'sp'].includes(patch.x) && r.unread) ? -1 : (patch.r === 0 && !r.unread) ? 1 : 0;
+                            if (d) this.mailCounts = { ...this.mailCounts, [r.acc]: { ...c, inbox: Math.max(0, c.inbox + d) } };
+                        }
+                    }
+                    this.persistMailStatus(); this.touchSync();
+                    const errs = [];
+                    await Promise.all(Object.entries(byAcc).map(async ([acc, ids]) => {
+                        const a = this.mailAccount(acc); if (!a) return;
+                        try { await this.mailCall(a, { action: 'mark', ids, ...patch }); }
+                        catch (e) { errs.push(e.message); for (const id of ids) { const key = acc + '.' + id, p = prev.get(key); this.mailStatus = p ? this.mailStatus.map(x => x.id === key ? p : x) : this.mailStatus.filter(x => x.id !== key); } }
+                    }));
+                    if (errs.length) { this.persistMailStatus(); this.touchSync(); this.toast('Aktion fehlgeschlagen: ' + errs[0]); this.mailPollCounts(); }
+                },
+                mailMove(x) {
+                    const r = this.mailCurRow; if (!r || !r.acc) return;
+                    this.mailSet([r], { x });
+                    this.toast({ a: 'Archiviert', d: 'In den Papierkorb verschoben', i: 'In den Posteingang verschoben', sp: 'Als Spam markiert' }[x]);
+                    this.mailBack();
+                },
+                /* Status von einem anderen Gerät: auch im Postfach nachziehen (idempotent) */
+                async mailPushOverlays(ids) {
+                    const groups = {};
+                    for (const id of ids) {
+                        const o = this.mailStatus.find(x => x.id === id); if (!o) continue;
+                        const acc = id.split('.')[0], tid = id.slice(acc.length + 1), patch = {};
+                        for (const k of ['r', 's', 'x']) if (k in o) patch[k] = o[k];
+                        if (!Object.keys(patch).length) continue;
+                        const gk = acc + JSON.stringify(patch); (groups[gk] = groups[gk] || { acc, patch, ids: [] }).ids.push(tid);
+                    }
+                    for (const g of Object.values(groups)) { const a = this.mailAccount(g.acc); if (!a) continue; try { await this.mailCall(a, { action: 'mark', ids: g.ids, ...g.patch }, 45000); } catch (e) {} }
+                    if (this.mailCfg.accounts.length) this.mailPollCounts();
+                },
+                async mailOpen(r) {
+                    const a = this.mailAccount(r.acc); if (!a) return;
+                    this.mailSel = r.key; this.mailCur = { acc: r.acc, id: r.id, subj: r.subj, key: r.key };
+                    const req = ++this.mailThreadReq;
+                    this.mailThread = { loading: true, error: '', msgs: [], open: {}, imgs: false };
+                    if (r.unread) this.mailSet([r], { r: 1 });
+                    try {
+                        const j = await this.mailCall(a, { action: 'thread', id: r.id });
+                        if (req !== this.mailThreadReq) return;
+                        const msgs = (j.msgs || []).map(m => ({ ...m, att: Array.isArray(m.att) ? m.att : [], html: m.html || '', plain: m.plain || '' }));
+                        this.mailThread = { loading: false, error: '', msgs, open: msgs.length ? { [msgs[msgs.length - 1].i]: true } : {}, imgs: false };
+                        if (j.subj) this.mailCur.subj = j.subj;
+                    } catch (e) { if (req === this.mailThreadReq) this.mailThread = { loading: false, error: 'E-Mail konnte nicht geladen werden: ' + e.message, msgs: [], open: {}, imgs: false }; }
+                },
+                mailBack() { this.mailSel = null; this.mailCur = null; this.mailThreadReq++; this.mailThread = { loading: false, error: '', msgs: [], open: {}, imgs: false }; },
+                mailToggleMsg(i) { this.mailThread.open = { ...this.mailThread.open, [i]: !this.mailThread.open[i] }; },
+                mailDoc(m) {
+                    const allow = this.mailImagesOk, k = this.mailSel + ':' + m.i + ':' + allow;
+                    if (!mailDocCache.has(k)) { if (mailDocCache.size > 40) mailDocCache.clear(); mailDocCache.set(k, sanitizeMailHtml(m.html, allow)); }
+                    return mailDocCache.get(k).html;
+                },
+                mailHasRemote(m) { return sanitizeMailHtml(m.html, false).remote; },
+                mailFit(el) { try { const d = el.contentDocument; if (d && d.documentElement) el.style.height = Math.min(d.documentElement.scrollHeight + 4, 30000) + 'px'; } catch (e) {} },
+                mailText(m) {
+                    if (m.plain) return String(m.plain).replace(/\s+/g, ' ').trim();
+                    try { return (new DOMParser().parseFromString(m.html || '', 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim(); } catch (e) { return ''; }
+                },
+                mailSnippet(r) { return String(r.snip || '').replace(/\s+/g, ' ').trim().slice(0, 140); },
+                senderName(s) { s = String(s || ''); const m = s.match(/^\s*"?([^"<]*?)"?\s*<([^>]*)>/); return ((m ? (m[1].trim() || m[2]) : s.trim()) || '(unbekannt)'); },
+                addrOf(s) { const m = String(s || '').match(/<([^>]+)>/); return (m ? m[1] : String(s || '')).trim(); },
+                mailWho(r) { return this.mailFolder === 'sent' ? 'An: ' + this.senderName(String(r.to || '').split(',')[0]) : this.senderName(r.from); },
+                mailHue(s) { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) % 360; return h; },
+                mailDateShort(ms) { const d = new Date(ms), n = new Date(); if (d.toDateString() === n.toDateString()) return pad(d.getHours()) + ':' + pad(d.getMinutes()); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + (d.getFullYear() === n.getFullYear() ? '' : String(d.getFullYear()).slice(2)); },
+                mailDateLong(ms) { try { return new Date(ms).toLocaleString('de-DE', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } },
+                mailBytes(n) { n = Number(n) || 0; return n < 1024 ? n + ' B' : n < 1048576 ? Math.round(n / 1024) + ' KB' : (n / 1048576).toFixed(1) + ' MB'; },
+                /* --- Schreiben --- */
+                mailNew(init = {}) {
+                    const acc = init.acc || (this.mailAcc !== 'all' ? this.mailAcc : ((this.mailCfg.accounts[0] || {}).id || ''));
+                    this.mailComp = { mode: init.mode || 'new', acc, to: init.to || '', cc: '', bcc: '', subject: init.subject || '', body: init.body || '', att: [], busy: false, error: '', showCc: false, refId: init.refId || '', refMi: init.refMi || 0, all: !!init.all, info: init.info || '', initBody: init.body || '' };
+                    this.showMailCompose = true;
+                    this.$nextTick(() => { const t = this.$refs.mailBody; if (t && init.body) { t.focus(); t.setSelectionRange(0, 0); } });
+                },
+                mailQuote(m) { return 'Am ' + this.mailDateLong(m.date) + ' schrieb ' + this.senderName(m.from) + ':\n' + this.mailBodyText(m).slice(0, 4000).split('\n').map(l => '> ' + l).join('\n'); },
+                mailBodyText(m) {
+                    if (m.plain) return String(m.plain).replace(/\r/g, '');
+                    try { return (new DOMParser().parseFromString(m.html || '', 'text/html').body.innerText || new DOMParser().parseFromString(m.html || '', 'text/html').body.textContent || '').trim(); } catch (e) { return ''; }
+                },
+                mailReplyTo(mi, all) {
+                    const m = this.mailThread.msgs.find(x => x.i === mi), cur = this.mailCur; if (!m || !cur) return;
+                    const s = m.subj || cur.subj || '';
+                    this.mailNew({ mode: all ? 'replyAll' : 'reply', acc: cur.acc, refId: cur.id, refMi: m.i, all, subject: /^(re|aw)\s*:/i.test(s) ? s : 'Re: ' + s, body: '\n\n' + this.mailQuote(m), info: all ? 'Antwort an alle Empfänger der Nachricht von ' + this.senderName(m.from) : 'Antwort an ' + m.from });
+                },
+                mailForward(mi) {
+                    const m = this.mailThread.msgs.find(x => x.i === mi), cur = this.mailCur; if (!m || !cur) return;
+                    const s = m.subj || cur.subj || '';
+                    this.mailNew({ mode: 'forward', acc: cur.acc, subject: /^(fwd|wg)\s*:/i.test(s) ? s : 'Fwd: ' + s, body: '\n\n---------- Weitergeleitete Nachricht ----------\nVon: ' + m.from + '\nDatum: ' + this.mailDateLong(m.date) + '\nBetreff: ' + s + '\nAn: ' + (m.to || '') + '\n\n' + this.mailBodyText(m).slice(0, 20000) });
+                },
+                mailBadAddr(str) {
+                    for (const p of String(str || '').split(/[,;]/).map(x => x.trim()).filter(Boolean)) if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(this.addrOf(p))) return p;
+                    return '';
+                },
+                mailNormAddrs(str) { return String(str || '').split(/[,;]/).map(x => x.trim()).filter(Boolean).join(', '); },
+                async mailAttach(e) {
+                    const files = [...(e.target.files || [])]; e.target.value = ''; const c = this.mailComp;
+                    for (const f of files) {
+                        if (c.att.reduce((s, x) => s + x.size, 0) + f.size > 6 * 1048576) { c.error = 'Anhänge insgesamt maximal 6 MB.'; break; }
+                        c.att.push({ name: f.name, type: f.type || 'application/octet-stream', size: f.size, b64: toB64(await f.arrayBuffer()) });
+                    }
+                },
+                mailCloseCompose() {
+                    const c = this.mailComp, dirty = c.att.length || c.body !== c.initBody || (c.mode === 'new' && c.to.trim());
+                    if (this.showMailCompose && dirty && !confirm('Die Nachricht verwerfen?')) return;
+                    this.showMailCompose = false;
+                },
+                async mailSend() {
+                    const c = this.mailComp, a = this.mailAccount(c.acc); if (c.busy) return;
+                    if (!a) { c.error = 'Bitte ein Postfach wählen.'; return; }
+                    const isNew = c.mode === 'new' || c.mode === 'forward';
+                    if (isNew) { if (!c.to.trim()) { c.error = 'Bitte einen Empfänger angeben.'; return; } const bad = this.mailBadAddr(c.to); if (bad) { c.error = `„${bad}“ ist keine gültige E-Mail-Adresse.`; return; } }
+                    for (const f of [c.cc, c.bcc]) { const bad = this.mailBadAddr(f); if (bad) { c.error = `„${bad}“ ist keine gültige E-Mail-Adresse.`; return; } }
+                    if (!c.body.trim() && !c.att.length && !confirm('Die Nachricht ist leer. Trotzdem senden?')) return;
+                    c.busy = true; c.error = '';
+                    try {
+                        const common = { body: c.body, cc: this.mailNormAddrs(c.cc), bcc: this.mailNormAddrs(c.bcc), attachments: c.att.map(x => ({ name: x.name, type: x.type, b64: x.b64 })) };
+                        if (isNew) await this.mailCall(a, { action: 'send', to: this.mailNormAddrs(c.to), subject: c.subject, ...common }, 120000);
+                        else await this.mailCall(a, { action: 'reply', id: c.refId, mi: c.refMi, all: c.all, ...common }, 120000);
+                        this.toast('E-Mail gesendet'); this.showMailCompose = false;
+                        if (this.activeTab === 'mail') setTimeout(() => this.mailRefresh({ silent: true }), 1500);
+                    } catch (e) { c.error = 'Senden fehlgeschlagen: ' + e.message; }
+                    finally { c.busy = false; }
+                },
+                async mailDownload(m, att) {
+                    const cur = this.mailCur, a = cur && this.mailAccount(cur.acc); if (!a) return;
+                    try {
+                        this.toast('Anhang wird geladen …');
+                        const j = await this.mailCall(a, { action: 'attachment', id: cur.id, mi: m.i, i: att.i }, 120000);
+                        const url = URL.createObjectURL(new Blob([fromB64(j.b64)], { type: j.type || 'application/octet-stream' }));
+                        const el = Object.assign(document.createElement('a'), { href: url, download: j.name || att.name || 'anhang' });
+                        document.body.appendChild(el); el.click(); el.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+                    } catch (e) { this.toast('Anhang konnte nicht geladen werden: ' + e.message); }
+                },
+                /* --- Postfächer verwalten --- */
+                mailToken() { return [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join(''); },
+                mailNewId() { let id; do { id = Math.random().toString(36).slice(2, 8); } while (id.length < 3 || this.mailAccount(id)); return id; },
+                openMailSetup(a) {
+                    this.mailSetup = a ? { id: a.id, name: a.name, url: a.url, token: a.token, busy: false, error: '' } : { id: '', name: '', url: '', token: this.mailToken(), busy: false, error: '' };
+                    this.showMailSetup = true;
+                },
+                copyMailScript() { this.copyText(MAIL_SCRIPT.replace('__TOKEN__', this.mailSetup.token), 'Script kopiert – jetzt in Google Apps Script einfügen'); },
+                async saveMailAccount() {
+                    const s = this.mailSetup; s.error = '';
+                    const url = s.url.trim(), name = s.name.trim().slice(0, 40);
+                    if (!MAIL_URL_RE.test(url)) { s.error = 'Die URL muss wie https://script.google.com/macros/s/…/exec aussehen.'; return; }
+                    if (!s.id && this.mailCfg.accounts.length >= 8) { s.error = 'Es sind maximal 8 Postfächer möglich.'; return; }
+                    if (this.mailCfg.accounts.some(a => a.url === url && a.id !== s.id)) { s.error = 'Dieses Postfach ist bereits verbunden.'; return; }
+                    s.busy = true;
+                    try {
+                        const j = await this.mailCall({ url, token: s.token }, { action: 'ping' }, 45000);
+                        const acc = { id: s.id || this.mailNewId(), name: name || j.email || 'Postfach', email: j.email || '', url, token: s.token };
+                        const accounts = [...this.mailCfg.accounts], i = accounts.findIndex(a => a.id === acc.id);
+                        if (i >= 0) accounts[i] = acc; else accounts.push(acc);
+                        this.mailCfg = { ...this.mailCfg, accounts }; this.saveMailCfg();
+                        this.showMailSetup = false; this.toast('Postfach verbunden'); this.noteCounts(acc, j.unread);
+                        this.mailList = []; this.mailRefresh();
+                    } catch (e) { s.error = (/Falscher Schl/.test(e.message) ? 'Der geheime Schlüssel im Script passt nicht – bitte das Script erneut mit „Script kopieren“ einfügen und neu bereitstellen. ' : '') + 'Verbindung fehlgeschlagen: ' + e.message; }
+                    finally { s.busy = false; }
+                },
+                removeMailAccount(a) {
+                    if (!confirm(`Postfach „${a.name}“ aus der App entfernen? (Deine Mails bleiben unverändert bei Google.)`)) return;
+                    this.mailCfg = { ...this.mailCfg, accounts: this.mailCfg.accounts.filter(x => x.id !== a.id) };
+                    this.mailStatus = this.mailStatus.filter(o => o.id.split('.')[0] !== a.id); this.persistMailStatus(); this.saveMailCfg(); this.mailAfterCfg();
+                },
+                /* ---------- Tresor: Export / Import ---------- */
+                blankVio() { return { plainOk: false, needPw: false, pw: '', rec: null, file: '', items: [], folders: [], error: '', busy: false, info: '', nNew: 0, nDup: 0 }; },
+                openVaultIO() { this.vio = this.blankVio(); this.showVaultIO = true; },
+                downloadText(name, text, mime = 'application/json') {
+                    const url = URL.createObjectURL(new Blob([text], { type: mime }));
+                    const a = Object.assign(document.createElement('a'), { href: url, download: name });
+                    document.body.appendChild(a); a.click(); a.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                },
+                csvCell(v) { v = String(v ?? ''); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; },
+                exportEncrypted() {
+                    const rec = readJSON(VAULT_KEY, null);
+                    if (!validVaultRecord(rec)) return this.toast('Export nicht möglich');
+                    this.downloadText(`tresor-verschluesselt-${fmt(new Date())}.json`, JSON.stringify({ format: 'space-vault', v: 1, exported: new Date().toISOString(), vault: rec }, null, 2));
+                    this.toast('Verschlüsselter Export gespeichert');
+                },
+                exportPlain(kind) {
+                    if (!this.vio.plainOk) return this.toast('Bitte zuerst die Sicherheitswarnung bestätigen');
+                    const day = fmt(new Date());
+                    if (kind === 'csv') {
+                        const rows = [['folder', 'favorite', 'type', 'name', 'notes', 'fields', 'reprompt', 'login_uri', 'login_username', 'login_password', 'login_totp']];
+                        let skipped = 0;
+                        for (const p of this.passwords) {
+                            if (p.type !== 'login' && p.type !== 'note') { skipped++; continue; }
+                            rows.push([p.folder, p.fav ? 1 : '', p.type === 'note' ? 'note' : 'login', p.title, p.notes, '', 0, p.url, p.username, p.password, '']);
+                        }
+                        this.downloadText(`tresor-klartext-${day}.csv`, rows.map(r => r.map(c => this.csvCell(c)).join(',')).join('\r\n') + '\r\n', 'text/csv');
+                        return this.toast(skipped ? `CSV gespeichert – ${skipped} Karten/Identitäten fehlen (dafür JSON nutzen)` : 'Klartext-CSV gespeichert');
+                    }
+                    const folders = this.vaultFolders.map((name, i) => ({ id: 'f' + i, name }));
+                    const items = this.passwords.map(p => {
+                        const o = { id: String(p.id), organizationId: null, folderId: (folders.find(f => f.name === p.folder) || {}).id || null, type: { login: 1, note: 2, card: 3, identity: 4 }[p.type] || 1, reprompt: 0, name: p.title, notes: p.notes || null, favorite: !!p.fav, fields: [], collectionIds: null };
+                        if (p.type === 'login') o.login = { uris: p.url ? [{ match: null, uri: p.url }] : [], username: p.username || null, password: p.password || null, totp: null };
+                        else if (p.type === 'note') o.secureNote = { type: 0 };
+                        else if (p.type === 'card') { const [m, y] = (p.cardExp || '').split('/'); o.card = { cardholderName: p.cardHolder || null, brand: null, number: p.cardNumber || null, expMonth: m || null, expYear: y ? (y.length === 2 ? '20' + y : y) : null, code: p.cardCvv || null }; }
+                        else o.identity = { firstName: p.firstName || null, lastName: p.lastName || null, email: p.email || null, phone: p.phone || null, address1: p.address || null };
+                        return o;
+                    });
+                    this.downloadText(`tresor-klartext-${day}.json`, JSON.stringify({ encrypted: false, folders, items }, null, 2));
+                    this.toast('Klartext-JSON gespeichert');
+                },
+                parseCSV(text) {
+                    const rows = []; let row = [], cur = '', q = false;
+                    text = String(text).replace(/^﻿/, '');
+                    for (let i = 0; i < text.length; i++) {
+                        const c = text[i];
+                        if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+                        else if (c === '"') q = true;
+                        else if (c === ',') { row.push(cur); cur = ''; }
+                        else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); cur = ''; if (row.length > 1 || row[0] !== '') rows.push(row); row = []; }
+                        else cur += c;
+                    }
+                    if (cur !== '' || row.length) { row.push(cur); if (row.length > 1 || row[0] !== '') rows.push(row); }
+                    return rows;
+                },
+                fromCsv(rows) {
+                    if (rows.length < 2) throw new Error('Die CSV-Datei enthält keine Daten.');
+                    const head = rows[0].map(h => h.trim().toLowerCase()), col = (...n) => head.findIndex(h => n.includes(h));
+                    const c = { type: col('type'), title: col('name', 'title', 'account', 'account name', 'login_name'), url: col('login_uri', 'url', 'uri', 'website', 'web site', 'login url'), user: col('login_username', 'username', 'user name', 'user', 'login', 'email'),
+                                pw: col('login_password', 'password', 'pass'), notes: col('notes', 'note', 'extra', 'comments'), folder: col('folder', 'grouping', 'group', 'category'), fav: col('favorite', 'fav') };
+                    if (c.pw < 0 && !(c.type >= 0 && c.notes >= 0)) throw new Error('CSV-Spalten nicht erkannt (erwartet z. B. name, url, username, password).');
+                    const g = (r, i) => i >= 0 && r[i] != null ? String(r[i]).trim() : '';
+                    const items = [], folders = new Set();
+                    for (const r of rows.slice(1)) {
+                        const t = g(r, c.type).toLowerCase();
+                        if (t && !['login', 'note', 'securenote', 'secure note'].includes(t)) continue; // Karten/Identitäten gibt es im CSV-Format nicht
+                        const url = g(r, c.url).split(/\r?\n/)[0], user = g(r, c.user), folder = g(r, c.folder);
+                        if (folder) folders.add(folder);
+                        const isNote = t === 'note' || t === 'securenote' || t === 'secure note';
+                        if (!isNote && !g(r, c.pw) && !user && !url) continue;
+                        items.push(this.normPw({ type: isNote ? 'note' : 'login', title: g(r, c.title) || this.hostOf(url) || user, url, username: user, password: g(r, c.pw), notes: g(r, c.notes), folder, fav: ['1', 'true', 'yes'].includes(g(r, c.fav).toLowerCase()) }));
+                    }
+                    return { items, folders: [...folders] };
+                },
+                fromBitwarden(o) {
+                    const fm = {}; (o.folders || []).forEach(f => { if (f && f.id) fm[f.id] = String(f.name || ''); });
+                    const items = [];
+                    for (const it of o.items) {
+                        if (!it || typeof it !== 'object') continue;
+                        const base = { title: String(it.name || ''), notes: it.notes ? String(it.notes) : '', fav: !!it.favorite, folder: fm[it.folderId] || '' };
+                        if (it.type === 1) { const l = it.login || {}; items.push(this.normPw({ ...base, type: 'login', url: (Array.isArray(l.uris) && l.uris[0] && l.uris[0].uri) || '', username: l.username, password: l.password })); }
+                        else if (it.type === 2) items.push(this.normPw({ ...base, type: 'note' }));
+                        else if (it.type === 3) { const c = it.card || {}; items.push(this.normPw({ ...base, type: 'card', cardHolder: c.cardholderName, cardNumber: c.number, cardExp: c.expMonth ? pad(+c.expMonth || 0) + '/' + String(c.expYear || '').slice(-2) : '', cardCvv: c.code })); }
+                        else if (it.type === 4) { const d = it.identity || {}; items.push(this.normPw({ ...base, type: 'identity', firstName: d.firstName, lastName: d.lastName, email: d.email, phone: d.phone, address: [d.address1, d.address2, d.address3, [d.postalCode, d.city].filter(Boolean).join(' '), d.country].filter(Boolean).join(', ') })); }
+                    }
+                    return { items, folders: Object.values(fm).filter(Boolean) };
+                },
+                dupKey(p) { return [p.type, p.title, p.username || p.email || p.cardNumber || [p.firstName, p.lastName].join(' '), p.url, p.password || p.notes].map(x => String(x || '').trim().toLowerCase()).join('\u0001'); },
+                vioPreview() {
+                    const v = this.vio, have = new Set(this.passwords.map(p => this.dupKey(p)));
+                    v.nNew = v.items.filter(p => !have.has(this.dupKey(p))).length; v.nDup = v.items.length - v.nNew;
+                },
+                vioFile(e) {
+                    const input = e.target, file = input.files && input.files[0];
+                    if (!file) return;
+                    if (file.size > 20 * 1024 * 1024) { this.vio.error = 'Die Datei ist zu groß.'; input.value = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = () => { this.vioParse(String(reader.result || ''), file.name); input.value = ''; };
+                    reader.onerror = () => { this.vio.error = 'Die Datei konnte nicht gelesen werden.'; input.value = ''; };
+                    reader.readAsText(file);
+                },
+                vioParse(text, name = '') {
+                    const v = this.vio; Object.assign(v, { error: '', needPw: false, pw: '', rec: null, items: [], folders: [], info: '', file: name, nNew: 0, nDup: 0 });
+                    try {
+                        const t = String(text || '').replace(/^﻿/, '').trim();
+                        if (!t) throw new Error('Die Datei ist leer.');
+                        if (t[0] === '{' || t[0] === '[') {
+                            let o; try { o = JSON.parse(t); } catch (e) { throw new Error('Die Datei ist kein gültiges JSON.'); }
+                            const rec = validVaultRecord(o) ? o : (o && validVaultRecord(o.vault) ? o.vault : null);
+                            if (rec) {
+                                if (rec.iter < 1000 || rec.iter > 2e6) throw new Error('Ungültige Verschlüsselungsparameter in der Datei.');
+                                v.rec = rec; v.needPw = true; v.info = 'Verschlüsselter Tresor-Export – bitte das Master-Passwort dieses Tresors eingeben.'; return;
+                            }
+                            if (o && o.encrypted) throw new Error('Dieser Bitwarden-Export ist verschlüsselt. Exportiere in Bitwarden bitte als „.json (unverschlüsselt)“ oder „.csv“.');
+                            if (!o || !Array.isArray(o.items)) throw new Error('Dateiformat nicht erkannt.');
+                            Object.assign(v, this.fromBitwarden(o));
+                        } else Object.assign(v, this.fromCsv(this.parseCSV(t)));
+                        if (!v.items.length) throw new Error('Keine passenden Einträge gefunden.');
+                        this.vioPreview();
+                    } catch (e) { v.error = e.message || 'Import fehlgeschlagen.'; v.items = []; }
+                },
+                async vioDecrypt() {
+                    const v = this.vio; if (!v.rec) return;
+                    v.error = ''; v.busy = true;
+                    try {
+                        const key = await deriveKey(v.pw, fromB64(v.rec.salt), v.rec.iter), data = await decryptJSON(key, v.rec);
+                        v.items = (data.entries || []).map((p, i) => this.normPw(p, i)); v.folders = Array.isArray(data.folders) ? data.folders.map(String) : [];
+                        v.needPw = false; v.pw = '';
+                        if (!v.items.length) v.error = 'Der Tresor in der Datei ist leer.'; else this.vioPreview();
+                    } catch (e) { v.error = 'Falsches Master-Passwort für diese Datei.'; }
+                    finally { v.busy = false; }
+                },
+                async vioConfirm() {
+                    const v = this.vio; if (!v.items.length || !vaultKey) return;
+                    const have = new Set(this.passwords.map(p => this.dupKey(p))); let added = 0;
+                    for (const it of v.items) { const k = this.dupKey(it); if (have.has(k)) continue; have.add(k); this.passwords.push({ ...it, id: uid() }); added++; }
+                    for (const f of [...v.folders, ...v.items.map(i => i.folder)]) if (f && !this.vaultFolders.includes(f)) this.vaultFolders.push(f);
+                    try { await this.persistVault(); } catch (e) { v.error = 'Speichern fehlgeschlagen.'; return; }
+                    const skipped = v.items.length - added;
+                    this.toast(`${added} importiert` + (skipped ? `, ${skipped} bereits vorhanden` : ''));
+                    this.showVaultIO = false; this.vio = this.blankVio();
+                },
                 typeSingle(t) { return (this.vaultTypes.find(x => x.id === t) || this.vaultTypes[0]).single; },
                 typeIcon(pw) { return (this.vaultTypes.find(x => x.id === pw.type) || this.vaultTypes[0]).icon; },
                 pwSub(pw) {
@@ -2523,6 +3665,7 @@ function handle_(p) {
                         localStorage.setItem('organizer_todos', JSON.stringify(this.todos));
                         localStorage.setItem('organizer_todo_lists', JSON.stringify(this.todoLists));
                         localStorage.setItem('organizer_shopping', JSON.stringify(this.shoppingItems));
+                        localStorage.setItem('organizer_mail_status', JSON.stringify(this.mailStatus));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
                     this.touchSync();
