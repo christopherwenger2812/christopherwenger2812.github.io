@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-8">
+    <meta name="app-version" content="2026.11.13-9">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -94,6 +94,9 @@
         [data-density="compact"] { --row-pad: .45rem .8rem; }
 
         html, body { min-height: 100dvh; }
+        /* Kein seitliches Verrutschen und keine vom Handy automatisch vergrößerte Schrift */
+        html { overflow-x: clip; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        body { overflow-x: clip; }
         body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; -webkit-tap-highlight-color: transparent;
                font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; letter-spacing: -.011em; }
         h1, h2, h3, .num { font-feature-settings: 'ss01'; }
@@ -223,6 +226,17 @@
             .mstar { padding: .4rem; }
         }
         @media (max-width: 640px) {
+            /* Auf dem Handy etwas kompakter, damit mehr auf den Bildschirm passt */
+            main[class] { padding-left: .8rem; padding-right: .8rem; }
+            main [class~="p-5"], main [class~="p-6"], main [class~="p-7"], main [class~="p-8"] { padding: 1.05rem; }
+            main [class~="text-2xl"] { font-size: 1.4rem; line-height: 1.2; }
+            main [class~="text-3xl"] { font-size: 1.55rem; line-height: 1.2; }
+            main [class~="gap-5"] { gap: .85rem; }
+            main .card, main section, main .inner { max-width: 100%; }
+            main .card, main .inner { overflow-wrap: anywhere; }
+            .mrow { padding-left: .7rem; padding-right: .6rem; }
+            .mav { width: 2.1rem; height: 2.1rem; font-size: .78rem; }
+            .mhead { padding: .75rem .8rem; }
             /* Dialoge erscheinen als Blatt von unten – mit dem Daumen erreichbar */
             .backdrop { align-items: flex-end; padding: 0; }
             .backdrop > * { margin-block: 0; width: 100%; max-width: none; border-radius: 1.6rem 1.6rem 0 0; max-height: 92dvh; overflow-y: auto; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
@@ -4436,7 +4450,11 @@ function reply_(p) {
                 mailFit(el) {
                     try {
                         const d = el.contentDocument; if (!d || !d.body) return;
-                        const avail = el.clientWidth || el.parentElement?.clientWidth || 0;
+                        let avail = el.clientWidth || el.parentElement?.clientWidth || 0;
+                        if (avail < 100) { // Breite noch nicht bekannt (Bereich war ausgeblendet) – gleich noch einmal versuchen
+                            requestAnimationFrame(() => setTimeout(() => { if ((el.clientWidth || 0) > 100) this.mailFit(el); }, 60));
+                            avail = (el.parentElement?.clientWidth || 0) || avail;
+                        }
                         d.body.style.transformOrigin = 'top left'; d.body.style.transform = ''; d.body.style.width = '';
                         const need = Math.max(d.body.scrollWidth, d.documentElement.scrollWidth);
                         let scale = 1;
