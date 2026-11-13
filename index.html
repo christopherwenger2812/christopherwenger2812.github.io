@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-2">
+    <meta name="app-version" content="2026.11.13-3">
     <meta name="theme-color" content="#0b0f19">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Space">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M20 34l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M43.1 22.8A16 16 0 1 0 43.1 41.2' fill='none' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='46.5' cy='32' r='3.8' fill='white'/%3E%3C/svg%3E">
     <title>Christopher’s All in One App</title>
     <script>
         // Theme, Akzentfarbe und Dichte vor dem ersten Rendern setzen (verhindert Aufblitzen)
@@ -27,8 +27,9 @@
             const x = c.getContext('2d'), g = x.createLinearGradient(0, 180, 180, 0);
             g.addColorStop(0, '#4f46e5'); g.addColorStop(1, '#10b981');
             x.fillStyle = g; x.fillRect(0, 0, 180, 180);
-            x.strokeStyle = '#fff'; x.lineWidth = 17; x.lineCap = x.lineJoin = 'round';
-            x.beginPath(); x.moveTo(52, 95); x.lineTo(78, 121); x.lineTo(130, 62); x.stroke();
+            x.strokeStyle = '#fff'; x.fillStyle = '#fff'; x.lineWidth = 17; x.lineCap = 'round';
+            x.beginPath(); x.arc(84.4, 90, 45, 35 * Math.PI / 180, 325 * Math.PI / 180); x.stroke();
+            x.beginPath(); x.arc(130.8, 90, 10.7, 0, 2 * Math.PI); x.fill();
             const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.appendChild(l);
         } catch (e) {}
     </script>
@@ -121,9 +122,42 @@
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         input[type="checkbox"] { accent-color: var(--accent); }
+
+        /* Tresor-Liste & Menüs */
+        .vrow { display: flex; align-items: center; gap: .75rem; padding: .7rem 1rem; border-top: 1px solid var(--border); transition: background .15s; }
+        .vrow:hover { background: var(--hover); }
+        .menu { position: absolute; right: 0; top: calc(100% + .25rem); z-index: 30; min-width: 13.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: .9rem; padding: .35rem; box-shadow: 0 16px 40px -12px rgba(0,0,0,.6); }
+        .menu button, .menu a { display: flex; width: 100%; align-items: center; gap: .7rem; padding: .55rem .7rem; border-radius: .6rem; font-size: .78rem; font-weight: 600; text-align: left; }
+        .menu button:hover, .menu a:hover { background: var(--hover); }
+        .menu .danger { color: #f43f5e; }
+        .menu hr { border: 0; border-top: 1px solid var(--border); margin: .3rem 0; }
+        .chip.run  { background: rgba(16,185,129,.15); color: #34d399; border-color: rgba(16,185,129,.3); }
+        .chip.soon { background: rgba(245,158,11,.15); color: #fbbf24; border-color: rgba(245,158,11,.3); }
+        .calgrid { display: grid; gap: 1.25rem; align-items: start; }
+        @media (min-width: 1280px) { .calgrid.up { grid-template-columns: minmax(0, 1fr) 21rem; } }
     </style>
 </head>
 <body class="font-sans antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()">
+
+    <!-- Eigene Logos: App („C“ mit Umlauf-Punkt) und Tresor (Safe-Wählscheibe mit Schlüsselloch) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="lgApp" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#10b981"/></linearGradient>
+            <linearGradient id="lgVault" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+            <symbol id="logoApp" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgApp)"/>
+                <path d="M43.1 22.8A16 16 0 1 0 43.1 41.2" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="46.5" cy="32" r="3.8" fill="#fff"/>
+            </symbol>
+            <symbol id="logoVault" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgVault)"/>
+                <circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3"/>
+                <g fill="#fff" fill-opacity=".9"><circle cx="57.0" cy="32.0" r="2.2"/><circle cx="49.7" cy="49.7" r="1.5"/><circle cx="32.0" cy="57.0" r="2.2"/><circle cx="14.3" cy="49.7" r="1.5"/><circle cx="7.0" cy="32.0" r="2.2"/><circle cx="14.3" cy="14.3" r="1.5"/><circle cx="32.0" cy="7.0" r="2.2"/><circle cx="49.7" cy="14.3" r="1.5"/></g>
+                <circle cx="32" cy="29" r="4.6" fill="#fff"/>
+                <path d="M29.6 31.5h4.8l1.6 10h-8z" fill="#fff"/>
+            </symbol>
+        </defs>
+    </svg>
 
     <!-- Erinnerungs-Banner -->
     <div class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-[70] space-y-2">
@@ -159,9 +193,9 @@
         <header class="sticky top-0 z-40 border-b backdrop-blur-xl divider" style="background: color-mix(in srgb, var(--surface) 85%, transparent);">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white p-3 rounded-2xl shadow-xl shadow-indigo-600/20 shrink-0"><i class="fa-solid fa-compass-drafting text-lg"></i></div>
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-xl shadow-indigo-600/20 shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
                     <div class="min-w-0">
-                        <h1 class="text-base font-extrabold tracking-tight truncate">Christopher’s Space</h1>
+                        <h1 class="text-base sm:text-lg font-black tracking-tight truncate">Christopher’s <span class="accent">Space</span></h1>
                         <p class="text-[11px] font-medium flex items-center gap-1.5 mt-0.5 muted">
                             <span class="w-2 h-2 rounded-full shrink-0" :class="headerOk ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'"></span>
                             <span class="truncate" x-text="headerStatus"></span>
@@ -185,7 +219,29 @@
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12">
 
             <!-- ================= KALENDER ================= -->
-            <section x-show="activeTab === 'calendar'" x-cloak class="space-y-5">
+            <section x-show="activeTab === 'calendar'" x-cloak class="calgrid" :class="cfg.showUpcoming ? 'up' : ''">
+                <!-- Nächste Termine mit Countdown -->
+                <aside x-show="cfg.showUpcoming" class="card p-4 sm:p-5 order-first xl:order-last xl:sticky xl:top-24">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="label"><i class="fa-regular fa-clock mr-2"></i>Nächste Termine</p>
+                        <button @click="openEventModal()" class="icon-btn !w-8 !h-8" aria-label="Neuer Termin"><i class="fa-solid fa-plus text-xs"></i></button>
+                    </div>
+                    <div class="space-y-2">
+                        <template x-for="u in upcoming" :key="u.ev.id">
+                            <button @click="editEvent(u.ev)" class="inner w-full p-3 flex items-center gap-3 text-left transition hover:brightness-110">
+                                <span class="w-1.5 self-stretch rounded-full shrink-0" :style="'background:' + u.ev.color"></span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-bold truncate" x-text="u.ev.title"></p>
+                                    <p class="text-[11px] muted truncate" x-text="u.when"></p>
+                                </div>
+                                <span class="chip shrink-0" :class="u.state" x-text="u.cd"></span>
+                            </button>
+                        </template>
+                    </div>
+                    <p x-show="!upcoming.length" class="text-xs muted text-center py-6"><i class="fa-regular fa-calendar-check text-xl block mb-2 opacity-60"></i>Keine anstehenden Termine.</p>
+                </aside>
+
+                <div class="space-y-5 min-w-0">
                 <div class="card p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight" x-text="calendarTitle"></h2>
@@ -296,6 +352,7 @@
                             </div>
                         </div>
                     </template>
+                </div>
                 </div>
             </section>
 
@@ -465,15 +522,15 @@
             <!-- ================= TRESOR ================= -->
             <section x-show="activeTab === 'passwords'" x-cloak class="space-y-5">
                 <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3">
-                            <i class="fa-solid" :class="vaultState === 'unlocked' ? 'fa-lock-open text-emerald-400' : 'fa-lock text-indigo-400'"></i>Passwort-Tresor
-                        </h2>
-                        <p class="muted text-xs mt-1 font-medium">Mit Master-Passwort verschlüsselt (AES-256-GCM) – nur auf diesem Gerät gespeichert.</p>
+                    <div class="flex items-center gap-4 min-w-0">
+                        <svg class="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
+                        <div class="min-w-0">
+                            <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Tresor</h2>
+                            <p class="muted text-xs mt-1 font-medium">Mit Master-Passwort verschlüsselt (AES-256-GCM) – nur auf deinen Geräten.</p>
+                        </div>
                     </div>
                     <div x-show="vaultState === 'unlocked'" class="flex flex-wrap gap-2.5">
-                        <button @click="openPasswordModal()" class="btn btn-primary"><i class="fa-solid fa-plus text-[10px]"></i>Neuer Eintrag</button>
-                        <button @click="openFolders()" class="btn btn-soft" title="Gruppen verwalten"><i class="fa-solid fa-folder-tree"></i><span class="hidden sm:inline">Gruppen</span></button>
+                        <button @click="openFolders()" class="btn btn-soft" title="Ordner verwalten"><i class="fa-solid fa-folder-tree"></i><span class="hidden sm:inline">Ordner</span></button>
                         <button @click="openChangeMaster()" class="btn btn-soft" title="Master-Passwort ändern"><i class="fa-solid fa-key"></i></button>
                         <button @click="lockVault(true)" class="btn btn-soft"><i class="fa-solid fa-lock"></i>Sperren</button>
                     </div>
@@ -482,7 +539,7 @@
                 <!-- Einrichtung -->
                 <div x-show="vaultState === 'none'" class="card p-6 sm:p-8 max-w-xl mx-auto w-full space-y-5">
                     <div class="text-center space-y-2">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl"><i class="fa-solid fa-shield-halved"></i></div>
+                        <svg class="w-16 h-16 mx-auto rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
                         <h3 class="text-lg font-black">Master-Passwort festlegen</h3>
                         <p class="muted text-xs leading-relaxed">Dieses Passwort schützt alle Tresor-Einträge. Du brauchst es bei jedem Entsperren.</p>
                     </div>
@@ -506,7 +563,7 @@
                 <!-- Gesperrt -->
                 <div x-show="vaultState === 'locked'" class="card p-6 sm:p-8 max-w-md mx-auto w-full space-y-5">
                     <div class="text-center space-y-2">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl"><i class="fa-solid fa-lock"></i></div>
+                        <svg class="w-16 h-16 mx-auto rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
                         <h3 class="text-lg font-black">Tresor gesperrt</h3>
                         <p class="muted text-xs">Gib dein Master-Passwort ein, um fortzufahren.</p>
                     </div>
@@ -522,53 +579,104 @@
                 </div>
 
                 <!-- Entsperrt -->
-                <div x-show="vaultState === 'unlocked'" class="card p-5 sm:p-6 space-y-5">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b pb-5 divider">
-                        <div class="flex gap-2 overflow-x-auto pb-1">
-                            <button @click="pwFolderFilter = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === 'all' ? 'on' : ''">Alle</button>
-                            <template x-for="f in vaultFolders" :key="f"><button @click="pwFolderFilter = f" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === f ? 'on' : ''" x-text="f"></button></template>
-                            <button x-show="passwords.some(p => !p.folder)" @click="pwFolderFilter = '__none'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === '__none' ? 'on' : ''">Ohne Gruppe</button>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <input type="search" x-model="pwSearch" placeholder="Tresor durchsuchen…" class="field lg:!w-64">
-                            <div class="seg">
-                                <button @click="setView('vault', 'grid')" :class="cfg.views.vault === 'grid' ? 'on' : ''" title="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
-                                <button @click="setView('vault', 'list')" :class="cfg.views.vault === 'list' ? 'on' : ''" title="Liste"><i class="fa-solid fa-list"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div :class="cfg.views.vault === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-2'">
-                        <template x-for="pw in filteredPasswords" :key="pw.id">
-                            <div class="inner p-4 flex gap-3 transition hover:border-indigo-500/50" :class="cfg.views.vault === 'grid' ? 'flex-col' : 'flex-col sm:flex-row sm:items-center'">
-                                <div class="flex items-center gap-3 min-w-0 flex-1">
-                                    <div class="logo"><i class="fa-solid fa-shield-halved text-sm"></i>
-                                        <template x-if="cfg.showLogos && logoUrl(pw)"><img :src="logoUrl(pw)" alt="" loading="lazy" referrerpolicy="no-referrer" @error="$el.remove()"></template>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <h3 class="text-sm font-bold truncate" x-text="pw.title"></h3>
-                                        <p class="text-[11px] muted font-mono truncate" x-text="pw.username || hostOf(pw.url) || 'Ohne Benutzername'"></p>
-                                    </div>
-                                    <span x-show="pw.folder" class="chip hidden sm:inline-flex" x-text="pw.folder"></span>
-                                </div>
-                                <div class="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl border divider sm:w-72 shrink-0" style="background: var(--surface);">
-                                    <span class="text-xs font-mono text-emerald-400 tracking-wider truncate" x-text="revealed[pw.id] ? pw.password : '••••••••••••'"></span>
-                                    <div class="flex shrink-0">
-                                        <button @click="revealed[pw.id] = !revealed[pw.id]" class="icon-btn !w-8 !h-8" aria-label="Anzeigen"><i class="fa-solid text-xs" :class="revealed[pw.id] ? 'fa-eye-slash' : 'fa-eye'"></i></button>
-                                        <button @click="copyText(pw.password, 'Passwort kopiert', true)" class="icon-btn !w-8 !h-8" aria-label="Passwort kopieren"><i class="fa-solid fa-copy text-xs"></i></button>
-                                    </div>
-                                </div>
-                                <div class="flex items-center shrink-0 -mx-1">
-                                    <a x-show="siteUrl(pw)" :href="siteUrl(pw)" target="_blank" rel="noopener noreferrer" class="icon-btn" aria-label="Website öffnen"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
-                                    <button x-show="pw.username" @click="copyText(pw.username, 'Benutzername kopiert')" class="icon-btn" aria-label="Benutzername kopieren"><i class="fa-regular fa-user text-xs"></i></button>
-                                    <button @click="editPassword(pw)" class="icon-btn" aria-label="Bearbeiten"><i class="fa-solid fa-pen text-xs"></i></button>
-                                    <button @click="deletePassword(pw.id)" class="icon-btn danger" aria-label="Löschen"><i class="fa-solid fa-trash text-xs"></i></button>
-                                </div>
-                            </div>
+                <div x-show="vaultState === 'unlocked'" class="grid md:grid-cols-[15.5rem_minmax(0,1fr)] gap-5 items-start">
+                    <!-- Seitenleiste (Desktop) -->
+                    <aside class="card p-3 hidden md:block md:sticky md:top-24 space-y-0.5" aria-label="Tresor-Filter">
+                        <template x-for="f in vaultFilters" :key="f.id">
+                            <button @click="setPwFilter(f.id)" class="side" :class="pwType === f.id && pwFolderFilter === 'all' ? 'on' : ''">
+                                <i :class="f.icon" class="fa-fw text-xs"></i><span class="truncate" x-text="f.label"></span><span class="ml-auto text-[11px] opacity-60" x-text="f.n"></span>
+                            </button>
                         </template>
+                        <p class="label !mt-4 px-3 pt-2 pb-1">Ordner</p>
+                        <template x-for="f in vaultFolderList" :key="f.id">
+                            <button @click="setPwFolder(f.id)" class="side" :class="pwFolderFilter === f.id ? 'on' : ''">
+                                <i class="fa-regular fa-folder fa-fw text-xs"></i><span class="truncate" x-text="f.label"></span><span class="ml-auto text-[11px] opacity-60" x-text="f.n"></span>
+                            </button>
+                        </template>
+                        <p class="label !mt-4 px-3 pt-2 pb-1">Werkzeuge</p>
+                        <button @click="openGenerator()" class="side"><i class="fa-solid fa-wand-magic-sparkles fa-fw text-xs"></i>Generator</button>
+                    </aside>
+
+                    <div class="space-y-4 min-w-0">
+                        <!-- Filter (Handy) -->
+                        <div class="md:hidden flex gap-2 overflow-x-auto pb-1">
+                            <template x-for="f in vaultFilters" :key="f.id">
+                                <button @click="setPwFilter(f.id)" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwType === f.id && pwFolderFilter === 'all' ? 'on' : ''"><i :class="f.icon" class="text-[10px]"></i><span x-text="f.label"></span></button>
+                            </template>
+                            <template x-for="f in vaultFolderList" :key="f.id">
+                                <button @click="setPwFolder(f.id)" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="pwFolderFilter === f.id ? 'on' : ''"><i class="fa-regular fa-folder text-[10px]"></i><span x-text="f.label"></span></button>
+                            </template>
+                            <button @click="openGenerator()" class="chip !py-1.5 !px-3 !text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>Generator</button>
+                        </div>
+
+                        <!-- Suche + Neu -->
+                        <div class="flex items-center gap-2.5">
+                            <div class="relative flex-1 min-w-0">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-xs muted pointer-events-none"></i>
+                                <input type="search" x-model="pwSearch" placeholder="Tresor durchsuchen…" class="field !pl-10 !pr-10" aria-label="Tresor durchsuchen">
+                                <button x-show="pwSearch" @click="pwSearch = ''" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2" aria-label="Suche leeren"><i class="fa-solid fa-xmark text-xs"></i></button>
+                            </div>
+                            <div class="relative shrink-0" @click.outside="newMenu = false">
+                                <button @click="newMenu = !newMenu" class="btn btn-primary"><i class="fa-solid fa-plus text-[10px]"></i>Neu</button>
+                                <div x-show="newMenu" x-transition x-cloak class="menu">
+                                    <template x-for="t in vaultTypes" :key="t.id">
+                                        <button @click="openPasswordModal(t.id); newMenu = false"><i :class="t.icon" class="fa-fw text-xs"></i><span x-text="t.single"></span></button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Liste -->
+                        <div class="card">
+                            <div class="px-4 sm:px-5 py-3.5 flex items-center justify-between gap-3">
+                                <h3 class="text-sm font-black truncate" x-text="pwFilterTitle"></h3>
+                                <span class="text-[11px] muted shrink-0" x-text="filteredPasswords.length + (filteredPasswords.length === 1 ? ' Eintrag' : ' Einträge')"></span>
+                            </div>
+                            <template x-for="pw in filteredPasswords" :key="pw.id">
+                                <div class="vrow">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer" @click="editPassword(pw)">
+                                        <div class="logo"><i :class="typeIcon(pw)" class="text-sm"></i>
+                                            <template x-if="cfg.showLogos && pw.type === 'login' && logoUrl(pw)"><img :src="logoUrl(pw)" alt="" loading="lazy" referrerpolicy="no-referrer" @error="$el.remove()"></template>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold flex items-center gap-1.5 min-w-0"><span class="truncate" x-text="pw.title"></span><i x-show="pw.fav" class="fa-solid fa-star text-[10px] text-amber-400 shrink-0"></i></p>
+                                            <p class="text-[11px] muted truncate" x-text="pwSub(pw)"></p>
+                                        </div>
+                                    </div>
+                                    <span x-show="pw.folder" class="chip hidden md:inline-flex shrink-0 max-w-[9rem]"><span class="truncate" x-text="pw.folder"></span></span>
+                                    <div class="flex items-center shrink-0">
+                                        <a x-show="pw.type === 'login' && siteUrl(pw)" :href="siteUrl(pw)" target="_blank" rel="noopener noreferrer" class="icon-btn" title="Website öffnen" aria-label="Website öffnen"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                                        <button x-show="primaryOf(pw)" @click="copyPrimary(pw)" class="icon-btn" :title="primaryOf(pw) ? primaryOf(pw).label : ''" aria-label="Kopieren"><i class="fa-regular fa-copy text-xs"></i></button>
+                                        <div class="relative" @click.outside="pwMenu === pw.id && (pwMenu = null)">
+                                            <button @click="pwMenu = pwMenu === pw.id ? null : pw.id" class="icon-btn" aria-label="Optionen"><i class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                            <div x-show="pwMenu === pw.id" x-transition x-cloak class="menu">
+                                                <button @click="pwMenu = null; editPassword(pw)"><i class="fa-solid fa-pen fa-fw text-xs"></i>Bearbeiten</button>
+                                                <button @click="pwMenu = null; toggleFav(pw)"><i class="fa-star fa-fw text-xs" :class="pw.fav ? 'fa-solid text-amber-400' : 'fa-regular'"></i><span x-text="pw.fav ? 'Favorit entfernen' : 'Als Favorit markieren'"></span></button>
+                                                <hr>
+                                                <template x-if="pw.type === 'login'"><div>
+                                                    <button x-show="pw.username" @click="pwMenu = null; copyText(pw.username, 'Benutzername kopiert')"><i class="fa-regular fa-user fa-fw text-xs"></i>Benutzername kopieren</button>
+                                                    <button @click="pwMenu = null; copyText(pw.password, 'Passwort kopiert', true)"><i class="fa-solid fa-key fa-fw text-xs"></i>Passwort kopieren</button>
+                                                </div></template>
+                                                <template x-if="pw.type === 'card'"><div>
+                                                    <button x-show="pw.cardNumber" @click="pwMenu = null; copyText(pw.cardNumber, 'Kartennummer kopiert', true)"><i class="fa-regular fa-credit-card fa-fw text-xs"></i>Kartennummer kopieren</button>
+                                                    <button x-show="pw.cardCvv" @click="pwMenu = null; copyText(pw.cardCvv, 'Sicherheitscode kopiert', true)"><i class="fa-solid fa-key fa-fw text-xs"></i>Sicherheitscode kopieren</button>
+                                                </div></template>
+                                                <template x-if="pw.type === 'identity'"><div>
+                                                    <button x-show="pw.email" @click="pwMenu = null; copyText(pw.email, 'E-Mail kopiert')"><i class="fa-regular fa-envelope fa-fw text-xs"></i>E-Mail kopieren</button>
+                                                    <button x-show="pw.phone" @click="pwMenu = null; copyText(pw.phone, 'Telefonnummer kopiert')"><i class="fa-solid fa-phone fa-fw text-xs"></i>Telefon kopieren</button>
+                                                </div></template>
+                                                <button x-show="pw.notes" @click="pwMenu = null; copyText(pw.notes, 'Notiz kopiert', true)"><i class="fa-regular fa-note-sticky fa-fw text-xs"></i>Notiz kopieren</button>
+                                                <hr>
+                                                <button class="danger" @click="pwMenu = null; deletePassword(pw.id)"><i class="fa-solid fa-trash fa-fw text-xs"></i>Löschen</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <p x-show="!filteredPasswords.length" class="muted text-sm font-medium text-center py-12 border-t divider"><i class="fa-solid fa-vault text-2xl block mb-3 opacity-60"></i>Keine Einträge gefunden.</p>
+                        </div>
+                        <p class="text-[11px] muted text-center" x-show="cfg.vaultLockMin > 0">Der Tresor sperrt sich nach <span x-text="cfg.vaultLockMin"></span> Minuten Inaktivität automatisch.</p>
                     </div>
-                    <p x-show="!filteredPasswords.length" class="muted text-sm font-medium text-center py-10"><i class="fa-solid fa-vault text-2xl block mb-3 opacity-60"></i>Keine Einträge gefunden.</p>
-                    <p class="text-[11px] muted text-center" x-show="cfg.vaultLockMin > 0">Der Tresor sperrt sich nach <span x-text="cfg.vaultLockMin"></span> Minuten Inaktivität automatisch.</p>
                 </div>
             </section>
 
@@ -620,7 +728,7 @@
                 <div class="card p-5 sm:p-6 space-y-5">
                     <div>
                         <p class="label"><i class="fa-solid fa-arrows-rotate mr-2"></i>Geräte-Abgleich</p>
-                        <p class="text-[11px] muted mt-1.5 leading-relaxed">Hält Termine, Aufgaben, Einkauf und Tresor auf deinen Geräten synchron. Alles wird mit deinem Sync-Passwort verschlüsselt, bevor es das Gerät verlässt. Einstellungen und Design werden nicht abgeglichen.</p>
+                        <p class="text-[11px] muted mt-1.5 leading-relaxed">Hält Termine, Aufgaben, Einkauf, Tresor und Einstellungen auf deinen Geräten synchron. Alles wird mit deinem Sync-Passwort verschlüsselt, bevor es das Gerät verlässt. Nur pro Gerät bleiben Design/Akzent, Dichte, Startseite, Ansichten, Benachrichtigungen und die Update-Prüfung sowie die Google-Kalender-URL.</p>
                     </div>
 
                     <form @submit.prevent="saveSyncCreds()" class="space-y-3">
@@ -886,42 +994,98 @@
     <!-- Tresor-Eintrag -->
     <div x-show="showPasswordModalState" x-transition.opacity x-cloak class="backdrop" @click.self="showPasswordModalState = false">
         <form @submit.prevent="savePassword()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
-            <h3 class="font-black text-lg" x-text="currentPassword.id ? 'Eintrag bearbeiten' : 'Neuer Tresor-Eintrag'"></h3>
+            <div class="flex items-center justify-between gap-3">
+                <h3 class="font-black text-lg" x-text="(currentPassword.id ? 'Bearbeiten: ' : 'Neu: ') + typeSingle(currentPassword.type)"></h3>
+                <button type="button" @click="currentPassword.fav = !currentPassword.fav" class="icon-btn" :class="currentPassword.fav ? '!text-amber-400' : ''" :title="currentPassword.fav ? 'Favorit entfernen' : 'Als Favorit markieren'" aria-label="Favorit"><i class="fa-star" :class="currentPassword.fav ? 'fa-solid' : 'fa-regular'"></i></button>
+            </div>
+            <select x-show="!currentPassword.id" x-model="currentPassword.type" class="field" aria-label="Typ">
+                <template x-for="t in vaultTypes" :key="t.id"><option :value="t.id" x-text="t.single"></option></template>
+            </select>
             <div class="flex items-center gap-3">
-                <div class="logo"><i class="fa-solid fa-shield-halved"></i>
-                    <template x-if="cfg.showLogos && logoUrl(currentPassword)"><img :src="logoUrl(currentPassword)" alt="" referrerpolicy="no-referrer" @error="$el.remove()"></template>
+                <div class="logo"><i :class="typeIcon(currentPassword)"></i>
+                    <template x-if="cfg.showLogos && currentPassword.type === 'login' && logoUrl(currentPassword)"><img :src="logoUrl(currentPassword)" alt="" referrerpolicy="no-referrer" @error="$el.remove()"></template>
                 </div>
-                <input x-ref="pwTitle" type="text" x-model="currentPassword.title" required placeholder="Titel (z. B. Netflix)" class="field">
+                <input x-ref="pwTitle" type="text" x-model="currentPassword.title" required placeholder="Name (z. B. Netflix)" class="field">
             </div>
-            <input type="text" x-model="currentPassword.url" placeholder="Website (z. B. netflix.com)" autocomplete="off" inputmode="url" class="field">
-            <input type="text" x-model="currentPassword.username" placeholder="Benutzername / E-Mail" autocomplete="off" class="field">
-            <div class="flex gap-2">
-                <input type="text" x-model="currentPassword.password" required placeholder="Passwort" autocomplete="off" class="field flex-1 !font-mono">
-                <button type="button" @click="generatePassword()" class="btn btn-primary" title="Passwort generieren"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-            </div>
-            <select x-model="currentPassword.folder" class="field" aria-label="Gruppe">
-                <option value="">Ohne Gruppe</option>
-                <template x-for="f in vaultFolders" :key="f"><option :value="f" x-text="'Gruppe: ' + f"></option></template>
+
+            <template x-if="currentPassword.type === 'login'"><div class="space-y-4">
+                <input type="text" x-model="currentPassword.url" placeholder="Website (z. B. netflix.com)" autocomplete="off" inputmode="url" class="field">
+                <input type="text" x-model="currentPassword.username" placeholder="Benutzername / E-Mail" autocomplete="off" class="field">
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <input :type="pwEditShow ? 'text' : 'password'" x-model="currentPassword.password" required placeholder="Passwort" autocomplete="new-password" class="field !pr-11 !font-mono">
+                        <button type="button" @click="pwEditShow = !pwEditShow" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2" aria-label="Anzeigen"><i class="fa-solid text-xs" :class="pwEditShow ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                    </div>
+                    <button type="button" @click="generatePassword()" class="btn btn-primary" title="Passwort generieren"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                </div>
+            </div></template>
+
+            <template x-if="currentPassword.type === 'card'"><div class="space-y-4">
+                <input type="text" x-model="currentPassword.cardHolder" placeholder="Karteninhaber" autocomplete="off" class="field">
+                <input type="text" x-model="currentPassword.cardNumber" placeholder="Kartennummer" inputmode="numeric" autocomplete="off" class="field !font-mono">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" x-model="currentPassword.cardExp" placeholder="Ablauf (MM/JJ)" autocomplete="off" class="field">
+                    <input type="password" x-model="currentPassword.cardCvv" placeholder="Sicherheitscode" inputmode="numeric" autocomplete="off" class="field">
+                </div>
+            </div></template>
+
+            <template x-if="currentPassword.type === 'identity'"><div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" x-model="currentPassword.firstName" placeholder="Vorname" autocomplete="off" class="field">
+                    <input type="text" x-model="currentPassword.lastName" placeholder="Nachname" autocomplete="off" class="field">
+                </div>
+                <input type="email" x-model="currentPassword.email" placeholder="E-Mail" autocomplete="off" class="field">
+                <input type="tel" x-model="currentPassword.phone" placeholder="Telefon" autocomplete="off" class="field">
+                <textarea x-model="currentPassword.address" rows="2" placeholder="Adresse" class="field !font-medium"></textarea>
+            </div></template>
+
+            <textarea x-model="currentPassword.notes" :rows="currentPassword.type === 'note' ? 6 : 3" :placeholder="currentPassword.type === 'note' ? 'Notiz' : 'Notizen (optional)'" class="field !font-medium"></textarea>
+            <select x-model="currentPassword.folder" class="field" aria-label="Ordner">
+                <option value="">Ohne Ordner</option>
+                <template x-for="f in vaultFolders" :key="f"><option :value="f" x-text="'Ordner: ' + f"></option></template>
             </select>
             <div class="flex justify-end gap-2 pt-1"><button type="button" @click="showPasswordModalState = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary" :disabled="vaultBusy">Speichern</button></div>
         </form>
     </div>
 
-    <!-- Tresor-Gruppen verwalten -->
+    <!-- Passwort-Generator -->
+    <div x-show="showGenerator" x-transition.opacity x-cloak class="backdrop" @click.self="showGenerator = false">
+        <div class="card w-full max-w-md p-6 sm:p-8 space-y-4">
+            <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles accent"></i>Passwort-Generator</h3>
+            <div class="inner p-4 flex items-center gap-2">
+                <p class="flex-1 min-w-0 font-mono text-sm break-all text-emerald-400" x-text="gen.result"></p>
+                <button type="button" @click="regen()" class="icon-btn" title="Neu erzeugen" aria-label="Neu erzeugen"><i class="fa-solid fa-rotate"></i></button>
+                <button type="button" @click="copyText(gen.result, 'Passwort kopiert', true)" class="icon-btn" title="Kopieren" aria-label="Kopieren"><i class="fa-regular fa-copy"></i></button>
+            </div>
+            <div>
+                <div class="flex items-center justify-between"><label class="label" for="genLen">Länge</label><span class="text-xs font-bold" x-text="gen.length"></span></div>
+                <input id="genLen" type="range" min="8" max="64" x-model.number="gen.length" @input="regen()" class="w-full mt-2">
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.upper" @change="regen()">A–Z</label>
+                <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.lower" @change="regen()">a–z</label>
+                <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.digits" @change="regen()">0–9</label>
+                <label class="inner px-3 py-2.5 flex items-center gap-2 cursor-pointer"><input type="checkbox" x-model="gen.symbols" @change="regen()">!@#$%</label>
+            </div>
+            <div class="flex justify-end"><button type="button" @click="showGenerator = false" class="btn btn-primary">Fertig</button></div>
+        </div>
+    </div>
+
+    <!-- Tresor-Ordner verwalten -->
     <div x-show="showFolders" x-transition.opacity x-cloak class="backdrop" @click.self="showFolders = false">
         <form @submit.prevent="saveFolders()" class="card w-full max-w-md p-6 sm:p-8 space-y-4">
-            <h3 class="font-black text-lg">Gruppen verwalten</h3>
-            <p class="text-xs muted">Gruppen umbenennen, hinzufügen oder löschen. Einträge gelöschter Gruppen bleiben erhalten und landen unter „Ohne Gruppe“.</p>
+            <h3 class="font-black text-lg">Ordner verwalten</h3>
+            <p class="text-xs muted">Ordner umbenennen, hinzufügen oder löschen. Einträge gelöschter Ordner bleiben erhalten und landen unter „Ohne Ordner“.</p>
             <div class="space-y-2">
                 <template x-for="(f, i) in folderDraft" :key="f.key">
                     <div class="flex items-center gap-2">
-                        <input type="text" x-model="f.name" class="field" placeholder="Gruppenname" aria-label="Gruppenname">
+                        <input type="text" x-model="f.name" class="field" placeholder="Ordnername" aria-label="Ordnername">
                         <span class="text-[11px] muted w-10 text-right shrink-0" x-text="passwords.filter(p => p.folder === f.old).length || ''"></span>
-                        <button type="button" @click="folderDraft.splice(i, 1)" class="icon-btn danger" aria-label="Gruppe löschen"><i class="fa-solid fa-trash text-xs"></i></button>
+                        <button type="button" @click="folderDraft.splice(i, 1)" class="icon-btn danger" aria-label="Ordner löschen"><i class="fa-solid fa-trash text-xs"></i></button>
                     </div>
                 </template>
             </div>
-            <button type="button" @click="folderDraft.push({ key: uid(), old: null, name: '' })" class="btn btn-soft w-full"><i class="fa-solid fa-plus text-[10px]"></i>Neue Gruppe</button>
+            <button type="button" @click="folderDraft.push({ key: uid(), old: null, name: '' })" class="btn btn-soft w-full"><i class="fa-solid fa-plus text-[10px]"></i>Neuer Ordner</button>
             <p x-show="vaultError" class="text-xs font-bold text-rose-400" x-text="vaultError"></p>
             <div class="flex justify-end gap-2 pt-1"><button type="button" @click="showFolders = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary" :disabled="vaultBusy">Speichern</button></div>
         </form>
@@ -1003,6 +1167,7 @@
             calView: 'month', weekStart: 1, hourFrom: 6, hourTo: 22, defaultDuration: 60, defaultReminder: '', state: 'NW', showHolidays: true, showTasksInCal: true,
             remindTime: '09:00', newOnTop: true, showDone: true,
             shopGroup: true,
+            showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
             views: { todos: 'list', shopping: 'tiles', vault: 'grid' }
         };
@@ -1089,6 +1254,7 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems']];
+        const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -1189,7 +1355,9 @@ function handle_(p) {
                         { k: 'defaultReminder', type: 'select', label: 'Standard-Erinnerung für Termine', o: [['', 'Keine'], ['0', 'Zur Startzeit'], ['15', '15 Min. vorher'], ['60', '1 Std. vorher'], ['1440', '1 Tag vorher']] },
                         { k: 'state', type: 'select', label: 'Bundesland', desc: 'Für die Anzeige der Feiertage', o: STATES },
                         { k: 'showHolidays', type: 'toggle', label: 'Feiertage anzeigen' },
-                        { k: 'showTasksInCal', type: 'toggle', label: 'Aufgaben mit Fälligkeit im Kalender zeigen' }
+                        { k: 'showTasksInCal', type: 'toggle', label: 'Aufgaben mit Fälligkeit im Kalender zeigen' },
+                        { k: 'showUpcoming', type: 'toggle', label: 'Liste „Nächste Termine“ anzeigen', desc: 'Mit Countdown, neben bzw. über dem Kalender' },
+                        { k: 'upcomingCount', type: 'select', label: 'Anzahl der nächsten Termine', o: [[3, '3'], [5, '5'], [8, '8'], [10, '10']] }
                     ] },
                     { title: 'To-Dos', icon: 'fa-solid fa-list-check', items: [
                         { k: 'remindTime', type: 'time', label: 'Standard-Erinnerungszeit', desc: 'Für Aufgaben mit Datum, aber ohne Uhrzeit' },
@@ -1246,9 +1414,16 @@ function handle_(p) {
                 vaultState: 'none', vaultBusy: false, vaultError: '', legacyCount: 0,
                 mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
                 passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
-                pwSearch: '', pwFolderFilter: 'all',
+                pwSearch: '', pwFolderFilter: 'all', pwType: 'all', newMenu: false, pwMenu: null, pwEditShow: false,
+                showGenerator: false, gen: { length: 20, upper: true, lower: true, digits: true, symbols: true, result: '' },
+                vaultTypes: [
+                    { id: 'login', label: 'Zugangsdaten', single: 'Zugangsdaten', icon: 'fa-solid fa-globe' },
+                    { id: 'card', label: 'Karten', single: 'Karte', icon: 'fa-solid fa-credit-card' },
+                    { id: 'identity', label: 'Identitäten', single: 'Identität', icon: 'fa-solid fa-id-card' },
+                    { id: 'note', label: 'Sichere Notizen', single: 'Sichere Notiz', icon: 'fa-solid fa-note-sticky' }
+                ],
                 showPasswordModalState: false, showChangeMaster: false, showResetModal: false, showFolders: false, resetConfirm: '',
-                currentPassword: { id: null, title: '', url: '', username: '', password: '', folder: 'Privat' },
+                currentPassword: { id: null, type: 'login', title: '', url: '', username: '', password: '', notes: '', fav: false, folder: 'Privat', cardHolder: '', cardNumber: '', cardExp: '', cardCvv: '', firstName: '', lastName: '', email: '', phone: '', address: '' },
 
                 /* ---------- Init ---------- */
                 init() {
@@ -1317,7 +1492,8 @@ function handle_(p) {
                 ask(msg) { return !this.cfg.confirmDelete || confirm(msg); },
                 closeModals() {
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
-                    this.showChangeMaster = this.showResetModal = this.showFolders = false;
+                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = false;
+                    this.newMenu = false; this.pwMenu = null;
                 },
                 async copyText(text, msg, secret = false) {
                     try { await navigator.clipboard.writeText(text); }
@@ -1332,7 +1508,16 @@ function handle_(p) {
                 },
 
                 /* ---------- Einstellungen ---------- */
-                saveCfg() { try { localStorage.setItem('organizer_cfg', JSON.stringify(this.cfg)); } catch (e) {} },
+                persistCfg() { try { localStorage.setItem('organizer_cfg', JSON.stringify(this.cfg)); } catch (e) {} },
+                saveCfg() { this.persistCfg(); this.touchSync(); },
+                cfgPicked() { const o = {}; for (const k of SYNC_CFG_KEYS) o[k] = this.cfg[k]; return o; },
+                cfgHashOf(o) { return hashStr(JSON.stringify(o)); },
+                applyRemoteCfg(v) {
+                    const before = this.cfg.calView;
+                    for (const k of SYNC_CFG_KEYS) if (k in v && typeof v[k] === typeof DEFAULT_CFG[k]) this.cfg[k] = v[k];
+                    this.persistCfg(); this.applyCfg();
+                    if (this.cfg.calView !== before) this.calendarView = this.cfg.calView;
+                },
                 applyCfg() {
                     const r = document.documentElement;
                     r.dataset.density = this.cfg.density;
@@ -1456,11 +1641,13 @@ function handle_(p) {
                             if (!m || m.d || m.h !== h) { syncMeta[k] = { u: now, h }; changed = true; }
                         }
                     }
+                    const ch = this.cfgHashOf(this.cfgPicked()), cm = syncMeta.cfg;
+                    if (cm ? cm.h !== ch : ch !== this.cfgHashOf(Object.fromEntries(SYNC_CFG_KEYS.map(k => [k, DEFAULT_CFG[k]])))) { syncMeta.cfg = { u: now, h: ch }; changed = true; } // erst stempeln, wenn jemand etwas geändert hat (ein neues Gerät mit Standardwerten überschreibt nichts)
                     const vraw = localStorage.getItem(VAULT_KEY), vm = syncMeta.vault;
                     if (vraw) { const h = hashStr(vraw); if (!vm || vm.d || vm.h !== h) { syncMeta.vault = { u: now, h }; changed = true; } }
                     else if (vm && !vm.d) { syncMeta.vault = { u: now, d: 1 }; changed = true; }
                     for (const k of Object.keys(syncMeta)) {
-                        if (k === 'vault') continue;
+                        if (k === 'vault' || k === 'cfg') continue;
                         const m = syncMeta[k];
                         if (m.d) { if (now - m.u > TOMBSTONE_MS) delete syncMeta[k]; }
                         else if (!seen.has(k)) { syncMeta[k] = { u: now, d: 1 }; changed = true; }
@@ -1479,7 +1666,7 @@ function handle_(p) {
                     const items = {};
                     for (const [k, m] of Object.entries(syncMeta)) {
                         if (m.d) { items[k] = { u: m.u, d: 1 }; continue; }
-                        const v = k === 'vault' ? readJSON(VAULT_KEY, null) : maps[k.slice(0, 2)]?.get(k.slice(3));
+                        const v = k === 'vault' ? readJSON(VAULT_KEY, null) : k === 'cfg' ? this.cfgPicked() : maps[k.slice(0, 2)]?.get(k.slice(3));
                         if (v) items[k] = { u: m.u, v };
                     }
                     return { v: 1, items };
@@ -1499,6 +1686,10 @@ function handle_(p) {
                         const l = syncMeta[k];
                         const vclash = k === 'vault' && !r.d && validVaultRecord(r.v) && (() => { const lv = readJSON(VAULT_KEY, null); return validVaultRecord(lv) && !(lv.vid && lv.vid === r.v.vid) && lv.salt !== r.v.salt; })();
                         if (!vclash && l && l.u >= r.u) { if (l.u > r.u) needPush = true; continue; }
+                        if (k === 'cfg') {
+                            if (!r.d && r.v && typeof r.v === 'object') { this.applyRemoteCfg(r.v); syncMeta.cfg = { u: r.u, h: this.cfgHashOf(this.cfgPicked()) }; changed++; }
+                            continue;
+                        }
                         if (k === 'vault') {
                             const res = this.applyRemoteVault(r);
                             if (res === 'push') needPush = true; else if (res === 'changed') changed++;
@@ -1782,6 +1973,43 @@ function handle_(p) {
                     const p = this.calendarView === 'year' ? String(this.currentYear) : `${this.currentYear}-${pad(this.currentMonth + 1)}`;
                     const n = this.events.filter(e => e.startDate.slice(0, p.length) <= p && e.endDate.slice(0, p.length) >= p).length;
                     return `${n} ${n === 1 ? 'Termin' : 'Termine'} ${this.calendarView === 'year' ? 'in diesem Jahr' : 'in diesem Monat'}`;
+                },
+                /* Nächste Termine mit Countdown (aktualisiert sich über nowTick alle 30 s) */
+                evStart(ev) { const d = parseDate(ev.startDate); if (!ev.allDay) { const [h, m] = ev.startTime.split(':').map(Number); d.setHours(h, m); } return d.getTime(); },
+                evEnd(ev) { const d = parseDate(ev.endDate); if (ev.allDay) d.setHours(24, 0); else { const [h, m] = ev.endTime.split(':').map(Number); d.setHours(h, m); } return d.getTime(); },
+                spanText(ms, dat = false) {
+                    const min = Math.max(1, Math.ceil(ms / 60000));
+                    if (min < 60) return `${min} Min`;
+                    const h = Math.floor(min / 60), m = min % 60;
+                    if (h < 24) return m ? `${h} Std ${m} Min` : `${h} Std`;
+                    const d = Math.floor(h / 24), hh = h % 24;
+                    return `${d} ${d === 1 ? 'Tag' : dat ? 'Tagen' : 'Tage'}` + (d < 3 && hh ? ` ${hh} Std` : '');
+                },
+                dayLabel(ds) {
+                    const t = this.today;
+                    if (ds === t) return 'Heute';
+                    if (ds === fmt(addDays(parseDate(t), 1))) return 'Morgen';
+                    return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' });
+                },
+                countdown(ev, s, e, now) {
+                    const shortD = ds => parseDate(ds).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
+                    let when;
+                    if (ev.allDay) when = this.dayLabel(ev.startDate) + (ev.endDate !== ev.startDate ? ' – ' + shortD(ev.endDate) : ' · ganztägig');
+                    else when = this.dayLabel(ev.startDate) + ', ' + ev.startTime + (ev.endDate !== ev.startDate ? ' – ' + shortD(ev.endDate) + ' ' + ev.endTime : ' – ' + ev.endTime);
+                    if (s <= now) return { when, state: 'run', cd: ev.allDay ? (ev.endDate !== ev.startDate ? 'läuft' : 'heute') : 'läuft · noch ' + this.spanText(e - now) };
+                    const diff = s - now;
+                    if (ev.allDay) {
+                        const days = Math.round((parseDate(ev.startDate) - parseDate(this.today)) / 864e5);
+                        return { when, state: '', cd: days === 1 ? 'morgen' : `in ${days} Tagen` };
+                    }
+                    if (diff < 60000) return { when, state: 'soon', cd: 'jetzt gleich' };
+                    return { when, state: diff < 3600000 ? 'soon' : '', cd: 'in ' + this.spanText(diff, true) };
+                },
+                get upcoming() {
+                    void this.nowTick; const now = Date.now(), out = [];
+                    for (const ev of this.events) { const s = this.evStart(ev), e = this.evEnd(ev); if (e > now) out.push({ ev, s, e }); }
+                    out.sort((a, b) => a.s - b.s || a.e - b.e);
+                    return out.slice(0, Number(this.cfg.upcomingCount) || 5).map(o => ({ ev: o.ev, ...this.countdown(o.ev, o.s, o.e, now) }));
                 },
                 weekOffset(d) { return (d.getDay() - this.cfg.weekStart + 7) % 7; },
                 get calendarDays() {
@@ -2083,12 +2311,20 @@ function handle_(p) {
                     return this.mpInput !== this.mpConfirm ? 'Die Passwörter stimmen nicht überein.' : '';
                 },
                 async persistVault() {
-                    const entries = this.passwords.map(({ id, title, url, username, password, folder }) => ({ id, title, url, username, password, folder }));
+                    const entries = this.passwords.map(p => Object.fromEntries(Object.entries(p).filter(([k, v]) => k === 'id' || k === 'title' || (v !== '' && v !== false && v != null))));
                     const rec = await encryptJSON(vaultKey, { entries, folders: this.vaultFolders });
                     localStorage.setItem(VAULT_KEY, JSON.stringify({ v: 2, vid: vaultMeta.vid, iter: vaultMeta.iter, salt: vaultMeta.salt, ...rec }));
                     this.touchSync();
                 },
-                normPw(p, i = 0) { return { id: p.id ?? uid() + i, title: p.title || 'Ohne Titel', url: p.url || '', username: p.username || '', password: p.password || '', folder: p.folder ?? '' }; },
+                blankPw(type = 'login', folder = '') {
+                    return { id: null, type, title: '', url: '', username: '', password: '', notes: '', fav: false, folder, cardHolder: '', cardNumber: '', cardExp: '', cardCvv: '', firstName: '', lastName: '', email: '', phone: '', address: '' };
+                },
+                normPw(p, i = 0) {
+                    const type = this.vaultTypes.some(t => t.id === p.type) ? p.type : 'login', b = this.blankPw(type), o = { ...b, id: p.id ?? uid() + i };
+                    for (const k of Object.keys(b)) if (k !== 'id' && k !== 'type' && p[k] != null) o[k] = typeof b[k] === 'boolean' ? !!p[k] : String(p[k]);
+                    o.title = o.title || 'Ohne Titel';
+                    return o;
+                },
                 async setupVault() {
                     this.vaultError = '';
                     if (!window.crypto?.subtle) { this.vaultError = 'Verschlüsselung wird in diesem Browser nicht unterstützt.'; return; }
@@ -2133,9 +2369,10 @@ function handle_(p) {
                     clearTimeout(this._idleTimer);
                     if (this.vaultState !== 'unlocked') return;
                     vaultKey = null; vaultMeta = null;
-                    this.passwords = []; this.revealed = {}; this.vaultFolders = [...DEFAULT_FOLDERS]; this.pwFolderFilter = 'all'; this.pwSearch = '';
-                    this.showPasswordModalState = this.showChangeMaster = this.showFolders = false;
-                    this.currentPassword = { id: null, title: '', url: '', username: '', password: '', folder: 'Privat' };
+                    this.passwords = []; this.revealed = {}; this.vaultFolders = [...DEFAULT_FOLDERS]; this.pwFolderFilter = 'all'; this.pwType = 'all'; this.pwSearch = '';
+                    this.showPasswordModalState = this.showChangeMaster = this.showFolders = this.showGenerator = false;
+                    this.newMenu = false; this.pwMenu = null; this.pwEditShow = false; this.gen.result = '';
+                    this.currentPassword = this.blankPw('login', 'Privat');
                     this.vaultState = 'locked'; this.mpInput = ''; this.vaultError = '';
                     this.toast(manual ? 'Tresor gesperrt' : 'Tresor automatisch gesperrt');
                 },
@@ -2169,7 +2406,7 @@ function handle_(p) {
                     clearTimeout(this._idleTimer);
                     localStorage.removeItem(VAULT_KEY); localStorage.removeItem('organizer_passwords');
                     vaultKey = null; vaultMeta = null; legacyEntries = [];
-                    Object.assign(this, { legacyCount: 0, passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], failCount: 0, cooldownUntil: 0, mpInput: '', mpConfirm: '', vaultError: '', vaultState: 'none', showResetModal: false });
+                    Object.assign(this, { pwType: 'all', pwFolderFilter: 'all', legacyCount: 0, passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], failCount: 0, cooldownUntil: 0, mpInput: '', mpConfirm: '', vaultError: '', vaultState: 'none', showResetModal: false });
                     this.touchSync();
                     this.toast('Tresor zurückgesetzt – bitte neues Master-Passwort festlegen');
                     this.switchTab('passwords');
@@ -2179,28 +2416,73 @@ function handle_(p) {
                 openFolders() { this.folderDraft = this.vaultFolders.map(f => ({ key: uid(), old: f, name: f })); this.vaultError = ''; this.showFolders = true; },
                 async saveFolders() {
                     const names = this.folderDraft.map(f => f.name.trim());
-                    if (names.some(n => !n)) { this.vaultError = 'Gruppennamen dürfen nicht leer sein.'; return; }
-                    if (new Set(names.map(n => n.toLowerCase())).size !== names.length) { this.vaultError = 'Gruppennamen müssen eindeutig sein.'; return; }
+                    if (names.some(n => !n)) { this.vaultError = 'Ordnernamen dürfen nicht leer sein.'; return; }
+                    if (new Set(names.map(n => n.toLowerCase())).size !== names.length) { this.vaultError = 'Ordnernamen müssen eindeutig sein.'; return; }
                     const rename = {}; this.folderDraft.forEach((f, i) => { if (f.old !== null) rename[f.old] = names[i]; });
                     this.passwords.forEach(p => { p.folder = p.folder in rename ? rename[p.folder] : ''; });
                     this.vaultFolders = names; this.pwFolderFilter = 'all'; this.vaultBusy = true;
-                    try { await this.persistVault(); this.showFolders = false; this.toast('Gruppen gespeichert'); }
+                    try { await this.persistVault(); this.showFolders = false; this.toast('Ordner gespeichert'); }
                     catch (e) { this.vaultError = 'Speichern fehlgeschlagen.'; }
                     finally { this.vaultBusy = false; }
                 },
 
                 /* Einträge */
-                openPasswordModal() {
-                    this.currentPassword = { id: null, title: '', url: '', username: '', password: '', folder: this.vaultFolders.includes(this.pwFolderFilter) ? this.pwFolderFilter : (this.vaultFolders[0] || '') };
-                    this.showPasswordModalState = true; this.$nextTick(() => this.$refs.pwTitle?.focus());
+                openPasswordModal(type = 'login') {
+                    const folder = this.vaultFolders.includes(this.pwFolderFilter) ? this.pwFolderFilter : (this.vaultFolders[0] || '');
+                    this.currentPassword = { ...this.blankPw(type, folder), fav: this.pwType === 'fav' };
+                    this.pwEditShow = false; this.showPasswordModalState = true; this.$nextTick(() => this.$refs.pwTitle?.focus());
                 },
-                editPassword(pw) { this.currentPassword = { ...pw }; this.showPasswordModalState = true; },
-                generatePassword() {
-                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_?';
-                    const limit = Math.floor(0x100000000 / chars.length) * chars.length;
+                editPassword(pw) { this.currentPassword = { ...this.blankPw(pw.type), ...pw }; this.pwEditShow = false; this.showPasswordModalState = true; },
+                makePassword(o = {}) {
+                    let chars = '';
+                    if (o.upper !== false) chars += 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+                    if (o.lower !== false) chars += 'abcdefghijkmnopqrstuvwxyz';
+                    if (o.digits !== false) chars += '23456789';
+                    if (o.symbols !== false) chars += '!@#$%^&*-_?';
+                    if (!chars) chars = 'abcdefghijkmnopqrstuvwxyz';
+                    const len = Math.min(128, Math.max(4, Number(o.length) || this.cfg.genLength)), limit = Math.floor(0x100000000 / chars.length) * chars.length;
                     let pwd = '';
-                    while (pwd.length < this.cfg.genLength) { const [r] = crypto.getRandomValues(new Uint32Array(1)); if (r < limit) pwd += chars[r % chars.length]; }
-                    this.currentPassword.password = pwd;
+                    while (pwd.length < len) { const [r] = crypto.getRandomValues(new Uint32Array(1)); if (r < limit) pwd += chars[r % chars.length]; }
+                    return pwd;
+                },
+                generatePassword() { this.currentPassword.password = this.makePassword(); this.pwEditShow = true; },
+                openGenerator() { this.gen.length = this.cfg.genLength; this.regen(); this.showGenerator = true; },
+                regen() { this.gen.result = this.makePassword(this.gen); },
+                typeSingle(t) { return (this.vaultTypes.find(x => x.id === t) || this.vaultTypes[0]).single; },
+                typeIcon(pw) { return (this.vaultTypes.find(x => x.id === pw.type) || this.vaultTypes[0]).icon; },
+                pwSub(pw) {
+                    if (pw.type === 'card') { const l4 = (pw.cardNumber || '').replace(/\D/g, '').slice(-4); return [l4 ? '•••• ' + l4 : '', pw.cardHolder].filter(Boolean).join(' · ') || 'Karte'; }
+                    if (pw.type === 'identity') return [pw.firstName, pw.lastName].filter(Boolean).join(' ') || pw.email || 'Identität';
+                    if (pw.type === 'note') return (pw.notes || '').split('\n')[0] || 'Leere Notiz';
+                    return pw.username || this.hostOf(pw.url) || 'Ohne Benutzername';
+                },
+                primaryOf(pw) {
+                    if (pw.type === 'login') return pw.password ? { text: pw.password, msg: 'Passwort kopiert', label: 'Passwort kopieren', secret: true } : null;
+                    if (pw.type === 'card') return pw.cardNumber ? { text: pw.cardNumber, msg: 'Kartennummer kopiert', label: 'Kartennummer kopieren', secret: true } : null;
+                    if (pw.type === 'identity') return pw.email ? { text: pw.email, msg: 'E-Mail kopiert', label: 'E-Mail kopieren', secret: false } : null;
+                    return pw.notes ? { text: pw.notes, msg: 'Notiz kopiert', label: 'Notiz kopieren', secret: true } : null;
+                },
+                copyPrimary(pw) { const c = this.primaryOf(pw); if (c) this.copyText(c.text, c.msg, c.secret); },
+                async toggleFav(pw) { pw.fav = !pw.fav; try { await this.persistVault(); } catch (e) { this.toast('Speichern fehlgeschlagen'); } },
+                setPwFilter(id) { this.pwType = id; this.pwFolderFilter = 'all'; },
+                setPwFolder(f) { this.pwFolderFilter = f; this.pwType = 'all'; },
+                get vaultFilters() {
+                    const c = f => this.passwords.filter(f).length;
+                    return [
+                        { id: 'all', label: 'Alle Einträge', icon: 'fa-solid fa-grip', n: this.passwords.length },
+                        { id: 'fav', label: 'Favoriten', icon: 'fa-regular fa-star', n: c(p => p.fav) },
+                        ...this.vaultTypes.map(t => ({ id: t.id, label: t.label, icon: t.icon, n: c(p => p.type === t.id) }))
+                    ];
+                },
+                get vaultFolderList() {
+                    const l = this.vaultFolders.map(f => ({ id: f, label: f, n: this.passwords.filter(p => p.folder === f).length }));
+                    const n0 = this.passwords.filter(p => !p.folder).length;
+                    if (n0) l.push({ id: '__none', label: 'Ohne Ordner', n: n0 });
+                    return l;
+                },
+                get pwFilterTitle() {
+                    if (this.pwFolderFilter !== 'all') return this.pwFolderFilter === '__none' ? 'Ohne Ordner' : this.pwFolderFilter;
+                    return (this.vaultFilters.find(f => f.id === this.pwType) || {}).label || 'Alle Einträge';
                 },
                 siteUrl(pw) {
                     const u = (pw.url || '').trim(); if (!u) return '';
@@ -2210,7 +2492,7 @@ function handle_(p) {
                 logoUrl(pw) { const h = this.hostOf(pw.url); return h.includes('.') ? `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(h)}` : ''; },
                 async savePassword() {
                     const p = this.normPw({ ...this.currentPassword, title: this.currentPassword.title.trim(), url: (this.currentPassword.url || '').trim() });
-                    if (!this.currentPassword.title.trim() || !p.password || !vaultKey) return;
+                    if (!this.currentPassword.title.trim() || !vaultKey || (p.type === 'login' && !p.password)) return;
                     this.vaultBusy = true;
                     try {
                         const i = this.passwords.findIndex(x => x.id === this.currentPassword.id);
@@ -2227,8 +2509,11 @@ function handle_(p) {
                     await this.persistVault();
                 },
                 get filteredPasswords() {
-                    const q = this.pwSearch.trim().toLowerCase(), f = this.pwFolderFilter;
-                    return this.passwords.filter(pw => (f === 'all' || (f === '__none' ? !pw.folder : pw.folder === f)) && (!q || [pw.title, pw.username, pw.url].some(s => (s || '').toLowerCase().includes(q))));
+                    const q = this.pwSearch.trim().toLowerCase(), f = this.pwFolderFilter, t = this.pwType;
+                    return this.passwords
+                        .filter(pw => (f === 'all' || (f === '__none' ? !pw.folder : pw.folder === f)) && (t === 'all' || (t === 'fav' ? pw.fav : pw.type === t))
+                            && (!q || [pw.title, pw.username, pw.url, pw.notes, pw.email, pw.cardHolder, pw.firstName, pw.lastName].some(s => (s || '').toLowerCase().includes(q))))
+                        .sort((a, b) => a.title.localeCompare(b.title, 'de', { sensitivity: 'base' }));
                 },
 
                 /* ---------- Speichern / Backup ---------- */
