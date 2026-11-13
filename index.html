@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.14-2">
+    <meta name="app-version" content="2026.11.14-3">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4586,7 +4586,9 @@ function reply_(p) {
                 get shopAll() { return this.shoppingItems.filter(i => !i.done); },
                 get todaySummary() {
                     const e = this.todayEventList.length, t = this.todayTodoList.length, m = this.mailUnread, h = this.holidayFor(this.today);
-                    return [h, e ? `${e} Termin${e > 1 ? 'e' : ''}` : 'keine Termine', t ? `${t} offene Aufgabe${t > 1 ? 'n' : ''}` : 'keine offenen Aufgaben', m ? `${m} ungelesene Mail${m > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ');
+                    const parts = [h, e ? `${e} Termin${e > 1 ? 'e' : ''}` : 'keine Termine', t ? `${t} offene Aufgabe${t > 1 ? 'n' : ''}` : 'keine offenen Aufgaben', m ? `${m} ungelesene Mail${m > 1 ? 's' : ''}` : ''].filter(Boolean);
+                    if (parts.length) parts[0] = parts[0].charAt(0).toUpperCase() + parts[0].slice(1); // Satzanfang groß
+                    return parts.join(' · ');
                 },
                 todayAddTask() {
                     const title = this.todayTask.trim(); if (!title) return;
