@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.14-3">
+    <meta name="app-version" content="2026.11.14-4">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -236,6 +236,11 @@
         .note .nt { font-weight: 800; font-size: .95rem; line-height: 1.3; overflow-wrap: anywhere; }
         .note .nx { font-size: .8rem; line-height: 1.5; color: var(--muted); white-space: pre-wrap; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
         .note .nd { font-size: .68rem; font-weight: 600; color: var(--muted); margin-top: .15rem; }
+        /* Karten dicht untereinander packen, statt Lücken neben kurzen Karten zu lassen */
+        .cardcols { columns: 1; column-gap: 1.25rem; }
+        .cardcols > * { break-inside: avoid; margin-bottom: 1.25rem; display: inline-block; width: 100%; }
+        @media (min-width: 1024px) { .cardcols { columns: 2; } }
+        @media (min-width: 1600px) { .cardcols { columns: 3; } }
         .notegrid { columns: 1; column-gap: .9rem; }
         .notegrid > * { break-inside: avoid; margin-bottom: .9rem; display: inline-block; width: 100%; }
         @media (min-width: 640px) { .notegrid { columns: 2; } }
@@ -341,6 +346,66 @@
         <defs>
             <linearGradient id="lgApp" x1="0" y1="1" x2="1" y2="0"><stop offset="0"/><stop offset="1"/></linearGradient>
             <linearGradient id="lgVault" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+            <linearGradient id="lgStart" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#fb7185"/></linearGradient>
+            <linearGradient id="lgCal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#06b6d4"/></linearGradient>
+            <linearGradient id="lgTodo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#14b8a6"/></linearGradient>
+            <linearGradient id="lgNote" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#eab308"/></linearGradient>
+            <linearGradient id="lgRecipe" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f97316"/><stop offset="1" stop-color="#ef4444"/></linearGradient>
+            <linearGradient id="lgShop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#65a30d"/><stop offset="1" stop-color="#22c55e"/></linearGradient>
+            <linearGradient id="lgMail" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#6366f1"/></linearGradient>
+            <linearGradient id="lgSet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>
+            <!-- Bereichssymbole: einheitlich 64x64, abgerundete Kachel mit Farbverlauf und weißem Zeichen -->
+            <symbol id="logoStart" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgStart)"/>
+                <circle cx="32" cy="33" r="9.5" fill="#fff"/>
+                <g stroke="#fff" stroke-width="3.2" stroke-linecap="round">
+                    <path d="M32 11.5v5.5M32 49v5.5M11.5 33H17M47 33h5.5M18 19l3.9 3.9M42.1 43.1 46 47M46 19l-3.9 3.9M21.9 43.1 18 47"/>
+                </g>
+            </symbol>
+            <symbol id="logoCal" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgCal)"/>
+                <rect x="12" y="17" width="40" height="35" rx="6" fill="#fff"/>
+                <rect x="12" y="17" width="40" height="9" rx="4.5" fill="#fff" fill-opacity=".55"/>
+                <g fill="#fff"><rect x="20" y="10" width="5" height="12" rx="2.5"/><rect x="39" y="10" width="5" height="12" rx="2.5"/></g>
+                <g fill="#1e3a8a" fill-opacity=".55"><circle cx="22" cy="35" r="2.6"/><circle cx="32" cy="35" r="2.6"/><circle cx="42" cy="35" r="2.6"/><circle cx="22" cy="44" r="2.6"/><circle cx="32" cy="44" r="2.6"/></g>
+            </symbol>
+            <symbol id="logoTodo" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgTodo)"/>
+                <rect x="13" y="12" width="38" height="40" rx="7" fill="#fff"/>
+                <g stroke="#047857" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-opacity=".75">
+                    <path d="M20 23.5l3.2 3.2L29 21"/><path d="M20 34.5l3.2 3.2L29 32"/><path d="M20 45.5l3.2 3.2L29 43"/>
+                </g>
+                <g fill="#047857" fill-opacity=".3"><rect x="33" y="22" width="12" height="3.4" rx="1.7"/><rect x="33" y="33" width="12" height="3.4" rx="1.7"/><rect x="33" y="44" width="9" height="3.4" rx="1.7"/></g>
+            </symbol>
+            <symbol id="logoNote" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgNote)"/>
+                <path d="M13 19a6 6 0 0 1 6-6h26a6 6 0 0 1 6 6v18L36 51H19a6 6 0 0 1-6-6z" fill="#fff"/>
+                <path d="M51 37 36 51V41a4 4 0 0 1 4-4z" fill="#fff" fill-opacity=".6"/>
+                <g fill="#92400e" fill-opacity=".45"><rect x="20" y="22" width="24" height="3.4" rx="1.7"/><rect x="20" y="30" width="19" height="3.4" rx="1.7"/><rect x="20" y="38" width="13" height="3.4" rx="1.7"/></g>
+            </symbol>
+            <symbol id="logoRecipe" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgRecipe)"/>
+                <path d="M14 29h36v9a14 14 0 0 1-14 14h-8a14 14 0 0 1-14-14z" fill="#fff"/>
+                <rect x="11" y="25" width="42" height="5.5" rx="2.75" fill="#fff"/>
+                <path d="M50 32h3.5a5.5 5.5 0 0 1 0 11H50" fill="none" stroke="#fff" stroke-width="3.5"/>
+                <g stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-opacity=".85"><path d="M24 19c0-3 3-3 3-6M32 19c0-3 3-3 3-6M40 19c0-3 3-3 3-6"/></g>
+            </symbol>
+            <symbol id="logoShop" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgShop)"/>
+                <path d="M12 25h40l-4 23a6 6 0 0 1-6 5H22a6 6 0 0 1-6-5z" fill="#fff"/>
+                <path d="M23 25l6-12M41 25l-6-12" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
+                <g fill="#166534" fill-opacity=".4"><rect x="23" y="32" width="4" height="13" rx="2"/><rect x="30" y="32" width="4" height="13" rx="2"/><rect x="37" y="32" width="4" height="13" rx="2"/></g>
+            </symbol>
+            <symbol id="logoMail" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgMail)"/>
+                <rect x="11" y="18" width="42" height="29" rx="6" fill="#fff"/>
+                <path d="M13.5 22 32 35.5 50.5 22" fill="none" stroke="#1e3a8a" stroke-opacity=".55" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+            <symbol id="logoSet" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgSet)"/>
+                <g stroke="#fff" stroke-width="3.6" stroke-linecap="round"><path d="M14 21h36M14 32h36M14 43h36"/></g>
+                <g fill="url(#lgSet)" stroke="#fff" stroke-width="3"><circle cx="25" cy="21" r="5"/><circle cx="40" cy="32" r="5"/><circle cx="29" cy="43" r="5"/></g>
+            </symbol>
             <symbol id="logoApp" viewBox="0 0 64 64">
                 <rect width="64" height="64" rx="16" fill="url(#lgApp)"/>
                 <path d="M43.1 22.8A16 16 0 1 0 43.1 41.2" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
@@ -400,11 +465,11 @@
                     </div>
                 </div>
                 <button type="button" @click="openSearch()" class="icon-btn md:hidden shrink-0" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
-                <button type="button" @click="switchTab('settings')" class="icon-btn md:hidden shrink-0" :class="activeTab === 'settings' ? 'accent' : ''" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
+                <button type="button" @click="switchTab('settings')" class="icon-btn shrink-0" :class="activeTab === 'settings' ? 'accent' : ''" title="Einstellungen" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
                 <div class="hidden md:flex items-center gap-3 shrink-0">
                 <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                 <nav class="flex seg" aria-label="Hauptnavigation">
-                    <template x-for="t in tabs" :key="t.id">
+                    <template x-for="t in navTabs" :key="t.id">
                         <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden xl:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
                     </template>
                 </nav>
@@ -436,6 +501,7 @@
             <!-- ================= HEUTE ================= -->
             <section x-show="activeTab === 'today'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-7 flex flex-wrap items-center gap-4">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoStart"/></svg>
                     <div class="mr-auto min-w-0">
                         <p class="label" x-text="longDate(today)"></p>
                         <h2 class="text-2xl sm:text-4xl font-black tracking-tight mt-1" x-text="greeting"></h2>
@@ -447,7 +513,44 @@
                     </div>
                 </div>
 
-                <div class="grid lg:grid-cols-2 gap-5 items-start">
+                <div class="cardcols">
+                    <!-- Wetter -->
+                    <div x-show="cfg.weather" class="card p-5 sm:p-6 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="label"><i class="fa-solid fa-cloud-sun mr-2"></i>Wetter<span class="ct" x-show="wx.place" x-text="'· ' + wx.place"></span></p>
+                            <button type="button" class="icon-btn !w-7 !h-7" @click="loadWeather(true)" :disabled="wx.busy" title="Aktualisieren" aria-label="Wetter aktualisieren"><i class="fa-solid fa-rotate text-[11px]" :class="wx.busy ? 'spin' : ''"></i></button>
+                        </div>
+                        <p x-show="!cfg.weatherPlace" class="muted text-sm">Noch kein Ort gewählt. <button type="button" class="accent font-bold" @click="switchTab('settings'); setCat = 'today'">Ort festlegen</button></p>
+                        <template x-if="cfg.weatherPlace && wx.now">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-4">
+                                    <i class="text-4xl accent shrink-0" :class="wmoIcon(wx.now?.code, wx.now?.night)"></i>
+                                    <div class="min-w-0">
+                                        <p class="text-3xl font-black leading-none num" x-text="wxTemp(wx.now?.temp)"></p>
+                                        <p class="text-xs font-bold mt-1" x-text="wmoText(wx.now?.code)"></p>
+                                    </div>
+                                    <div class="ml-auto text-right text-[11px] muted font-semibold leading-relaxed">
+                                        <p x-text="'gefühlt ' + wxTemp(wx.now?.feels)"></p>
+                                        <p x-text="Math.round(wx.now?.wind) + ' km/h · ' + wx.now?.hum + ' %'"></p>
+                                        <p><i class="fa-solid fa-arrow-up text-[9px]"></i> <span x-text="wxTime(wx.now?.sunrise)"></span> · <i class="fa-solid fa-arrow-down text-[9px]"></i> <span x-text="wxTime(wx.now?.sunset)"></span></p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-4 gap-2 pt-1">
+                                    <template x-for="d in wx.days" :key="d.ds">
+                                        <div class="inner py-2.5 px-1 text-center">
+                                            <p class="text-[11px] font-bold" x-text="d.label"></p>
+                                            <i class="my-1.5 block text-base accent" :class="wmoIcon(d.code, false)"></i>
+                                            <p class="text-[11px] font-black num"><span x-text="wxTemp(d.max)"></span><span class="muted font-bold" x-text="' ' + wxTemp(d.min)"></span></p>
+                                            <p class="text-[10px] muted font-bold" x-show="d.rain !== null && d.rain > 0"><i class="fa-solid fa-droplet text-[8px]"></i> <span x-text="d.rain + '%'"></span></p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        <p x-show="cfg.weatherPlace && !wx.now && !wx.error" class="muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade Wetter …</p>
+                        <p x-show="wx.error" class="text-[11px] muted" x-text="wx.error"></p>
+                    </div>
+
                     <div x-show="cfg.todayEvents" class="card p-5 sm:p-6 space-y-3">
                         <div class="flex items-center justify-between"><p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Termine heute</p><button class="text-[11px] font-bold accent" @click="switchTab('calendar')">Kalender öffnen</button></div>
                         <p x-show="!todayEventList.length" class="muted text-sm py-3">Heute stehen keine Termine an.</p>
@@ -518,10 +621,13 @@
                 </aside>
 
                 <div class="space-y-5 min-w-0">
-                <div class="card p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                    <div>
+                <div class="card hero p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoCal"/></svg>
+                    <div class="min-w-0">
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight" x-text="calendarTitle"></h2>
                         <p class="muted text-xs mt-1 font-medium" x-text="calendarSubtitle"></p>
+                    </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-2.5">
                         <button x-show="googleScriptUrl" @click="fetchGoogleEvents(true)" class="btn btn-soft text-emerald-400"><i class="fa-solid fa-rotate"></i><span>Google Sync</span></button>
@@ -663,9 +769,10 @@
                 </div>
 
                 <div class="space-y-4 min-w-0">
-                    <div class="card p-5 sm:p-6 space-y-4">
+                    <div class="card hero p-5 sm:p-6 space-y-4">
                         <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
+                            <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoTodo"/></svg>
+                            <div class="min-w-0 mr-auto">
                                 <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3 min-w-0">
                                     <i x-show="activeList.icon" :class="activeList.icon" :style="'color:' + activeList.color"></i><span x-show="activeList.emoji" x-text="activeList.emoji"></span>
                                     <span class="truncate" x-text="activeList.name"></span>
@@ -742,6 +849,7 @@
             <!-- ================= NOTIZEN ================= -->
             <section x-show="activeTab === 'notes'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoNote"/></svg>
                     <div class="min-w-0 flex-1">
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Notizen</h2>
                         <p class="muted text-xs mt-1 font-medium"><span x-text="notes.length"></span> gespeichert · werden mit deinen Geräten abgeglichen</p>
@@ -778,6 +886,7 @@
             <!-- ================= REZEPTE ================= -->
             <section x-show="activeTab === 'recipes'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoRecipe"/></svg>
                     <div class="min-w-0 flex-1">
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Rezepte</h2>
                         <p class="muted text-xs mt-1 font-medium"><span x-text="recipes.length"></span> gespeichert · Zutaten wandern auf Knopfdruck in die Einkaufsliste</p>
@@ -824,9 +933,12 @@
 
                 <!-- Kopfzeile -->
                 <div class="card hero p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoShop"/></svg>
                     <div class="min-w-0">
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight truncate" x-text="shopListName"></h2>
                         <p class="muted text-xs mt-1 font-semibold"><span x-text="shopOpen.length"></span> offen · <span x-text="shopDone.length"></span> im Wagen</p>
+                    </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="seg">
@@ -864,10 +976,10 @@
                         </div>
                     </template>
                 </div>
-                <div x-show="!shopOpen.length" class="card p-8 text-center">
-                    <i class="fa-solid fa-basket-shopping text-3xl accent opacity-70"></i>
-                    <p class="text-sm font-bold mt-3">Die Liste ist leer</p>
-                    <p class="muted text-xs mt-1">Tippe unten ein Produkt an, dann landet es hier.</p>
+                <div x-show="!shopOpen.length" class="card px-5 py-4 flex items-center gap-3">
+                    <i class="fa-solid fa-basket-shopping accent"></i>
+                    <p class="text-sm font-bold">Die Liste ist leer.</p>
+                    <p class="muted text-xs hidden sm:block">Tippe unten ein Produkt an, dann landet es hier.</p>
                 </div>
 
                 <!-- Wagen -->
@@ -890,7 +1002,12 @@
 
                 <!-- Artikel hinzufügen -->
                 <div class="card p-5 sm:p-6 space-y-4">
-                    <p class="label">Artikel hinzufügen</p>
+                    <button type="button" class="label flex items-center gap-2 w-full text-left" @click="catalogOpen = !catalogOpen; saveFold()" :aria-expanded="catalogOpen">
+                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform" :class="catalogOpen ? '' : '-rotate-90'"></i>
+                        <span>Artikel hinzufügen</span>
+                        <span class="ct ml-auto" x-show="!catalogOpen" x-text="catalogView.length + ' Produkte'"></span>
+                    </button>
+                    <div x-show="catalogOpen" class="space-y-4">
                     <form @submit.prevent="addFromQuery()" class="flex gap-2">
                         <input type="text" x-model="shopQuery" placeholder="Suchen oder eigenen Artikel eingeben…" class="field" aria-label="Artikel suchen">
                         <button type="submit" class="btn btn-primary" :disabled="!shopQuery.trim()" aria-label="Hinzufügen"><i class="fa-solid fa-plus"></i></button>
@@ -930,6 +1047,7 @@
                             </div>
                         </template>
                         <p x-show="!catalogGroups.length" class="muted text-xs py-6 text-center">Kein Produkt gefunden – tippe auf „<span x-text="shopQuery.trim()"></span>“ anlegen.</p>
+                    </div>
                     </div>
                 </div>
             </section>
@@ -978,6 +1096,13 @@
                 <div x-show="mailCfg.accounts.length" class="grid gap-3 lg:grid-cols-[12.5rem_22rem_minmax(0,1fr)] xl:grid-cols-[13.5rem_24rem_minmax(0,1fr)] items-start">
                     <!-- Ordner -->
                     <aside :class="mailSel ? 'hidden lg:block' : ''" class="card p-2.5 space-y-3">
+                        <div class="flex items-center gap-2.5 px-1 pt-1 pb-0.5">
+                            <svg class="w-9 h-9 shrink-0 rounded-xl shadow" role="img" aria-hidden="true"><use href="#logoMail"/></svg>
+                            <div class="min-w-0">
+                                <p class="font-black text-sm leading-tight">E-Mail</p>
+                                <p class="text-[10px] muted font-semibold" x-text="mailUnread ? mailUnread + ' ungelesen' : 'alles gelesen'"></p>
+                            </div>
+                        </div>
                         <div>
                             <p class="label px-2 pb-1.5">Favoriten</p>
                             <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
@@ -1285,9 +1410,10 @@
 
             <!-- ================= SETTINGS ================= -->
             <section x-show="activeTab === 'settings'" x-cloak class="space-y-5">
-                <div class="card p-5 sm:p-6 flex flex-wrap items-center gap-3">
+                <div class="card hero p-5 sm:p-6 flex flex-wrap items-center gap-4">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoSet"/></svg>
                     <div class="mr-auto">
-                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3"><i class="fa-solid fa-sliders text-indigo-400"></i>Einstellungen</h2>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Einstellungen</h2>
                         <p class="muted text-xs mt-1 font-medium">Alles wird automatisch gespeichert.</p>
                     </div>
                     <div class="relative w-full sm:w-72">
@@ -1299,7 +1425,7 @@
                 <div class="grid lg:grid-cols-[14.5rem_minmax(0,1fr)] gap-5 items-start">
                     <nav class="card p-2 sm:p-3 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:sticky lg:top-24" aria-label="Einstellungs-Kategorien">
                         <template x-for="c in settingsCats" :key="c.id">
-                            <button type="button" class="mfold" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'data') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
+                            <button type="button" class="mfold" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'sync') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
                         </template>
                     </nav>
 
@@ -1310,11 +1436,29 @@
                             <p x-show="!settingsShown.length" class="muted text-sm py-4">Keine passende Einstellung gefunden.</p>
                         </div>
 
+                        <div x-show="!setQuery.trim() && setCat === 'today' && cfg.weather" class="card p-5 sm:p-6 space-y-3">
+                                <p class="label"><i class="fa-solid fa-location-dot mr-2"></i>Ort für das Wetter</p>
+                                <p class="text-sm font-bold" x-show="cfg.weatherPlace"><span x-text="(cfg.weatherPlace || {}).name"></span><span class="muted font-semibold text-xs" x-text="(cfg.weatherPlace || {}).admin ? ' · ' + cfg.weatherPlace.admin : ''"></span></p>
+                                <form @submit.prevent="wxFind()" class="flex gap-2">
+                                    <input type="search" x-model="wxSearch" placeholder="Stadt suchen, z. B. Düsseldorf" class="field" aria-label="Ort suchen">
+                                    <button type="submit" class="btn btn-soft shrink-0" :disabled="wxBusy" aria-label="Ort suchen"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    <button type="button" class="btn btn-soft shrink-0" @click="wxHere()" :disabled="wxBusy" title="Standort dieses Geräts"><i class="fa-solid fa-location-crosshairs"></i></button>
+                                </form>
+                                <div x-show="wxHits.length" class="space-y-1.5">
+                                    <template x-for="p in wxHits" :key="p.lat + ',' + p.lon">
+                                        <button type="button" class="inner w-full p-2.5 text-left flex items-center gap-2 hover:brightness-110" @click="setWxPlace(p)">
+                                            <i class="fa-solid fa-location-dot muted"></i><span class="font-bold text-sm" x-text="p.name"></span><span class="muted text-xs" x-text="p.admin"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            <p class="text-[11px] muted leading-relaxed">Die Daten kommen von Open-Meteo. Dabei werden nur die Koordinaten des gewählten Ortes übertragen, keine Angaben zu dir.</p>
+                        </div>
+
                         <!-- Generische Einstellungen (Kategorie oder Suchtreffer) -->
                         <div x-show="settingsShown.length" class="card p-5 sm:p-6 space-y-1" :class="setQuery.trim() ? '!mt-0' : ''">
                             <p x-show="!setQuery.trim()" class="label mb-3"><i :class="(settingsCats.find(c => c.id === setCat) || {}).icon" class="mr-2"></i><span x-text="(settingsCats.find(c => c.id === setCat) || {}).label"></span></p>
                             <template x-for="it in settingsShown" :key="it.cat + it.k">
-                                <div class="flex items-center justify-between gap-4 py-3 border-t divider first:border-t-0" x-show="!it.if || cfg[it.if]">
+                                <div class="flex items-center justify-between gap-4 py-3 border-t divider first:border-t-0" x-show="showSetting(it)">
                                     <div class="min-w-0">
                                         <p class="text-sm font-bold" x-text="it.label"></p>
                                         <p class="text-[11px] muted mt-0.5" x-show="it.desc" x-text="it.desc"></p>
@@ -1388,6 +1532,34 @@
                             <div class="pt-3 border-t divider"><button type="button" class="btn btn-soft" @click="openMailSetup()"><i class="fa-solid fa-plug"></i>Postfächer verwalten</button></div>
                         </div>
                         <div x-show="!setQuery.trim() && setCat === 'sync'" class="space-y-5">
+                            <div class="card p-5 sm:p-6"><div class="space-y-3">
+                        <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
+                        <template x-if="!backupReady()">
+                            <p class="text-[11px] muted">Dafür muss der Google-Abgleich eingerichtet sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zum Geräte-Abgleich</button></p>
+                        </template>
+                        <template x-if="backupReady()">
+                            <div class="space-y-3">
+                                <div class="flex flex-wrap gap-3 items-center">
+                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="makeBackup()"><i class="fa-solid fa-cloud-arrow-up"></i>Jetzt sichern</button>
+                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="loadBackups()"><i class="fa-solid fa-rotate"></i>Liste aktualisieren</button>
+                                    <span class="text-[11px] muted" x-show="backupLast" x-text="'Letzte Sicherung: ' + backupLabel({ ts: backupLast })"></span>
+                                </div>
+                                <p class="text-[11px] !text-rose-400" x-show="backupMsg" x-text="backupMsg"></p>
+                                <p class="text-[11px] muted" x-show="!backups.length &amp;&amp; !backupMsg">Noch keine Sicherung vorhanden (oder Liste noch nicht geladen).</p>
+                                <div class="space-y-2">
+                                    <template x-for="b in backups" :key="b.id">
+                                        <div class="inner p-3 flex items-center justify-between gap-3">
+                                            <div class="min-w-0"><p class="text-sm font-bold" x-text="backupLabel(b)"></p><p class="text-[11px] muted" x-text="Math.max(1, Math.round(b.size / 1024)) + ' KB · verschlüsselt'"></p></div>
+                                            <button type="button" class="btn btn-soft shrink-0" :disabled="backupBusy" @click="restoreBackup(b)"><i class="fa-solid fa-clock-rotate-left"></i>Wiederherstellen</button>
+                                        </div>
+                                    </template>
+                                </div>
+                                <p class="text-[11px] muted">Sicherungen sind mit deinem Sync-Passwort verschlüsselt und liegen als Dateien <code>space-backup-…</code> in deinem Google Drive. Vor jeder Wiederherstellung wird automatisch der aktuelle Stand gesichert.</p>
+                            </div>
+                        </template>
+                    </div>
+                    </div>
+
 <div class="card p-5 sm:p-6 space-y-5">
                     <div>
                         <p class="label"><i class="fa-solid fa-arrows-rotate mr-2"></i>Geräte-Abgleich</p>
@@ -1468,32 +1640,6 @@
                             <label class="btn btn-soft"><i class="fa-solid fa-upload"></i>Importieren<input type="file" @change="importData($event)" accept=".json,application/json" class="hidden" aria-label="Sicherungsdatei auswählen"></label>
                         </div>
                         <p class="text-[11px] muted">Der Tresor wird im Backup nur verschlüsselt gespeichert – ohne Master-Passwort ist er nicht lesbar.</p>
-                    </div>
-                    <div class="space-y-3 pt-6 border-t divider">
-                        <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
-                        <template x-if="!backupReady()">
-                            <p class="text-[11px] muted">Dafür muss der Google-Abgleich eingerichtet sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zum Geräte-Abgleich</button></p>
-                        </template>
-                        <template x-if="backupReady()">
-                            <div class="space-y-3">
-                                <div class="flex flex-wrap gap-3 items-center">
-                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="makeBackup()"><i class="fa-solid fa-cloud-arrow-up"></i>Jetzt sichern</button>
-                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="loadBackups()"><i class="fa-solid fa-rotate"></i>Liste aktualisieren</button>
-                                    <span class="text-[11px] muted" x-show="backupLast" x-text="'Letzte Sicherung: ' + backupLabel({ ts: backupLast })"></span>
-                                </div>
-                                <p class="text-[11px] !text-rose-400" x-show="backupMsg" x-text="backupMsg"></p>
-                                <p class="text-[11px] muted" x-show="!backups.length &amp;&amp; !backupMsg">Noch keine Sicherung vorhanden (oder Liste noch nicht geladen).</p>
-                                <div class="space-y-2">
-                                    <template x-for="b in backups" :key="b.id">
-                                        <div class="inner p-3 flex items-center justify-between gap-3">
-                                            <div class="min-w-0"><p class="text-sm font-bold" x-text="backupLabel(b)"></p><p class="text-[11px] muted" x-text="Math.max(1, Math.round(b.size / 1024)) + ' KB · verschlüsselt'"></p></div>
-                                            <button type="button" class="btn btn-soft shrink-0" :disabled="backupBusy" @click="restoreBackup(b)"><i class="fa-solid fa-clock-rotate-left"></i>Wiederherstellen</button>
-                                        </div>
-                                    </template>
-                                </div>
-                                <p class="text-[11px] muted">Sicherungen sind mit deinem Sync-Passwort verschlüsselt und liegen als Dateien <code>space-backup-…</code> in deinem Google Drive. Vor jeder Wiederherstellung wird automatisch der aktuelle Stand gesichert.</p>
-                            </div>
-                        </template>
                     </div>
                     <div class="space-y-3 pt-6 border-t divider">
                         <p class="label text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gefahrenzone</p>
@@ -2274,12 +2420,12 @@
         /* ============ Datenmodelle & Migration ============ */
         const DEFAULT_CFG = {
             accent: '', density: 'comfortable', startTab: 'last', confirmDelete: true, notifications: false, autoUpdate: true,
-            calView: 'month', weekStart: 1, hourFrom: 6, hourTo: 22, defaultDuration: 60, defaultReminder: '', state: 'NW', showHolidays: true, showTasksInCal: true,
+            calView: 'month', weekStart: 1, hourAuto: true, hourFrom: 6, hourTo: 22, defaultDuration: 60, defaultReminder: '', state: 'NW', showHolidays: true, showTasksInCal: true,
             remindTime: '09:00', newOnTop: true, showDone: true,
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            weather: false, weatherPlace: null, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -2520,7 +2666,7 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes']];
-        const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -2628,6 +2774,23 @@ function listBackups_(room) {
             { id: 'inbox', label: 'In den Posteingang', icon: 'fa-solid fa-inbox', patch: { x: 'i' }, msg: 'In den Posteingang verschoben' }
         ];
         const DEFAULT_QUICK = ['read_archive', 'todo_archive', 'delete'];
+
+        /* ---------- Wetter (Open-Meteo, ohne Anmeldung) ---------- */
+        const WMO = {
+            0: ['Klar', 'fa-sun', 'fa-moon'], 1: ['Überwiegend klar', 'fa-sun', 'fa-moon'], 2: ['Teils bewölkt', 'fa-cloud-sun', 'fa-cloud-moon'], 3: ['Bedeckt', 'fa-cloud', 'fa-cloud'],
+            45: ['Nebel', 'fa-smog', 'fa-smog'], 48: ['Reifnebel', 'fa-smog', 'fa-smog'],
+            51: ['Leichter Nieselregen', 'fa-cloud-rain', 'fa-cloud-rain'], 53: ['Nieselregen', 'fa-cloud-rain', 'fa-cloud-rain'], 55: ['Starker Nieselregen', 'fa-cloud-showers-heavy', 'fa-cloud-showers-heavy'],
+            56: ['Gefrierender Niesel', 'fa-icicles', 'fa-icicles'], 57: ['Gefrierender Niesel', 'fa-icicles', 'fa-icicles'],
+            61: ['Leichter Regen', 'fa-cloud-rain', 'fa-cloud-rain'], 63: ['Regen', 'fa-cloud-showers-heavy', 'fa-cloud-showers-heavy'], 65: ['Starker Regen', 'fa-cloud-showers-heavy', 'fa-cloud-showers-heavy'],
+            66: ['Gefrierender Regen', 'fa-icicles', 'fa-icicles'], 67: ['Gefrierender Regen', 'fa-icicles', 'fa-icicles'],
+            71: ['Leichter Schneefall', 'fa-snowflake', 'fa-snowflake'], 73: ['Schneefall', 'fa-snowflake', 'fa-snowflake'], 75: ['Starker Schneefall', 'fa-snowflake', 'fa-snowflake'],
+            77: ['Schneegriesel', 'fa-snowflake', 'fa-snowflake'],
+            80: ['Leichte Schauer', 'fa-cloud-sun-rain', 'fa-cloud-moon-rain'], 81: ['Schauer', 'fa-cloud-showers-heavy', 'fa-cloud-showers-heavy'], 82: ['Kräftige Schauer', 'fa-cloud-showers-heavy', 'fa-cloud-showers-heavy'],
+            85: ['Schneeschauer', 'fa-snowflake', 'fa-snowflake'], 86: ['Starke Schneeschauer', 'fa-snowflake', 'fa-snowflake'],
+            95: ['Gewitter', 'fa-cloud-bolt', 'fa-cloud-bolt'], 96: ['Gewitter mit Hagel', 'fa-cloud-bolt', 'fa-cloud-bolt'], 99: ['Schweres Gewitter mit Hagel', 'fa-cloud-bolt', 'fa-cloud-bolt']
+        };
+        const wmoText = c => (WMO[c] || ['Unbekannt', 'fa-cloud', 'fa-cloud'])[0];
+        const wmoIcon = (c, night) => 'fa-solid ' + (WMO[c] || ['', 'fa-cloud', 'fa-cloud'])[night ? 2 : 1];
 
         /* ---------- Rezepte ---------- */
         const UNITS = ['g', 'kg', 'ml', 'l', 'TL', 'EL', 'Stück', 'Prise', 'Bund', 'Dose', 'Pck', 'Zehe', 'Scheibe'];
@@ -2947,7 +3110,7 @@ function reply_(p) {
         function organizerApp() {
             return {
                 tabs: [
-                    { id: 'today', label: 'Heute', icon: 'fa-solid fa-sun' },
+                    { id: 'today', label: 'Start', icon: 'fa-solid fa-house' },
                     { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
                     { id: 'notes', label: 'Notizen', icon: 'fa-regular fa-note-sticky' },
@@ -2982,7 +3145,7 @@ function reply_(p) {
                 /* Einstellungen: werden generisch gerendert */
                 settingsCats: [
                     { id: 'general', label: 'Allgemein', icon: 'fa-solid fa-gear' }, { id: 'design', label: 'Darstellung', icon: 'fa-solid fa-palette' },
-                    { id: 'today', label: 'Heute', icon: 'fa-solid fa-sun' }, { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
+                    { id: 'today', label: 'Start', icon: 'fa-solid fa-house' }, { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' }, { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
                     { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' }, { id: 'vault', label: 'Tresor', icon: 'fa-solid fa-vault' },
                     { id: 'notify', label: 'Benachrichtigungen', icon: 'fa-solid fa-bell' }, { id: 'sync', label: 'Geräte-Abgleich', icon: 'fa-solid fa-arrows-rotate' },
@@ -2990,7 +3153,7 @@ function reply_(p) {
                 ],
                 setCat: 'general', setQuery: '',
                 settingsDef: [
-                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Heute'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
+                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Start'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
                     { cat: 'general', k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
                     { cat: 'general', k: 'fontSize', type: 'select', label: 'Schriftgröße', desc: 'Skaliert die gesamte App', o: [['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']] },
                     { cat: 'general', k: 'reduceMotion', type: 'toggle', label: 'Weniger Animationen', desc: 'Schaltet Übergänge und Bewegungen weitgehend ab' },
@@ -3000,14 +3163,17 @@ function reply_(p) {
                     { cat: 'design', k: 'cardStyle', type: 'select', label: 'Kartenstil', desc: 'Glas wirkt am besten mit Farbverlauf-Hintergrund', o: [['solid', 'Gefüllt'], ['glass', 'Glas'], ['flat', 'Flach (ohne Schatten)'], ['outline', 'Nur Umrandung']] },
                     { cat: 'design', k: 'bgStyle', type: 'select', label: 'Hintergrund', o: [['plain', 'Einfarbig'], ['gradient', 'Sanfter Farbverlauf']] },
                     { cat: 'design', k: 'font', type: 'select', label: 'Schriftart', o: [['default', 'Jakarta (Standard)'], ['inter', 'Inter'], ['grotesk', 'Space Grotesk'], ['dm', 'DM Sans'], ['atkinson', 'Atkinson (gut lesbar)'], ['lora', 'Lora (Serif)'], ['serif', 'Serif (System)'], ['rounded', 'Rund'], ['system', 'System'], ['mono', 'Monospace']] },
+                    { cat: 'today', k: 'weather', type: 'toggle', label: 'Wetter anzeigen', desc: 'Aktuelle Lage und die nächsten Tage – Daten von Open-Meteo, ohne Anmeldung und ohne Konto.' },
+                    { cat: 'today', k: 'weatherUnit', type: 'select', if: 'weather', label: 'Temperatur in', o: [['c', 'Grad Celsius'], ['f', 'Grad Fahrenheit']] },
                     { cat: 'today', k: 'todayEvents', type: 'toggle', label: 'Termine anzeigen' },
                     { cat: 'today', k: 'todayTodos', type: 'toggle', label: 'Aufgaben anzeigen', desc: 'Überfällig, heute fällig und „Mein Tag“' },
                     { cat: 'today', k: 'todayMail', type: 'toggle', label: 'Ungelesene E-Mails anzeigen' },
                     { cat: 'today', k: 'todayShop', type: 'toggle', label: 'Einkaufsliste anzeigen' },
                     { cat: 'calendar', k: 'calView', type: 'select', label: 'Standardansicht', o: [['month', 'Monat'], ['week', 'Woche'], ['day', 'Tag'], ['year', 'Jahr']] },
                     { cat: 'calendar', k: 'weekStart', type: 'select', label: 'Wochenbeginn', o: [[1, 'Montag'], [0, 'Sonntag']] },
-                    { cat: 'calendar', k: 'hourFrom', type: 'select', label: 'Stundenraster ab', o: Array.from({ length: 12 }, (_, h) => [h, pad(h) + ':00']) },
-                    { cat: 'calendar', k: 'hourTo', type: 'select', label: 'Stundenraster bis', o: Array.from({ length: 13 }, (_, i) => [i + 12, pad((i + 12) % 24) + ':00' + (i + 12 === 24 ? ' (Mitternacht)' : '')]) },
+                    { cat: 'calendar', k: 'hourAuto', type: 'toggle', label: 'Stundenraster an die Termine anpassen', desc: 'Zeigt in Tages- und Wochenansicht nur die Stunden, in denen etwas ansteht – kein leeres Raster.' },
+                    { cat: 'calendar', k: 'hourFrom', type: 'select', if: '!hourAuto', label: 'Stundenraster ab', o: Array.from({ length: 12 }, (_, h) => [h, pad(h) + ':00']) },
+                    { cat: 'calendar', k: 'hourTo', type: 'select', if: '!hourAuto', label: 'Stundenraster bis', o: Array.from({ length: 13 }, (_, i) => [i + 12, pad((i + 12) % 24) + ':00' + (i + 12 === 24 ? ' (Mitternacht)' : '')]) },
                     { cat: 'calendar', k: 'defaultDuration', type: 'select', label: 'Standarddauer neuer Termine', o: [[15, '15 Minuten'], [30, '30 Minuten'], [60, '1 Stunde'], [90, '1,5 Stunden'], [120, '2 Stunden']] },
                     { cat: 'calendar', k: 'defaultReminder', type: 'select', label: 'Standard-Erinnerung für Termine', o: [['', 'Keine'], ['0', 'Zur Startzeit'], ['15', '15 Min. vorher'], ['60', '1 Std. vorher'], ['1440', '1 Tag vorher']] },
                     { cat: 'calendar', k: 'defaultEventColor', type: 'select', label: 'Standardfarbe neuer Termine', o: [['#6366f1', 'Indigo'], ['#10b981', 'Grün'], ['#f59e0b', 'Orange'], ['#ef4444', 'Rot'], ['#06b6d4', 'Türkis'], ['#ec4899', 'Rosa']] },
@@ -3027,8 +3193,8 @@ function reply_(p) {
                     { cat: 'mail', src: 'mail', k: 'notify', type: 'toggle', label: 'Bei neuen Mails benachrichtigen', desc: 'Hinweis in der App, bei aktivierten Benachrichtigungen auch als Systemhinweis' },
                     { cat: 'mail', src: 'mail', k: 'preview', type: 'toggle', label: 'Vorschautext in der Liste zeigen' },
                     { cat: 'mail', src: 'mail', k: 'images', type: 'toggle', label: 'Externe Bilder immer laden', desc: 'Absender können dann sehen, dass du die Mail geöffnet hast' },
-                    { cat: 'data', k: 'autoBackup', type: 'toggle', label: 'Automatische Sicherung in Google Drive', desc: 'Legt regelmäßig eine verschlüsselte Sicherung an (die letzten 8 bleiben erhalten). Benötigt den Google-Abgleich.' },
-                    { cat: 'data', k: 'backupEvery', type: 'select', if: 'autoBackup', label: 'Sicherung erstellen', o: [[1, 'Täglich'], [7, 'Wöchentlich'], [30, 'Monatlich']] },
+                    { cat: 'sync', k: 'autoBackup', type: 'toggle', label: 'Automatische Sicherung in Google Drive', desc: 'Legt regelmäßig eine verschlüsselte Sicherung an (die letzten 8 bleiben erhalten). Benötigt den Google-Abgleich.' },
+                    { cat: 'sync', k: 'backupEvery', type: 'select', if: 'autoBackup', label: 'Sicherung erstellen', o: [[1, 'Täglich'], [7, 'Wöchentlich'], [30, 'Monatlich']] },
                     { cat: 'vault', k: 'vaultLockMin', type: 'select', label: 'Automatisch sperren nach', o: [[1, '1 Minute'], [2, '2 Minuten'], [5, '5 Minuten'], [10, '10 Minuten'], [15, '15 Minuten'], [30, '30 Minuten']] },
                     { cat: 'vault', k: 'lockOnHide', type: 'toggle', label: 'Sofort sperren, wenn die App im Hintergrund ist', desc: 'Beim Wechsel in einen anderen Tab oder eine andere App' },
                     { cat: 'vault', k: 'clipboardClear', type: 'select', label: 'Zwischenablage leeren nach', desc: 'Nach dem Kopieren eines Passworts', o: [[0, 'Nie'], [15, '15 Sekunden'], [30, '30 Sekunden'], [60, '60 Sekunden']] },
@@ -3075,9 +3241,11 @@ function reply_(p) {
                 showListModal: false, currentList: { id: null, name: '', emoji: '📋' },
 
                 /* Einkauf */
+                wx: { busy: false, error: '', at: 0, now: null, days: [], place: '' },
+                wxSearch: '', wxHits: [], wxBusy: false,
                 notes: [], noteQuery: '', showNoteModal: false, currentNote: { id: null, title: '', text: '', color: '', pin: false },
                 recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: normRecipe({ id: null, title: '' }), recipeIngText: '', recipeUnits: UNITS,
-                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, shopFold: {}, catFold: {},
+                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, catalogOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
 
                 /* Tresor */
@@ -3137,8 +3305,9 @@ function reply_(p) {
                     this.mailCfg = normMailCfg(readJSON('organizer_mailcfg', null));
                     this.notes = (readJSON('organizer_notes', []) || []).filter(n => n && (n.title || n.text)).map(normNote);
                     this.recipes = (readJSON('organizer_recipes', []) || []).filter(r => r && r.title).map(normRecipe);
+                    const wx = readJSON('organizer_wx', null); if (wx && wx.now) this.wx = { ...wx, busy: false };
                     const fold = readJSON('organizer_fold', null);
-                    if (fold && typeof fold === 'object') { this.shopFold = fold.s && typeof fold.s === 'object' ? fold.s : {}; this.catFold = fold.c && typeof fold.c === 'object' ? fold.c : {}; }
+                    if (fold && typeof fold === 'object') { this.shopFold = fold.s && typeof fold.s === 'object' ? fold.s : {}; this.catFold = fold.c && typeof fold.c === 'object' ? fold.c : {}; this.catalogOpen = fold.k !== false; }
                     this.mailStatus = (readJSON('organizer_mail_status', []) || []).filter(o => o && o.id && o.t).map(normOverlay);
                     this.mailPrune(false);
 
@@ -3159,7 +3328,7 @@ function reply_(p) {
                     window.addEventListener('resize', () => { clearTimeout(this._refitT); this._refitT = setTimeout(() => this.mailRefit(), 250); }, { passive: true });
                     window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
                     window.addEventListener('offline', () => { this.online = false; });
-                    this.$watch('activeTab', v => { this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
+                    this.$watch('activeTab', v => { if (v === 'today') this.loadWeather(); this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
                     this.$watch('calendarView', () => this.scrollGrid());
                     this.saveAllData(); // persistiert migrierte Daten im neuen Format
 
@@ -3277,6 +3446,8 @@ function reply_(p) {
                     }
                     this.setCfg(k, !this.cfg[k]);
                 },
+                /* Bedingte Einstellungen: „!schalter“ heißt „nur zeigen, wenn aus“ */
+                showSetting(it) { if (!it.if) return true; const n = it.if.startsWith('!'), k = n ? it.if.slice(1) : it.if; const v = it.src === 'mail' ? this.mailCfg.settings[k] : this.cfg[k]; return n ? !v : !!v; },
                 setView(section, v) { this.cfg.views[section] = v; this.saveCfg(); },
                 async resetAll() {
                     if (!await this.askBox('Termine, Aufgaben, Einkauf, Tresore und Einstellungen werden auf diesem Gerät gelöscht. Das kann nicht rückgängig gemacht werden.', { title: 'Alle Daten löschen', ok: 'Alles löschen' })) return;
@@ -3940,12 +4111,30 @@ function reply_(p) {
                 },
                 get weekDays() { const d = parseDate(this.anchor), mon = addDays(d, -this.weekOffset(d)); return Array.from({ length: 7 }, (_, i) => this.dayInfo(addDays(mon, i))); },
                 get gridDays() { return this.calendarView === 'day' ? [this.dayInfo(parseDate(this.anchor))] : this.weekDays; },
-                get gridHours() { const f = this.cfg.hourFrom; return Array.from({ length: this.cfg.hourTo - f }, (_, i) => ({ h: f + i, label: pad(f + i) + ':00', top: i * HPX })); },
-                get gridHeight() { return (this.cfg.hourTo - this.cfg.hourFrom) * HPX; },
+                /* Sichtbarer Stundenbereich: entweder fest eingestellt oder passend zu den Terminen des Tages */
+                get gridRange() {
+                    const f = Math.min(this.cfg.hourFrom, 23), t = Math.max(this.cfg.hourTo, f + 1);
+                    if (!this.cfg.hourAuto) return [f, t];
+                    let lo = 99, hi = -1;
+                    const days = this.gridDays.length ? this.gridDays.map(d => d.dateString) : [this.anchor];
+                    for (const ds of days) for (const e of this.eventsOnDate(ds)) {
+                        if (e.allDay || e.startDate !== e.endDate) continue;
+                        const s = Number(e.startTime.slice(0, 2)), em = Number(e.endTime.slice(0, 2)) + (Number(e.endTime.slice(3, 5)) ? 1 : 0);
+                        lo = Math.min(lo, s); hi = Math.max(hi, em);
+                    }
+                    if (hi < 0) { const n = new Date().getHours(); lo = n; hi = n + 5; }
+                    let a = Math.max(0, lo - 1), b = Math.min(24, hi + 1);
+                    if (b - a < 6) { b = Math.min(24, a + 6); a = Math.max(0, b - 6); }
+                    return [a, b];
+                },
+                get gridFrom() { return this.gridRange[0]; },
+                get gridTo() { return this.gridRange[1]; },
+                get gridHours() { const f = this.gridFrom; return Array.from({ length: this.gridTo - f }, (_, i) => ({ h: f + i, label: pad(f + i) + ':00', top: i * HPX })); },
+                get gridHeight() { return (this.gridTo - this.gridFrom) * HPX; },
                 get gridLines() { return `background-image: repeating-linear-gradient(to bottom, var(--border) 0, var(--border) 1px, transparent 1px, transparent ${HPX}px)`; },
                 get nowTop() {
                     void this.nowTick; const n = new Date(), m = n.getHours() * 60 + n.getMinutes();
-                    return m < this.cfg.hourFrom * 60 || m > this.cfg.hourTo * 60 ? null : (m - this.cfg.hourFrom * 60) / 60 * HPX;
+                    return m < this.gridFrom * 60 || m > this.gridTo * 60 ? null : (m - this.gridFrom * 60) / 60 * HPX;
                 },
                 getYearMonthDays(mIdx) {
                     const y = this.currentYear, first = new Date(y, mIdx, 1), total = new Date(y, mIdx + 1, 0).getDate();
@@ -3969,7 +4158,7 @@ function reply_(p) {
                     this.$nextTick(() => setTimeout(() => {
                         const el = this.$refs.timeScroll; if (!el) return;
                         const base = this.gridDays.some(d => d.isToday) ? new Date().getHours() - 1 : 8;
-                        el.scrollTop = Math.max(0, (base - this.cfg.hourFrom) * HPX);
+                        el.scrollTop = Math.max(0, (base - this.gridFrom) * HPX);
                     }, 40));
                 },
 
@@ -3981,7 +4170,7 @@ function reply_(p) {
                 tasksOnDate(ds) { return this.cfg.showTasksInCal ? this.todos.filter(t => !t.done && t.due === ds) : []; },
                 evLabel(ev, ds) { return (ev.startDate === ds && !ev.allDay ? ev.startTime + ' ' : '') + ev.title; },
                 dayLayout(ds) { // positioniert Termine im Stundenraster; überlappende Termine teilen sich die Breite
-                    const from = this.cfg.hourFrom * 60, to = this.cfg.hourTo * 60;
+                    const from = this.gridFrom * 60, to = this.gridTo * 60;
                     const items = this.events.filter(e => !e.allDay && e.startDate === ds && e.endDate === ds)
                         .map(ev => { const s = toMin(ev.startTime); return { ev, s, e: Math.max(toMin(ev.endTime), s + 30) }; })
                         .filter(x => x.e > from && x.s < to).sort((a, b) => a.s - b.s || b.e - a.e);
@@ -4001,7 +4190,7 @@ function reply_(p) {
                 },
                 slotClick(e, ds) {
                     const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
-                    const m = Math.min(this.cfg.hourFrom * 60 + Math.floor(y / HPX * 2) * 30, 1410);
+                    const m = Math.min(this.gridFrom * 60 + Math.floor(y / HPX * 2) * 30, 1410);
                     this.anchor = ds; this.openEventModal({ startDate: ds, startTime: minToTime(m) });
                 },
                 openEventModal(p = {}) {
@@ -4195,7 +4384,7 @@ function reply_(p) {
                     if (!this.cfg.shopGroup) return this.shopOpen.length ? [{ cat: 'Alle Artikel', items: this.shopOpen }] : [];
                     return CATEGORIES.map(cat => ({ cat, items: this.shopOpen.filter(i => i.category === cat) })).filter(g => g.items.length);
                 },
-                saveFold() { try { localStorage.setItem('organizer_fold', JSON.stringify({ s: this.shopFold, c: this.catFold })); } catch (e) {} },
+                saveFold() { try { localStorage.setItem('organizer_fold', JSON.stringify({ s: this.shopFold, c: this.catFold, k: this.catalogOpen })); } catch (e) {} },
                 toggleFold(where, cat) { const m = where === 'cat' ? this.catFold : this.shopFold; m[cat] = !m[cat]; this.saveFold(); },
                 isFolded(where, cat) { return !!(where === 'cat' ? this.catFold : this.shopFold)[cat]; },
                 foldAll(where, close) {
@@ -4320,6 +4509,75 @@ function reply_(p) {
                     this.todos = [normTodo({ id: uid(), title, note: n.title ? this.noteSnippet(n).slice(0, 500) : '', listId: 'inbox', created: Date.now() }, {}), ...this.todos];
                     this.saveAllData(); this.toast('Als Aufgabe übernommen');
                 },
+
+                /* ---------- Wetter ---------- */
+                get wxPlace() { return this.cfg.weatherPlace; },
+                wmoText, wmoIcon,
+                wxTemp(t) { return t === null || t === undefined ? '–' : Math.round(this.cfg.weatherUnit === 'f' ? t * 9 / 5 + 32 : t) + '°'; },
+                async wxFind() {
+                    const q = this.wxSearch.trim(); if (q.length < 2) { this.wxHits = []; return; }
+                    this.wxBusy = true;
+                    try {
+                        const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&language=de&format=json&name=' + encodeURIComponent(q));
+                        const j = await r.json();
+                        this.wxHits = (j.results || []).map(x => ({ name: x.name, admin: [x.admin1, x.country].filter(Boolean).join(', '), lat: x.latitude, lon: x.longitude }));
+                        if (!this.wxHits.length) this.toast('Kein Ort gefunden');
+                    } catch (e) { this.toast('Ortssuche nicht erreichbar'); }
+                    finally { this.wxBusy = false; }
+                },
+                setWxPlace(p) {
+                    this.cfg.weatherPlace = { name: p.name, admin: p.admin, lat: Math.round(p.lat * 1000) / 1000, lon: Math.round(p.lon * 1000) / 1000 };
+                    this.cfg.weather = true; this.saveCfg(); this.wxHits = []; this.wxSearch = '';
+                    this.wx = { ...this.wx, at: 0 }; this.loadWeather(true);
+                },
+                /* Standort des Geräts verwenden (fragt den Browser) */
+                wxHere() {
+                    if (!navigator.geolocation) return this.toast('Dieses Gerät kennt seinen Standort nicht');
+                    this.wxBusy = true;
+                    navigator.geolocation.getCurrentPosition(
+                        async pos => {
+                            this.wxBusy = false;
+                            const { latitude: lat, longitude: lon } = pos.coords;
+                            let name = 'Mein Standort', admin = '';
+                            try {
+                                const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=de&format=json&name=' + lat.toFixed(2) + ',' + lon.toFixed(2));
+                                const j = await r.json(); if (j.results && j.results[0]) { name = j.results[0].name; admin = j.results[0].country || ''; }
+                            } catch (e) {}
+                            this.setWxPlace({ name, admin, lat, lon });
+                        },
+                        () => { this.wxBusy = false; this.toast('Standort nicht freigegeben'); },
+                        { timeout: 10000, maximumAge: 600000 }
+                    );
+                },
+                async loadWeather(force) {
+                    const p = this.cfg.weatherPlace;
+                    if (!this.cfg.weather || !p) return;
+                    if (!force && Date.now() - this.wx.at < 1800000) return; // höchstens alle 30 Minuten
+                    if (this.wx.busy) return;
+                    this.wx = { ...this.wx, busy: true, error: '' };
+                    try {
+                        const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + p.lat + '&longitude=' + p.lon +
+                            '&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m' +
+                            '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset' +
+                            '&forecast_days=4&timezone=auto';
+                        const r = await fetch(url);
+                        if (!r.ok) throw new Error('Dienst antwortet mit ' + r.status);
+                        const j = await r.json(), c = j.current || {}, d = j.daily || {};
+                        const days = (d.time || []).map((t, i) => ({
+                            ds: t, code: d.weather_code[i], max: d.temperature_2m_max[i], min: d.temperature_2m_min[i],
+                            rain: d.precipitation_probability_max ? d.precipitation_probability_max[i] : null,
+                            label: i === 0 ? 'Heute' : i === 1 ? 'Morgen' : new Date(t + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short' })
+                        }));
+                        this.wx = {
+                            busy: false, error: '', at: Date.now(), place: p.name, days,
+                            now: { temp: c.temperature_2m, feels: c.apparent_temperature, code: c.weather_code, night: c.is_day === 0, wind: c.wind_speed_10m, hum: c.relative_humidity_2m, sunrise: (d.sunrise || [])[0], sunset: (d.sunset || [])[0] }
+                        };
+                        try { localStorage.setItem('organizer_wx', JSON.stringify(this.wx)); } catch (e) {}
+                    } catch (e) {
+                        this.wx = { ...this.wx, busy: false, error: e instanceof TypeError ? 'Offline – zuletzt geladene Werte' : 'Wetter nicht abrufbar (' + e.message + ')' };
+                    }
+                },
+                wxTime(iso) { return iso ? iso.slice(11, 16) : '–'; },
 
                 /* ---------- Rezepte ---------- */
                 get recipesView() {
@@ -4594,7 +4852,7 @@ function reply_(p) {
                     const title = this.todayTask.trim(); if (!title) return;
                     this.todos.push(newTodo({ title, myDay: this.today, created: Date.now() })); this.todayTask = ''; this.saveAllData();
                 },
-                todayEnter() { if (this.cfg.todayMail && this.mailCfg.accounts.length && Date.now() - this.mailCountsAt > 120000) this.mailPollCounts(); },
+                todayEnter() { this.loadWeather(); if (this.cfg.todayMail && this.mailCfg.accounts.length && Date.now() - this.mailCountsAt > 120000) this.mailPollCounts(); },
                 /* ---------- Globale Suche ---------- */
                 openSearch() { this.gq = ''; this.gSel = 0; this.showSearch = true; this.$nextTick(() => this.$refs.gInput && this.$refs.gInput.focus()); },
                 get searchHits() {
@@ -4733,6 +4991,7 @@ function reply_(p) {
                 showMore: false, online: typeof navigator === 'undefined' || navigator.onLine !== false,
                 get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'passwords', 'settings'].includes(t.id)); },
                 get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'passwords'].includes(t.id)); },
+                get navTabs() { return this.tabs.filter(t => t.id !== 'settings'); },
                 swState: 'unbekannt', swFiles: 0,
                 /* Prüft wirklich nach: läuft ein Service Worker und liegen Dateien im Offline-Speicher? */
                 async checkOffline() {
