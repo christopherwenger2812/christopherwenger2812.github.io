@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-10">
+    <meta name="app-version" content="2026.11.14-1">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,7 +23,7 @@
                 if (!c.font || c.font === 'system') { c.font = 'default'; localStorage.setItem('organizer_cfg', JSON.stringify(c)); }
             }
             r.dataset.theme = ['daylight', 'sky', 'mint', 'white', 'paper', 'rose', 'midnight', 'ocean', 'emerald', 'nord', 'graphite', 'sunset', 'aurora'].includes(t) ? t : 'daylight';
-            if (c.accent) r.style.setProperty('--accent', c.accent);
+            if (c.accent) r.style.setProperty('--accent', c.accent); // die zweite Logofarbe setzt die App gleich nach dem Start
             if (c.density) r.dataset.density = c.density;
             if (c.fontSize) r.dataset.fsize = c.fontSize;
             if (c.font) r.dataset.font = c.font;
@@ -69,7 +69,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -103,8 +103,16 @@
         .num, .tnum { font-variant-numeric: tabular-nums; }
 
         .card   { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: var(--shadow); }
+        /* Erste Karte eines Bereichs bekommt einen zarten Hauch der Akzentfarbe */
+        .hero   { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--surface)), var(--surface) 55%); border-color: color-mix(in srgb, var(--accent) 22%, var(--border)); }
         .inner  { background: var(--surface2); border: 1px solid var(--border); border-radius: 1rem; }
         .row    { padding: var(--row-pad); }
+        /* Kompakte To-Do-Ansicht: schmalere Zeilen, Zusatzangaben nur als Symbole */
+        .tdc { padding: .45rem .7rem; gap: .6rem; border-radius: .7rem; }
+        .tdc .check { width: 1.2rem; height: 1.2rem; font-size: .55rem; }
+        .tdc .tdmeta { margin-top: 0; font-size: .65rem; gap: .5rem .7rem; }
+        .tdc .icon-btn { width: 1.9rem; height: 1.9rem; }
+        .tdc .tdprog { display: none; }
         .muted  { color: var(--muted); }
         .divider { border-color: var(--border); }
         .accent { color: var(--accent); }
@@ -132,6 +140,10 @@
         .seg > button.on { background: var(--accent); color: #fff; box-shadow: 0 4px 12px -8px var(--accent); }
 
         .label { display: block; font-size: .78rem; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
+        .label > i:first-child { color: var(--accent); }
+        /* Logo nimmt die gewählte Akzentfarbe an */
+        #lgApp stop:first-child { stop-color: var(--accent, #4f46e5); }
+        #lgApp stop:last-child { stop-color: var(--accent2, #10b981); }
         .label .ct { color: var(--muted); font-weight: 600; }
         .chip { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .6rem; border-radius: .6rem; font-size: .68rem; font-weight: 700; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
         button.chip { cursor: pointer; transition: all .15s; }
@@ -171,6 +183,7 @@
         @media (min-width: 1024px) { .mfold { width: 100%; } }
         .mrow { position: relative; display: flex; gap: .7rem; padding: .7rem .85rem .7rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; width: 100%; align-items: flex-start; }
         .mrow.unread::before { content: ''; position: absolute; left: 0; top: .55rem; bottom: .55rem; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+        .mrow.picked { background: color-mix(in srgb, var(--accent) 14%, transparent); }
         .mgrp { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .5rem; padding: .4rem .9rem; font-size: .7rem; font-weight: 800; color: var(--muted); background: var(--surface2); border-bottom: 1px solid var(--border); }
         .cmd { display: flex; align-items: center; gap: .15rem; overflow-x: auto; }
         .cmd .btn { padding: .5rem .7rem; font-size: .72rem; }
@@ -186,6 +199,11 @@
         /* ---------- Stil-Optionen (Einstellungen → Darstellung) ---------- */
         [data-fsize="large"] { font-size: 112.5%; } [data-fsize="xl"] { font-size: 125%; }
         [data-font="system"] body { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+        [data-font="inter"] body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; letter-spacing: -.012em; }
+        [data-font="grotesk"] body { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; letter-spacing: -.005em; }
+        [data-font="dm"] body { font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; }
+        [data-font="lora"] body { font-family: 'Lora', Georgia, 'Times New Roman', serif; letter-spacing: 0; }
+        [data-font="atkinson"] body { font-family: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif; letter-spacing: 0; }
         [data-font="rounded"] body { font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif; }
         [data-font="serif"] body { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif; }
         [data-font="mono"] body { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; letter-spacing: -.01em; }
@@ -206,7 +224,14 @@
         .swatch.on { border-color: var(--text); transform: scale(1.12); }
         .safe-bottom { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
         /* Notizen */
-        .note { position: relative; display: flex; flex-direction: column; gap: .4rem; padding: 1rem 1.1rem; border-radius: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--nc, var(--border)); box-shadow: var(--shadow-s); cursor: pointer; text-align: left; transition: transform .15s, box-shadow .15s; width: 100%; }
+        .note { position: relative; display: flex; flex-direction: column; gap: .4rem; padding: 1rem 1.1rem; border-radius: .85rem; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-s); cursor: pointer; text-align: left; transition: transform .15s, box-shadow .15s; width: 100%; }
+        /* Farbige Notizen sind komplett hinterlegt – wie ein Haftzettel */
+        .note.col { background: color-mix(in srgb, var(--nc) 20%, var(--surface)); border-color: color-mix(in srgb, var(--nc) 38%, transparent); box-shadow: 0 1px 1px color-mix(in srgb, var(--nc) 25%, transparent), var(--shadow-s); }
+        .note.col .nx { color: color-mix(in srgb, var(--text) 70%, var(--nc)); }
+        .note.col .nd { color: color-mix(in srgb, var(--text) 55%, var(--nc)); }
+        .note.col .icon-btn:not(.accent) { color: color-mix(in srgb, var(--text) 60%, var(--nc)); }
+        /* Angeheftet: kleine Ecke oben rechts */
+        .note.pin::after { content: ''; position: absolute; top: 0; right: 0; width: 1.4rem; height: 1.4rem; border-radius: 0 .85rem 0 .7rem; background: color-mix(in srgb, var(--nc, var(--accent)) 55%, transparent); }
         .note:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
         .note .nt { font-weight: 800; font-size: .95rem; line-height: 1.3; overflow-wrap: anywhere; }
         .note .nx { font-size: .8rem; line-height: 1.5; color: var(--muted); white-space: pre-wrap; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
@@ -314,7 +339,7 @@
     <!-- Eigene Logos: App („C“ mit Umlauf-Punkt) und Tresor (Safe-Wählscheibe mit Schlüsselloch) -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
         <defs>
-            <linearGradient id="lgApp" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#10b981"/></linearGradient>
+            <linearGradient id="lgApp" x1="0" y1="1" x2="1" y2="0"><stop offset="0"/><stop offset="1"/></linearGradient>
             <linearGradient id="lgVault" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
             <symbol id="logoApp" viewBox="0 0 64 64">
                 <rect width="64" height="64" rx="16" fill="url(#lgApp)"/>
@@ -375,6 +400,7 @@
                     </div>
                 </div>
                 <button type="button" @click="openSearch()" class="icon-btn md:hidden shrink-0" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button type="button" @click="switchTab('settings')" class="icon-btn md:hidden shrink-0" :class="activeTab === 'settings' ? 'accent' : ''" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
                 <div class="hidden md:flex items-center gap-3 shrink-0">
                 <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                 <nav class="flex seg" aria-label="Hauptnavigation">
@@ -409,7 +435,7 @@
 
             <!-- ================= HEUTE ================= -->
             <section x-show="activeTab === 'today'" x-cloak class="space-y-5">
-                <div class="card p-5 sm:p-7 flex flex-wrap items-center gap-4">
+                <div class="card hero p-5 sm:p-7 flex flex-wrap items-center gap-4">
                     <div class="mr-auto min-w-0">
                         <p class="label" x-text="longDate(today)"></p>
                         <h2 class="text-2xl sm:text-4xl font-black tracking-tight mt-1" x-text="greeting"></h2>
@@ -665,25 +691,40 @@
                     </div>
 
                     <template x-for="sec in todoSections" :key="sec.key">
-                        <div class="space-y-2">
+                        <div :class="cfg.views.todos === 'compact' ? 'space-y-1' : 'space-y-2'">
                             <button x-show="sec.label" @click="sec.key === 'done' && (doneOpen = !doneOpen)" class="label flex items-center gap-2 px-1" :class="sec.key === 'done' ? 'cursor-pointer' : 'cursor-default'">
                                 <i x-show="sec.key === 'done'" class="fa-solid fa-chevron-right text-[9px] transition-transform" :class="doneOpen ? 'rotate-90' : ''"></i>
                                 <span x-text="sec.label"></span><span x-text="sec.items.length"></span>
                             </button>
-                            <div x-show="sec.key !== 'done' || doneOpen" class="space-y-2">
+                            <div x-show="sec.key !== 'done' || doneOpen" :class="cfg.views.todos === 'compact' ? 'space-y-1' : 'space-y-2'">
                                 <template x-for="t in sec.items" :key="t.id">
-                                    <div @click="openTaskModal(t)" class="inner row flex items-center gap-3 cursor-pointer hover:brightness-110 transition" :class="t.done ? 'opacity-60' : ''">
+                                    <div @click="openTaskModal(t)" class="inner row flex items-center gap-3 cursor-pointer hover:brightness-110 transition" :class="[t.done ? 'opacity-60' : '', cfg.views.todos === 'compact' ? 'tdc' : '']">
                                         <button @click.stop="toggleTodo(t.id)" class="check" :class="t.done ? 'done' : ''" :aria-label="t.done ? 'Wieder öffnen' : 'Erledigen'"><i class="fa-solid fa-check"></i></button>
                                         <div class="min-w-0 flex-1">
                                             <p class="text-sm font-bold break-words" :class="t.done ? 'line-through muted' : ''" x-text="t.title"></p>
-                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[11px] muted empty:hidden">
+                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[11px] muted empty:hidden tdmeta">
                                                 <span x-show="t.myDay === today && todoListId !== 'myday'"><i class="fa-regular fa-sun mr-1"></i>Mein Tag</span>
-                                                <span x-show="t.steps.length && cfg.views.todos === 'list'"><i class="fa-solid fa-list-check mr-1"></i><span x-text="t.steps.filter(s => s.done).length + ' von ' + t.steps.length"></span></span>
+                                                <button type="button" x-show="t.steps.length" @click.stop="toggleSteps(t.id)" class="flex items-center gap-1 hover:brightness-125" :aria-expanded="stepsOpen.includes(t.id)">
+                                                    <i class="fa-solid fa-chevron-right text-[9px] transition-transform" :class="stepsOpen.includes(t.id) ? 'rotate-90' : ''"></i>
+                                                    <i class="fa-solid fa-list-check"></i><span x-text="t.steps.filter(s => s.done).length + ' von ' + t.steps.length"></span>
+                                                </button>
                                                 <span x-show="t.due" :class="dueClass(t)"><i class="fa-regular fa-calendar mr-1"></i><span x-text="t.due ? dueLabel(t) : ''"></span></span>
                                                 <span x-show="remindTimeOf(t)"><i class="fa-regular fa-bell"></i></span>
                                                 <span x-show="t.repeat"><i class="fa-solid fa-repeat"></i></span>
                                                 <span x-show="t.note && cfg.views.todos === 'list'"><i class="fa-regular fa-note-sticky"></i></span>
                                                 <span x-show="isSmartList && listOf(t)" x-text="listOf(t) ? listOf(t).emoji + ' ' + listOf(t).name : ''"></span>
+                                            </div>
+                                            <div x-show="t.steps.length && cfg.views.todos !== 'compact'" class="tdprog mt-1.5 h-1 rounded-full overflow-hidden" style="background: var(--border)">
+                                                <div class="h-full rounded-full transition-all" :style="'width:' + stepPct(t) + '%; background: var(--accent)'"></div>
+                                            </div>
+                                            <div x-show="stepsOpen.includes(t.id)" class="mt-2 space-y-1">
+                                                <template x-for="s in t.steps" :key="s.id">
+                                                    <button type="button" @click.stop="toggleStep(t.id, s.id)" class="flex items-center gap-2 w-full text-left py-1 group">
+                                                        <span class="check !w-4 !h-4 !text-[8px]" :class="s.done ? 'done' : ''"><i class="fa-solid fa-check"></i></span>
+                                                        <span class="text-[12px] font-semibold break-words" :class="s.done ? 'line-through muted' : ''" x-text="s.t"></span>
+                                                    </button>
+                                                </template>
+                                                <button type="button" @click.stop="openTaskModal(t)" class="text-[11px] accent font-bold pl-6">+ Schritt</button>
                                             </div>
                                         </div>
                                         <button @click.stop="toggleImportant(t.id)" class="icon-btn" :class="t.important ? '!text-amber-400' : ''" aria-label="Wichtig"><i :class="t.important ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
@@ -700,7 +741,7 @@
 
             <!-- ================= NOTIZEN ================= -->
             <section x-show="activeTab === 'notes'" x-cloak class="space-y-5">
-                <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
                     <div class="min-w-0 flex-1">
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Notizen</h2>
                         <p class="muted text-xs mt-1 font-medium"><span x-text="notes.length"></span> gespeichert · werden mit deinen Geräten abgeglichen</p>
@@ -721,7 +762,7 @@
                 <div class="notegrid">
                     <template x-for="n in notesView" :key="n.id">
                         <div>
-                            <div class="note" :style="n.color ? '--nc:' + n.color : ''" role="button" tabindex="0" @click="openNote(n)" @keydown.enter.self="openNote(n)">
+                            <div class="note" :class="[n.color ? 'col' : '', n.pin ? 'pin' : '']" :style="n.color ? '--nc:' + n.color : ''" role="button" tabindex="0" @click="openNote(n)" @keydown.enter.self="openNote(n)">
                                 <div class="flex items-start gap-2">
                                     <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
                                     <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
@@ -730,6 +771,44 @@
                                 <p class="nd" x-text="noteDate(n.updated)"></p>
                             </div>
                         </div>
+                    </template>
+                </div>
+            </section>
+
+            <!-- ================= REZEPTE ================= -->
+            <section x-show="activeTab === 'recipes'" x-cloak class="space-y-5">
+                <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div class="min-w-0 flex-1">
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Rezepte</h2>
+                        <p class="muted text-xs mt-1 font-medium"><span x-text="recipes.length"></span> gespeichert · Zutaten wandern auf Knopfdruck in die Einkaufsliste</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="search" x-model="recipeQuery" placeholder="Suchen…" class="field sm:!w-52" aria-label="Rezepte durchsuchen">
+                        <button @click="openRecipeEdit()" class="btn btn-primary shrink-0"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Rezept</span></button>
+                    </div>
+                </div>
+
+                <div x-show="!recipesView.length" class="card p-8 text-center">
+                    <i class="fa-solid fa-utensils text-3xl accent opacity-70"></i>
+                    <p class="text-sm font-bold mt-3" x-text="recipeQuery.trim() ? 'Nichts gefunden' : 'Noch keine Rezepte'"></p>
+                    <p class="muted text-xs mt-1" x-show="!recipeQuery.trim()">Lieblingsgerichte mit Zutatenliste – beim Kochen nachschlagen und die Zutaten direkt einkaufen.</p>
+                    <button x-show="!recipeQuery.trim()" @click="openRecipeEdit()" class="btn btn-soft mt-4"><i class="fa-solid fa-plus"></i>Erstes Rezept anlegen</button>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    <template x-for="r in recipesView" :key="r.id">
+                        <button type="button" class="card p-4 text-left flex gap-3.5 items-start hover:brightness-[1.04] transition" @click="openRecipe(r)">
+                            <span class="text-3xl leading-none shrink-0 mt-0.5" x-text="r.emoji"></span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block font-black text-sm leading-snug break-words" x-text="r.title"></span>
+                                <span class="block text-[11px] muted font-semibold mt-1">
+                                    <span x-text="r.ings.length + ' Zutaten'"></span>
+                                    <span x-show="r.minutes" x-text="' · ' + r.minutes + ' Min'"></span>
+                                    <span x-text="' · ' + r.servings + ' Portionen'"></span>
+                                </span>
+                            </span>
+                            <span class="shrink-0" :class="r.fav ? 'text-amber-400' : 'muted opacity-40'" @click.stop="toggleRecipeFav(r)"><i :class="r.fav ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></span>
+                        </button>
                     </template>
                 </div>
             </section>
@@ -744,7 +823,7 @@
                 </div>
 
                 <!-- Kopfzeile -->
-                <div class="card p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+                <div class="card hero p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
                     <div class="min-w-0">
                         <h2 class="text-2xl sm:text-3xl font-black tracking-tight truncate" x-text="shopListName"></h2>
                         <p class="muted text-xs mt-1 font-semibold"><span x-text="shopOpen.length"></span> offen · <span x-text="shopDone.length"></span> im Wagen</p>
@@ -863,6 +942,12 @@
                     <div class="cmd">
                         <button x-show="mailCfg.accounts.length" @click="mailNew()" class="btn btn-primary shrink-0"><i class="fa-solid fa-pen-to-square"></i>Neu</button>
                         <span x-show="mailCfg.accounts.length" class="sep"></span>
+                        <template x-for="a in mailQuick" :key="'q' + a.id">
+                            <button x-show="mailCfg.accounts.length && quickOk(a, mailPicked.length ? mailPicked : (mailCurRow.id ? [mailCurRow] : []))" class="btn btn-soft shrink-0" :disabled="!mailSel && !mailPicked.length" @click="runQuick(a, mailPicked)" :title="a.label">
+                                <i :class="a.icon"></i><span class="hidden md:inline" x-text="a.label"></span>
+                            </button>
+                        </template>
+                        <span x-show="mailCfg.accounts.length && mailQuick.length" class="sep"></span>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailReplyTo(mailThread.msgs.length - 1, false)"><i class="fa-solid fa-reply"></i><span class="hidden sm:inline">Antworten</span></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailReplyTo(mailThread.msgs.length - 1, true)" title="Allen antworten" aria-label="Allen antworten"><i class="fa-solid fa-reply-all"></i></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailForward(mailThread.msgs.length - 1)" title="Weiterleiten" aria-label="Weiterleiten"><i class="fa-solid fa-share"></i></button>
@@ -926,8 +1011,19 @@
 
                     <!-- Liste -->
                     <div :class="mailSel ? 'hidden lg:block' : ''" class="card overflow-hidden">
+                        <div x-show="mailSelected.length" class="px-3 py-2.5 flex items-center gap-2 flex-wrap" style="background: color-mix(in srgb, var(--accent) 12%, var(--surface))">
+                            <button type="button" @click="mailPickAll()" class="icon-btn" :aria-label="mailAllPicked ? 'Auswahl aufheben' : 'Alle auswählen'"><i class="fa-solid" :class="mailAllPicked ? 'fa-square-check' : 'fa-square'"></i></button>
+                            <span class="text-sm font-bold" x-text="mailSelected.length + ' ausgewählt'"></span>
+                            <button type="button" @click="mailSelected = []" class="btn btn-ghost !py-1.5 !px-2 ml-auto">Fertig</button>
+                        </div>
+                        <div x-show="mailSelected.length" class="px-3 pb-2.5 flex gap-1.5 overflow-x-auto">
+                            <template x-for="a in quickActions" :key="'m' + a.id">
+                                <button type="button" x-show="quickOk(a, mailPicked)" class="chip !py-2 !px-3 shrink-0" @click="runQuick(a, mailPicked)"><i :class="a.icon"></i><span x-text="a.label"></span></button>
+                            </template>
+                        </div>
                         <div class="px-3 pt-3 pb-2 flex items-center gap-2">
                             <p class="font-black text-base truncate mr-auto" x-text="mailFolderLabel"></p>
+                            <button type="button" @click="mailSelected.length ? mailSelected = [] : mailPickAll()" class="icon-btn" :class="mailSelected.length ? 'accent' : ''" title="Mehrere auswählen" aria-label="Mehrere auswählen"><i class="fa-solid fa-list-check"></i></button>
                             <button type="button" @click="mailUnreadOnly = !mailUnreadOnly; mailRefresh({ manual: true })" class="icon-btn" :class="mailUnreadOnly ? 'accent' : ''" :title="mailUnreadOnly ? 'Alle anzeigen' : 'Nur ungelesene'" :aria-pressed="mailUnreadOnly"><i class="fa-solid fa-filter"></i></button>
                             <button type="button" @click="mailNewestFirst = !mailNewestFirst" class="icon-btn" :title="mailNewestFirst ? 'Älteste zuerst' : 'Neueste zuerst'"><i class="fa-solid" :class="mailNewestFirst ? 'fa-arrow-down-wide-short' : 'fa-arrow-up-wide-short'"></i></button>
                         </div>
@@ -942,8 +1038,10 @@
                                 <div>
                                     <p class="mgrp"><span x-text="g.label"></span><span class="ml-auto font-bold" x-text="g.rows.length"></span></p>
                                     <template x-for="r in g.rows" :key="r.key">
-                                        <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '']" @click="mailOpen(r)" @keydown.enter.self="mailOpen(r)">
-                                            <span class="mav" :style="'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" x-text="initial(mailWho(r))"></span>
+                                        <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '', mailSelected.includes(r.key) ? 'picked' : '']" @click="mailSelected.length ? mailPick(r) : mailOpen(r)" @keydown.enter.self="mailOpen(r)">
+                                            <button type="button" class="mav shrink-0" :style="mailSelected.includes(r.key) ? 'background: var(--accent)' : 'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" @click.stop="mailPick(r)" :title="mailSelected.includes(r.key) ? 'Auswahl aufheben' : 'Auswählen'">
+                                                <i x-show="mailSelected.includes(r.key)" class="fa-solid fa-check"></i><span x-show="!mailSelected.includes(r.key)" x-text="initial(mailWho(r))"></span>
+                                            </button>
                                             <span class="min-w-0 flex-1">
                                                 <span class="flex items-baseline gap-2"><span class="mw text-sm truncate flex-1" x-text="mailWho(r)"></span><span class="text-[11px] muted shrink-0 tnum" x-text="mailDateShort(r.date)"></span></span>
                                                 <span class="block ms truncate" x-text="(r.subj || '(kein Betreff)') + (r.n > 1 ? ' (' + r.n + ')' : '')"></span>
@@ -1021,7 +1119,7 @@
                     </template>
                     <button x-show="vaults.length < 8" @click="openVaultEdit()" class="chip !py-2 !px-3.5 !text-xs shrink-0 !border-dashed" title="Neuen Tresor anlegen"><i class="fa-solid fa-plus"></i>Tresor</button>
                 </div>
-                <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="flex items-center gap-4 min-w-0">
                         <svg class="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl shadow-lg" role="img" aria-label="Tresor"><use href="#logoVault"/></svg>
                         <div class="min-w-0">
@@ -1260,6 +1358,19 @@
                         <div class="flex justify-end"><button @click="saveGoogleScriptUrl()" class="btn btn-primary">URL speichern</button></div>
                     </div>
                         </div>
+                        <div x-show="!setQuery.trim() && setCat === 'mail'" class="card p-5 sm:p-6 space-y-3 mb-5">
+                                <p class="label"><i class="fa-solid fa-bolt mr-2"></i>Schnellaktionen</p>
+                                <p class="text-[11px] muted leading-relaxed">Bis zu vier Tasten in der Befehlsleiste, die mehrere Schritte auf einmal erledigen – für die geöffnete Mail oder für alle ausgewählten.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <template x-for="a in quickActions" :key="'s' + a.id">
+                                        <button type="button" class="chip !py-2 !px-3" :class="(mailCfg.settings.quick || []).includes(a.id) ? 'on' : ''" @click="toggleQuick(a.id)">
+                                            <i :class="a.icon"></i><span x-text="a.label"></span>
+                                            <span x-show="(mailCfg.settings.quick || []).includes(a.id)" class="font-black" x-text="((mailCfg.settings.quick || []).indexOf(a.id) + 1)"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            <p class="text-[11px] muted" x-text="(mailCfg.settings.quick || []).length + ' von 4 belegt'"></p>
+                        </div>
                         <div x-show="!setQuery.trim() && setCat === 'mail'" class="card p-5 sm:p-6 space-y-4">
                             <p class="label"><i class="fa-solid fa-signature mr-2"></i>Signatur &amp; Textbausteine</p>
                             <label class="block"><span class="text-sm font-bold">Signatur</span><span class="block text-[11px] muted mb-1.5">Wird neuen Mails und Antworten automatisch angehängt.</span>
@@ -1394,12 +1505,25 @@
 
                             </div>
                         </div>
-                        <div x-show="!setQuery.trim() && setCat === 'about'" class="space-y-5">
-                            <div class="card p-5 sm:p-6 space-y-2">
+                        <div x-show="!setQuery.trim() && setCat === 'about'" class="space-y-5" x-init="checkOffline()">
+                                                        <div class="card p-5 sm:p-6 space-y-3">
                                 <p class="label"><i class="fa-solid fa-wifi mr-2"></i>Offline-Betrieb</p>
-                                <p class="text-sm font-bold" x-text="offlineReady ? 'Aktiv – die App startet auch ohne Internet.' : 'Nicht aktiv'"></p>
-                                <p class="text-[11px] muted leading-relaxed" x-show="!offlineReady">Dafür muss die Datei <code>sw.js</code> neben der <code>index.html</code> im selben Ordner liegen. Danach die Seite einmal neu laden.</p>
-                                <p class="text-[11px] muted leading-relaxed" x-show="offlineReady">Die App und ihre Bausteine liegen im Browser. Ohne Verbindung funktionieren Kalender, Aufgaben, Einkauf und Tresor weiter; E-Mail und der Geräte-Abgleich brauchen Internet und holen auf, sobald du wieder online bist.</p>
+                                <p class="text-sm font-bold">
+                                    <span x-show="swState === 'bereit'" class="accent">Aktiv – die App startet auch ohne Internet.</span>
+                                    <span x-show="swState === 'teilweise'">Teilweise: die App ist gespeichert, die Bausteine noch nicht.</span>
+                                    <span x-show="swState === 'startet'">Wird eingerichtet – bitte die Seite einmal neu laden.</span>
+                                    <span x-show="swState === 'fehlt'">Nicht aktiv: <code>sw.js</code> wurde nicht gefunden.</span>
+                                    <span x-show="swState === 'nur über https'">Nicht möglich: funktioniert nur über https (also auf GitHub Pages, nicht bei einer lokal geöffneten Datei).</span>
+                                    <span x-show="swState === 'lädt'">Lade Offline-Daten …</span>
+                                    <span x-show="['bereit', 'teilweise', 'startet', 'fehlt', 'nur über https', 'lädt'].indexOf(swState) < 0" x-text="'Status: ' + swState"></span>
+                                </p>
+                                <p class="text-[11px] muted" x-show="swFiles" x-text="swFiles + ' Dateien im Offline-Speicher'"></p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-soft" @click="checkOffline()"><i class="fa-solid fa-rotate"></i>Erneut prüfen</button>
+                                    <button type="button" class="btn btn-soft" @click="fillOffline()" :disabled="swState === 'lädt'"><i class="fa-solid fa-download"></i>Offline-Daten jetzt laden</button>
+                                </div>
+                                <p class="text-[11px] muted leading-relaxed" x-show="swState === 'fehlt' || swState === 'nur über https'">Die Datei <code>sw.js</code> muss im selben Ordner liegen wie <code>index.html</code> und über dieselbe Adresse erreichbar sein (also <code>…github.io/sw.js</code>). Danach die Seite einmal vollständig neu laden.</p>
+                                <p class="text-[11px] muted leading-relaxed">Ohne Verbindung funktionieren Heute, Kalender, Aufgaben, Notizen, Einkauf und Tresor weiter. E-Mail und der Geräte-Abgleich brauchen Internet und holen auf, sobald du wieder online bist.</p>
                             </div>
                 <div class="card p-5 sm:p-6 space-y-3">
                     <p class="label"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>App &amp; Updates</p>
@@ -1478,6 +1602,10 @@
 
             <!-- Schritte -->
             <div class="space-y-2">
+                <div x-show="currentTodo.steps.length" class="flex items-center gap-2">
+                    <span class="label !text-[11px] shrink-0" x-text="currentTodo.steps.filter(s => s.done).length + ' von ' + currentTodo.steps.length + ' Schritten'"></span>
+                    <span class="flex-1 h-1 rounded-full overflow-hidden" style="background: var(--border)"><span class="block h-full rounded-full" :style="'width:' + stepPct(currentTodo) + '%; background: var(--accent)'"></span></span>
+                </div>
                 <template x-for="s in currentTodo.steps" :key="s.id">
                     <div class="flex items-center gap-2">
                         <input type="checkbox" x-model="s.done" class="w-4 h-4 shrink-0">
@@ -1553,9 +1681,90 @@
         </form>
     </div>
 
+    <!-- Rezept ansehen -->
+    <div x-show="showRecipe" x-transition.opacity x-cloak class="backdrop" @click.self="showRecipe = false">
+        <div class="card w-full max-w-2xl p-5 sm:p-7 space-y-5" x-show="recipeDraft">
+            <div class="flex items-start gap-3">
+                <span class="text-4xl leading-none shrink-0" x-text="recipeDraft?.emoji"></span>
+                <div class="min-w-0 flex-1">
+                    <h3 class="font-black text-xl leading-snug break-words" x-text="recipeDraft?.title"></h3>
+                    <p class="text-[11px] muted font-semibold mt-1"><span x-show="recipeDraft?.minutes" x-text="recipeDraft?.minutes + ' Minuten · '"></span><span x-text="recipeDraft?.ings.length + ' Zutaten'"></span></p>
+                </div>
+                <button type="button" class="icon-btn shrink-0" :class="recipeDraft?.fav ? '!text-amber-400' : ''" @click="toggleRecipeFav(recipeDraft)" aria-label="Lieblingsrezept"><i :class="recipeDraft?.fav ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
+                <button type="button" class="icon-btn shrink-0" @click="openRecipeEdit(recipeDraft)" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></button>
+            </div>
+
+            <div class="inner p-3 flex items-center justify-between gap-3">
+                <span class="label !text-[11px]">Portionen</span>
+                <div class="flex items-center gap-3">
+                    <button type="button" class="icon-btn" @click="recipeScale = Math.max(1, (recipeScale || recipeDraft.servings) - 1)" aria-label="Weniger">−</button>
+                    <span class="font-black text-lg w-7 text-center num" x-text="recipeScale || recipeDraft?.servings"></span>
+                    <button type="button" class="icon-btn" @click="recipeScale = Math.min(99, (recipeScale || recipeDraft.servings) + 1)" aria-label="Mehr">+</button>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" x-show="recipeDraft?.ings.length">
+                <p class="label"><i class="fa-solid fa-basket-shopping mr-2"></i>Zutaten</p>
+                <template x-for="(i, idx) in recipeDraft?.ings || []" :key="idx">
+                    <p class="flex items-baseline gap-2 text-sm py-0.5">
+                        <span class="font-black num shrink-0 min-w-[3.5rem]" x-text="ingLabel(i)"></span>
+                        <span class="break-words" x-text="i.name"></span>
+                    </p>
+                </template>
+            </div>
+
+            <div class="space-y-2" x-show="recipeStepList.length">
+                <p class="label"><i class="fa-solid fa-list-ol mr-2"></i>Zubereitung</p>
+                <template x-for="(s, idx) in recipeStepList" :key="idx">
+                    <p class="flex gap-3 text-sm leading-relaxed">
+                        <span class="shrink-0 w-6 h-6 rounded-full grid place-items-center text-[11px] font-black" style="background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent)" x-text="idx + 1"></span>
+                        <span class="break-words flex-1" x-text="s"></span>
+                    </p>
+                </template>
+            </div>
+            <p x-show="recipeDraft?.note" class="text-[12px] muted leading-relaxed whitespace-pre-wrap" x-text="recipeDraft?.note"></p>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button type="button" @click="recipeToShopping()" class="btn btn-primary"><i class="fa-solid fa-basket-shopping"></i>Zutaten einkaufen</button>
+                <button type="button" @click="recipeToNote()" class="btn btn-soft"><i class="fa-regular fa-note-sticky"></i><span class="hidden sm:inline">Als Notiz</span></button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showRecipe = false" class="btn btn-ghost">Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rezept bearbeiten -->
+    <div x-show="showRecipeEdit" x-transition.opacity x-cloak class="backdrop" @click.self="showRecipeEdit = false">
+        <form @submit.prevent="saveRecipe()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-4" x-show="recipeDraft">
+            <h3 class="font-black text-lg" x-text="recipeDraft?.id ? 'Rezept bearbeiten' : 'Neues Rezept'"></h3>
+            <div class="flex gap-2">
+                <input type="text" x-model="recipeDraft.emoji" maxlength="8" class="field !w-16 text-center !text-xl" aria-label="Symbol">
+                <input type="text" x-ref="recipeTitle" x-model="recipeDraft.title" maxlength="80" placeholder="Name des Gerichts" class="field !font-bold" required>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <label class="block"><span class="label">Portionen</span><input type="number" min="1" max="99" x-model.number="recipeDraft.servings" class="field mt-1"></label>
+                <label class="block"><span class="label">Dauer in Minuten</span><input type="number" min="0" max="999" x-model.number="recipeDraft.minutes" class="field mt-1" placeholder="z. B. 40"></label>
+            </div>
+            <label class="block">
+                <span class="label">Zutaten – eine pro Zeile</span>
+                <textarea x-model="recipeIngText" rows="7" class="field mt-1 !text-sm" placeholder="250 g Linsen&#10;2 Karotten&#10;1 Bund Petersilie&#10;Salz und Pfeffer"></textarea>
+                <span class="text-[11px] muted">Menge und Einheit werden erkannt (g, kg, ml, l, TL, EL, Stück, Bund, Dose, Zehe …) und beim Umrechnen der Portionen angepasst.</span>
+            </label>
+            <label class="block"><span class="label">Zubereitung – ein Schritt pro Zeile</span>
+                <textarea x-model="recipeDraft.steps" rows="6" class="field mt-1 !text-sm" placeholder="Linsen abspülen und in Brühe aufsetzen.&#10;Gemüse würfeln und zugeben."></textarea></label>
+            <label class="block"><span class="label">Notiz</span><input type="text" x-model="recipeDraft.note" maxlength="200" class="field mt-1" placeholder="z. B. schmeckt aufgewärmt noch besser"></label>
+            <div class="flex flex-wrap justify-between gap-2 pt-1">
+                <button type="button" x-show="recipeDraft?.id" @click="deleteRecipe(recipeDraft.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showRecipeEdit = false" class="btn btn-ghost">Abbrechen</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Speichern</button>
+            </div>
+        </form>
+    </div>
+
     <!-- Notiz -->
     <div x-show="showNoteModal" x-transition.opacity x-cloak class="backdrop" @click.self="saveNote()">
-        <form @submit.prevent="saveNote()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-3">
+        <form @submit.prevent="saveNote()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-3" :style="currentNote.color ? 'background: color-mix(in srgb, ' + currentNote.color + ' 14%, var(--surface)); border-color: color-mix(in srgb, ' + currentNote.color + ' 32%, transparent)' : ''">
             <div class="flex items-center gap-2">
                 <input type="text" x-ref="noteTitle" x-model="currentNote.title" maxlength="120" placeholder="Titel" class="field !font-bold !text-base" aria-label="Titel">
                 <button type="button" class="icon-btn shrink-0" :class="currentNote.pin ? 'accent' : ''" @click="currentNote.pin = !currentNote.pin" :aria-label="currentNote.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack"></i></button>
@@ -1801,7 +2010,7 @@
                     </button>
                 </template>
                 <p x-show="gq.trim().length > 1 && !searchHits.length" class="p-6 text-center muted text-sm">Nichts gefunden.</p>
-                <p x-show="gq.trim().length < 2" class="p-6 text-center muted text-xs leading-relaxed">Tippe mindestens zwei Zeichen. Durchsucht werden Termine, Aufgaben, Notizen, Einkauf, Einstellungen, der entsperrte Tresor (nur Titel, Benutzername, Adresse) und die zuletzt geladene Mail-Liste. Tastenkürzel: <b>Strg/⌘ + K</b></p>
+                <p x-show="gq.trim().length < 2" class="p-6 text-center muted text-xs leading-relaxed">Tippe mindestens zwei Zeichen. Durchsucht werden Termine, Aufgaben, Notizen, Rezepte, Einkauf, Einstellungen, der entsperrte Tresor (nur Titel, Benutzername, Adresse) und die zuletzt geladene Mail-Liste. Tastenkürzel: <b>Strg/⌘ + K</b></p>
             </div>
         </div>
     </div>
@@ -2213,6 +2422,18 @@
         }
 
         /* ============ Tresor-Kryptografie (WebCrypto) ============ */
+        /* Zweite Logo-Farbe: dieselbe Farbe, um 45 Grad im Farbkreis gedreht */
+        function shiftHue(hex, deg) {
+            const m = /^#([0-9a-f]{6})$/i.exec(String(hex || '')); if (!m) return hex;
+            const n = parseInt(m[1], 16); let r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+            const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+            let hh = 0; if (d) hh = mx === r ? ((g - b) / d + (g < b ? 6 : 0)) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+            hh = (hh * 60 + deg + 360) % 360;
+            const l = (mx + mn) / 2, s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+            const c2 = (1 - Math.abs(2 * l - 1)) * s, x = c2 * (1 - Math.abs((hh / 60) % 2 - 1)), mm = l - c2 / 2;
+            const t = hh < 60 ? [c2, x, 0] : hh < 120 ? [x, c2, 0] : hh < 180 ? [0, c2, x] : hh < 240 ? [0, x, c2] : hh < 300 ? [x, 0, c2] : [c2, 0, x];
+            return '#' + t.map(v => Math.round((v + mm) * 255).toString(16).padStart(2, '0')).join('');
+        }
         const VAULT_KEY = 'organizer_vault';
         /* Mehrere Tresore: der erste heißt „main“ und liegt weiterhin unter organizer_vault (so bleiben alte Daten erhalten) */
         const VAULTS_KEY = 'organizer_vaults';
@@ -2298,7 +2519,7 @@
         async function sha1Hex(str) { return [...new Uint8Array(await crypto.subtle.digest('SHA-1', te.encode(str)))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes']];
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes']];
         const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
@@ -2392,8 +2613,67 @@ function listBackups_(room) {
 
         /* ============ E-Mail (Gmail über eigenes Apps-Script) ============ */
         const MAIL_URL_RE = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+        /* Schnellaktionen für E-Mails: eine Taste, mehrere Schritte */
+        const QUICK_ACTIONS = [
+            { id: 'read_archive', label: 'Gelesen & archivieren', icon: 'fa-solid fa-box-archive', patch: { r: 1, x: 'a' }, msg: 'Gelesen und archiviert' },
+            { id: 'archive', label: 'Archivieren', icon: 'fa-solid fa-box-archive', patch: { x: 'a' }, msg: 'Archiviert' },
+            { id: 'delete', label: 'Löschen', icon: 'fa-solid fa-trash-can', patch: { x: 'd' }, msg: 'In den Papierkorb verschoben' },
+            { id: 'spam', label: 'Als Spam', icon: 'fa-solid fa-ban', patch: { x: 'sp' }, msg: 'Als Spam markiert' },
+            { id: 'read', label: 'Als gelesen', icon: 'fa-solid fa-envelope-open', patch: { r: 1 }, msg: 'Als gelesen markiert' },
+            { id: 'unread', label: 'Als ungelesen', icon: 'fa-solid fa-envelope', patch: { r: 0 }, msg: 'Als ungelesen markiert' },
+            { id: 'star', label: 'Markieren', icon: 'fa-solid fa-star', patch: { s: 1 }, msg: 'Markiert' },
+            { id: 'star_read', label: 'Markieren & gelesen', icon: 'fa-solid fa-star', patch: { s: 1, r: 1 }, msg: 'Markiert und gelesen' },
+            { id: 'todo_archive', label: 'Aufgabe & archivieren', icon: 'fa-solid fa-list-check', patch: { r: 1, x: 'a' }, todo: true, msg: 'Als Aufgabe gemerkt und archiviert' },
+            { id: 'todo', label: 'Als Aufgabe merken', icon: 'fa-solid fa-list-check', patch: {}, todo: true, msg: 'Als Aufgabe gemerkt' },
+            { id: 'inbox', label: 'In den Posteingang', icon: 'fa-solid fa-inbox', patch: { x: 'i' }, msg: 'In den Posteingang verschoben' }
+        ];
+        const DEFAULT_QUICK = ['read_archive', 'todo_archive', 'delete'];
+
+        /* ---------- Rezepte ---------- */
+        const UNITS = ['g', 'kg', 'ml', 'l', 'TL', 'EL', 'Stück', 'Prise', 'Bund', 'Dose', 'Pck', 'Zehe', 'Scheibe'];
+        /* „200 g Mehl“ oder „2 Zehen Knoblauch“ in Menge, Einheit und Name zerlegen */
+        function parseIngredient(line) {
+            const raw = String(line || '').trim();
+            if (!raw) return null;
+            const m = /^([0-9]+(?:[.,][0-9]+)?(?:\s*\/\s*[0-9]+)?|[½¼¾⅓⅔])?\s*([A-Za-zÄÖÜäöüß.]+)?\s*(.*)$/.exec(raw);
+            let qty = 0, unit = '', name = raw;
+            if (m) {
+                const frac = { '½': .5, '¼': .25, '¾': .75, '⅓': 1 / 3, '⅔': 2 / 3 };
+                if (m[1]) qty = frac[m[1]] !== undefined ? frac[m[1]] : (m[1].includes('/') ? (parseFloat(m[1].split('/')[0]) / parseFloat(m[1].split('/')[1])) : parseFloat(m[1].replace(',', '.'))) || 0;
+                const u = (m[2] || '').replace(/\.$/, '');
+                const hit = UNITS.find(x => x.toLowerCase() === u.toLowerCase() || (u.toLowerCase() === 'zehen' && x === 'Zehe') || (u.toLowerCase() === 'scheiben' && x === 'Scheibe') || (u.toLowerCase() === 'stk' && x === 'Stück'));
+                if (hit && qty) { unit = hit; name = m[3] || ''; }
+                else if (qty) name = ((m[2] || '') + ' ' + (m[3] || '')).trim();
+                if (!name) name = raw;
+            }
+            return { qty: qty || 0, unit, name: name.trim().slice(0, 60) };
+        }
+        function normRecipe(r) {
+            const ings = (Array.isArray(r.ings) ? r.ings : []).slice(0, 60).map(i => ({
+                qty: Number(i.qty) || 0, unit: UNITS.includes(i.unit) ? i.unit : '', name: String(i.name || '').slice(0, 60)
+            })).filter(i => i.name);
+            return {
+                id: String(r.id ?? uid()),
+                title: String(r.title || '').slice(0, 80) || 'Rezept',
+                emoji: String(r.emoji || '🍽️').slice(0, 8),
+                servings: Math.min(99, Math.max(1, Number(r.servings) || 2)),
+                minutes: Math.min(999, Math.max(0, Number(r.minutes) || 0)),
+                fav: !!r.fav,
+                ings,
+                steps: String(r.steps || '').slice(0, 8000),
+                note: String(r.note || '').slice(0, 2000),
+                created: Number(r.created) || Date.now(),
+                updated: Number(r.updated) || Number(r.created) || Date.now()
+            };
+        }
+
         /* ---------- Notizen ---------- */
         const NOTE_COLORS = ['', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#ef4444'];
+        /* Mengen hübsch anzeigen: 0,5 statt 0.5 und keine überflüssigen Nullen */
+        function fmtQty(n) {
+            const v = Math.round(n * 100) / 100;
+            return (Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/0$/, '').replace(/\./, ',')).replace(/,$/, '');
+        }
         function normNote(n) {
             return {
                 id: String(n.id ?? uid()),
@@ -2424,7 +2704,7 @@ function listBackups_(room) {
             }
             const s = v.settings && typeof v.settings === 'object' ? v.settings : {};
             const templates = (Array.isArray(s.templates) ? s.templates : []).filter(t => t && typeof t === 'object').slice(0, 12).map(t => ({ name: String(t.name || '').slice(0, 40), text: String(t.text || '').slice(0, 3000) }));
-            return { accounts, settings: { poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, images: !!s.images, notify: s.notify !== false, preview: s.preview !== false, signature: String(s.signature || '').slice(0, 1500), templates } };
+            return { accounts, settings: { quick: Array.isArray(s.quick) ? s.quick.filter(x => QUICK_ACTIONS.some(a => a.id === x)).slice(0, 4) : [...DEFAULT_QUICK], poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, images: !!s.images, notify: s.notify !== false, preview: s.preview !== false, signature: String(s.signature || '').slice(0, 1500), templates } };
         }
         const normOverlay = v => ({ id: String(v.id), t: Number(v.t) || 0, ...(v.r === 0 || v.r === 1 ? { r: v.r } : {}), ...(v.s === 0 || v.s === 1 ? { s: v.s } : {}), ...(['a', 'd', 'i', 'sp'].includes(v.x) ? { x: v.x } : {}) });
         /* Macht fremdes HTML zum Anzeigen sicher: keine Skripte/Frames/Formulare, keine Weiterleitungen; Bilder nur auf Wunsch. */
@@ -2671,6 +2951,7 @@ function reply_(p) {
                     { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
                     { id: 'notes', label: 'Notizen', icon: 'fa-regular fa-note-sticky' },
+                    { id: 'recipes', label: 'Rezepte', icon: 'fa-solid fa-utensils' },
                     { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
                     { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' },
                     { id: 'passwords', label: 'Tresor', icon: 'fa-solid fa-vault' },
@@ -2691,7 +2972,7 @@ function reply_(p) {
                     { id: 'paper', label: 'Papier', bg: '#f6f1e7', accent: '#b45309' },
                     { id: 'rose', label: 'Rosé', bg: '#fdf2f4', accent: '#be185d' }
                 ],
-                accents: ['#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f59e0b', '#10b981', '#06b6d4'],
+                accents: ['#6366f1', '#4f46e5', '#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#65a30d', '#eab308', '#f59e0b', '#f97316', '#ef4444', '#e11d48', '#ec4899', '#d946ef', '#8b5cf6', '#7c3aed', '#64748b'],
                 eventColors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'],
                 listEmojis: ['🏠', '💼', '🛒', '📚', '🎯', '💡', '✈️', '🎁', '💪', '🧹', '💰', '❤️'],
                 monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
@@ -2709,7 +2990,7 @@ function reply_(p) {
                 ],
                 setCat: 'general', setQuery: '',
                 settingsDef: [
-                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Heute'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
+                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Heute'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
                     { cat: 'general', k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
                     { cat: 'general', k: 'fontSize', type: 'select', label: 'Schriftgröße', desc: 'Skaliert die gesamte App', o: [['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']] },
                     { cat: 'general', k: 'reduceMotion', type: 'toggle', label: 'Weniger Animationen', desc: 'Schaltet Übergänge und Bewegungen weitgehend ab' },
@@ -2718,7 +2999,7 @@ function reply_(p) {
                     { cat: 'design', k: 'radius', type: 'select', label: 'Ecken', o: [['soft', 'Weich (Standard)'], ['sharp', 'Eckig'], ['round', 'Sehr rund']] },
                     { cat: 'design', k: 'cardStyle', type: 'select', label: 'Kartenstil', desc: 'Glas wirkt am besten mit Farbverlauf-Hintergrund', o: [['solid', 'Gefüllt'], ['glass', 'Glas'], ['flat', 'Flach (ohne Schatten)'], ['outline', 'Nur Umrandung']] },
                     { cat: 'design', k: 'bgStyle', type: 'select', label: 'Hintergrund', o: [['plain', 'Einfarbig'], ['gradient', 'Sanfter Farbverlauf']] },
-                    { cat: 'design', k: 'font', type: 'select', label: 'Schriftart', o: [['default', 'Jakarta (Standard)'], ['system', 'System'], ['rounded', 'Rund'], ['serif', 'Serif'], ['mono', 'Monospace']] },
+                    { cat: 'design', k: 'font', type: 'select', label: 'Schriftart', o: [['default', 'Jakarta (Standard)'], ['inter', 'Inter'], ['grotesk', 'Space Grotesk'], ['dm', 'DM Sans'], ['atkinson', 'Atkinson (gut lesbar)'], ['lora', 'Lora (Serif)'], ['serif', 'Serif (System)'], ['rounded', 'Rund'], ['system', 'System'], ['mono', 'Monospace']] },
                     { cat: 'today', k: 'todayEvents', type: 'toggle', label: 'Termine anzeigen' },
                     { cat: 'today', k: 'todayTodos', type: 'toggle', label: 'Aufgaben anzeigen', desc: 'Überfällig, heute fällig und „Mein Tag“' },
                     { cat: 'today', k: 'todayMail', type: 'toggle', label: 'Ungelesene E-Mails anzeigen' },
@@ -2795,6 +3076,7 @@ function reply_(p) {
 
                 /* Einkauf */
                 notes: [], noteQuery: '', showNoteModal: false, currentNote: { id: null, title: '', text: '', color: '', pin: false },
+                recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: null, recipeIngText: '', recipeUnits: UNITS,
                 shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
 
@@ -2804,7 +3086,7 @@ function reply_(p) {
                 mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
                 passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
                 pwSearch: '', pwFolderFilter: 'all', pwType: 'all', newMenu: false, pwMenu: null, pwEditShow: false,
-                mailFolders: MAIL_FOLDERS, mailNewestFirst: true, mailCfg: { accounts: [], settings: { poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
+                mailFolders: MAIL_FOLDERS, mailNewestFirst: true, mailCfg: { accounts: [], settings: { quick: [...DEFAULT_QUICK], poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
                 mailList: [], mailLoading: false, mailError: '', mailMoreOk: false, mailCounts: {}, mailSel: null, mailCur: null, mailLoaded: 0, mailLastPoll: 0, mailReq: 0, mailThreadReq: 0,
                 mailThread: { loading: false, error: '', msgs: [], open: {}, imgs: false },
                 showSearch: false, gq: '', gSel: 0, todayTask: '', mailCountsAt: 0,
@@ -2854,6 +3136,7 @@ function reply_(p) {
                     this.shopLists = (readJSON('organizer_shop_lists', []) || []).filter(l => l && l.id).map(l => this.normIncoming('sl', l));
                     this.mailCfg = normMailCfg(readJSON('organizer_mailcfg', null));
                     this.notes = (readJSON('organizer_notes', []) || []).filter(n => n && (n.title || n.text)).map(normNote);
+                    this.recipes = (readJSON('organizer_recipes', []) || []).filter(r => r && r.title).map(normRecipe);
                     const fold = readJSON('organizer_fold', null);
                     if (fold && typeof fold === 'object') { this.shopFold = fold.s && typeof fold.s === 'object' ? fold.s : {}; this.catFold = fold.c && typeof fold.c === 'object' ? fold.c : {}; }
                     this.mailStatus = (readJSON('organizer_mail_status', []) || []).filter(o => o && o.id && o.t).map(normOverlay);
@@ -2932,6 +3215,8 @@ function reply_(p) {
                     this.showVaultEdit = false;
                     if (this.picker.open) { this.picker.open = false; return; } // Esc schließt zuerst nur die Datum-/Zeit-Auswahl
                     if (this.showNoteModal) { this.saveNote(); return; }
+                    if (this.showRecipeEdit) { this.showRecipeEdit = false; return; }
+                    if (this.showRecipe) { this.showRecipe = false; return; }
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
                     this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = this.showSearch = this.showShopList = this.showVaultHealth = false;
                     if (this.showMailCompose) this.mailCloseCompose();
@@ -2963,7 +3248,8 @@ function reply_(p) {
                 applyCfg() {
                     const r = document.documentElement;
                     r.dataset.density = this.cfg.density;
-                    if (this.cfg.accent) r.style.setProperty('--accent', this.cfg.accent); else r.style.removeProperty('--accent');
+                    if (this.cfg.accent) { r.style.setProperty('--accent', this.cfg.accent); r.style.setProperty('--accent2', shiftHue(this.cfg.accent, 45)); }
+                    else { r.style.removeProperty('--accent'); r.style.removeProperty('--accent2'); }
                     r.dataset.fsize = this.cfg.fontSize; r.dataset.font = this.cfg.font; r.dataset.radius = this.cfg.radius; r.dataset.card = this.cfg.cardStyle; r.dataset.bg = this.cfg.bgStyle;
                     if (this.cfg.reduceMotion) r.dataset.motion = 'reduce'; else delete r.dataset.motion;
                 },
@@ -3141,6 +3427,7 @@ function reply_(p) {
                     if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋' };
                     if (p === 'sl') return { id: String(v.id), name: String(v.name || 'Liste').slice(0, 40), emoji: String(v.emoji || '🛒').slice(0, 8) };
                     if (p === 'nt') return normNote({ ...v });
+                    if (p === 'rc') return normRecipe({ ...v });
                     if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
@@ -3194,6 +3481,7 @@ function reply_(p) {
                         if (dirty.has('sh')) this.shoppingItems = cols.sh;
                         if (dirty.has('ml')) this.mailStatus = cols.ml;
                         if (dirty.has('nt')) this.notes = cols.nt;
+                        if (dirty.has('rc')) this.recipes = cols.rc;
                         if (dirty.has('sl')) { this.shopLists = cols.sl; if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = ''; }
                         if (dirty.has('ls')) {
                             if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
@@ -3357,7 +3645,7 @@ function reply_(p) {
                         else if (k[2] === ':' && cols[k.slice(0, 2)]) cols[k.slice(0, 2)].push(this.normIncoming(k.slice(0, 2), { ...r.v, id: k.slice(3) }));
                     }
                     this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
-                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl; this.notes = cols.nt;
+                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl; this.notes = cols.nt; this.recipes = cols.rc;
                     if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = '';
                     if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
                     this.todoLists = cols.ls;
@@ -3846,6 +4134,16 @@ function reply_(p) {
                 toggleImportant(id) { const t = this.todos.find(x => x.id === id); if (t) { t.important = !t.important; this.saveAllData(); } },
                 openTaskModal(t) { this.currentTodo = JSON.parse(JSON.stringify(t)); this.newStep = ''; this.showTodoModalState = true; },
                 addStep() { const s = this.newStep.trim(); if (s) this.currentTodo.steps.push({ id: uid(), t: s, done: false }); this.newStep = ''; },
+                /* Unteraufgaben lassen sich direkt in der Liste auf- und zuklappen und abhaken */
+                stepsOpen: [],
+                toggleSteps(id) { this.stepsOpen = this.stepsOpen.includes(id) ? this.stepsOpen.filter(x => x !== id) : [...this.stepsOpen, id]; },
+                stepPct(t) { return t.steps.length ? Math.round(t.steps.filter(s => s.done).length / t.steps.length * 100) : 0; },
+                toggleStep(todoId, stepId) {
+                    this.todos = this.todos.map(t => t.id !== todoId ? t : { ...t, steps: t.steps.map(s => s.id === stepId ? { ...s, done: !s.done } : s) });
+                    this.saveAllData();
+                    const t = this.todos.find(x => x.id === todoId);
+                    if (t && !t.done && t.steps.length && t.steps.every(s => s.done)) this.toast('Alle Schritte erledigt – Aufgabe abhaken?');
+                },
                 saveTodo() {
                     this.addStep();
                     const t = { ...this.currentTodo, title: this.currentTodo.title.trim() };
@@ -4021,6 +4319,68 @@ function reply_(p) {
                     const title = (n.title || this.noteSnippet(n)).slice(0, 80);
                     this.todos = [normTodo({ id: uid(), title, note: n.title ? this.noteSnippet(n).slice(0, 500) : '', listId: 'inbox', created: Date.now() }, {}), ...this.todos];
                     this.saveAllData(); this.toast('Als Aufgabe übernommen');
+                },
+
+                /* ---------- Rezepte ---------- */
+                get recipesView() {
+                    const q = this.recipeQuery.trim().toLowerCase();
+                    const hit = r => !q || (r.title + ' ' + r.ings.map(i => i.name).join(' ') + ' ' + r.steps).toLowerCase().includes(q);
+                    return this.recipes.filter(hit).sort((a, b) => (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || a.title.localeCompare(b.title, 'de'));
+                },
+                get recipeStepList() { return this.recipeDraft ? this.recipeDraft.steps.split(/\n+/).map(s => s.trim()).filter(Boolean) : []; },
+                openRecipe(r) { this.recipeDraft = normRecipe({ ...r }); this.recipeScale = r.servings; this.showRecipe = true; },
+                openRecipeEdit(r) {
+                    this.recipeDraft = r ? normRecipe({ ...r }) : normRecipe({ id: null, title: '', servings: 2 });
+                    if (!r) this.recipeDraft.id = null;
+                    this.recipeIngText = this.recipeDraft.ings.map(i => [i.qty ? fmtQty(i.qty) : '', i.unit, i.name].filter(Boolean).join(' ')).join('\n');
+                    this.showRecipe = false; this.showRecipeEdit = true;
+                    this.$nextTick(() => this.$refs.recipeTitle?.focus());
+                },
+                saveRecipe() {
+                    const d = this.recipeDraft; if (!d) return;
+                    const title = d.title.trim(); if (!title) { this.toast('Bitte einen Namen eingeben'); return; }
+                    const ings = this.recipeIngText.split('\n').map(parseIngredient).filter(Boolean);
+                    const now = Date.now();
+                    const rec = normRecipe({ ...d, title, ings, updated: now, created: d.created || now, id: d.id || uid() });
+                    this.recipes = d.id ? this.recipes.map(r => r.id === d.id ? rec : r) : [rec, ...this.recipes];
+                    this.saveAllData(); this.showRecipeEdit = false; this.recipeDraft = rec; this.recipeScale = rec.servings;
+                },
+                async deleteRecipe(id) {
+                    const r = this.recipes.find(x => x.id === id); if (!r) return;
+                    if (!await this.ask('Das Rezept „' + r.title + '“ wird gelöscht.', { title: 'Rezept löschen' })) return;
+                    this.recipes = this.recipes.filter(x => x.id !== id); this.saveAllData();
+                    this.showRecipe = this.showRecipeEdit = false; this.toast('Rezept gelöscht');
+                },
+                toggleRecipeFav(r) { this.recipes = this.recipes.map(x => x.id === r.id ? { ...x, fav: !x.fav, updated: Date.now() } : x); this.saveAllData(); if (this.recipeDraft && this.recipeDraft.id === r.id) this.recipeDraft = { ...this.recipeDraft, fav: !this.recipeDraft.fav }; },
+                /* Mengen auf die gewünschte Portionszahl umrechnen */
+                scaledQty(i) { const d = this.recipeDraft; if (!d || !i.qty) return 0; return i.qty * (this.recipeScale || d.servings) / d.servings; },
+                ingLabel(i) { const q = this.scaledQty(i); return [q ? fmtQty(q) : '', i.unit].filter(Boolean).join(' '); },
+                /* Zutaten auf die Einkaufsliste – bekannte Produkte bekommen Symbol und Kategorie */
+                recipeToShopping() {
+                    const d = this.recipeDraft; if (!d) return;
+                    let added = 0, merged = 0;
+                    for (const i of d.ings) {
+                        const label = this.ingLabel(i);
+                        const known = matchProduct(i.name);
+                        const ex = this.shopOpen.find(x => x.name.toLowerCase() === (known ? known.name : i.name).toLowerCase());
+                        if (ex) {
+                            const note = [ex.note, label].filter(Boolean).join(' + ');
+                            this.shoppingItems = this.shoppingItems.map(x => x.id === ex.id ? { ...x, note: note.slice(0, 80) } : x);
+                            merged++;
+                        } else {
+                            const it = normShop({ ...(known || { name: i.name.charAt(0).toUpperCase() + i.name.slice(1) }), id: uid(), list: this.shopListId, note: label });
+                            this.shoppingItems.push(it); this.noteRecent(it); added++;
+                        }
+                    }
+                    this.saveAllData();
+                    this.toast(added + ' Zutat' + (added === 1 ? '' : 'en') + ' auf der Liste' + (merged ? ', ' + merged + ' ergänzt' : ''));
+                    this.showRecipe = false; this.switchTab('shopping');
+                },
+                recipeToNote() {
+                    const d = this.recipeDraft; if (!d) return;
+                    const txt = d.ings.map(i => '- ' + [this.ingLabel(i), i.name].filter(Boolean).join(' ')).join('\n') + (d.steps ? '\n\n' + d.steps : '');
+                    this.notes = [normNote({ id: uid(), title: d.title, text: txt, color: '#10b981' }), ...this.notes];
+                    this.saveAllData(); this.toast('Als Notiz gespeichert');
                 },
 
                 /* ---------- Tresor ---------- */
@@ -4243,6 +4603,7 @@ function reply_(p) {
                     for (const i of cap(this.shoppingItems.filter(i => has(i.name, i.note)))) out.push({ key: 's' + i.id, kind: 'Einkauf', icon: 'fa-solid fa-bag-shopping', title: i.name, sub: i.category + (i.done ? ' · im Warenkorb' : ''), type: 'shop', ref: i });
                     if (this.vaultState === 'unlocked') for (const v of cap(this.passwords.filter(v => has(v.title, v.username, v.url, v.email)))) out.push({ key: 'v' + v.id, kind: 'Tresor', icon: 'fa-solid fa-vault', title: v.title, sub: v.username || v.url || v.email || '', type: 'vault', ref: v.id });
                     for (const r of cap(this.mailRows.filter(r => has(r.subj, r.from, r.snip)))) out.push({ key: 'm' + r.key, kind: 'Mail', icon: 'fa-solid fa-envelope', title: r.subj || '(kein Betreff)', sub: this.senderName(r.from), type: 'mail', ref: r });
+                    for (const r of cap(this.recipes.filter(r => has(r.title, r.ings.map(i => i.name).join(' '))))) out.push({ key: 'r' + r.id, kind: 'Rezept', icon: 'fa-solid fa-utensils', title: r.emoji + ' ' + r.title, sub: r.ings.length + ' Zutaten', type: 'recipe', ref: r.id });
                     for (const n of cap(this.notes.filter(n => has(n.title, n.text)))) out.push({ key: 'n' + n.id, kind: 'Notiz', icon: 'fa-regular fa-note-sticky', title: n.title || this.noteSnippet(n).slice(0, 40) || 'Notiz', sub: this.noteDate(n.updated), type: 'note', ref: n.id });
                     for (const it of cap(this.settingsDef.filter(i => has(i.label, i.desc)), 5)) out.push({ key: 'c' + it.cat + it.k, kind: 'Einstellung', icon: 'fa-solid fa-sliders', title: it.label, sub: (this.settingsCats.find(c => c.id === it.cat) || {}).label, type: 'setting', ref: it });
                     return out;
@@ -4255,6 +4616,7 @@ function reply_(p) {
                     else if (h.type === 'vault') { const v = this.passwords.find(x => x.id === h.ref); if (v) { this.switchTab('passwords'); this.editPassword(v); } }
                     else if (h.type === 'mail') { this.switchTab('mail'); this.mailOpen(h.ref); }
                     else if (h.type === 'note') { const n = this.notes.find(x => x.id === h.ref); if (n) { this.switchTab('notes'); this.openNote(n); } }
+                    else if (h.type === 'recipe') { const r = this.recipes.find(x => x.id === h.ref); if (r) { this.switchTab('recipes'); this.openRecipe(r); } }
                     else if (h.type === 'setting') { this.setQuery = ''; this.setCat = h.ref.cat; this.switchTab('settings'); }
                 },
                 /* ---------- Mail → Aufgabe / Termin, Signatur, Bausteine ---------- */
@@ -4349,7 +4711,8 @@ function reply_(p) {
                     if (o.manual && !errs.length) this.mailLastPoll = Date.now();
                 },
                 mailSetAcc(id) { this.mailAcc = id; this.mailBack(); this.mailList = []; this.mailRefresh(); },
-                mailSetFolder(f) { this.mailFolder = f; this.mailBack(); this.mailList = []; this.mailRefresh(); },
+                mailSetFolder(f) {
+                    this.mailSelected = []; this.mailFolder = f; this.mailBack(); this.mailList = []; this.mailRefresh(); },
                 get mailRows() {
                     const ov = new Map(this.mailStatus.map(o => [o.id, o])), f = this.mailFolder, out = [];
                     for (const m of this.mailList) {
@@ -4366,9 +4729,32 @@ function reply_(p) {
                     return out;
                 },
                 showMore: false, online: typeof navigator === 'undefined' || navigator.onLine !== false,
-                get mainTabs() { return this.tabs.filter(t => !['notes', 'passwords', 'settings'].includes(t.id)); },
-                get moreTabs() { return this.tabs.filter(t => ['notes', 'passwords', 'settings'].includes(t.id)); },
-                get offlineReady() { return typeof window !== 'undefined' && !!window.__swOk; },
+                get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'passwords', 'settings'].includes(t.id)); },
+                get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'passwords'].includes(t.id)); },
+                swState: 'unbekannt', swFiles: 0,
+                /* Prüft wirklich nach: läuft ein Service Worker und liegen Dateien im Offline-Speicher? */
+                async checkOffline() {
+                    try {
+                        if (!('serviceWorker' in navigator)) { this.swState = 'nicht möglich'; return; }
+                        const reg = await navigator.serviceWorker.getRegistration();
+                        if (!reg) { this.swState = location.protocol === 'https:' ? 'fehlt' : 'nur über https'; this.swFiles = 0; return; }
+                        const c = await caches.open('space-cache-v1');
+                        this.swFiles = (await c.keys()).length;
+                        this.swState = navigator.serviceWorker.controller ? (this.swFiles > 2 ? 'bereit' : 'teilweise') : 'startet';
+                    } catch (e) { this.swState = 'Fehler: ' + (e.message || e); }
+                },
+                /* Lädt die Bausteine (Tailwind, Alpine, Symbole, Schriften) aktiv in den Offline-Speicher */
+                async fillOffline() {
+                    this.swState = 'lädt';
+                    try {
+                        const urls = [...document.querySelectorAll('script[src], link[rel="stylesheet"][href]')].map(e => e.src || e.href).filter(u => /^https?:/.test(u));
+                        await Promise.all(urls.map(u => fetch(u, { mode: 'no-cors', cache: 'reload' }).catch(() => {})));
+                        await fetch(location.pathname, { cache: 'reload' }).catch(() => {});
+                    } catch (e) {}
+                    await new Promise(r => setTimeout(r, 600));
+                    await this.checkOffline();
+                    this.toast(this.swState === 'bereit' ? 'Offline-Daten gespeichert' : 'Offline-Speicher: ' + this.swState);
+                },
                 get wideTab() { return this.activeTab === 'mail' || this.activeTab === 'calendar'; },
                 get mailFolderLabel() { return (MAIL_FOLDERS.find(f => f.id === this.mailFolder) || { label: 'E-Mail' }).label; },
                 get mailFavFolders() { return MAIL_FOLDERS.filter(f => ['inbox', 'starred', 'sent'].includes(f.id)); },
@@ -4411,6 +4797,45 @@ function reply_(p) {
                         catch (e) { errs.push(e.message); for (const id of ids) { const key = acc + '.' + id, p = prev.get(key); this.mailStatus = p ? this.mailStatus.map(x => x.id === key ? p : x) : this.mailStatus.filter(x => x.id !== key); } }
                     }));
                     if (errs.length) { this.persistMailStatus(); this.touchSync(); this.toast('Aktion fehlgeschlagen: ' + errs[0]); this.mailPollCounts(); }
+                },
+                /* --- Schnellaktionen --- */
+                quickActions: QUICK_ACTIONS,
+                get mailQuick() { return (this.mailCfg.settings.quick || DEFAULT_QUICK).map(id => QUICK_ACTIONS.find(a => a.id === id)).filter(Boolean); },
+                quickOk(a, rows) {
+                    if (!rows.length) return false;
+                    if (a.patch.x === 'a') return this.mailFolder !== 'archive';
+                    if (a.patch.x === 'd') return this.mailFolder !== 'trash';
+                    if (a.patch.x === 'sp') return this.mailFolder !== 'spam' && this.mailFolder !== 'trash';
+                    if (a.patch.x === 'i') return ['archive', 'spam', 'trash'].includes(this.mailFolder);
+                    return true;
+                },
+                async runQuick(a, rows) {
+                    rows = (rows && rows.length ? rows : (this.mailCurRow.id ? [this.mailCurRow] : [])).filter(r => r && r.id);
+                    if (!rows.length) return;
+                    if (a.todo) for (const r of rows) this.mailRowToTodo(r);
+                    if (Object.keys(a.patch).length) await this.mailSet(rows, { ...a.patch });
+                    if (a.patch.x) { this.mailSelected = []; if (rows.some(r => r.key === this.mailSel)) this.mailBack(); }
+                    this.toast(a.msg + (rows.length > 1 ? ' (' + rows.length + ')' : ''));
+                },
+                toggleQuick(id) {
+                    const cur = [...(this.mailCfg.settings.quick || [])];
+                    const i = cur.indexOf(id);
+                    if (i >= 0) cur.splice(i, 1);
+                    else { if (cur.length >= 4) { this.toast('Mehr als vier Schnellaktionen passen nicht'); return; } cur.push(id); }
+                    this.mailCfg = { ...this.mailCfg, settings: { ...this.mailCfg.settings, quick: cur } };
+                    this.saveMailCfg(); this.touchSync();
+                },
+                /* --- Mehrfachauswahl --- */
+                mailSelected: [],
+                get mailPicked() { return this.mailRows.filter(r => this.mailSelected.includes(r.key)); },
+                get mailAllPicked() { return this.mailRows.length > 0 && this.mailPicked.length === this.mailRows.length; },
+                mailPick(r, on) { this.mailSelected = on === false || (on === undefined && this.mailSelected.includes(r.key)) ? this.mailSelected.filter(k => k !== r.key) : [...this.mailSelected, r.key]; },
+                mailPickAll() { this.mailSelected = this.mailAllPicked ? [] : this.mailRows.map(r => r.key); },
+                mailPickMode(r) { this.mailSelected = [r.key]; },
+                mailRowToTodo(r) {
+                    const title = (r.subj || '(kein Betreff)').slice(0, 120);
+                    this.todos = [normTodo({ id: uid(), title, note: 'Von ' + this.mailWho(r) + (this.mailSnippet(r) ? '\n\n' + this.mailSnippet(r).slice(0, 400) : ''), listId: 'inbox', created: Date.now() }, {}), ...this.todos];
+                    this.saveAllData();
                 },
                 mailMove(x) {
                     const r = this.mailCurRow; if (!r || !r.acc) return;
@@ -4872,12 +5297,13 @@ function reply_(p) {
                         localStorage.setItem('organizer_shop_lists', JSON.stringify(this.shopLists));
                         localStorage.setItem('organizer_mail_status', JSON.stringify(this.mailStatus));
                         localStorage.setItem('organizer_notes', JSON.stringify(this.notes));
+                        localStorage.setItem('organizer_recipes', JSON.stringify(this.recipes));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
                     this.touchSync();
                 },
                 exportData() {
-                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, vault: readJSON(VAULT_KEY, null),
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, recipes: this.recipes, vault: readJSON(VAULT_KEY, null),
                         vaults: this.vaults, vaultRecords: Object.fromEntries(this.vaults.filter(v => v.id !== 'main').map(v => [v.id, readJSON(vaultStoreKey(v.id), null)]).filter(([, r]) => validVaultRecord(r))) };
                     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
                     const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
@@ -4896,6 +5322,7 @@ function reply_(p) {
                             if (Array.isArray(data.shoppingItems)) this.shoppingItems = data.shoppingItems.filter(i => i && i.name).map(normShop);
                             if (Array.isArray(data.shopLists)) this.shopLists = data.shopLists.filter(l => l && l.id).map(l => this.normIncoming('sl', l));
                             if (Array.isArray(data.notes)) this.notes = data.notes.filter(n => n && (n.title || n.text)).map(normNote);
+                            if (Array.isArray(data.recipes)) this.recipes = data.recipes.filter(r => r && r.title).map(normRecipe);
                             if (data.cfg && typeof data.cfg === 'object') { this.cfg = { ...DEFAULT_CFG, ...data.cfg, views: { ...DEFAULT_CFG.views, ...(data.cfg.views || {}) } }; this.saveCfg(); this.applyCfg(); this.calendarView = this.cfg.calView; }
                             this.saveAllData();
 
