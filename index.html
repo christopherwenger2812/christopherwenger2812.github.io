@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.13-7">
+    <meta name="app-version" content="2026.11.13-8">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,7 +43,28 @@
             x.strokeStyle = '#fff'; x.fillStyle = '#fff'; x.lineWidth = 17; x.lineCap = 'round';
             x.beginPath(); x.arc(84.4, 90, 45, 35 * Math.PI / 180, 325 * Math.PI / 180); x.stroke();
             x.beginPath(); x.arc(130.8, 90, 10.7, 0, 2 * Math.PI); x.fill();
-            const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.appendChild(l);
+            const icon = c.toDataURL('image/png');
+            const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = icon; document.head.appendChild(l);
+            // Manifest zur Laufzeit erzeugen, damit die App weiterhin aus einer Datei besteht
+            const base = location.href.split('#')[0].split('?')[0];
+            const mf = {
+                name: 'Christophers Space', short_name: 'Space', start_url: base, scope: base.replace(/[^/]*$/, ''),
+                display: 'standalone', orientation: 'any', background_color: '#f4f6fb', theme_color: '#f4f6fb', lang: 'de',
+                icons: [{ src: icon, sizes: '180x180', type: 'image/png', purpose: 'any' }, { src: icon, sizes: '180x180', type: 'image/png', purpose: 'maskable' }]
+            };
+            const ml = document.createElement('link'); ml.rel = 'manifest';
+            ml.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(mf)); document.head.appendChild(ml);
+        } catch (e) {}
+        // Offline-Betrieb: nur wenn die Datei sw.js neben der App liegt (sonst passiert einfach nichts)
+        try {
+            if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js').then(r => {
+                        window.__swOk = true;
+                        r.addEventListener('updatefound', () => { const w = r.installing; w && w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) w.postMessage('skipWaiting'); }); });
+                    }).catch(() => {});
+                });
+            }
         } catch (e) {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -181,6 +202,35 @@
         .swatch { width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 2px solid transparent; transition: transform .15s; flex-shrink: 0; }
         .swatch.on { border-color: var(--text); transform: scale(1.12); }
         .safe-bottom { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
+        /* Notizen */
+        .note { position: relative; display: flex; flex-direction: column; gap: .4rem; padding: 1rem 1.1rem; border-radius: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--nc, var(--border)); box-shadow: var(--shadow-s); cursor: pointer; text-align: left; transition: transform .15s, box-shadow .15s; width: 100%; }
+        .note:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .note .nt { font-weight: 800; font-size: .95rem; line-height: 1.3; overflow-wrap: anywhere; }
+        .note .nx { font-size: .8rem; line-height: 1.5; color: var(--muted); white-space: pre-wrap; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+        .note .nd { font-size: .68rem; font-weight: 600; color: var(--muted); margin-top: .15rem; }
+        .notegrid { columns: 1; column-gap: .9rem; }
+        .notegrid > * { break-inside: avoid; margin-bottom: .9rem; display: inline-block; width: 100%; }
+        @media (min-width: 640px) { .notegrid { columns: 2; } }
+        @media (min-width: 1024px) { .notegrid { columns: 3; } }
+        @media (min-width: 1536px) { .notegrid { columns: 4; } }
+        /* ---------- Handy ---------- */
+        @media (pointer: coarse) {
+            .icon-btn { width: 2.6rem; height: 2.6rem; }
+            .btn { padding: .8rem 1.1rem; }
+            button.chip { padding: .4rem .75rem; }
+            .seg > button { padding: .6rem .9rem; }
+            .check { width: 1.7rem; height: 1.7rem; }
+            .mstar { padding: .4rem; }
+        }
+        @media (max-width: 640px) {
+            /* Dialoge erscheinen als Blatt von unten – mit dem Daumen erreichbar */
+            .backdrop { align-items: flex-end; padding: 0; }
+            .backdrop > * { margin-block: 0; width: 100%; max-width: none; border-radius: 1.6rem 1.6rem 0 0; max-height: 92dvh; overflow-y: auto; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+            .backdrop > *::before { content: ''; display: block; width: 2.5rem; height: .25rem; border-radius: 999px; background: var(--border); margin: -.5rem auto 1rem; }
+            /* Verhindert, dass iPhones beim Tippen in Felder hineinzoomen */
+            input, select, textarea { font-size: 16px; }
+            .mnav { font-size: .6rem; }
+        }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
         .spin { animation: spin 1s linear infinite; }
@@ -292,7 +342,7 @@
 
     <div class="min-h-[100dvh] flex flex-col">
         <header class="sticky top-0 z-40 border-b backdrop-blur-xl divider" style="background: color-mix(in srgb, var(--surface) 85%, transparent);">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4" :class="wideTab ? 'max-w-[1900px]' : 'max-w-7xl'">
                 <div class="flex items-center gap-3 min-w-0">
                     <svg class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-xl shadow-indigo-600/20 shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
                     <div class="min-w-0">
@@ -303,6 +353,7 @@
                         </p>
                     </div>
                 </div>
+                <button type="button" @click="openSearch()" class="icon-btn md:hidden shrink-0" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                 <div class="hidden md:flex items-center gap-3 shrink-0">
                 <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                 <nav class="flex seg" aria-label="Hauptnavigation">
@@ -314,13 +365,26 @@
             </div>
         </header>
 
-        <nav class="md:hidden fixed bottom-3 left-3 right-3 z-40 card px-2 pt-2 safe-bottom flex justify-around backdrop-blur-xl" aria-label="Hauptnavigation">
-            <template x-for="t in tabs" :key="t.id">
+        <nav class="md:hidden fixed bottom-3 left-3 right-3 z-40 card px-1.5 pt-2 safe-bottom flex justify-around backdrop-blur-xl" aria-label="Hauptnavigation">
+            <template x-for="t in mainTabs" :key="t.id">
                 <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="mnav relative"><i :class="t.icon" class="text-base"></i><span x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="absolute top-0 right-[18%] min-w-[1rem] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
             </template>
+            <button @click="showMore = true" :class="moreTabs.some(t => t.id === activeTab) ? 'on' : ''" class="mnav" aria-label="Mehr"><i class="fa-solid fa-ellipsis text-base"></i><span>Mehr</span></button>
         </nav>
 
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12">
+        <!-- „Mehr“ auf dem Handy -->
+        <div x-show="showMore" x-transition.opacity x-cloak class="backdrop md:hidden" @click.self="showMore = false" style="z-index: 85">
+            <div class="card w-full p-5 space-y-2">
+                <p class="label mb-1">Mehr</p>
+                <template x-for="t in moreTabs" :key="t.id">
+                    <button @click="showMore = false; switchTab(t.id)" class="side !py-3.5" :class="activeTab === t.id ? 'on' : ''"><i :class="t.icon" class="w-5 text-center"></i><span x-text="t.label"></span></button>
+                </template>
+                <button @click="showMore = false; openSearch()" class="side !py-3.5"><i class="fa-solid fa-magnifying-glass w-5 text-center"></i>Alles durchsuchen</button>
+                <button @click="showMore = false" class="btn btn-soft w-full !py-3 mt-2">Schließen</button>
+            </div>
+        </div>
+
+        <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12" :class="wideTab ? 'max-w-[1900px]' : 'max-w-7xl'">
 
             <!-- ================= HEUTE ================= -->
             <section x-show="activeTab === 'today'" x-cloak class="space-y-5">
@@ -613,6 +677,42 @@
                 </div>
             </section>
 
+            <!-- ================= NOTIZEN ================= -->
+            <section x-show="activeTab === 'notes'" x-cloak class="space-y-5">
+                <div class="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div class="min-w-0 flex-1">
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Notizen</h2>
+                        <p class="muted text-xs mt-1 font-medium"><span x-text="notes.length"></span> gespeichert · werden mit deinen Geräten abgeglichen</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="search" x-model="noteQuery" placeholder="Durchsuchen…" class="field sm:!w-56" aria-label="Notizen durchsuchen">
+                        <button @click="openNote()" class="btn btn-primary shrink-0"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Notiz</span></button>
+                    </div>
+                </div>
+
+                <div x-show="!notesView.length" class="card p-8 text-center">
+                    <i class="fa-regular fa-note-sticky text-3xl accent opacity-70"></i>
+                    <p class="text-sm font-bold mt-3" x-text="noteQuery.trim() ? 'Nichts gefunden' : 'Noch keine Notizen'"></p>
+                    <p class="muted text-xs mt-1" x-show="!noteQuery.trim()">Gedanken, Zugangsdaten-freie Merkzettel, Einkaufsideen – alles, was du später wiederfinden willst.</p>
+                    <button x-show="!noteQuery.trim()" @click="openNote()" class="btn btn-soft mt-4"><i class="fa-solid fa-plus"></i>Erste Notiz schreiben</button>
+                </div>
+
+                <div class="notegrid">
+                    <template x-for="n in notesView" :key="n.id">
+                        <div>
+                            <div class="note" :style="n.color ? '--nc:' + n.color : ''" role="button" tabindex="0" @click="openNote(n)" @keydown.enter.self="openNote(n)">
+                                <div class="flex items-start gap-2">
+                                    <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
+                                    <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
+                                </div>
+                                <p class="nx" x-show="n.text" x-text="n.text"></p>
+                                <p class="nd" x-text="noteDate(n.updated)"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
             <!-- ================= EINKAUF (Bring!-Stil) ================= -->
             <section x-show="activeTab === 'shopping'" x-cloak class="space-y-4">
                 <!-- Listen -->
@@ -639,11 +739,17 @@
                 </div>
 
                 <!-- Was gekauft werden soll -->
-                <div x-show="shopOpen.length" class="card p-5 sm:p-6 space-y-5">
+                <div x-show="shopOpen.length" class="card p-4 sm:p-6 space-y-4">
+                    <div class="flex justify-end -mb-1" x-show="cfg.shopGroup && shopGroups.length > 1">
+                        <button type="button" class="btn btn-ghost !py-1.5 !px-2.5 !text-[11px]" @click="foldAll('shop', !allFolded)">
+                            <i class="fa-solid" :class="allFolded ? 'fa-chevron-down' : 'fa-chevron-up'"></i><span x-text="allFolded ? 'Alle ausklappen' : 'Alle einklappen'"></span></button>
+                    </div>
                     <template x-for="g in shopGroups" :key="g.cat">
                         <div class="space-y-2.5">
-                            <p class="label flex items-center gap-2" x-show="cfg.shopGroup"><span class="w-2 h-2 rounded-full shrink-0" :style="'background:' + catColor(g.cat)"></span><span x-text="g.cat"></span><span class="ct" x-text="g.items.length"></span></p>
-                            <div :class="cfg.views.shopping === 'tiles' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5' : 'space-y-1'">
+                            <button type="button" class="label flex items-center gap-2 w-full py-1.5 text-left" x-show="cfg.shopGroup" @click="toggleFold('shop', g.cat)" :aria-expanded="!isFolded('shop', g.cat)">
+                                <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="'background:' + catColor(g.cat)"></span><span x-text="g.cat"></span><span class="ct" x-text="g.items.length"></span>
+                                <i class="fa-solid fa-chevron-down text-[10px] ml-auto transition-transform" :class="isFolded('shop', g.cat) ? '-rotate-90' : ''"></i></button>
+                            <div x-show="!cfg.shopGroup || !isFolded('shop', g.cat)" :class="cfg.views.shopping === 'tiles' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5' : 'space-y-1'">
                                 <template x-for="i in g.items" :key="i.id">
                                     <div @click="toggleBought(i.id)" :style="'--cc:' + catColor(i.category)" :class="cfg.views.shopping === 'tiles' ? 'ptile pick' : 'prow'">
                                         <template x-if="cfg.views.shopping === 'tiles'"><span class="pi"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span><span class="bg" x-show="badgeOf(i)" x-text="badgeOf(i)"></span></span></template><template x-if="cfg.views.shopping !== 'tiles'"><span class="pdot" :style="'--cc:' + catColor(i.category)"><span class="em" x-show="hasEmoji(i)" x-text="i.emoji"></span><span class="ltr" x-show="!hasEmoji(i)" x-text="initial(i.name)"></span><span class="bg" x-show="badgeOf(i)" x-text="badgeOf(i)"></span></span></template>
@@ -703,18 +809,27 @@
                         <button @click="shopCat = 'all'" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === 'all' ? 'on' : ''">Alle</button>
                         <template x-for="c in shopCategories" :key="c"><button @click="shopCat = c" class="chip !py-1.5 !px-3 !text-xs shrink-0" :class="shopCat === c ? 'on' : ''" x-text="c"></button></template>
                     </div>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2 max-h-[26rem] overflow-y-auto pr-1">
-                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="ptile !border-dashed" :style="'--cc:' + catColor(guessCategory(shopQuery))">
-                            <span class="pi"><span class="ltr" x-text="initial(shopQuery)"></span></span><span class="nm" x-text="'„' + shopQuery.trim() + '“ anlegen'"></span>
+                    <div class="space-y-3 overflow-y-auto pr-1" style="max-height: min(28rem, 60dvh)">
+                        <button x-show="shopQuery.trim() && !exactProduct" @click="addFromQuery()" class="ptile !border-dashed w-full !flex-row !justify-start gap-3 !min-h-0 !py-3 px-4" :style="'--cc:' + catColor(guessCategory(shopQuery))">
+                            <span class="pi !w-9 !h-9"><span class="ltr !text-base" x-text="initial(shopQuery)"></span></span><span class="nm !text-sm" x-text="'„' + shopQuery.trim() + '“ anlegen'"></span>
                         </button>
-                        <template x-for="p in catalogView" :key="p.name">
-                            <button @click="tapProduct(p)" class="ptile" :class="openQty(p.name) ? 'pick' : ''" :style="'--cc:' + catColor(p.category)">
-                                <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
-                                <span class="pi"><span class="em" x-text="p.emoji"></span><span class="bg" x-show="p.badge" x-text="p.badge"></span></span>
-                                <span class="nm" x-text="p.name"></span>
-                            </button>
+                        <template x-for="g in catalogGroups" :key="'c' + g.cat">
+                            <div class="space-y-2">
+                                <button type="button" class="label flex items-center gap-2 w-full py-1 text-left sticky top-0 z-10" style="background: var(--surface)" @click="toggleFold('cat', g.cat)" :aria-expanded="!isFolded('cat', g.cat)">
+                                    <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="'background:' + catColor(g.cat)"></span><span x-text="g.cat"></span><span class="ct" x-text="g.items.length"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] ml-auto transition-transform" :class="isFolded('cat', g.cat) ? '-rotate-90' : ''"></i></button>
+                                <div x-show="!isFolded('cat', g.cat)" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-2">
+                                    <template x-for="p in g.items" :key="p.name">
+                                        <button @click="tapProduct(p)" class="ptile" :class="openQty(p.name) ? 'pick' : ''" :style="'--cc:' + catColor(p.category)">
+                                            <span class="badge" x-show="openQty(p.name)" x-text="openQty(p.name)"></span>
+                                            <span class="pi"><span class="em" x-text="p.emoji"></span><span class="bg" x-show="p.badge" x-text="p.badge"></span></span>
+                                            <span class="nm" x-text="p.name"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
                         </template>
-                        <p x-show="!catalogView.length" class="muted text-xs col-span-full py-6 text-center">Kein Produkt gefunden – mit „+“ eigenen Artikel anlegen.</p>
+                        <p x-show="!catalogGroups.length" class="muted text-xs py-6 text-center">Kein Produkt gefunden – tippe auf „<span x-text="shopQuery.trim()"></span>“ anlegen.</p>
                     </div>
                 </div>
             </section>
@@ -754,7 +869,7 @@
                     <button @click="openMailSetup()" class="btn btn-primary"><i class="fa-solid fa-plug"></i>Jetzt verbinden</button>
                 </div>
 
-                <div x-show="mailCfg.accounts.length" class="grid gap-3 lg:grid-cols-[13.5rem_minmax(0,24rem)_minmax(0,1fr)] items-start">
+                <div x-show="mailCfg.accounts.length" class="grid gap-3 lg:grid-cols-[12.5rem_22rem_minmax(0,1fr)] xl:grid-cols-[13.5rem_24rem_minmax(0,1fr)] items-start">
                     <!-- Ordner -->
                     <aside :class="mailSel ? 'hidden lg:block' : ''" class="card p-2.5 space-y-3">
                         <div>
@@ -801,7 +916,7 @@
                         <p x-show="mailError" class="px-4 py-3 text-xs font-bold text-rose-400 border-t divider" x-text="mailError"></p>
                         <div x-show="mailLoading && !mailList.length" class="p-8 text-center muted text-sm border-t divider"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade E-Mails …</div>
                         <div x-show="!mailLoading && !mailRows.length && !mailError" class="p-8 text-center muted text-sm border-t divider" x-text="mailUnreadOnly ? 'Keine ungelesenen E-Mails.' : 'Keine E-Mails in diesem Ordner.'"></div>
-                        <div class="max-h-[70vh] overflow-y-auto border-t divider">
+                        <div class="overflow-y-auto border-t divider" style="max-height: min(70vh, calc(100dvh - 19rem))">
                             <template x-for="g in mailGroups" :key="g.label">
                                 <div>
                                     <p class="mgrp"><span x-text="g.label"></span><span class="ml-auto font-bold" x-text="g.rows.length"></span></p>
@@ -827,7 +942,7 @@
                     </div>
 
                     <!-- Lesebereich -->
-                    <div :class="mailSel ? '' : 'hidden lg:block'" class="card overflow-hidden min-h-[50vh]">
+                    <div :class="mailSel ? '' : 'hidden lg:block'" class="card overflow-hidden min-h-[50vh] lg:overflow-y-auto" style="max-height: min(100vh, calc(100dvh - 8.5rem))">
                         <div x-show="!mailSel" class="p-10 text-center muted text-sm"><i class="fa-regular fa-envelope-open text-3xl mb-3 block opacity-70"></i>Wähle links eine E-Mail aus.</div>
                         <div x-show="mailSel">
                             <div class="px-4 pt-4 pb-3 border-b divider">
@@ -1259,6 +1374,12 @@
                             </div>
                         </div>
                         <div x-show="!setQuery.trim() && setCat === 'about'" class="space-y-5">
+                            <div class="card p-5 sm:p-6 space-y-2">
+                                <p class="label"><i class="fa-solid fa-wifi mr-2"></i>Offline-Betrieb</p>
+                                <p class="text-sm font-bold" x-text="offlineReady ? 'Aktiv – die App startet auch ohne Internet.' : 'Nicht aktiv'"></p>
+                                <p class="text-[11px] muted leading-relaxed" x-show="!offlineReady">Dafür muss die Datei <code>sw.js</code> neben der <code>index.html</code> im selben Ordner liegen. Danach die Seite einmal neu laden.</p>
+                                <p class="text-[11px] muted leading-relaxed" x-show="offlineReady">Die App und ihre Bausteine liegen im Browser. Ohne Verbindung funktionieren Kalender, Aufgaben, Einkauf und Tresor weiter; E-Mail und der Geräte-Abgleich brauchen Internet und holen auf, sobald du wieder online bist.</p>
+                            </div>
                 <div class="card p-5 sm:p-6 space-y-3">
                     <p class="label"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>App &amp; Updates</p>
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1411,7 +1532,49 @@
         </form>
     </div>
 
+    <!-- Notiz -->
+    <div x-show="showNoteModal" x-transition.opacity x-cloak class="backdrop" @click.self="saveNote()">
+        <form @submit.prevent="saveNote()" class="card w-full max-w-2xl p-5 sm:p-7 space-y-3">
+            <div class="flex items-center gap-2">
+                <input type="text" x-ref="noteTitle" x-model="currentNote.title" maxlength="120" placeholder="Titel" class="field !font-bold !text-base" aria-label="Titel">
+                <button type="button" class="icon-btn shrink-0" :class="currentNote.pin ? 'accent' : ''" @click="currentNote.pin = !currentNote.pin" :aria-label="currentNote.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack"></i></button>
+            </div>
+            <textarea x-model="currentNote.text" rows="12" maxlength="20000" class="field !text-sm leading-relaxed" placeholder="Schreib los …" aria-label="Notiz"></textarea>
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="label mr-1">Farbe</span>
+                <template x-for="c in noteColors" :key="'nc' + c">
+                    <button type="button" class="swatch" :class="currentNote.color === c ? 'on' : ''" :style="c ? 'background:' + c : 'background: var(--surface2); border-color: var(--border)'" @click="currentNote.color = c" :aria-label="c ? 'Farbe ' + c : 'Ohne Farbe'"></button>
+                </template>
+            </div>
+            <div class="flex flex-wrap justify-between gap-2 pt-1">
+                <div class="flex gap-2">
+                    <button type="button" x-show="currentNote.id" @click="deleteNote(currentNote.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                    <button type="button" x-show="currentNote.id" @click="noteToTodo(currentNote); showNoteModal = false" class="btn btn-ghost" title="Als Aufgabe übernehmen"><i class="fa-solid fa-list-check"></i><span class="hidden sm:inline">Als Aufgabe</span></button>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Fertig</button>
+            </div>
+        </form>
+    </div>
+
     <!-- Einkaufsliste anlegen / bearbeiten -->
+    <!-- Rückfrage (ersetzt den Browser-Dialog, den manche Browser nach mehrmaliger Nutzung unterdrücken) -->
+    <div x-show="confirmBox.open" x-transition.opacity x-cloak class="backdrop !items-center" @click.self="confirmBoxDone(false)" style="z-index: 90">
+        <div class="card w-full max-w-sm p-6 space-y-5" role="alertdialog" aria-modal="true">
+            <div class="flex items-start gap-3.5">
+                <span class="w-11 h-11 rounded-2xl grid place-items-center shrink-0 text-lg" :style="confirmBox.danger ? 'background: rgba(225,29,72,.14); color: #f43f5e' : 'background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent)'">
+                    <i class="fa-solid" :class="confirmBox.danger ? 'fa-triangle-exclamation' : 'fa-circle-question'"></i></span>
+                <div class="min-w-0 flex-1">
+                    <p class="font-black text-base" x-text="confirmBox.title"></p>
+                    <p class="muted text-sm mt-1 whitespace-pre-line break-words" x-text="confirmBox.text"></p>
+                </div>
+            </div>
+            <div class="flex gap-2.5">
+                <button type="button" @click="confirmBoxDone(false)" class="btn btn-soft flex-1 !py-3">Abbrechen</button>
+                <button type="button" x-ref="confirmOk" @click="confirmBoxDone(true)" class="btn flex-1 !py-3" :class="confirmBox.danger ? 'btn-danger' : 'btn-primary'" x-text="confirmBox.ok"></button>
+            </div>
+        </div>
+    </div>
+
     <div x-show="showShopList" x-transition.opacity x-cloak class="backdrop" @click.self="showShopList = false">
         <form @submit.prevent="saveShopList()" class="card w-full max-w-sm p-6 sm:p-8 space-y-4">
             <h3 class="font-black text-lg" x-text="shopListDraft.id ? 'Liste bearbeiten' : 'Neue Einkaufsliste'"></h3>
@@ -1617,7 +1780,7 @@
                     </button>
                 </template>
                 <p x-show="gq.trim().length > 1 && !searchHits.length" class="p-6 text-center muted text-sm">Nichts gefunden.</p>
-                <p x-show="gq.trim().length < 2" class="p-6 text-center muted text-xs leading-relaxed">Tippe mindestens zwei Zeichen. Durchsucht werden Termine, Aufgaben, Einkauf, Einstellungen, der entsperrte Tresor (nur Titel, Benutzername, Adresse) und die zuletzt geladene Mail-Liste. Tastenkürzel: <b>Strg/⌘ + K</b></p>
+                <p x-show="gq.trim().length < 2" class="p-6 text-center muted text-xs leading-relaxed">Tippe mindestens zwei Zeichen. Durchsucht werden Termine, Aufgaben, Notizen, Einkauf, Einstellungen, der entsperrte Tresor (nur Titel, Benutzername, Adresse) und die zuletzt geladene Mail-Liste. Tastenkürzel: <b>Strg/⌘ + K</b></p>
             </div>
         </div>
     </div>
@@ -2114,7 +2277,7 @@
         async function sha1Hex(str) { return [...new Uint8Array(await crypto.subtle.digest('SHA-1', te.encode(str)))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus']];
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes']];
         const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
@@ -2208,6 +2371,19 @@ function listBackups_(room) {
 
         /* ============ E-Mail (Gmail über eigenes Apps-Script) ============ */
         const MAIL_URL_RE = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+        /* ---------- Notizen ---------- */
+        const NOTE_COLORS = ['', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#ef4444'];
+        function normNote(n) {
+            return {
+                id: String(n.id ?? uid()),
+                title: String(n.title || '').slice(0, 120),
+                text: String(n.text || '').slice(0, 20000),
+                color: NOTE_COLORS.includes(n.color) ? n.color : '',
+                pin: !!n.pin,
+                created: Number(n.created) || Date.now(),
+                updated: Number(n.updated) || Number(n.created) || Date.now()
+            };
+        }
         const MAIL_FOLDERS = [
             { id: 'inbox', label: 'Posteingang', icon: 'fa-inbox' }, { id: 'starred', label: 'Markiert', icon: 'fa-star' },
             { id: 'sent', label: 'Gesendet', icon: 'fa-paper-plane' }, { id: 'archive', label: 'Archiv', icon: 'fa-box-archive' },
@@ -2247,7 +2423,7 @@ function listBackups_(room) {
             const inner = doc.head.innerHTML + '</head><body>' + doc.body.innerHTML;
             const remote = /(src|background)\s*=\s*["']?\s*https?:|url\(\s*["']?\s*https?:/i.test(inner);
             const csp = "default-src 'none'; img-src " + (allowImg ? 'data: https:' : 'data:') + "; style-src 'unsafe-inline'; font-src data:; form-action 'none'";
-            const base = 'html{color-scheme:light}body{margin:0;padding:14px 16px;background:#fff;color:#1b1b1f;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-wrap:anywhere}img{max-width:100%;height:auto}a{color:#2563eb}';
+            const base = 'html{color-scheme:light}body{margin:0;padding:14px 16px;background:#fff;color:#1b1b1f;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-wrap:anywhere}img{max-width:100%;height:auto}a{color:#2563eb}table{max-width:100%}';
             return { remote, html: '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="' + csp + '"><meta name="referrer" content="no-referrer"><style>' + base + '</style>' + inner + '</body></html>' };
         }
         const MAIL_SCRIPT = `/**
@@ -2473,10 +2649,11 @@ function reply_(p) {
                     { id: 'today', label: 'Heute', icon: 'fa-solid fa-sun' },
                     { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
+                    { id: 'notes', label: 'Notizen', icon: 'fa-regular fa-note-sticky' },
                     { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
                     { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' },
                     { id: 'passwords', label: 'Tresor', icon: 'fa-solid fa-vault' },
-                    { id: 'settings', label: 'Settings', icon: 'fa-solid fa-sliders' }
+                    { id: 'settings', label: 'Einstellungen', icon: 'fa-solid fa-sliders' }
                 ],
                 themes: [
                     { id: 'daylight', label: 'Tageslicht', bg: '#f4f6fb', accent: '#4f46e5' },
@@ -2511,7 +2688,7 @@ function reply_(p) {
                 ],
                 setCat: 'general', setQuery: '',
                 settingsDef: [
-                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Heute'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
+                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Heute'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
                     { cat: 'general', k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
                     { cat: 'general', k: 'fontSize', type: 'select', label: 'Schriftgröße', desc: 'Skaliert die gesamte App', o: [['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']] },
                     { cat: 'general', k: 'reduceMotion', type: 'toggle', label: 'Weniger Animationen', desc: 'Schaltet Übergänge und Bewegungen weitgehend ab' },
@@ -2596,7 +2773,8 @@ function reply_(p) {
                 showListModal: false, currentList: { id: null, name: '', emoji: '📋' },
 
                 /* Einkauf */
-                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: CATEGORIES[0], shopCartOpen: true,
+                notes: [], noteQuery: '', showNoteModal: false, currentNote: { id: null, title: '', text: '', color: '', pin: false },
+                shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
 
                 /* Tresor */
@@ -2654,6 +2832,9 @@ function reply_(p) {
                     this.shoppingItems = readJSON('organizer_shopping', []).filter(i => i && i.name).map(normShop);
                     this.shopLists = (readJSON('organizer_shop_lists', []) || []).filter(l => l && l.id).map(l => this.normIncoming('sl', l));
                     this.mailCfg = normMailCfg(readJSON('organizer_mailcfg', null));
+                    this.notes = (readJSON('organizer_notes', []) || []).filter(n => n && (n.title || n.text)).map(normNote);
+                    const fold = readJSON('organizer_fold', null);
+                    if (fold && typeof fold === 'object') { this.shopFold = fold.s && typeof fold.s === 'object' ? fold.s : {}; this.catFold = fold.c && typeof fold.c === 'object' ? fold.c : {}; }
                     this.mailStatus = (readJSON('organizer_mail_status', []) || []).filter(o => o && o.id && o.t).map(normOverlay);
                     this.mailPrune(false);
 
@@ -2671,6 +2852,9 @@ function reply_(p) {
                     if (!window.crypto?.subtle) this.vaultError = 'Dieser Browser/Kontext unterstützt keine Verschlüsselung (WebCrypto).';
 
                     ['click', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, () => this.touchIdle(), { passive: true }));
+                    window.addEventListener('resize', () => { clearTimeout(this._refitT); this._refitT = setTimeout(() => this.mailRefit(), 250); }, { passive: true });
+                    window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
+                    window.addEventListener('offline', () => { this.online = false; });
                     this.$watch('activeTab', v => { this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
                     this.$watch('calendarView', () => this.scrollGrid());
                     this.saveAllData(); // persistiert migrierte Daten im neuen Format
@@ -2708,10 +2892,25 @@ function reply_(p) {
                 addDaysStr(ds, n) { return fmt(addDays(parseDate(ds), n)); },
                 longDate(ds) { return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); },
                 toast(msg) { this.toastMsg = msg; clearTimeout(this._toastTimer); this._toastTimer = setTimeout(() => this.toastMsg = '', 2800); },
-                ask(msg) { return !this.cfg.confirmDelete || confirm(msg); },
+                confirmBox: { open: false, title: '', text: '', ok: 'Löschen', danger: true, res: null },
+                askBox(text, o = {}) {
+                    return new Promise(res => {
+                        this.confirmBox = { open: true, title: o.title || 'Wirklich löschen?', text, ok: o.ok || 'Löschen', danger: o.danger !== false, res };
+                        this.$nextTick(() => this.$refs.confirmOk?.focus());
+                    });
+                },
+                confirmBoxDone(v) {
+                    const res = this.confirmBox.res;
+                    this.confirmBox = { ...this.confirmBox, open: false, res: null };
+                    if (res) res(v);
+                },
+                async ask(msg, o) { return !this.cfg.confirmDelete || await this.askBox(msg, o); },
                 closeModals() {
+                    if (this.confirmBox.open) return this.confirmBoxDone(false);
+                    this.showMore = false;
                     this.showVaultEdit = false;
                     if (this.picker.open) { this.picker.open = false; return; } // Esc schließt zuerst nur die Datum-/Zeit-Auswahl
+                    if (this.showNoteModal) { this.saveNote(); return; }
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
                     this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = this.showSearch = this.showShopList = this.showVaultHealth = false;
                     if (this.showMailCompose) this.mailCloseCompose();
@@ -2772,8 +2971,8 @@ function reply_(p) {
                     this.setCfg(k, !this.cfg[k]);
                 },
                 setView(section, v) { this.cfg.views[section] = v; this.saveCfg(); },
-                resetAll() {
-                    if (!confirm('Wirklich ALLE Daten auf diesem Gerät löschen (Termine, Aufgaben, Einkauf, Tresor, Einstellungen)? Das kann nicht rückgängig gemacht werden.')) return;
+                async resetAll() {
+                    if (!await this.askBox('Termine, Aufgaben, Einkauf, Tresore und Einstellungen werden auf diesem Gerät gelöscht. Das kann nicht rückgängig gemacht werden.', { title: 'Alle Daten löschen', ok: 'Alles löschen' })) return;
                     localStorage.clear(); sessionStorage.clear(); location.reload();
                 },
                 saveGoogleScriptUrl() {
@@ -2787,6 +2986,7 @@ function reply_(p) {
                 get syncReady() { return !!this.syncCfg.room && (this.syncCfg.pass || '').length >= 8 && !!window.crypto?.subtle; },
                 get syncActive() { return this.syncReady && (this.syncCfg.google || this.syncCfg.p2p); },
                 get headerStatus() {
+                    if (!this.online) return 'Offline – Änderungen werden später abgeglichen';
                     if (!this.syncActive) return this.syncStatus;
                     const p = [];
                     if (this.syncCfg.google) p.push(this.gError ? 'Google ⚠' : this.gBusy ? 'Google …' : this.gLast ? 'Google ✓' : 'Google');
@@ -2794,6 +2994,7 @@ function reply_(p) {
                     return 'Abgleich: ' + p.join(' · ');
                 },
                 get headerOk() {
+                    if (!this.online) return false;
                     if (!this.syncActive) return this.syncOk;
                     return (!this.syncCfg.google || (!this.gError && !!this.gLast)) && (!this.syncCfg.p2p || ['connected', 'waiting'].includes(this.p2p.status));
                 },
@@ -2825,8 +3026,8 @@ function reply_(p) {
                     if (changed) this.restartSync();
                     this.toast('Zugangsdaten gespeichert');
                 },
-                clearSync() {
-                    if (!this.ask('Abgleich beenden und die Zugangsdaten von diesem Gerät entfernen? Deine Daten bleiben erhalten.')) return;
+                async clearSync() {
+                    if (!await this.ask('Abgleich beenden und die Zugangsdaten von diesem Gerät entfernen? Deine Daten bleiben erhalten.')) return;
                     this.stopSync();
                     Object.assign(this.syncCfg, { room: '', pass: '', google: false, p2p: false });
                     this.syncPassInput = ''; this.syncRoomInput = ''; this.gError = ''; this.gLast = 0;
@@ -2918,6 +3119,7 @@ function reply_(p) {
                     if (p === 'td') return normTodo({ ...v }, {});
                     if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋' };
                     if (p === 'sl') return { id: String(v.id), name: String(v.name || 'Liste').slice(0, 40), emoji: String(v.emoji || '🛒').slice(0, 8) };
+                    if (p === 'nt') return normNote({ ...v });
                     if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
@@ -2970,6 +3172,7 @@ function reply_(p) {
                         if (dirty.has('td')) this.todos = cols.td;
                         if (dirty.has('sh')) this.shoppingItems = cols.sh;
                         if (dirty.has('ml')) this.mailStatus = cols.ml;
+                        if (dirty.has('nt')) this.notes = cols.nt;
                         if (dirty.has('sl')) { this.shopLists = cols.sl; if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = ''; }
                         if (dirty.has('ls')) {
                             if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
@@ -3109,7 +3312,7 @@ function reply_(p) {
                 backupLabel(b) { return new Date(b.ts).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); },
                 async restoreBackup(b) {
                     if (this.backupBusy || !this.backupReady()) return;
-                    if (!confirm('Sicherung vom ' + this.backupLabel(b) + ' wiederherstellen?\n\nDer aktuelle Stand wird dadurch ersetzt und danach auf alle verbundenen Geräte übertragen. Vorher wird automatisch eine Sicherung des jetzigen Stands angelegt.')) return;
+                    if (!await this.askBox('Der aktuelle Stand wird durch die Sicherung vom ' + this.backupLabel(b) + ' ersetzt und auf alle verbundenen Geräte übertragen. Vorher wird automatisch eine Sicherung des jetzigen Stands angelegt.', { title: 'Sicherung wiederherstellen', ok: 'Wiederherstellen', danger: false })) return;
                     if (!(await this.makeBackup(false))) { this.toast('Wiederherstellung abgebrochen – die Vorab-Sicherung ist fehlgeschlagen'); return; }
                     this.backupBusy = true;
                     try {
@@ -3133,7 +3336,7 @@ function reply_(p) {
                         else if (k[2] === ':' && cols[k.slice(0, 2)]) cols[k.slice(0, 2)].push(this.normIncoming(k.slice(0, 2), { ...r.v, id: k.slice(3) }));
                     }
                     this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
-                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl;
+                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl; this.notes = cols.nt;
                     if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = '';
                     if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
                     this.todoLists = cols.ls;
@@ -3639,8 +3842,8 @@ function reply_(p) {
                     } else this.todos.push(t);
                     this.saveAllData(); this.showTodoModalState = false;
                 },
-                deleteTodo(id) {
-                    if (!this.ask('Aufgabe wirklich löschen?')) return;
+                async deleteTodo(id) {
+                    if (!await this.ask('Aufgabe wirklich löschen?', { title: 'Aufgabe löschen' })) return;
                     this.todos = this.todos.filter(x => x.id !== id); this.saveAllData();
                 },
                 openListModal(l) {
@@ -3654,9 +3857,9 @@ function reply_(p) {
                     if (i !== -1) this.todoLists[i] = l; else this.todoLists.push(l);
                     this.saveAllData(); this.showListModal = false; if (i === -1) this.selectTodoList(l.id);
                 },
-                deleteList(id) {
+                async deleteList(id) {
                     if (id === 'inbox') return this.toast('Die Standardliste kann nicht gelöscht werden');
-                    if (!this.ask('Liste löschen? Die Aufgaben wandern in „Aufgaben“.')) return;
+                    if (!await this.ask('Die Aufgaben wandern in die Liste „Aufgaben“.', { title: 'Liste löschen' })) return;
                     this.todos.forEach(t => { if (t.listId === id) t.listId = 'inbox'; });
                     this.todoLists = this.todoLists.filter(l => l.id !== id);
                     if (this.todoListId === id) this.selectTodoList('myday');
@@ -3672,6 +3875,23 @@ function reply_(p) {
                 get shopGroups() {
                     if (!this.cfg.shopGroup) return this.shopOpen.length ? [{ cat: 'Alle Artikel', items: this.shopOpen }] : [];
                     return CATEGORIES.map(cat => ({ cat, items: this.shopOpen.filter(i => i.category === cat) })).filter(g => g.items.length);
+                },
+                saveFold() { try { localStorage.setItem('organizer_fold', JSON.stringify({ s: this.shopFold, c: this.catFold })); } catch (e) {} },
+                toggleFold(where, cat) { const m = where === 'cat' ? this.catFold : this.shopFold; m[cat] = !m[cat]; this.saveFold(); },
+                isFolded(where, cat) { return !!(where === 'cat' ? this.catFold : this.shopFold)[cat]; },
+                foldAll(where, close) {
+                    const groups = where === 'cat' ? this.catalogGroups : this.shopGroups, m = {};
+                    for (const g of groups) if (close) m[g.cat] = true;
+                    if (where === 'cat') this.catFold = m; else this.shopFold = m;
+                    this.saveFold();
+                },
+                get allFolded() { const g = this.shopGroups; return g.length > 0 && g.every(x => this.shopFold[x.cat]); },
+                /* Katalog nach Kategorien gruppiert – bei „Alle“ alle Bereiche, sonst nur der gewählte */
+                get catalogGroups() {
+                    const q = this.shopQuery.trim().toLowerCase();
+                    if (q) { const hits = this.catalogView; return hits.length ? [{ cat: 'Suchergebnisse', items: hits }] : []; }
+                    if (this.shopCat !== 'all') { const items = this.catalogView; return items.length ? [{ cat: this.shopCat, items }] : []; }
+                    return CATEGORIES.map(cat => ({ cat, items: CATALOG.filter(p => p.category === cat) })).filter(g => g.items.length);
                 },
                 get catalogView() {
                     const q = this.shopQuery.trim().toLowerCase();
@@ -3702,10 +3922,10 @@ function reply_(p) {
                     else { const id = uid(); this.shopLists = [...this.shopLists, { id, name, emoji: d.emoji }]; this.shopListId = id; }
                     this.saveAllData(); this.showShopList = false;
                 },
-                deleteShopList() {
+                async deleteShopList() {
                     const d = this.shopListDraft; if (!d.id) return;
                     const n = this.shoppingItems.filter(i => i.list === d.id).length;
-                    if (!this.ask(`Liste „${d.name}“` + (n ? ` mit ${n} Artikel${n > 1 ? 'n' : ''}` : '') + ' löschen?')) return;
+                    if (!await this.ask(`Die Liste „${d.name}“` + (n ? ` und ${n} Artikel darin werden` : ' wird') + ' gelöscht.', { title: 'Einkaufsliste löschen' })) return;
                     this.shoppingItems = this.shoppingItems.filter(i => i.list !== d.id); this.shopLists = this.shopLists.filter(l => l.id !== d.id);
                     if (this.shopListId === d.id) this.shopListId = '';
                     this.saveAllData(); this.showShopList = false;
@@ -3745,6 +3965,42 @@ function reply_(p) {
                 noteParts() { return (this.currentShop.note || '').split(',').map(s => s.trim()).filter(Boolean); },
                 hasVariant(v) { return this.noteParts().includes(v); },
                 toggleVariant(v) { const p = this.noteParts(); this.currentShop.note = (p.includes(v) ? p.filter(x => x !== v) : [...p, v]).join(', '); },
+
+                /* ---------- Notizen ---------- */
+                noteColors: NOTE_COLORS,
+                get notesView() {
+                    const q = this.noteQuery.trim().toLowerCase();
+                    const hit = n => !q || (n.title + ' ' + n.text).toLowerCase().includes(q);
+                    return this.notes.filter(hit).sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || b.updated - a.updated);
+                },
+                openNote(n) {
+                    this.currentNote = n ? { ...n } : normNote({ id: null, title: '', text: '' });
+                    if (!n) this.currentNote.id = null;
+                    this.showNoteModal = true;
+                    this.$nextTick(() => this.$refs.noteTitle?.focus());
+                },
+                saveNote() {
+                    const c = this.currentNote, title = c.title.trim(), text = c.text.trim();
+                    if (!title && !text) { this.showNoteModal = false; return; }
+                    const now = Date.now();
+                    if (c.id) this.notes = this.notes.map(n => n.id === c.id ? normNote({ ...n, ...c, updated: now }) : n);
+                    else this.notes = [normNote({ ...c, id: uid(), created: now, updated: now }), ...this.notes];
+                    this.saveAllData(); this.showNoteModal = false;
+                },
+                async deleteNote(id) {
+                    const n = this.notes.find(x => x.id === id); if (!n) return;
+                    if (!await this.ask('Die Notiz „' + (n.title || n.text.slice(0, 30)) + '“ wird gelöscht.', { title: 'Notiz löschen' })) return;
+                    this.notes = this.notes.filter(x => x.id !== id); this.saveAllData(); this.showNoteModal = false;
+                    this.toast('Notiz gelöscht');
+                },
+                toggleNotePin(n) { this.notes = this.notes.map(x => x.id === n.id ? { ...x, pin: !x.pin, updated: Date.now() } : x); this.saveAllData(); },
+                noteSnippet(n) { return String(n.text || '').replace(/\s+/g, ' ').trim(); },
+                noteDate(ms) { const d = new Date(ms), n = new Date(); if (d.toDateString() === n.toDateString()) return 'Heute, ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); return d.toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: d.getFullYear() === n.getFullYear() ? undefined : 'numeric' }); },
+                noteToTodo(n) {
+                    const title = (n.title || this.noteSnippet(n)).slice(0, 80);
+                    this.todos = [normTodo({ id: uid(), title, note: n.title ? this.noteSnippet(n).slice(0, 500) : '', listId: 'inbox', created: Date.now() }, {}), ...this.todos];
+                    this.saveAllData(); this.toast('Als Aufgabe übernommen');
+                },
 
                 /* ---------- Tresor ---------- */
                 get mpStrength() {
@@ -3879,10 +4135,10 @@ function reply_(p) {
                     }
                     this.persistVaults(); this.touchSync(); this.showVaultEdit = false;
                 },
-                deleteVaultEntry() {
+                async deleteVaultEntry() {
                     const d = this.vaultDraft; if (!d.id) return;
                     if (d.id === 'main') { this.showVaultEdit = false; this.switchVault('main'); this.openReset(); return; }
-                    if (!confirm('Tresor „' + d.name + '“ mit allen darin gespeicherten Daten löschen? Das lässt sich nicht rückgängig machen.')) return;
+                    if (!await this.askBox('Der Tresor „' + d.name + '“ und alle Einträge darin werden gelöscht. Das lässt sich nicht rückgängig machen.', { title: 'Tresor löschen' })) return;
                     if (this.vaultId === d.id && this.vaultState === 'unlocked') this.lockVault(false, true);
                     localStorage.removeItem(vaultStoreKey(d.id));
                     this.vaults = this.vaults.filter(v => v.id !== d.id);
@@ -3966,6 +4222,7 @@ function reply_(p) {
                     for (const i of cap(this.shoppingItems.filter(i => has(i.name, i.note)))) out.push({ key: 's' + i.id, kind: 'Einkauf', icon: 'fa-solid fa-bag-shopping', title: i.name, sub: i.category + (i.done ? ' · im Warenkorb' : ''), type: 'shop', ref: i });
                     if (this.vaultState === 'unlocked') for (const v of cap(this.passwords.filter(v => has(v.title, v.username, v.url, v.email)))) out.push({ key: 'v' + v.id, kind: 'Tresor', icon: 'fa-solid fa-vault', title: v.title, sub: v.username || v.url || v.email || '', type: 'vault', ref: v.id });
                     for (const r of cap(this.mailRows.filter(r => has(r.subj, r.from, r.snip)))) out.push({ key: 'm' + r.key, kind: 'Mail', icon: 'fa-solid fa-envelope', title: r.subj || '(kein Betreff)', sub: this.senderName(r.from), type: 'mail', ref: r });
+                    for (const n of cap(this.notes.filter(n => has(n.title, n.text)))) out.push({ key: 'n' + n.id, kind: 'Notiz', icon: 'fa-regular fa-note-sticky', title: n.title || this.noteSnippet(n).slice(0, 40) || 'Notiz', sub: this.noteDate(n.updated), type: 'note', ref: n.id });
                     for (const it of cap(this.settingsDef.filter(i => has(i.label, i.desc)), 5)) out.push({ key: 'c' + it.cat + it.k, kind: 'Einstellung', icon: 'fa-solid fa-sliders', title: it.label, sub: (this.settingsCats.find(c => c.id === it.cat) || {}).label, type: 'setting', ref: it });
                     return out;
                 },
@@ -3976,6 +4233,7 @@ function reply_(p) {
                     else if (h.type === 'shop') { this.switchTab('shopping'); this.openShopModal(h.ref); }
                     else if (h.type === 'vault') { const v = this.passwords.find(x => x.id === h.ref); if (v) { this.switchTab('passwords'); this.editPassword(v); } }
                     else if (h.type === 'mail') { this.switchTab('mail'); this.mailOpen(h.ref); }
+                    else if (h.type === 'note') { const n = this.notes.find(x => x.id === h.ref); if (n) { this.switchTab('notes'); this.openNote(n); } }
                     else if (h.type === 'setting') { this.setQuery = ''; this.setCat = h.ref.cat; this.switchTab('settings'); }
                 },
                 /* ---------- Mail → Aufgabe / Termin, Signatur, Bausteine ---------- */
@@ -4086,6 +4344,11 @@ function reply_(p) {
                     }
                     return out;
                 },
+                showMore: false, online: typeof navigator === 'undefined' || navigator.onLine !== false,
+                get mainTabs() { return this.tabs.filter(t => !['notes', 'passwords', 'settings'].includes(t.id)); },
+                get moreTabs() { return this.tabs.filter(t => ['notes', 'passwords', 'settings'].includes(t.id)); },
+                get offlineReady() { return typeof window !== 'undefined' && !!window.__swOk; },
+                get wideTab() { return this.activeTab === 'mail' || this.activeTab === 'calendar'; },
                 get mailFolderLabel() { return (MAIL_FOLDERS.find(f => f.id === this.mailFolder) || { label: 'E-Mail' }).label; },
                 get mailFavFolders() { return MAIL_FOLDERS.filter(f => ['inbox', 'starred', 'sent'].includes(f.id)); },
                 mailAddr(s) { const m = String(s || '').match(/<([^>]+)>/); return m ? m[1].trim() : (String(s || '').includes('@') ? String(s).trim() : ''); },
@@ -4169,7 +4432,25 @@ function reply_(p) {
                     return mailDocCache.get(k).html;
                 },
                 mailHasRemote(m) { return sanitizeMailHtml(m.html, false).remote; },
-                mailFit(el) { try { const d = el.contentDocument; if (d && d.documentElement) el.style.height = Math.min(d.documentElement.scrollHeight + 4, 30000) + 'px'; } catch (e) {} },
+                /* Höhe anpassen und zu breite Newsletter so verkleinern, dass sie ohne seitliches Scrollen passen */
+                mailFit(el) {
+                    try {
+                        const d = el.contentDocument; if (!d || !d.body) return;
+                        const avail = el.clientWidth || el.parentElement?.clientWidth || 0;
+                        d.body.style.transformOrigin = 'top left'; d.body.style.transform = ''; d.body.style.width = '';
+                        const need = Math.max(d.body.scrollWidth, d.documentElement.scrollWidth);
+                        let scale = 1;
+                        if (avail > 100 && need > avail + 2) {
+                            scale = Math.max(0.4, avail / need);
+                            d.body.style.width = need + 'px';
+                            d.body.style.transform = 'scale(' + scale + ')';
+                        }
+                        const hgt = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
+                        el.style.height = Math.min(Math.ceil(hgt * scale) + 6, 30000) + 'px';
+                    } catch (e) {}
+                },
+                /* Nach Größenänderung des Fensters neu einpassen */
+                mailRefit() { try { document.querySelectorAll('iframe.mframe').forEach(f => this.mailFit(f)); } catch (e) {} },
                 mailText(m) {
                     if (m.plain) return String(m.plain).replace(/\s+/g, ' ').trim();
                     try { return (new DOMParser().parseFromString(m.html || '', 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim(); } catch (e) { return ''; }
@@ -4224,9 +4505,9 @@ function reply_(p) {
                         c.att.push({ name: f.name, type: f.type || 'application/octet-stream', size: f.size, b64: toB64(await f.arrayBuffer()) });
                     }
                 },
-                mailCloseCompose() {
+                async mailCloseCompose() {
                     const c = this.mailComp, dirty = c.att.length || c.body !== c.initBody || (c.mode === 'new' && c.to.trim());
-                    if (this.showMailCompose && dirty && !confirm('Die Nachricht verwerfen?')) return;
+                    if (this.showMailCompose && dirty && !await this.askBox('Der geschriebene Text geht verloren.', { title: 'Nachricht verwerfen?', ok: 'Verwerfen' })) return;
                     this.showMailCompose = false;
                 },
                 /* Adressen, die Gmail unter „Senden als“ erlaubt */
@@ -4248,7 +4529,7 @@ function reply_(p) {
                     const isNew = c.mode === 'new' || c.mode === 'forward';
                     if (isNew) { if (!c.to.trim()) { c.error = 'Bitte einen Empfänger angeben.'; return; } const bad = this.mailBadAddr(c.to); if (bad) { c.error = `„${bad}“ ist keine gültige E-Mail-Adresse.`; return; } }
                     for (const f of [c.cc, c.bcc]) { const bad = this.mailBadAddr(f); if (bad) { c.error = `„${bad}“ ist keine gültige E-Mail-Adresse.`; return; } }
-                    if (!c.body.trim() && !c.att.length && !confirm('Die Nachricht ist leer. Trotzdem senden?')) return;
+                    if (!c.body.trim() && !c.att.length && !await this.askBox('Die Nachricht hat keinen Text und keine Anhänge.', { title: 'Trotzdem senden?', ok: 'Senden', danger: false })) return;
                     c.busy = true; c.error = '';
                     try {
                         const common = { body: c.body, cc: this.mailNormAddrs(c.cc), bcc: this.mailNormAddrs(c.bcc), attachments: c.att.map(x => ({ name: x.name, type: x.type, b64: x.b64 })), ...(c.from ? { from: c.from } : {}) };
@@ -4295,8 +4576,8 @@ function reply_(p) {
                     } catch (e) { s.error = (/Falscher Schl/.test(e.message) ? 'Der geheime Schlüssel im Script passt nicht – bitte das Script erneut mit „Script kopieren“ einfügen und neu bereitstellen. ' : '') + 'Verbindung fehlgeschlagen: ' + e.message; }
                     finally { s.busy = false; }
                 },
-                removeMailAccount(a) {
-                    if (!confirm(`Postfach „${a.name}“ aus der App entfernen? (Deine Mails bleiben unverändert bei Google.)`)) return;
+                async removeMailAccount(a) {
+                    if (!await this.askBox(`Das Postfach „${a.name}“ wird aus der App entfernt. Deine Mails bleiben unverändert bei Google.`, { title: 'Postfach entfernen', ok: 'Entfernen' })) return;
                     this.mailCfg = { ...this.mailCfg, accounts: this.mailCfg.accounts.filter(x => x.id !== a.id) };
                     this.mailStatus = this.mailStatus.filter(o => o.id.split('.')[0] !== a.id); this.persistMailStatus(); this.saveMailCfg(); this.mailAfterCfg();
                 },
@@ -4544,7 +4825,7 @@ function reply_(p) {
                 },
                 async deletePassword(id) {
                     const p = this.passwords.find(x => x.id === id);
-                    if (!p || !this.ask(`Eintrag „${p.title}“ wirklich löschen?`)) return;
+                    if (!p || !await this.ask(`Der Eintrag „${p.title}“ wird gelöscht.`, { title: 'Eintrag löschen' })) return;
                     this.passwords = this.passwords.filter(x => x.id !== id);
                     await this.persistVault();
                 },
@@ -4565,12 +4846,13 @@ function reply_(p) {
                         localStorage.setItem('organizer_shopping', JSON.stringify(this.shoppingItems));
                         localStorage.setItem('organizer_shop_lists', JSON.stringify(this.shopLists));
                         localStorage.setItem('organizer_mail_status', JSON.stringify(this.mailStatus));
+                        localStorage.setItem('organizer_notes', JSON.stringify(this.notes));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
                     this.touchSync();
                 },
                 exportData() {
-                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, vault: readJSON(VAULT_KEY, null),
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, vault: readJSON(VAULT_KEY, null),
                         vaults: this.vaults, vaultRecords: Object.fromEntries(this.vaults.filter(v => v.id !== 'main').map(v => [v.id, readJSON(vaultStoreKey(v.id), null)]).filter(([, r]) => validVaultRecord(r))) };
                     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
                     const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
@@ -4588,13 +4870,14 @@ function reply_(p) {
                             if (Array.isArray(data.todos)) this.loadTodoData(data.todos, data.todoLists, data.todoLists ? null : data.todoGroups);
                             if (Array.isArray(data.shoppingItems)) this.shoppingItems = data.shoppingItems.filter(i => i && i.name).map(normShop);
                             if (Array.isArray(data.shopLists)) this.shopLists = data.shopLists.filter(l => l && l.id).map(l => this.normIncoming('sl', l));
+                            if (Array.isArray(data.notes)) this.notes = data.notes.filter(n => n && (n.title || n.text)).map(normNote);
                             if (data.cfg && typeof data.cfg === 'object') { this.cfg = { ...DEFAULT_CFG, ...data.cfg, views: { ...DEFAULT_CFG.views, ...(data.cfg.views || {}) } }; this.saveCfg(); this.applyCfg(); this.calendarView = this.cfg.calView; }
                             this.saveAllData();
 
                             let note = '';
                             const recs = Object.entries(data.vaultRecords || {}).filter(([, r]) => validVaultRecord(r));
                             if (validVaultRecord(data.vault) || recs.length) {
-                                if (this.vaultState === 'none' || confirm('Das Backup enthält Tresore. Die Tresore auf diesem Gerät ersetzen? (Danach gelten die Master-Passwörter aus dem Backup.)')) {
+                                                if (this.vaultState === 'none' || await this.askBox('Die Sicherung enthält Tresore. Danach gelten die Master-Passwörter aus der Sicherung.', { title: 'Tresore ersetzen?', ok: 'Ersetzen' })) {
                                     this.lockVault(false, true);
                                     if (Array.isArray(data.vaults)) { this.vaults = normVaults(data.vaults); this.persistVaults(); }
                                     if (validVaultRecord(data.vault)) localStorage.setItem(VAULT_KEY, JSON.stringify(data.vault));
