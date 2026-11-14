@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.14-4">
+    <meta name="app-version" content="2026.11.14-5">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -116,7 +116,7 @@
         .muted  { color: var(--muted); }
         .divider { border-color: var(--border); }
         .accent { color: var(--accent); }
-        .field  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: .9rem; padding: .7rem 1rem; font-size: .8rem; font-weight: 600; width: 100%; outline: none; transition: border-color .15s, box-shadow .15s; }
+        .field  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: .9rem; padding: .7rem 1rem; font-size: .8rem; font-weight: 600; width: 100%; outline: none; font-family: inherit; line-height: 1.5; transition: border-color .15s, box-shadow .15s; }
         .field::placeholder { color: var(--muted); opacity: .75; font-weight: 500; }
         .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 
@@ -137,6 +137,10 @@
         .seg { display: inline-flex; gap: .2rem; padding: .3rem; border-radius: 1rem; background: var(--surface2); border: 1px solid var(--border); }
         .seg > button { padding: .5rem .85rem; border-radius: .7rem; font-size: .75rem; font-weight: 700; color: var(--muted); transition: all .15s; }
         .seg > button:hover { color: var(--text); }
+        .clock { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; padding: .3rem .6rem; border-radius: .8rem; font-variant-numeric: tabular-nums; font-weight: 800; font-size: .95rem; color: var(--text); transition: background .15s; }
+        .clock:hover { background: var(--hover); }
+        .clock .dt { font-size: .6rem; font-weight: 700; color: var(--muted); letter-spacing: .01em; }
+        @media (max-width: 360px) { .clock { display: none; } }
         .seg > button.on { background: var(--accent); color: #fff; box-shadow: 0 4px 12px -8px var(--accent); }
 
         .label { display: block; font-size: .78rem; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
@@ -184,6 +188,12 @@
         .mrow { position: relative; display: flex; gap: .7rem; padding: .7rem .85rem .7rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; width: 100%; align-items: flex-start; }
         .mrow.unread::before { content: ''; position: absolute; left: 0; top: .55rem; bottom: .55rem; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
         .mrow.picked { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+        /* Auswahlkästchen: erscheint beim Darüberfahren, ersetzt die Initiale */
+        .mpick { position: relative; cursor: pointer; }
+        .mpick .hov { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; font-size: .95rem; }
+        .mpick:hover .ltr { opacity: 0; }
+        .mpick:hover .hov { display: flex; }
+        .mpick.on { background: var(--accent) !important; }
         .mgrp { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .5rem; padding: .4rem .9rem; font-size: .7rem; font-weight: 800; color: var(--muted); background: var(--surface2); border-bottom: 1px solid var(--border); }
         .cmd { display: flex; align-items: center; gap: .15rem; overflow-x: auto; }
         .cmd .btn { padding: .5rem .7rem; font-size: .72rem; }
@@ -336,7 +346,6 @@
         .pk-t:hover { background: var(--hover); }
         .pk-t.sel { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 6px 14px -8px var(--accent); }
         .calgrid { display: grid; gap: 1.25rem; align-items: start; }
-        @media (min-width: 1280px) { .calgrid.up { grid-template-columns: minmax(0, 1fr) 21rem; } }
     </style>
 </head>
 <body class="antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
@@ -401,6 +410,14 @@
                 <rect x="11" y="18" width="42" height="29" rx="6" fill="#fff"/>
                 <path d="M13.5 22 32 35.5 50.5 22" fill="none" stroke="#1e3a8a" stroke-opacity=".55" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
             </symbol>
+            <linearGradient id="lgUse" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eab308"/><stop offset="1" stop-color="#f97316"/></linearGradient>
+            <symbol id="logoUse" viewBox="0 0 64 64">
+                <rect width="64" height="64" rx="16" fill="url(#lgUse)"/>
+                <path d="M32 14a18 18 0 0 0-15.6 27H47.6A18 18 0 0 0 32 14z" fill="#fff"/>
+                <path d="M32 36 43 24" fill="none" stroke="#b45309" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="32" cy="37" r="4.2" fill="#b45309"/>
+                <g fill="#b45309" fill-opacity=".45"><circle cx="20" cy="34" r="1.8"/><circle cx="24" cy="25" r="1.8"/><circle cx="32" cy="21" r="1.8"/><circle cx="40" cy="25" r="1.8"/><circle cx="44" cy="34" r="1.8"/></g>
+            </symbol>
             <symbol id="logoSet" viewBox="0 0 64 64">
                 <rect width="64" height="64" rx="16" fill="url(#lgSet)"/>
                 <g stroke="#fff" stroke-width="3.6" stroke-linecap="round"><path d="M14 21h36M14 32h36M14 43h36"/></g>
@@ -457,17 +474,22 @@
                 <div class="flex items-center gap-3 min-w-0">
                     <svg class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-xl shadow-indigo-600/20 shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
                     <div class="min-w-0">
-                        <h1 class="text-base sm:text-lg font-black tracking-tight truncate">Christopher’s <span class="accent">Space</span></h1>
+                        <h1 class="text-base sm:text-lg font-black tracking-tight truncate"><span x-text="appTitle.first"></span><span class="accent" x-text="appTitle.last"></span></h1>
                         <p class="text-[11px] font-medium flex items-center gap-1.5 mt-0.5 muted">
                             <span class="w-2 h-2 rounded-full shrink-0" :class="headerOk ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'"></span>
                             <span class="truncate" x-text="headerStatus"></span>
                         </p>
                     </div>
                 </div>
-                <button type="button" @click="openSearch()" class="icon-btn md:hidden shrink-0" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
-                <button type="button" @click="switchTab('settings')" class="icon-btn shrink-0" :class="activeTab === 'settings' ? 'accent' : ''" title="Einstellungen" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
-                <div class="hidden md:flex items-center gap-3 shrink-0">
-                <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <div class="flex items-center gap-1 shrink-0">
+                    <button type="button" @click="switchTab('calendar'); calendarView = 'day'; goToToday()" class="clock" :title="longDate(today)" aria-label="Heutiger Tag im Kalender">
+                        <span x-text="clockTime"></span>
+                        <span class="dt" x-text="clockDate"></span>
+                    </button>
+                    <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button type="button" @click="switchTab('settings')" class="icon-btn" :class="activeTab === 'settings' ? 'accent' : ''" title="Einstellungen" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
+                </div>
+                <div class="hidden md:flex items-center shrink-0">
                 <nav class="flex seg" aria-label="Hauptnavigation">
                     <template x-for="t in navTabs" :key="t.id">
                         <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden xl:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
@@ -516,9 +538,10 @@
                 <div class="cardcols">
                     <!-- Wetter -->
                     <div x-show="cfg.weather" class="card p-5 sm:p-6 space-y-3">
-                        <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
                             <p class="label"><i class="fa-solid fa-cloud-sun mr-2"></i>Wetter<span class="ct" x-show="wx.place" x-text="'· ' + wx.place"></span></p>
-                            <button type="button" class="icon-btn !w-7 !h-7" @click="loadWeather(true)" :disabled="wx.busy" title="Aktualisieren" aria-label="Wetter aktualisieren"><i class="fa-solid fa-rotate text-[11px]" :class="wx.busy ? 'spin' : ''"></i></button>
+                            <span class="text-[10px] muted font-semibold ml-auto mr-1" x-show="wx.at" x-text="wxAgo"></span>
+                            <button type="button" class="icon-btn !w-7 !h-7" @click="loadWeather(true)" :disabled="wx.busy" title="Jetzt aktualisieren" aria-label="Wetter aktualisieren"><i class="fa-solid fa-rotate text-[11px]" :class="wx.busy ? 'spin' : ''"></i></button>
                         </div>
                         <p x-show="!cfg.weatherPlace" class="muted text-sm">Noch kein Ort gewählt. <button type="button" class="accent font-bold" @click="switchTab('settings'); setCat = 'today'">Ort festlegen</button></p>
                         <template x-if="cfg.weatherPlace && wx.now">
@@ -598,27 +621,7 @@
             </section>
 
             <!-- ================= KALENDER ================= -->
-            <section x-show="activeTab === 'calendar'" x-cloak class="calgrid" :class="cfg.showUpcoming ? 'up' : ''">
-                <!-- Nächste Termine mit Countdown -->
-                <aside x-show="cfg.showUpcoming" class="card p-4 sm:p-5 order-first xl:order-last xl:sticky xl:top-24">
-                    <div class="flex items-center justify-between mb-3">
-                        <p class="label"><i class="fa-regular fa-clock mr-2"></i>Nächste Termine</p>
-                        <button @click="openEventModal()" class="icon-btn !w-8 !h-8" aria-label="Neuer Termin"><i class="fa-solid fa-plus text-xs"></i></button>
-                    </div>
-                    <div class="space-y-2">
-                        <template x-for="u in upcoming" :key="u.ev.id">
-                            <button @click="editEvent(u.ev)" class="inner w-full p-3 flex items-center gap-3 text-left transition hover:brightness-110">
-                                <span class="w-1.5 self-stretch rounded-full shrink-0" :style="'background:' + u.ev.color"></span>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-bold truncate" x-text="u.ev.title"></p>
-                                    <p class="text-[11px] muted truncate" x-text="u.when"></p>
-                                </div>
-                                <span class="chip shrink-0" :class="u.state" x-text="u.cd"></span>
-                            </button>
-                        </template>
-                    </div>
-                    <p x-show="!upcoming.length" class="text-xs muted text-center py-6"><i class="fa-regular fa-calendar-check text-xl block mb-2 opacity-60"></i>Keine anstehenden Termine.</p>
-                </aside>
+            <section x-show="activeTab === 'calendar'" x-cloak class="space-y-5">
 
                 <div class="space-y-5 min-w-0">
                 <div class="card hero p-5 sm:p-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
@@ -736,6 +739,26 @@
                     </template>
                 </div>
                 </div>
+                <!-- Nächste Termine mit Countdown -->
+                <aside x-show="cfg.showUpcoming" class="card p-4 sm:p-5 ">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="label"><i class="fa-regular fa-clock mr-2"></i>Nächste Termine</p>
+                        <button @click="openEventModal()" class="icon-btn !w-8 !h-8" aria-label="Neuer Termin"><i class="fa-solid fa-plus text-xs"></i></button>
+                    </div>
+                    <div class="space-y-2">
+                        <template x-for="u in upcoming" :key="u.ev.id">
+                            <button @click="editEvent(u.ev)" class="inner w-full p-3 flex items-center gap-3 text-left transition hover:brightness-110">
+                                <span class="w-1.5 self-stretch rounded-full shrink-0" :style="'background:' + u.ev.color"></span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-bold truncate" x-text="u.ev.title"></p>
+                                    <p class="text-[11px] muted truncate" x-text="u.when"></p>
+                                </div>
+                                <span class="chip shrink-0" :class="u.state" x-text="u.cd"></span>
+                            </button>
+                        </template>
+                    </div>
+                    <p x-show="!upcoming.length" class="text-xs muted text-center py-6"><i class="fa-regular fa-calendar-check text-xl block mb-2 opacity-60"></i>Keine anstehenden Termine.</p>
+                </aside>
             </section>
 
             <!-- ================= TO-DOS ================= -->
@@ -883,6 +906,126 @@
                 </div>
             </section>
 
+            <!-- ================= VERBRAUCH ================= -->
+            <section x-show="activeTab === 'usage'" x-cloak class="space-y-5">
+                <div class="card hero p-5 sm:p-6 flex flex-wrap items-center gap-4">
+                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoUse"/></svg>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Verbrauch</h2>
+                        <p class="muted text-xs mt-1 font-medium">Zählerstände eintragen und sehen, ob du über oder unter deinem Jahreswert liegst.</p>
+                    </div>
+                    <button @click="openMeter()" class="btn btn-primary shrink-0"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Zähler</span></button>
+                </div>
+
+                <div x-show="!meters.length" class="card p-8 text-center">
+                    <i class="fa-solid fa-gauge-high text-3xl accent opacity-70"></i>
+                    <p class="text-sm font-bold mt-3">Noch kein Zähler angelegt</p>
+                    <p class="muted text-xs mt-1 max-w-md mx-auto">Lege einen Zähler für Strom, Gas oder Wasser an und trage ab und zu den Stand ein. Nach zwei Ablesungen siehst du Tagesschnitt, Hochrechnung aufs Jahr und die voraussichtlichen Kosten.</p>
+                    <button @click="openMeter()" class="btn btn-soft mt-4"><i class="fa-solid fa-plus"></i>Ersten Zähler anlegen</button>
+                </div>
+
+                <template x-for="m in meterList" :key="m.id">
+                    <div class="card p-5 sm:p-6 space-y-4" :style="'--cc:' + meterKind(m).color">
+                        <div class="flex items-center gap-3.5">
+                            <span class="w-11 h-11 rounded-2xl grid place-items-center text-lg shrink-0" style="background: color-mix(in srgb, var(--cc) 18%, transparent); color: var(--cc)"><i :class="meterKind(m).icon"></i></span>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-black text-lg leading-tight truncate" x-text="m.name"></p>
+                                <p class="text-[11px] muted font-semibold">
+                                    <span x-text="meterKind(m).label"></span>
+                                    <span x-show="m.number" x-text="' · Nr. ' + m.number"></span>
+                                    <span x-show="meterStats(m).last" x-text="' · zuletzt ' + (meterStats(m).last ? shortDate(meterStats(m).last.date) : '')"></span>
+                                </p>
+                            </div>
+                            <button type="button" class="icon-btn" @click="openMeter(m)" aria-label="Zähler bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="btn btn-primary shrink-0" @click="openReading(m)"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Ablesung</span></button>
+                        </div>
+
+                        <template x-if="meterStats(m).readings < 2">
+                            <p class="muted text-sm py-2" x-text="meterStats(m).readings ? 'Eine Ablesung gespeichert – ab der zweiten rechne ich den Verbrauch aus.' : 'Noch keine Ablesung. Trag den aktuellen Zählerstand ein.'"></p>
+                        </template>
+
+                        <template x-if="meterStats(m).readings >= 2">
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                                    <div class="inner p-3">
+                                        <p class="label !text-[10px]">Aktueller Stand</p>
+                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).last.value, 1)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                    </div>
+                                    <div class="inner p-3">
+                                        <p class="label !text-[10px]">Pro Tag</p>
+                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).perDay, 2)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                        <p class="text-[10px] muted font-semibold" x-text="'über ' + meterStats(m).days + ' Tage'"></p>
+                                    </div>
+                                    <div class="inner p-3">
+                                        <p class="label !text-[10px]">Letzte 30 Tage</p>
+                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).month30, 1)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                    </div>
+                                    <div class="inner p-3">
+                                        <p class="label !text-[10px]">Hochrechnung Jahr</p>
+                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).year)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                        <p class="text-[10px] muted font-semibold" x-show="!meterStats(m).ready">noch wenige Tage – ungenau</p>
+                                    </div>
+                                </div>
+
+                                <!-- Vergleich mit dem Jahreswert -->
+                                <div x-show="m.target > 0" class="space-y-1.5">
+                                    <div class="flex items-center justify-between text-xs font-bold">
+                                        <span>Jahreswert <span class="muted font-semibold num" x-text="fmtNum(m.target) + ' ' + m.unit"></span></span>
+                                        <span :class="meterStats(m).diff > 0 ? 'text-rose-400' : 'text-emerald-400'">
+                                            <span x-text="meterStats(m).diff > 0 ? 'über Plan' : 'unter Plan'"></span>
+                                            <span class="num" x-text="' · ' + (meterStats(m).diff > 0 ? '+' : '') + fmtNum(meterStats(m).diff) + ' ' + m.unit"></span>
+                                        </span>
+                                    </div>
+                                    <div class="h-2.5 rounded-full overflow-hidden" style="background: var(--border)">
+                                        <div class="h-full rounded-full transition-all" :style="'width:' + Math.min(100, meterStats(m).pct) + '%; background:' + (meterStats(m).diff > 0 ? '#f43f5e' : '#10b981')"></div>
+                                    </div>
+                                    <p class="text-[11px] muted font-semibold"><span class="num" x-text="meterStats(m).pct"></span> % des geplanten Jahresverbrauchs</p>
+                                </div>
+
+                                <!-- Kosten -->
+                                <div x-show="m.price > 0" class="flex flex-wrap gap-2.5">
+                                    <span class="chip !py-2"><i class="fa-solid fa-euro-sign"></i>Jahr etwa <b class="num" x-text="fmtEuro(meterStats(m).costYear)"></b></span>
+                                    <span class="chip !py-2" x-show="m.monthly > 0"><i class="fa-solid fa-file-invoice"></i>Abschlag <b class="num" x-text="fmtEuro(m.monthly * 12)"></b></span>
+                                    <span class="chip !py-2" x-show="m.monthly > 0" :class="meterStats(m).costDiff > 0 ? '!text-rose-400' : '!text-emerald-400'">
+                                        <i class="fa-solid" :class="meterStats(m).costDiff > 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'"></i>
+                                        <span x-text="meterStats(m).costDiff > 0 ? 'Nachzahlung etwa ' : 'Guthaben etwa '"></span><b class="num" x-text="fmtEuro(Math.abs(meterStats(m).costDiff))"></b>
+                                    </span>
+                                </div>
+
+                                <!-- Monatsbalken -->
+                                <div x-show="meterMonths(m).length > 1" class="space-y-1.5">
+                                    <p class="label !text-[11px]">Verbrauch je Monat</p>
+                                    <div class="flex items-end gap-1.5 h-28">
+                                        <template x-for="mo in meterMonths(m)" :key="mo.key">
+                                            <div class="flex-1 flex flex-col items-center gap-1 min-w-0">
+                                                <span class="text-[9px] font-black num muted" x-text="fmtNum(mo.val)"></span>
+                                                <div class="w-full rounded-t-md transition-all" :style="'height:' + Math.max(3, mo.val / meterMax(meterMonths(m)) * 72) + 'px; background: var(--cc); opacity:' + (mo.part ? .45 : 1)" :title="mo.label + ': ' + fmtNum(mo.val, 1) + ' ' + m.unit"></div>
+                                                <span class="text-[9px] font-bold muted truncate w-full text-center" x-text="mo.label"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <p class="text-[10px] muted" x-show="meterMonths(m).some(x => x.part)">Blasse Balken sind angefangene Monate.</p>
+                                </div>
+
+                                <!-- Ablesungen -->
+                                <details class="pt-1">
+                                    <summary class="label cursor-pointer select-none">Ablesungen <span class="ct" x-text="meterStats(m).readings"></span></summary>
+                                    <div class="mt-2 space-y-1">
+                                        <template x-for="r in meterRead(m.id).slice().reverse()" :key="r.id">
+                                            <button type="button" class="prow w-full" @click="openReading(m, r)">
+                                                <span class="text-xs font-bold w-28 shrink-0" x-text="shortDate(r.date)"></span>
+                                                <span class="text-sm font-black num flex-1 text-right" x-text="fmtNum(r.value, 1) + ' ' + m.unit"></span>
+                                                <span class="text-[11px] muted truncate max-w-[8rem]" x-text="r.note"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </details>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </section>
+
             <!-- ================= REZEPTE ================= -->
             <section x-show="activeTab === 'recipes'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -893,6 +1036,7 @@
                     </div>
                     <div class="flex gap-2">
                         <input type="search" x-model="recipeQuery" placeholder="Suchen…" class="field sm:!w-52" aria-label="Rezepte durchsuchen">
+                        <button @click="openRecipeImport()" class="btn btn-soft shrink-0"><i class="fa-solid fa-file-import"></i><span class="hidden sm:inline">Einlesen</span></button>
                         <button @click="openRecipeEdit()" class="btn btn-primary shrink-0"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Rezept</span></button>
                     </div>
                 </div>
@@ -901,7 +1045,10 @@
                     <i class="fa-solid fa-utensils text-3xl accent opacity-70"></i>
                     <p class="text-sm font-bold mt-3" x-text="recipeQuery.trim() ? 'Nichts gefunden' : 'Noch keine Rezepte'"></p>
                     <p class="muted text-xs mt-1" x-show="!recipeQuery.trim()">Lieblingsgerichte mit Zutatenliste – beim Kochen nachschlagen und die Zutaten direkt einkaufen.</p>
-                    <button x-show="!recipeQuery.trim()" @click="openRecipeEdit()" class="btn btn-soft mt-4"><i class="fa-solid fa-plus"></i>Erstes Rezept anlegen</button>
+                    <div x-show="!recipeQuery.trim()" class="flex flex-wrap justify-center gap-2 mt-4">
+                        <button @click="openRecipeEdit()" class="btn btn-soft"><i class="fa-solid fa-plus"></i>Erstes Rezept anlegen</button>
+                        <button @click="openRecipeImport()" class="btn btn-soft"><i class="fa-solid fa-file-import"></i>Aus Link oder PDF einlesen</button>
+                    </div>
                 </div>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -1136,19 +1283,19 @@
 
                     <!-- Liste -->
                     <div :class="mailSel ? 'hidden lg:block' : ''" class="card overflow-hidden">
-                        <div x-show="mailSelected.length" class="px-3 py-2.5 flex items-center gap-2 flex-wrap" style="background: color-mix(in srgb, var(--accent) 12%, var(--surface))">
-                            <button type="button" @click="mailPickAll()" class="icon-btn" :aria-label="mailAllPicked ? 'Auswahl aufheben' : 'Alle auswählen'"><i class="fa-solid" :class="mailAllPicked ? 'fa-square-check' : 'fa-square'"></i></button>
-                            <span class="text-sm font-bold" x-text="mailSelected.length + ' ausgewählt'"></span>
-                            <button type="button" @click="mailSelected = []" class="btn btn-ghost !py-1.5 !px-2 ml-auto">Fertig</button>
+                        <div x-show="mailSelMode" class="px-3 py-2.5 flex items-center gap-2" style="background: color-mix(in srgb, var(--accent) 12%, var(--surface))">
+                            <button type="button" @click="mailPickAll()" class="icon-btn" :aria-label="mailAllPicked ? 'Auswahl aufheben' : 'Alle auswählen'" :title="mailAllPicked ? 'Keine auswählen' : 'Alle auswählen'"><i class="fa-solid" :class="mailAllPicked ? 'fa-square-check accent' : 'fa-square'"></i></button>
+                            <span class="text-sm font-bold" x-text="mailSelected.length ? mailSelected.length + ' von ' + mailRows.length + ' ausgewählt' : 'Nichts ausgewählt'"></span>
+                            <button type="button" @click="mailSelEnd()" class="btn btn-ghost !py-1.5 !px-2.5 ml-auto">Fertig</button>
                         </div>
-                        <div x-show="mailSelected.length" class="px-3 pb-2.5 flex gap-1.5 overflow-x-auto">
+                        <div x-show="mailSelMode && mailSelected.length" class="px-3 pb-2.5 pt-2.5 flex gap-1.5 overflow-x-auto" style="background: color-mix(in srgb, var(--accent) 12%, var(--surface))">
                             <template x-for="a in quickActions" :key="'m' + a.id">
                                 <button type="button" x-show="quickOk(a, mailPicked)" class="chip !py-2 !px-3 shrink-0" @click="runQuick(a, mailPicked)"><i :class="a.icon"></i><span x-text="a.label"></span></button>
                             </template>
                         </div>
                         <div class="px-3 pt-3 pb-2 flex items-center gap-2">
                             <p class="font-black text-base truncate mr-auto" x-text="mailFolderLabel"></p>
-                            <button type="button" @click="mailSelected.length ? mailSelected = [] : mailPickAll()" class="icon-btn" :class="mailSelected.length ? 'accent' : ''" title="Mehrere auswählen" aria-label="Mehrere auswählen"><i class="fa-solid fa-list-check"></i></button>
+                            <button type="button" @click="mailSelMode ? mailSelEnd() : mailSelStart()" class="icon-btn" :class="mailSelMode ? 'accent' : ''" :title="mailSelMode ? 'Auswahl beenden' : 'Mehrere auswählen'" aria-label="Mehrere auswählen"><i class="fa-solid fa-list-check"></i></button>
                             <button type="button" @click="mailUnreadOnly = !mailUnreadOnly; mailRefresh({ manual: true })" class="icon-btn" :class="mailUnreadOnly ? 'accent' : ''" :title="mailUnreadOnly ? 'Alle anzeigen' : 'Nur ungelesene'" :aria-pressed="mailUnreadOnly"><i class="fa-solid fa-filter"></i></button>
                             <button type="button" @click="mailNewestFirst = !mailNewestFirst" class="icon-btn" :title="mailNewestFirst ? 'Älteste zuerst' : 'Neueste zuerst'"><i class="fa-solid" :class="mailNewestFirst ? 'fa-arrow-down-wide-short' : 'fa-arrow-up-wide-short'"></i></button>
                         </div>
@@ -1163,9 +1310,11 @@
                                 <div>
                                     <p class="mgrp"><span x-text="g.label"></span><span class="ml-auto font-bold" x-text="g.rows.length"></span></p>
                                     <template x-for="r in g.rows" :key="r.key">
-                                        <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '', mailSelected.includes(r.key) ? 'picked' : '']" @click="mailSelected.length ? mailPick(r) : mailOpen(r)" @keydown.enter.self="mailOpen(r)">
-                                            <button type="button" class="mav shrink-0" :style="mailSelected.includes(r.key) ? 'background: var(--accent)' : 'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" @click.stop="mailPick(r)" :title="mailSelected.includes(r.key) ? 'Auswahl aufheben' : 'Auswählen'">
-                                                <i x-show="mailSelected.includes(r.key)" class="fa-solid fa-check"></i><span x-show="!mailSelected.includes(r.key)" x-text="initial(mailWho(r))"></span>
+                                        <div class="mrow" role="button" tabindex="0" :class="[mailSel === r.key ? 'on' : '', r.unread ? 'unread' : '', mailSelected.includes(r.key) ? 'picked' : '']" @click="mailSelMode ? mailPick(r) : mailOpen(r)" @keydown.enter.self="mailSelMode ? mailPick(r) : mailOpen(r)">
+                                            <button type="button" class="mav mpick shrink-0" :class="mailSelected.includes(r.key) ? 'on' : ''" :style="mailSelected.includes(r.key) ? '' : 'background:hsl(' + mailHue(mailWho(r)) + ' 55% 42%)'" @click.stop="mailSelMode ? mailPick(r) : mailSelStart(r)" :title="mailSelected.includes(r.key) ? 'Auswahl aufheben' : 'Auswählen'" :aria-pressed="mailSelected.includes(r.key)">
+                                                <i x-show="mailSelected.includes(r.key)" class="fa-solid fa-check"></i>
+                                                <span x-show="!mailSelected.includes(r.key)" class="ltr" x-text="initial(mailWho(r))"></span>
+                                                <i x-show="!mailSelected.includes(r.key)" class="fa-regular fa-square hov"></i>
                                             </button>
                                             <span class="min-w-0 flex-1">
                                                 <span class="flex items-baseline gap-2"><span class="mw text-sm truncate flex-1" x-text="mailWho(r)"></span><span class="text-[11px] muted shrink-0 tnum" x-text="mailDateShort(r.date)"></span></span>
@@ -1468,6 +1617,7 @@
                                     <select x-show="it.type === 'select'" class="field !w-auto max-w-[11rem] sm:max-w-none" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
                                         <template x-for="o in it.o" :key="o[0]"><option :value="o[0]" :selected="String(o[0]) === String(settingVal(it))" x-text="o[1]"></option></template>
                                     </select>
+                                    <input x-show="it.type === 'text'" type="text" maxlength="40" class="field !w-auto max-w-[12rem] sm:max-w-[16rem]" :value="settingVal(it)" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
                                     <button x-show="it.type === 'time'" type="button" class="field pickbtn !w-auto" @click="pickTime(cfg, it.k, { cb: 'saveCfg', title: it.label })"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="cfg[it.k]"></span></button>
                                 </div>
                             </template>
@@ -1535,7 +1685,7 @@
                             <div class="card p-5 sm:p-6"><div class="space-y-3">
                         <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
                         <template x-if="!backupReady()">
-                            <p class="text-[11px] muted">Dafür muss der Google-Abgleich eingerichtet sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zum Geräte-Abgleich</button></p>
+                            <p class="text-[11px] muted">Dafür müssen deine Geräte über Google verbunden sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zu den verbundenen Geräten</button></p>
                         </template>
                         <template x-if="backupReady()">
                             <div class="space-y-3">
@@ -1562,7 +1712,7 @@
 
 <div class="card p-5 sm:p-6 space-y-5">
                     <div>
-                        <p class="label"><i class="fa-solid fa-arrows-rotate mr-2"></i>Geräte-Abgleich</p>
+                        <p class="label"><i class="fa-solid fa-link mr-2"></i>Verbundene Geräte</p>
                         <p class="text-[11px] muted mt-1.5 leading-relaxed">Hält Termine, Aufgaben, Einkauf, Tresor und Einstellungen auf deinen Geräten synchron. Alles wird mit deinem Sync-Passwort verschlüsselt, bevor es das Gerät verlässt. Nur pro Gerät bleiben Design/Akzent, Dichte, Startseite, Ansichten, Benachrichtigungen und die Update-Prüfung sowie die Google-Kalender-URL.</p>
                     </div>
 
@@ -1577,7 +1727,7 @@
                         <p class="text-[11px] muted leading-relaxed">Raumname und Passwort müssen auf allen Geräten <b>identisch</b> sein. Das Passwort wird auf diesem Gerät gespeichert und lässt sich nicht wiederherstellen – bewahre es gut auf.</p>
                         <p x-show="syncError" class="text-xs font-bold text-rose-400" x-text="syncError"></p>
                         <div class="flex flex-wrap justify-end gap-2">
-                            <button type="button" x-show="syncReady" @click="clearSync()" class="btn btn-ghost !text-rose-400">Abgleich beenden</button>
+                            <button type="button" x-show="syncReady" @click="clearSync()" class="btn btn-ghost !text-rose-400">Verbindung lösen</button>
                             <button type="submit" class="btn btn-primary">Speichern</button>
                         </div>
                     </form>
@@ -1618,7 +1768,7 @@
                         <div class="flex items-center justify-between gap-4">
                             <div class="min-w-0">
                                 <p class="text-sm font-bold"><i class="fa-solid fa-link mr-2"></i>Direkt zwischen Geräten (P2P)</p>
-                                <p class="text-[11px] muted mt-0.5">Sofortiger Abgleich, solange mindestens zwei Geräte mit demselben Raum geöffnet sind.</p>
+                                <p class="text-[11px] muted mt-0.5">Überträgt sofort, solange zwei Geräte mit demselben Raum geöffnet sind.</p>
                             </div>
                             <button type="button" role="switch" :aria-checked="syncCfg.p2p" class="switch" :class="syncCfg.p2p ? 'on' : ''" @click="toggleSyncChannel('p2p')" aria-label="P2P-Abgleich"></button>
                         </div>
@@ -1669,7 +1819,7 @@
                                     <button type="button" class="btn btn-soft" @click="fillOffline()" :disabled="swState === 'lädt'"><i class="fa-solid fa-download"></i>Offline-Daten jetzt laden</button>
                                 </div>
                                 <p class="text-[11px] muted leading-relaxed" x-show="swState === 'fehlt' || swState === 'nur über https'">Die Datei <code>sw.js</code> muss im selben Ordner liegen wie <code>index.html</code> und über dieselbe Adresse erreichbar sein (also <code>…github.io/sw.js</code>). Danach die Seite einmal vollständig neu laden.</p>
-                                <p class="text-[11px] muted leading-relaxed">Ohne Verbindung funktionieren Heute, Kalender, Aufgaben, Notizen, Einkauf und Tresor weiter. E-Mail und der Geräte-Abgleich brauchen Internet und holen auf, sobald du wieder online bist.</p>
+                                <p class="text-[11px] muted leading-relaxed">Ohne Verbindung funktionieren Heute, Kalender, Aufgaben, Notizen, Einkauf und Tresor weiter. E-Mail und der Austausch zwischen deinen Geräten brauchen Internet und holen auf, sobald du wieder online bist.</p>
                             </div>
                 <div class="card p-5 sm:p-6 space-y-3">
                     <p class="label"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>App &amp; Updates</p>
@@ -1828,6 +1978,91 @@
     </div>
 
     <!-- Rezept ansehen -->
+    <!-- Zähler anlegen / bearbeiten -->
+    <div x-show="showMeter" x-transition.opacity x-cloak class="backdrop" @click.self="showMeter = false">
+        <form @submit.prevent="saveMeter()" class="card w-full max-w-lg p-5 sm:p-7 space-y-4" x-show="meterDraft">
+            <h3 class="font-black text-xl" x-text="meterDraft?.id ? 'Zähler bearbeiten' : 'Neuer Zähler'"></h3>
+
+            <div class="flex flex-wrap gap-2">
+                <template x-for="(k, id) in meterKinds" :key="id">
+                    <button type="button" class="btn" :class="meterDraft?.kind === id ? 'btn-primary' : 'btn-soft'" @click="meterKindChange(id)">
+                        <i :class="k.icon"></i><span x-text="k.label"></span>
+                    </button>
+                </template>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="label" for="mtName">Name</label>
+                <input id="mtName" type="text" x-model="meterDraft.name" class="field" placeholder="z. B. Strom Wohnung" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                    <label class="label" for="mtUnit">Einheit</label>
+                    <input id="mtUnit" type="text" x-model="meterDraft.unit" class="field" placeholder="kWh">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="label" for="mtNr">Zählernummer</label>
+                    <input id="mtNr" type="text" x-model="meterDraft.number" class="field" placeholder="optional">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="label" for="mtTarget">Jahreswert</label>
+                    <input id="mtTarget" type="number" step="any" min="0" x-model.number="meterDraft.target" class="field" placeholder="z. B. 2500">
+                    <p class="text-[10px] muted">Dein geplanter Jahresverbrauch – daran messe ich „über“ oder „unter Plan“.</p>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="label" for="mtPrice">Preis je Einheit (€)</label>
+                    <input id="mtPrice" type="number" step="any" min="0" x-model.number="meterDraft.price" class="field" placeholder="0,35">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="label" for="mtBase">Grundpreis je Monat (€)</label>
+                    <input id="mtBase" type="number" step="any" min="0" x-model.number="meterDraft.base" class="field" placeholder="12">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="label" for="mtAb">Abschlag je Monat (€)</label>
+                    <input id="mtAb" type="number" step="any" min="0" x-model.number="meterDraft.monthly" class="field" placeholder="optional">
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Speichern</button>
+                <button type="button" x-show="meterDraft?.id" @click="deleteMeter()" class="btn btn-ghost !text-rose-400"><i class="fa-regular fa-trash-can"></i>Löschen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showMeter = false" class="btn btn-ghost">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Ablesung -->
+    <div x-show="showReading" x-transition.opacity x-cloak class="backdrop" @click.self="showReading = false">
+        <form @submit.prevent="saveReading()" class="card w-full max-w-md p-5 sm:p-7 space-y-4" x-show="readingDraft">
+            <h3 class="font-black text-xl" x-text="readingDraft?.id ? 'Ablesung bearbeiten' : 'Neue Ablesung'"></h3>
+
+            <div class="space-y-1.5">
+                <label class="label" for="rdDate">Datum</label>
+                <input id="rdDate" type="date" x-model="readingDraft.date" class="field" required>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="label" for="rdVal">Zählerstand</label>
+                <input id="rdVal" x-ref="readingValue" type="number" step="any" x-model.number="readingDraft.value" class="field" inputmode="decimal" required>
+                <p class="text-[11px] muted" x-show="readingDraft?.lastDate">Letzter Stand: <span class="num font-bold" x-text="fmtNum(readingDraft.lastValue, 1)"></span> am <span x-text="shortDate(readingDraft.lastDate)"></span></p>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="label" for="rdNote">Notiz</label>
+                <input id="rdNote" type="text" x-model="readingDraft.note" class="field" placeholder="optional, z. B. Jahresablesung">
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Speichern</button>
+                <button type="button" x-show="readingDraft?.id" @click="deleteReading()" class="btn btn-ghost !text-rose-400"><i class="fa-regular fa-trash-can"></i>Löschen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showReading = false" class="btn btn-ghost">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+
     <div x-show="showRecipe" x-transition.opacity x-cloak class="backdrop" @click.self="showRecipe = false">
         <div class="card w-full max-w-2xl p-5 sm:p-7 space-y-5" x-show="recipeDraft">
             <div class="flex items-start gap-3">
@@ -1835,6 +2070,11 @@
                 <div class="min-w-0 flex-1">
                     <h3 class="font-black text-xl leading-snug break-words" x-text="recipeDraft?.title"></h3>
                     <p class="text-[11px] muted font-semibold mt-1"><span x-show="recipeDraft?.minutes" x-text="recipeDraft?.minutes + ' Minuten · '"></span><span x-text="recipeDraft?.ings.length + ' Zutaten'"></span></p>
+                    <p x-show="recipeDraft?.source" class="text-[11px] muted mt-1 truncate">
+                        <i class="fa-solid fa-link text-[9px] mr-1"></i>
+                        <template x-if="/^https?:/.test(recipeDraft?.source || '')"><a :href="recipeDraft.source" target="_blank" rel="noopener noreferrer" class="accent font-semibold hover:underline" x-text="recipeDraft.source"></a></template>
+                        <template x-if="!/^https?:/.test(recipeDraft?.source || '')"><span x-text="recipeDraft?.source"></span></template>
+                    </p>
                 </div>
                 <button type="button" class="icon-btn shrink-0" :class="recipeDraft?.fav ? '!text-amber-400' : ''" @click="toggleRecipeFav(recipeDraft)" aria-label="Lieblingsrezept"><i :class="recipeDraft?.fav ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
                 <button type="button" class="icon-btn shrink-0" @click="openRecipeEdit(recipeDraft)" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></button>
@@ -1875,6 +2115,56 @@
                 <button type="button" @click="recipeToNote()" class="btn btn-soft"><i class="fa-regular fa-note-sticky"></i><span class="hidden sm:inline">Als Notiz</span></button>
                 <span class="flex-1"></span>
                 <button type="button" @click="showRecipe = false" class="btn btn-ghost">Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rezept einlesen -->
+    <div x-show="showRecipeImport" x-transition.opacity x-cloak class="backdrop" @click.self="showRecipeImport = false">
+        <div class="card w-full max-w-xl p-5 sm:p-7 space-y-4">
+            <div>
+                <h3 class="font-black text-xl">Rezept einlesen</h3>
+                <p class="muted text-xs mt-1 font-medium">Aus einem Link, einer PDF oder einfach eingefügtem Text. Danach kannst du alles prüfen, bevor es gespeichert wird.</p>
+            </div>
+
+            <div class="flex gap-1.5 p-1 rounded-2xl" style="background: var(--inner)">
+                <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'url' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'url'; importErr = ''"><i class="fa-solid fa-link"></i>Link</button>
+                <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'pdf' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'pdf'; importErr = ''"><i class="fa-regular fa-file-pdf"></i>PDF</button>
+                <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'text' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'text'; importErr = ''"><i class="fa-regular fa-clipboard"></i>Text</button>
+            </div>
+
+            <div x-show="importWay === 'url'" class="space-y-2">
+                <label class="label" for="imUrl">Adresse der Rezeptseite</label>
+                <input id="imUrl" type="url" x-model="importUrl" class="field" placeholder="https://…" @keydown.enter.prevent="importFromUrl()">
+                <p class="muted text-[11px] leading-relaxed">Die Seite wird über dein eigenes Google-Script geladen, weil der Browser fremde Seiten nicht direkt lesen darf. Klappt bei allen Seiten mit Rezept-Auszeichnung, also bei den meisten Koch-Portalen.</p>
+                <p x-show="!syncCfg.url" class="text-[11px] font-bold text-amber-400">Dafür muss unter „Verbundene Geräte“ das Google-Script eingerichtet sein.</p>
+            </div>
+
+            <div x-show="importWay === 'pdf'" class="space-y-2">
+                <label class="label">PDF auswählen</label>
+                <label class="inner p-6 grid place-items-center text-center cursor-pointer border-dashed" style="border: 2px dashed var(--border)">
+                    <i class="fa-regular fa-file-pdf text-2xl accent"></i>
+                    <span class="text-sm font-bold mt-2">PDF hier auswählen</span>
+                    <span class="muted text-[11px] mt-0.5">Die ersten 8 Seiten werden gelesen</span>
+                    <input type="file" accept="application/pdf,.pdf" class="hidden" @change="importFromPdf($event)">
+                </label>
+                <p class="muted text-[11px] leading-relaxed">Die PDF bleibt auf deinem Gerät. Für das Lesewerkzeug wird beim ersten Mal kurz Internet gebraucht.</p>
+            </div>
+
+            <div x-show="importWay === 'text'" class="space-y-2">
+                <label class="label" for="imText">Rezepttext einfügen</label>
+                <textarea id="imText" x-model="importText" rows="9" class="field !text-sm" placeholder="Linsensuppe&#10;&#10;Zutaten&#10;250 g Linsen&#10;2 Karotten&#10;1 Zwiebel&#10;&#10;Zubereitung&#10;Gemüse klein schneiden und anbraten.&#10;Linsen zugeben und 30 Minuten köcheln."></textarea>
+                <p class="muted text-[11px]">Überschriften wie „Zutaten“ und „Zubereitung“ helfen beim Einsortieren, sind aber nicht nötig.</p>
+            </div>
+
+            <p x-show="importErr" class="text-[12px] font-bold text-rose-400 leading-relaxed" x-text="importErr"></p>
+            <p x-show="importBusy" class="text-[12px] font-bold accent"><i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i><span x-text="importBusy"></span></p>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button type="button" x-show="importWay === 'url'" @click="importFromUrl()" :disabled="!!importBusy" class="btn btn-primary"><i class="fa-solid fa-download"></i>Laden</button>
+                <button type="button" x-show="importWay === 'text'" @click="importFromText()" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i>Auslesen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showRecipeImport = false" class="btn btn-ghost">Abbrechen</button>
             </div>
         </div>
     </div>
@@ -2425,7 +2715,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            weather: false, weatherPlace: null, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Christopher’s Space', weather: false, weatherPlace: null, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -2665,8 +2955,8 @@
         async function sha1Hex(str) { return [...new Uint8Array(await crypto.subtle.digest('SHA-1', te.encode(str)))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes']];
-        const SYNC_CFG_KEYS = ['calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings']];
+        const SYNC_CFG_KEYS = ['appName', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -2696,6 +2986,7 @@ function out_(obj) {
 function handle_(p) {
   var room = String(p.room || '');
   if (!/^[a-f0-9]{32}$/.test(room)) return out_({ ok: false, error: 'Ungültiger Raum' });
+  if (p.action === 'fetchurl') return fetchUrl_(String(p.url || ''));
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -2745,6 +3036,26 @@ function handle_(p) {
   }
 }
 
+/* Holt eine Webseite, damit die App Rezepte von Koch-Seiten lesen kann.
+   Der Browser darf das wegen CORS nicht selbst. */
+function fetchUrl_(url) {
+  if (!/^https?:\/\//i.test(url)) return out_({ ok: false, error: 'Keine gültige Adresse' });
+  try {
+    var res = UrlFetchApp.fetch(url, {
+      muteHttpExceptions: true,
+      followRedirects: true,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SpaceRecipeImport/1.0)' }
+    });
+    var code = res.getResponseCode();
+    if (code >= 400) return out_({ ok: false, error: 'Die Seite antwortet mit Fehler ' + code });
+    var txt = res.getContentText();
+    if (txt.length > 900000) txt = txt.substring(0, 900000);
+    return out_({ ok: true, html: txt });
+  } catch (err) {
+    return out_({ ok: false, error: 'Die Seite konnte nicht geladen werden' });
+  }
+}
+
 function listBackups_(room) {
   var it = DriveApp.searchFiles("title contains 'space-backup-" + room + "-' and trashed = false");
   var arr = [];
@@ -2774,6 +3085,50 @@ function listBackups_(room) {
             { id: 'inbox', label: 'In den Posteingang', icon: 'fa-solid fa-inbox', patch: { x: 'i' }, msg: 'In den Posteingang verschoben' }
         ];
         const DEFAULT_QUICK = ['read_archive', 'todo_archive', 'delete'];
+
+        /* ---------- Verbrauch: Zähler und Zählerstände ---------- */
+        const METER_KINDS = {
+            strom: { label: 'Strom', unit: 'kWh', icon: 'fa-solid fa-bolt', color: '#eab308', price: 0.35, base: 12 },
+            gas:   { label: 'Gas', unit: 'm³', icon: 'fa-solid fa-fire-flame-simple', color: '#f97316', price: 0.12, base: 15 },
+            wasser:{ label: 'Wasser', unit: 'm³', icon: 'fa-solid fa-droplet', color: '#0ea5e9', price: 4.5, base: 8 }
+        };
+            function normMeter(m) {
+            const kind = METER_KINDS[m.kind] ? m.kind : 'strom', d = METER_KINDS[kind];
+            return {
+                id: String(m.id ?? uid()),
+                kind,
+                name: String(m.name || '').slice(0, 40) || d.label,
+                unit: String(m.unit || d.unit).slice(0, 6),
+                number: String(m.number || '').slice(0, 30),
+                target: Math.max(0, Number(m.target) || 0),
+                price: Math.max(0, Number(m.price) || 0),
+                base: Math.max(0, Number(m.base) || 0),
+                monthly: Math.max(0, Number(m.monthly) || 0),
+                factor: Math.max(0, Number(m.factor) || (kind === 'gas' ? 10 : 0)),
+                created: Number(m.created) || Date.now()
+            };
+        }
+        function normReading(r) {
+            return {
+                id: String(r.id ?? uid()),
+                meter: String(r.meter || ''),
+                date: /^\d{4}-\d{2}-\d{2}$/.test(r.date) ? r.date : fmt(new Date()),
+                value: Math.max(0, Number(r.value) || 0),
+                note: String(r.note || '').slice(0, 60)
+            };
+        }
+        /* Zählerstand an einem beliebigen Tag – zwischen zwei Ablesungen wird linear gerechnet */
+        function valueAt(rs, ds) {
+            if (!rs.length) return null;
+            const t = +parseDate(ds), t0 = +parseDate(rs[0].date), tn = +parseDate(rs[rs.length - 1].date);
+            if (t <= t0) return rs[0].value;
+            if (t >= tn) return rs[rs.length - 1].value;
+            for (let i = 1; i < rs.length; i++) {
+                const a = rs[i - 1], b = rs[i], ta = +parseDate(a.date), tb = +parseDate(b.date);
+                if (t <= tb) return a.value + (b.value - a.value) * (t - ta) / ((tb - ta) || 1);
+            }
+            return rs[rs.length - 1].value;
+        }
 
         /* ---------- Wetter (Open-Meteo, ohne Anmeldung) ---------- */
         const WMO = {
@@ -2811,6 +3166,128 @@ function listBackups_(room) {
             }
             return { qty: qty || 0, unit, name: name.trim().slice(0, 60) };
         }
+        /* ---------- Rezepte einlesen ---------- */
+
+        /* "PT1H20M" oder "90 Min." -> Minuten */
+        function isoMinutes(v) {
+            if (typeof v === 'number') return Math.round(v);
+            const s = String(v || '');
+            const iso = /^P(?:\d+D)?T?(?:(\d+)H)?(?:(\d+)M)?/i.exec(s);
+            if (iso && (iso[1] || iso[2])) return (Number(iso[1]) || 0) * 60 + (Number(iso[2]) || 0);
+            const h = /(\d+)\s*(?:std|stunde)/i.exec(s), m = /(\d+)\s*(?:min)/i.exec(s);
+            if (h || m) return (h ? Number(h[1]) * 60 : 0) + (m ? Number(m[1]) : 0);
+            return 0;
+        }
+
+        function firstNum(v) {
+            const m = /(\d+)/.exec(String(Array.isArray(v) ? v[0] : (v && v.value) || v || ''));
+            return m ? Number(m[1]) : 0;
+        }
+
+        /* Überschriften, die einen Abschnitt eröffnen */
+        const RX_ING_HEAD = /^(zutaten|ingredients|einkaufsliste|für den teig|für die [a-zäöüß ]+|für das [a-zäöüß ]+)\b[:.]?$/i;
+        const RX_STEP_HEAD = /^(zubereitung|anleitung|zubereitungsschritte|schritte|so geht'?s|und so geht'?s|instructions|method|arbeitsschritte)\b[:.]?$/i;
+        const RX_SKIP = /^(nährwerte|nährwertangaben|kommentare|zutaten für|werbung|anzeige|drucken|teilen|bewertung|schwierigkeitsgrad|zubereitungszeit|gesamtzeit|portionen)\b.*$/i;
+
+        /* Sieht die Zeile nach einer Zutat aus? */
+        function looksLikeIng(l) {
+            if (l.length > 70) return false;
+            if (/[.!?]\s+\S/.test(l)) return false;                      // ganzer Satz
+            if (/^[-•*–]\s/.test(l)) return true;
+            if (/^\s*(?:\d+[.)]\s)/.test(l)) return false;               // nummerierter Schritt
+            return /^(?:[0-9½¼¾⅓⅔]|etwas\b|je\b|prise\b|eine?\b|ein paar\b|salz|pfeffer)/i.test(l);
+        }
+
+        /* Freier Text (eingefügt oder aus einer PDF) -> Rezeptentwurf */
+        function parseRecipeText(text) {
+            const lines = String(text || '').replace(/\r/g, '').split('\n')
+                .map(l => l.replace(/\s+/g, ' ').trim()).filter(l => l && !RX_SKIP.test(l));
+            const out = { title: '', servings: 0, minutes: 0, ings: [], steps: [] };
+            const joined = lines.join('\n');
+            const sv = /(\d+)\s*(?:portion|person|stück\b)/i.exec(joined);
+            if (sv) out.servings = Number(sv[1]);
+            const tm = /(?:zeit|dauer)[^\n]{0,20}?(\d+)\s*min|(\d+)\s*min(?:uten)?\b/i.exec(joined);
+            if (tm) out.minutes = Number(tm[1] || tm[2]);
+
+            let mode = '';                                              // '', 'ing', 'step'
+            for (let i = 0; i < lines.length; i++) {
+                const l = lines[i];
+                if (RX_ING_HEAD.test(l)) { mode = 'ing'; continue; }
+                if (RX_STEP_HEAD.test(l)) { mode = 'step'; continue; }
+                if (!out.title && mode === '' && l.length <= 80 && !looksLikeIng(l)) { out.title = l; continue; }
+                if (mode === 'step') { out.steps.push(l.replace(/^\s*\d+[.)]\s*/, '')); continue; }
+                if (mode === 'ing') {
+                    if (looksLikeIng(l) || l.length <= 45) { out.ings.push(l.replace(/^[-•*–]\s*/, '')); continue; }
+                    mode = 'step'; out.steps.push(l); continue;         // langer Fließtext: ab hier Zubereitung
+                }
+                if (looksLikeIng(l)) out.ings.push(l.replace(/^[-•*–]\s*/, ''));
+                else if (l.length > 45) out.steps.push(l.replace(/^\s*\d+[.)]\s*/, ''));
+            }
+            if (!out.title) out.title = lines[0] || '';
+            return out;
+        }
+
+        /* Rezept-Daten aus einer Webseite (bevorzugt die eingebetteten JSON-Daten) */
+        function recipeFromJsonLd(obj, out) {
+            if (!obj || typeof obj !== 'object') return false;
+            if (Array.isArray(obj)) return obj.some(o => recipeFromJsonLd(o, out));
+            const t = obj['@type'];
+            const isRec = t === 'Recipe' || (Array.isArray(t) && t.includes('Recipe'));
+            if (!isRec) return (obj['@graph'] ? recipeFromJsonLd(obj['@graph'], out) : false);
+            out.title = String(obj.name || '').replace(/\s+/g, ' ').trim();
+            out.servings = firstNum(obj.recipeYield);
+            out.minutes = isoMinutes(obj.totalTime) || isoMinutes(obj.cookTime) + isoMinutes(obj.prepTime);
+            out.ings = (Array.isArray(obj.recipeIngredient) ? obj.recipeIngredient : [])
+                .map(x => String(x).replace(/\s+/g, ' ').trim()).filter(Boolean);
+            const steps = [];
+            const walk = v => {
+                if (!v) return;
+                if (typeof v === 'string') { String(v).split(/\n+/).forEach(s => { s = s.replace(/\s+/g, ' ').trim(); if (s) steps.push(s); }); return; }
+                if (Array.isArray(v)) return v.forEach(walk);
+                if (v.itemListElement) return walk(v.itemListElement);
+                if (v.text) return walk(v.text);
+                if (v.name) return walk(v.name);
+            };
+            walk(obj.recipeInstructions);
+            out.steps = steps;
+            return true;
+        }
+
+        function recipeFromHtml(html) {
+            const out = { title: '', servings: 0, minutes: 0, ings: [], steps: [] };
+            const src = String(html || '');
+            // Zuerst die eingebetteten JSON-Daten – die stehen auf fast jeder Rezeptseite
+            const rx = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+            let b;
+            while ((b = rx.exec(src))) {
+                let data = null;
+                try { data = JSON.parse(b[1].trim()); } catch (e) { continue; }
+                if (recipeFromJsonLd(data, out) && (out.ings.length || out.steps.length)) return out;
+            }
+            let doc = null;
+            try { doc = new DOMParser().parseFromString(src, 'text/html'); } catch (e) { }
+            if (doc) {
+                // Keine JSON-Daten: über die üblichen Auszeichnungen versuchen
+                const pick = sel => [...doc.querySelectorAll(sel)].map(n => n.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean);
+                const ings = pick('[itemprop="recipeIngredient"], [itemprop="ingredients"], .ingredient, .recipe-ingredient, li.zutat');
+                const steps = pick('[itemprop="recipeInstructions"] li, [itemprop="recipeInstructions"] p, .instruction, .recipe-step');
+                if (ings.length) {
+                    out.ings = ings; out.steps = steps;
+                    const t = doc.querySelector('h1') || doc.querySelector('title');
+                    out.title = t ? t.textContent.replace(/\s+/g, ' ').trim() : '';
+                    return out;
+                }
+                // Letzter Versuch: sichtbaren Text lesen
+                doc.querySelectorAll('script, style, nav, footer, header, aside').forEach(n => n.remove());
+                const body = doc.body ? doc.body.innerText || doc.body.textContent : '';
+                const r = parseRecipeText(body);
+                const t = doc.querySelector('h1');
+                if (t) r.title = t.textContent.replace(/\s+/g, ' ').trim();
+                return r;
+            }
+            return parseRecipeText(src.replace(/<(script|style)[\s\S]*?<\/\1>/gi, '').replace(/<[^>]+>/g, '\n'));
+        }
+
         function normRecipe(r) {
             const ings = (Array.isArray(r.ings) ? r.ings : []).slice(0, 60).map(i => ({
                 qty: Number(i.qty) || 0, unit: UNITS.includes(i.unit) ? i.unit : '', name: String(i.name || '').slice(0, 60)
@@ -2822,6 +3299,7 @@ function listBackups_(room) {
                 servings: Math.min(99, Math.max(1, Number(r.servings) || 2)),
                 minutes: Math.min(999, Math.max(0, Number(r.minutes) || 0)),
                 fav: !!r.fav,
+                source: String(r.source || '').slice(0, 300),
                 ings,
                 steps: String(r.steps || '').slice(0, 8000),
                 note: String(r.note || '').slice(0, 2000),
@@ -3115,6 +3593,7 @@ function reply_(p) {
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
                     { id: 'notes', label: 'Notizen', icon: 'fa-regular fa-note-sticky' },
                     { id: 'recipes', label: 'Rezepte', icon: 'fa-solid fa-utensils' },
+                    { id: 'usage', label: 'Verbrauch', icon: 'fa-solid fa-gauge-high' },
                     { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
                     { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' },
                     { id: 'passwords', label: 'Tresor', icon: 'fa-solid fa-vault' },
@@ -3148,12 +3627,13 @@ function reply_(p) {
                     { id: 'today', label: 'Start', icon: 'fa-solid fa-house' }, { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' }, { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
                     { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' }, { id: 'vault', label: 'Tresor', icon: 'fa-solid fa-vault' },
-                    { id: 'notify', label: 'Benachrichtigungen', icon: 'fa-solid fa-bell' }, { id: 'sync', label: 'Geräte-Abgleich', icon: 'fa-solid fa-arrows-rotate' },
+                    { id: 'notify', label: 'Benachrichtigungen', icon: 'fa-solid fa-bell' }, { id: 'sync', label: 'Verbundene Geräte', icon: 'fa-solid fa-arrows-rotate' },
                     { id: 'data', label: 'Daten & Backup', icon: 'fa-solid fa-floppy-disk' }, { id: 'about', label: 'App & Updates', icon: 'fa-solid fa-cloud-arrow-down' }
                 ],
                 setCat: 'general', setQuery: '',
                 settingsDef: [
-                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Start'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
+                    { cat: 'general', k: 'appName', type: 'text', label: 'Name der App', desc: 'Steht oben links, im Browser-Tab und auf dem Startbildschirm. Das letzte Wort wird farbig hervorgehoben.' },
+                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Start'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['usage', 'Verbrauch'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
                     { cat: 'general', k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
                     { cat: 'general', k: 'fontSize', type: 'select', label: 'Schriftgröße', desc: 'Skaliert die gesamte App', o: [['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']] },
                     { cat: 'general', k: 'reduceMotion', type: 'toggle', label: 'Weniger Animationen', desc: 'Schaltet Übergänge und Bewegungen weitgehend ab' },
@@ -3209,7 +3689,7 @@ function reply_(p) {
                 activeTab: 'calendar',
                 cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)),
                 themeSettings: 'midnight',
-                syncStatus: 'Lokal gespeichert', syncOk: false,
+                syncStatus: 'Nur auf diesem Gerät', syncOk: false,
                 googleScriptUrl: '', googleScriptUrlInput: '',
                 syncCfg: { room: '', pass: '', google: false, p2p: false, url: '' },
                 syncRoomInput: '', syncPassInput: '', syncPassShow: false, syncError: '',
@@ -3244,7 +3724,9 @@ function reply_(p) {
                 wx: { busy: false, error: '', at: 0, now: null, days: [], place: '' },
                 wxSearch: '', wxHits: [], wxBusy: false,
                 notes: [], noteQuery: '', showNoteModal: false, currentNote: { id: null, title: '', text: '', color: '', pin: false },
+                meters: [], readings: [], meterId: '', showMeter: false, meterDraft: normMeter({ id: null }), showReading: false, readingDraft: normReading({ id: null }),
                 recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: normRecipe({ id: null, title: '' }), recipeIngText: '', recipeUnits: UNITS,
+                showRecipeImport: false, importWay: 'url', importUrl: '', importText: '', importBusy: '', importErr: '',
                 shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, catalogOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
 
@@ -3305,6 +3787,8 @@ function reply_(p) {
                     this.mailCfg = normMailCfg(readJSON('organizer_mailcfg', null));
                     this.notes = (readJSON('organizer_notes', []) || []).filter(n => n && (n.title || n.text)).map(normNote);
                     this.recipes = (readJSON('organizer_recipes', []) || []).filter(r => r && r.title).map(normRecipe);
+                    this.meters = (readJSON('organizer_meters', []) || []).filter(m => m && m.id).map(normMeter);
+                    this.readings = (readJSON('organizer_readings', []) || []).filter(r => r && r.meter).map(normReading);
                     const wx = readJSON('organizer_wx', null); if (wx && wx.now) this.wx = { ...wx, busy: false };
                     const fold = readJSON('organizer_fold', null);
                     if (fold && typeof fold === 'object') { this.shopFold = fold.s && typeof fold.s === 'object' ? fold.s : {}; this.catFold = fold.c && typeof fold.c === 'object' ? fold.c : {}; this.catalogOpen = fold.k !== false; }
@@ -3326,6 +3810,8 @@ function reply_(p) {
 
                     ['click', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, () => this.touchIdle(), { passive: true }));
                     window.addEventListener('resize', () => { clearTimeout(this._refitT); this._refitT = setTimeout(() => this.mailRefit(), 250); }, { passive: true });
+                    this.tickClock(); setInterval(() => this.tickClock(), 20000);
+                    this.applyAppName();
                     window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
                     window.addEventListener('offline', () => { this.online = false; });
                     this.$watch('activeTab', v => { if (v === 'today') this.loadWeather(); this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
@@ -3364,6 +3850,7 @@ function reply_(p) {
                 get today() { void this.nowTick; return fmt(new Date()); },
                 addDaysStr(ds, n) { return fmt(addDays(parseDate(ds), n)); },
                 longDate(ds) { return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); },
+                shortDate(ds) { if (!ds) return ''; return parseDate(ds).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' }); },
                 toast(msg) { this.toastMsg = msg; clearTimeout(this._toastTimer); this._toastTimer = setTimeout(() => this.toastMsg = '', 2800); },
                 confirmBox: { open: false, title: '', text: '', ok: 'Löschen', danger: true, res: null },
                 askBox(text, o = {}) {
@@ -3384,6 +3871,9 @@ function reply_(p) {
                     this.showVaultEdit = false;
                     if (this.picker.open) { this.picker.open = false; return; } // Esc schließt zuerst nur die Datum-/Zeit-Auswahl
                     if (this.showNoteModal) { this.saveNote(); return; }
+                    if (this.showReading) { this.showReading = false; return; }
+                    if (this.showMeter) { this.showMeter = false; return; }
+                    if (this.showRecipeImport) { this.showRecipeImport = false; return; }
                     if (this.showRecipeEdit) { this.showRecipeEdit = false; return; }
                     if (this.showRecipe) { this.showRecipe = false; return; }
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
@@ -3431,10 +3921,11 @@ function reply_(p) {
                 setSetting(it, v) {
                     if (it.src === 'mail') { this.mailCfg.settings[it.k] = v; this.saveMailCfg(); } else this.setCfg(it.k, v);
                 },
-                selectSetting(it, v) { const o = it.o.find(x => String(x[0]) === v); this.setSetting(it, o ? o[0] : v); },
+                selectSetting(it, v) { const o = (it.o || []).find(x => String(x[0]) === v); this.setSetting(it, o ? o[0] : v); },
                 toggleSetting(it) { if (it.src === 'mail') this.setSetting(it, !this.mailCfg.settings[it.k]); else this.toggleCfg(it.k); },
                 setCfg(k, v) {
                     this.cfg[k] = v; this.saveCfg(); this.applyCfg();
+                    if (k === 'appName') this.applyAppName();
                     if (k === 'calView') this.calendarView = v;
                     if (k === 'hourFrom' || k === 'hourTo') this.scrollGrid();
                 },
@@ -3457,7 +3948,7 @@ function reply_(p) {
                     this.googleScriptUrl = this.googleScriptUrlInput.trim();
                     localStorage.setItem('organizer_gscript_url', this.googleScriptUrl);
                     if (this.googleScriptUrl) this.fetchGoogleEvents(true);
-                    else { this.events = this.events.filter(e => !e.isGoogle); this.syncStatus = 'Lokal gespeichert'; this.syncOk = false; }
+                    else { this.events = this.events.filter(e => !e.isGoogle); this.syncStatus = 'Nur auf diesem Gerät'; this.syncOk = false; }
                     this.toast('Google URL gespeichert');
                 },
                 /* ---------- Geräte-Abgleich (Google & P2P) ---------- */
@@ -3478,7 +3969,7 @@ function reply_(p) {
                 },
                 get gStatusText() {
                     if (!this.syncCfg.url) return 'Bitte die Web-App-URL deines Scripts eintragen.';
-                    if (this.gBusy) return 'Synchronisiere …';
+                    if (this.gBusy) return 'Gleiche ab …';
                     if (this.gError) return '⚠ ' + this.gError;
                     return this.gLast ? 'Zuletzt abgeglichen: ' + new Date(this.gLast).toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht abgeglichen.';
                 },
@@ -3599,6 +4090,8 @@ function reply_(p) {
                     if (p === 'sl') return { id: String(v.id), name: String(v.name || 'Liste').slice(0, 40), emoji: String(v.emoji || '🛒').slice(0, 8) };
                     if (p === 'nt') return normNote({ ...v });
                     if (p === 'rc') return normRecipe({ ...v });
+                    if (p === 'mt') return normMeter({ ...v });
+                    if (p === 'rd') return normReading({ ...v });
                     if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
@@ -3653,6 +4146,8 @@ function reply_(p) {
                         if (dirty.has('ml')) this.mailStatus = cols.ml;
                         if (dirty.has('nt')) this.notes = cols.nt;
                         if (dirty.has('rc')) this.recipes = cols.rc;
+                        if (dirty.has('mt')) this.meters = cols.mt;
+                        if (dirty.has('rd')) this.readings = cols.rd;
                         if (dirty.has('sl')) { this.shopLists = cols.sl; if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = ''; }
                         if (dirty.has('ls')) {
                             if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
@@ -3735,7 +4230,7 @@ function reply_(p) {
                         }
                         if (!done) throw new Error('Zu viele gleichzeitige Änderungen – bitte später erneut versuchen.');
                         this.gError = ''; this.gLast = Date.now();
-                        if (manual) this.toast('Mit Google abgeglichen');
+                        if (manual) this.toast('Alles auf dem neuesten Stand');
                         this.maybeAutoBackup();
                     } catch (e) {
                         this.gError = e.name === 'AbortError' ? 'Zeitüberschreitung' : e instanceof TypeError ? 'Keine Verbindung zum Script (offline, oder Zugriff nicht auf „Jeder“ gestellt?)' : (e.message || 'Unbekannter Fehler');
@@ -3816,7 +4311,7 @@ function reply_(p) {
                         else if (k[2] === ':' && cols[k.slice(0, 2)]) cols[k.slice(0, 2)].push(this.normIncoming(k.slice(0, 2), { ...r.v, id: k.slice(3) }));
                     }
                     this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
-                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl; this.notes = cols.nt; this.recipes = cols.rc;
+                    this.todos = cols.td; this.shoppingItems = cols.sh; this.mailStatus = cols.ml; this.shopLists = cols.sl; this.notes = cols.nt; this.recipes = cols.rc; this.meters = cols.mt; this.readings = cols.rd;
                     if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = '';
                     if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
                     this.todoLists = cols.ls;
@@ -3939,10 +4434,10 @@ function reply_(p) {
                         if (data && Array.isArray(data.events)) {
                             const g = data.events.map((e, i) => normEvent({ color: '#10b981', ...e, id: 'g-' + (e.id ?? i), isGoogle: true })).filter(e => e.startDate);
                             this.events = [...this.events.filter(e => !e.isGoogle), ...g];
-                            this.syncStatus = 'Google Sync aktiv'; this.syncOk = true;
+                            this.syncStatus = 'Mit deinen Geräten verbunden'; this.syncOk = true;
                             if (manual) this.toast('Google-Termine aktualisiert');
                         }
-                    } catch (e) { this.syncStatus = 'Sync-Fehler'; this.syncOk = false; if (manual) this.toast('Google Sync fehlgeschlagen'); }
+                    } catch (e) { this.syncStatus = 'Verbindung gestört'; this.syncOk = false; if (manual) this.toast('Verbindung zu Google fehlgeschlagen'); }
                 },
 
                 /* ---------- App-Updates ---------- */
@@ -4122,7 +4617,7 @@ function reply_(p) {
                         const s = Number(e.startTime.slice(0, 2)), em = Number(e.endTime.slice(0, 2)) + (Number(e.endTime.slice(3, 5)) ? 1 : 0);
                         lo = Math.min(lo, s); hi = Math.max(hi, em);
                     }
-                    if (hi < 0) { const n = new Date().getHours(); lo = n; hi = n + 5; }
+                    if (hi < 0) { const n = new Date().getHours(), a0 = Math.max(0, Math.min(n - 1, 18)); return [a0, Math.min(24, a0 + 6)]; } // Tag ohne Termine: schmales Fenster um die aktuelle Zeit
                     let a = Math.max(0, lo - 1), b = Math.min(24, hi + 1);
                     if (b - a < 6) { b = Math.min(24, a + 6); a = Math.max(0, b - 6); }
                     return [a, b];
@@ -4578,6 +5073,206 @@ function reply_(p) {
                     }
                 },
                 wxTime(iso) { return iso ? iso.slice(11, 16) : '–'; },
+                /* „vor 5 Min.“ – die Uhr oben sorgt dafür, dass sich das von selbst auffrischt */
+                get wxAgo() {
+                    void this.clockTime;
+                    if (!this.wx.at) return '';
+                    const min = Math.round((Date.now() - this.wx.at) / 60000);
+                    const t = new Date(this.wx.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                    if (min < 1) return 'gerade eben';
+                    if (min < 60) return 'vor ' + min + ' Min. (' + t + ')';
+                    if (min < 1440) return t + ' Uhr';
+                    return new Date(this.wx.at).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' }) + ', ' + t;
+                },
+
+                /* ---------- Verbrauch ---------- */
+                meterKinds: METER_KINDS,
+                get meterList() { return [...this.meters].sort((a, b) => a.created - b.created); },
+                meterRead(id) { return this.readings.filter(r => r.meter === id).sort((a, b) => a.date.localeCompare(b.date)); },
+                meterKind(m) { return METER_KINDS[m.kind] || METER_KINDS.strom; },
+                fmtNum(n, d = 0) { return (Number(n) || 0).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }); },
+                fmtEuro(n) { return (Number(n) || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }); },
+                /* Alle Kennzahlen eines Zählers: Verbrauch, Schnitt, Hochrechnung, Kosten */
+                meterStats(m) {
+                    const rs = this.meterRead(m.id), n = rs.length;
+                    const out = { readings: n, first: rs[0] || null, last: rs[n - 1] || null, days: 0, total: 0, perDay: 0, year: 0, diff: 0, pct: 0, cost: 0, costYear: 0, month30: 0, ready: false };
+                    if (n < 2) return out;
+                    const t0 = +parseDate(rs[0].date), tn = +parseDate(rs[n - 1].date);
+                    out.days = Math.max(1, Math.round((tn - t0) / 86400000));
+                    out.total = Math.max(0, rs[n - 1].value - rs[0].value);
+                    out.perDay = out.total / out.days;
+                    out.year = out.perDay * 365;
+                    out.ready = out.days >= 7;
+                    const d30 = new Date(tn - 30 * 86400000);
+                    out.month30 = Math.max(0, rs[n - 1].value - valueAt(rs, fmt(d30)));
+                    if (m.target > 0) { out.diff = out.year - m.target; out.pct = Math.round(out.year / m.target * 100); }
+                    const units = u => m.kind === 'gas' && m.factor > 0 ? u * m.factor : u;
+                    out.cost = units(out.total) * m.price + m.base * (out.days / 30.44);
+                    out.costYear = units(out.year) * m.price + m.base * 12;
+                    if (m.monthly > 0) out.costDiff = out.costYear - m.monthly * 12;
+                    return out;
+                },
+                /* Verbrauch je Monat für das Balkendiagramm */
+                meterMonths(m, count = 12) {
+                    const rs = this.meterRead(m.id);
+                    if (rs.length < 2) return [];
+                    const last = parseDate(rs[rs.length - 1].date), first = parseDate(rs[0].date), out = [];
+                    for (let i = count - 1; i >= 0; i--) {
+                        const d = new Date(last.getFullYear(), last.getMonth() - i, 1);
+                        const end = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+                        if (end <= first) continue;
+                        const a = valueAt(rs, fmt(d < first ? first : d)), b = valueAt(rs, fmt(end > last ? last : end));
+                        out.push({ key: fmt(d).slice(0, 7), label: d.toLocaleDateString('de-DE', { month: 'short' }), val: Math.max(0, b - a), part: d < first || end > last });
+                    }
+                    return out;
+                },
+                meterMax(ms) { return Math.max(1, ...ms.map(x => x.val)); },
+                openMeter(m) {
+                    const k = m ? null : 'strom';
+                    this.meterDraft = m ? normMeter({ ...m }) : normMeter({ id: null, kind: k, name: METER_KINDS[k].label, target: 0, price: METER_KINDS[k].price, base: METER_KINDS[k].base });
+                    if (!m) this.meterDraft.id = null;
+                    this.showMeter = true;
+                },
+                meterKindChange(kind) {
+                    const d = METER_KINDS[kind] || METER_KINDS.strom, m = this.meterDraft;
+                    this.meterDraft = { ...m, kind, unit: d.unit, price: m.price || d.price, base: m.base || d.base, factor: kind === 'gas' ? (m.factor || 10) : 0, name: Object.values(METER_KINDS).some(x => x.label === m.name) || !m.name ? d.label : m.name };
+                },
+                saveMeter() {
+                    const d = this.meterDraft; if (!d) return;
+                    const m = normMeter({ ...d, id: d.id || uid() });
+                    this.meters = d.id ? this.meters.map(x => x.id === d.id ? m : x) : [...this.meters, m];
+                    this.meterId = m.id; this.saveAllData(); this.showMeter = false;
+                },
+                async deleteMeter(id) {
+                    id = id || this.meterDraft?.id;
+                    const m = this.meters.find(x => x.id === id); if (!m) return;
+                    const n = this.meterRead(id).length;
+                    if (!await this.ask('Der Zähler „' + m.name + '“' + (n ? ' und seine ' + n + ' Ablesungen werden' : ' wird') + ' gelöscht.', { title: 'Zähler löschen' })) return;
+                    this.meters = this.meters.filter(x => x.id !== id);
+                    this.readings = this.readings.filter(r => r.meter !== id);
+                    if (this.meterId === id) this.meterId = '';
+                    this.saveAllData(); this.showMeter = false; this.toast('Zähler gelöscht');
+                },
+                openReading(m, r) {
+                    const rs = this.meterRead(m.id), last = rs[rs.length - 1];
+                    this.readingDraft = r ? normReading({ ...r }) : normReading({ id: null, meter: m.id, date: this.today, value: last ? last.value : 0 });
+                    if (!r) { this.readingDraft.id = null; this.readingDraft.value = ''; }
+                    this.readingDraft.lastValue = last ? last.value : null;
+                    this.readingDraft.lastDate = last ? last.date : null;
+                    this.showReading = true;
+                    this.$nextTick(() => this.$refs.readingValue?.focus());
+                },
+                saveReading() {
+                    const d = this.readingDraft; if (!d) return;
+                    const v = Number(String(d.value).replace(',', '.'));
+                    if (!(v >= 0)) { this.toast('Bitte einen Zählerstand eingeben'); return; }
+                    const r = normReading({ ...d, value: v, id: d.id || uid() });
+                    const prev = this.meterRead(r.meter).filter(x => x.id !== r.id && x.date <= r.date).pop();
+                    this.readings = d.id ? this.readings.map(x => x.id === d.id ? r : x) : [...this.readings, r];
+                    this.saveAllData(); this.showReading = false;
+                    if (prev && v < prev.value) this.toast('Achtung: niedriger als die Ablesung vom ' + this.shortDate(prev.date));
+                    else this.toast('Zählerstand gespeichert');
+                },
+                async deleteReading(id) {
+                    id = id || this.readingDraft?.id;
+                    const r = this.readings.find(x => x.id === id); if (!r) return;
+                    if (!await this.ask('Die Ablesung vom ' + this.shortDate(r.date) + ' wird gelöscht.', { title: 'Ablesung löschen' })) return;
+                    this.readings = this.readings.filter(x => x.id !== id); this.saveAllData(); this.showReading = false;
+                },
+
+                /* ---------- Rezepte einlesen ---------- */
+                openRecipeImport() {
+                    this.importWay = this.syncCfg.url ? 'url' : 'text';
+                    this.importUrl = ''; this.importText = ''; this.importErr = ''; this.importBusy = '';
+                    this.showRecipeImport = true;
+                },
+                /* Aus dem Entwurf des Einlesens wird ein normales Rezept im Bearbeiten-Dialog */
+                useParsedRecipe(r, quelle) {
+                    const ings = (r.ings || []).slice(0, 60);
+                    if (!ings.length && !(r.steps || []).length) { this.importErr = 'Darin habe ich kein Rezept gefunden. Du kannst den Text auch von Hand einfügen.'; return false; }
+                    this.showRecipeImport = false;
+                    this.recipeDraft = normRecipe({
+                        id: null, title: r.title || 'Rezept',
+                        servings: r.servings || 2, minutes: r.minutes || 0,
+                        ings: ings.map(parseIngredient).filter(Boolean),
+                        steps: (r.steps || []).slice(0, 40).join('\n'),
+                        source: quelle || ''
+                    });
+                    this.recipeDraft.id = null;
+                    this.recipeIngText = ings.join('\n');
+                    this.showRecipeEdit = true;
+                    this.toast('Gefunden – bitte kurz prüfen und speichern');
+                    return true;
+                },
+                importFromText() {
+                    this.importErr = '';
+                    const t = this.importText.trim();
+                    if (t.length < 15) { this.importErr = 'Bitte den Rezepttext einfügen.'; return; }
+                    this.useParsedRecipe(parseRecipeText(t), '');
+                },
+                async importFromUrl() {
+                    this.importErr = '';
+                    const url = this.importUrl.trim();
+                    if (!/^https?:\/\//i.test(url)) { this.importErr = 'Bitte die komplette Adresse einfügen (mit https://).'; return; }
+                    if (!this.syncCfg.url) { this.importErr = 'Dafür brauche ich das Google-Script aus „Verbundene Geräte“ – der Browser darf fremde Seiten nicht selbst laden.'; return; }
+                    this.importBusy = 'Seite wird geladen…';
+                    try {
+                        const res = await this.gCall({ action: 'fetchurl', url });
+                        if (!res || !res.html) throw new Error(res && res.error || 'Die Seite konnte nicht geladen werden');
+                        this.useParsedRecipe(recipeFromHtml(res.html), url);
+                    } catch (e) {
+                        this.importErr = /Unbekannte Aktion/.test(e.message || '')
+                            ? 'Das Google-Script kennt diese Funktion noch nicht – bitte unter „Verbundene Geräte“ das neue Script kopieren und als neue Version bereitstellen.'
+                            : (e.message || 'Die Seite konnte nicht geladen werden');
+                    } finally { this.importBusy = ''; }
+                },
+                async importFromPdf(ev) {
+                    const file = ev.target.files && ev.target.files[0];
+                    ev.target.value = '';
+                    if (!file) return;
+                    this.importErr = ''; this.importBusy = 'PDF wird gelesen…';
+                    try {
+                        const pdfjs = await this.loadPdfJs();
+                        const buf = await file.arrayBuffer();
+                        const doc = await pdfjs.getDocument({ data: buf }).promise;
+                        const parts = [];
+                        for (let i = 1; i <= Math.min(doc.numPages, 8); i++) {
+                            const page = await doc.getPage(i), tc = await page.getTextContent();
+                            let y = null, line = [];
+                            for (const it of tc.items) {
+                                const ny = Math.round(it.transform[5]);
+                                if (y !== null && Math.abs(ny - y) > 3) { parts.push(line.join('')); line = []; }
+                                y = ny; line.push(it.str);
+                            }
+                            parts.push(line.join(''));
+                        }
+                        this.importText = parts.join('\n');
+                        this.importWay = 'text';
+                        if (!this.useParsedRecipe(parseRecipeText(this.importText), file.name)) {
+                            this.importErr = 'Aus der PDF konnte ich kein Rezept herauslesen – der Text steht links, du kannst ihn anpassen.';
+                        }
+                    } catch (e) {
+                        this.importErr = 'Die PDF konnte nicht gelesen werden' + (navigator.onLine ? '.' : ' – dafür wird einmalig Internet gebraucht.');
+                    } finally { this.importBusy = ''; }
+                },
+                /* pdf.js wird erst geladen, wenn wirklich eine PDF kommt */
+                loadPdfJs() {
+                    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+                    if (this._pdfjs) return this._pdfjs;
+                    const base = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+                    this._pdfjs = new Promise((ok, no) => {
+                        const s = document.createElement('script');
+                        s.src = base + 'pdf.min.js';
+                        s.onload = () => {
+                            if (!window.pdfjsLib) return no(new Error('pdf.js fehlt'));
+                            window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + 'pdf.worker.min.js';
+                            ok(window.pdfjsLib);
+                        };
+                        s.onerror = () => { this._pdfjs = null; no(new Error('pdf.js konnte nicht geladen werden')); };
+                        document.head.appendChild(s);
+                    });
+                    return this._pdfjs;
+                },
 
                 /* ---------- Rezepte ---------- */
                 get recipesView() {
@@ -4972,7 +5667,7 @@ function reply_(p) {
                 },
                 mailSetAcc(id) { this.mailAcc = id; this.mailBack(); this.mailList = []; this.mailRefresh(); },
                 mailSetFolder(f) {
-                    this.mailSelected = []; this.mailFolder = f; this.mailBack(); this.mailList = []; this.mailRefresh(); },
+                    this.mailSelected = []; this.mailSelMode = false; this.mailFolder = f; this.mailBack(); this.mailList = []; this.mailRefresh(); },
                 get mailRows() {
                     const ov = new Map(this.mailStatus.map(o => [o.id, o])), f = this.mailFolder, out = [];
                     for (const m of this.mailList) {
@@ -4988,9 +5683,9 @@ function reply_(p) {
                     }
                     return out;
                 },
-                showMore: false, online: typeof navigator === 'undefined' || navigator.onLine !== false,
-                get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'passwords', 'settings'].includes(t.id)); },
-                get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'passwords'].includes(t.id)); },
+                clockTime: '--:--', clockDate: '', showMore: false, online: typeof navigator === 'undefined' || navigator.onLine !== false,
+                get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'usage', 'passwords', 'settings'].includes(t.id)); },
+                get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'usage', 'passwords'].includes(t.id)); },
                 get navTabs() { return this.tabs.filter(t => t.id !== 'settings'); },
                 swState: 'unbekannt', swFiles: 0,
                 /* Prüft wirklich nach: läuft ein Service Worker und liegen Dateien im Offline-Speicher? */
@@ -5015,6 +5710,31 @@ function reply_(p) {
                     await new Promise(r => setTimeout(r, 600));
                     await this.checkOffline();
                     this.toast(this.swState === 'bereit' ? 'Offline-Daten gespeichert' : 'Offline-Speicher: ' + this.swState);
+                },
+                tickClock() {
+                    const d = new Date();
+                    this.clockTime = pad(d.getHours()) + ':' + pad(d.getMinutes());
+                    this.clockDate = d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' });
+                    const ds = fmt(d);
+                    if (ds !== this.today) { this.today = ds; this.refreshToday && this.refreshToday(); } // über Mitternacht hinweg
+                },
+                /* Letztes Wort des App-Namens farbig */
+                applyAppName() {
+                    const n = String(this.cfg.appName || '').trim() || 'Christopher’s Space';
+                    try {
+                        document.title = n;
+                        const l = document.querySelector('link[rel=manifest]');
+                        if (l && l.href.startsWith('data:')) {
+                            const mf = JSON.parse(decodeURIComponent(l.href.replace('data:application/manifest+json,', '')));
+                            mf.name = n; mf.short_name = n.split(' ').pop().slice(0, 12);
+                            l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(mf));
+                        }
+                    } catch (e) {}
+                },
+                get appTitle() {
+                    const n = String(this.cfg.appName || 'Christopher’s Space').trim() || 'Christopher’s Space';
+                    const i = n.lastIndexOf(' ');
+                    return i < 1 ? { first: '', last: n } : { first: n.slice(0, i + 1), last: n.slice(i + 1) };
                 },
                 get wideTab() { return this.activeTab === 'mail' || this.activeTab === 'calendar'; },
                 get mailFolderLabel() { return (MAIL_FOLDERS.find(f => f.id === this.mailFolder) || { label: 'E-Mail' }).label; },
@@ -5087,12 +5807,17 @@ function reply_(p) {
                     this.saveMailCfg(); this.touchSync();
                 },
                 /* --- Mehrfachauswahl --- */
-                mailSelected: [],
+                mailSelected: [], mailSelMode: false,
+                mailSelStart(r) { this.mailSelMode = true; if (r) this.mailPick(r, true); },
+                mailSelEnd() { this.mailSelMode = false; this.mailSelected = []; },
                 get mailPicked() { return this.mailRows.filter(r => this.mailSelected.includes(r.key)); },
                 get mailAllPicked() { return this.mailRows.length > 0 && this.mailPicked.length === this.mailRows.length; },
-                mailPick(r, on) { this.mailSelected = on === false || (on === undefined && this.mailSelected.includes(r.key)) ? this.mailSelected.filter(k => k !== r.key) : [...this.mailSelected, r.key]; },
-                mailPickAll() { this.mailSelected = this.mailAllPicked ? [] : this.mailRows.map(r => r.key); },
-                mailPickMode(r) { this.mailSelected = [r.key]; },
+                mailPick(r, on) {
+                    const has = this.mailSelected.includes(r.key);
+                    if (on === true && has) return;
+                    this.mailSelected = (on === false || (on === undefined && has)) ? this.mailSelected.filter(k => k !== r.key) : [...this.mailSelected, r.key];
+                },
+                mailPickAll() { this.mailSelMode = true; this.mailSelected = this.mailAllPicked ? [] : this.mailRows.map(r => r.key); },
                 mailRowToTodo(r) {
                     const title = (r.subj || '(kein Betreff)').slice(0, 120);
                     this.todos = [normTodo({ id: uid(), title, note: 'Von ' + this.mailWho(r) + (this.mailSnippet(r) ? '\n\n' + this.mailSnippet(r).slice(0, 400) : ''), listId: 'inbox', created: Date.now() }, {}), ...this.todos];
@@ -5559,12 +6284,14 @@ function reply_(p) {
                         localStorage.setItem('organizer_mail_status', JSON.stringify(this.mailStatus));
                         localStorage.setItem('organizer_notes', JSON.stringify(this.notes));
                         localStorage.setItem('organizer_recipes', JSON.stringify(this.recipes));
+                        localStorage.setItem('organizer_meters', JSON.stringify(this.meters));
+                        localStorage.setItem('organizer_readings', JSON.stringify(this.readings));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
                     this.touchSync();
                 },
                 exportData() {
-                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, recipes: this.recipes, vault: readJSON(VAULT_KEY, null),
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, recipes: this.recipes, meters: this.meters, readings: this.readings, vault: readJSON(VAULT_KEY, null),
                         vaults: this.vaults, vaultRecords: Object.fromEntries(this.vaults.filter(v => v.id !== 'main').map(v => [v.id, readJSON(vaultStoreKey(v.id), null)]).filter(([, r]) => validVaultRecord(r))) };
                     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
                     const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
@@ -5584,6 +6311,8 @@ function reply_(p) {
                             if (Array.isArray(data.shopLists)) this.shopLists = data.shopLists.filter(l => l && l.id).map(l => this.normIncoming('sl', l));
                             if (Array.isArray(data.notes)) this.notes = data.notes.filter(n => n && (n.title || n.text)).map(normNote);
                             if (Array.isArray(data.recipes)) this.recipes = data.recipes.filter(r => r && r.title).map(normRecipe);
+                            if (Array.isArray(data.meters)) this.meters = data.meters.filter(m => m && m.id).map(normMeter);
+                            if (Array.isArray(data.readings)) this.readings = data.readings.filter(r => r && r.meter).map(normReading);
                             if (data.cfg && typeof data.cfg === 'object') { this.cfg = { ...DEFAULT_CFG, ...data.cfg, views: { ...DEFAULT_CFG.views, ...(data.cfg.views || {}) } }; this.saveCfg(); this.applyCfg(); this.calendarView = this.cfg.calView; }
                             this.saveAllData();
 

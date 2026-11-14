@@ -13,6 +13,7 @@ const APP_URLS = ['./', './index.html'];
 const EXTERN = [
     /^https:\/\/cdn\.tailwindcss\.com\//,
     /^https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\//,
+    /^https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js\//,
     /^https:\/\/cdn\.jsdelivr\.net\/npm\//,
     /^https:\/\/fonts\.googleapis\.com\//,
     /^https:\/\/fonts\.gstatic\.com\//
