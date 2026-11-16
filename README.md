@@ -22,6 +22,10 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
 
+**Wetter** – Eigene Seite für mehrere Orte, jeder mit aktueller Lage und vier Tagen Vorschau. Der erste Ort steht auf der Startseite. Aktualisiert sich alle 15 Minuten von selbst, solange die App offen ist.
+
+**Kundenkarten** – Payback, DeutschlandCard, dm, Ikea Family und alles andere mit aufgedruckter Nummer. Der Strichcode wird in der App erzeugt (EAN-13, EAN-8, Code 128) und ist auch offline da. Karten, deren Code die jeweilige App bei jedem Einkauf neu erzeugt, lassen sich nicht ablegen – ein gespeicherter Abzug wäre an der Kasse ungültig.
+
 **Verbrauch** – Zähler für Strom, Gas und Wasser. Aus den Ablesungen entstehen Tagesschnitt, Hochrechnung aufs Jahr, Vergleich mit dem geplanten Jahreswert und die Kosten gegen den monatlichen Abschlag, dazu ein Balkendiagramm je Monat.
 
 **E-Mail** – Gmail im Outlook-Aufbau: Ordnerleiste, nach Zeitraum gruppierte Nachrichtenliste, Lesebereich, Antworten und Weiterleiten, Anhänge, Signatur und Textbausteine, Auswahl der Absenderadresse („Senden als"), Umwandeln einer Mail in eine Aufgabe oder einen Termin.
@@ -58,6 +62,9 @@ icon-192.png               Symbol
 icon-512.png               Symbol
 icon-maskable-512.png      Symbol für runde Darstellung
 apple-touch-icon.png       Symbol für iOS
+shortcut-aufgabe.png       Symbol für den Kurzbefehl
+shortcut-einkauf.png       Symbol für den Kurzbefehl
+shortcut-ablesung.png      Symbol für den Kurzbefehl
 .nojekyll                  damit GitHub Pages alle Dateien ausliefert
 ```
 
@@ -88,6 +95,11 @@ Andere Anbieter (GMX, web.de, Outlook.com, iCloud) lassen sich nur über eine We
 ### 4. Als App aufs Handy
 
 Am einfachsten: Seite in Chrome öffnen → Menü → „App installieren". Damit gibt es ein Symbol auf dem Startbildschirm, Vollbild und Offline-Betrieb.
+
+Danach kommen zwei Dinge dazu, die nur der installierten App zur Verfügung stehen:
+
+- **Teilen:** Alltag steht im Teilen-Menü. Eine geteilte Rezeptadresse landet direkt im Rezept-Import; geteilter Text fragt nach, ob Rezept, Notiz, Aufgabe oder Einkauf – bei Einkauf wird jede Zeile ein Artikel.
+- **Kurzbefehle:** App-Symbol lange drücken für „Aufgabe hinzufügen", „Einkaufsliste" und „Ablesung eintragen".
 
 Wer eine echte APK-Datei möchte (zum Weitergeben oder für ein Gerät ohne Play-Dienste): [pwabuilder.com](https://www.pwabuilder.com) aufrufen, die Adresse der Seite eintragen, bei Android auf „Package for stores" gehen und das Paket erzeugen lassen. Darin liegen die signierte `.apk`, ein Schlüssel (gut aufheben, er wird für jedes Update gebraucht) und eine `assetlinks.json`.
 
@@ -127,6 +139,7 @@ Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die u
 ## Grenzen
 
 - Erinnerungen erscheinen nur, solange die App im Browser geöffnet ist.
+- Kundenkarten mit wechselndem Code (von der jeweiligen App je Einkauf neu erzeugt) lassen sich nicht hinterlegen. QR-Codes werden noch nicht erzeugt, nur Strichcodes.
 - Passwörter lassen sich nicht automatisch in andere Apps oder Webseiten einfüllen.
 - Standortbezogene Erinnerungen sind nicht möglich.
 - E-Mail, Abgleich und das Einlesen von Rezepten aus Link oder PDF brauchen Internet; der Rest funktioniert offline.

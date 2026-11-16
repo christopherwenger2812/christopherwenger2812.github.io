@@ -39,5 +39,55 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Aufgabe hinzufügen",
+      "short_name": "Aufgabe",
+      "description": "Neue Aufgabe in Mein Tag",
+      "url": "./index.html?aktion=aufgabe",
+      "icons": [
+        {
+          "src": "shortcut-aufgabe.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Einkaufsliste",
+      "short_name": "Einkauf",
+      "description": "Einkaufsliste öffnen",
+      "url": "./index.html?aktion=einkauf",
+      "icons": [
+        {
+          "src": "shortcut-einkauf.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Ablesung eintragen",
+      "short_name": "Ablesung",
+      "description": "Zählerstand erfassen",
+      "url": "./index.html?aktion=ablesung",
+      "icons": [
+        {
+          "src": "shortcut-ablesung.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

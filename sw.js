@@ -10,7 +10,8 @@ const CACHE = 'space-cache-v1';
 const APP_URLS = [
     './', './index.html',
     './manifest.webmanifest', './icon-192.png', './icon-512.png',
-    './icon-maskable-512.png', './apple-touch-icon.png'
+    './icon-maskable-512.png', './apple-touch-icon.png',
+    './shortcut-aufgabe.png', './shortcut-einkauf.png', './shortcut-ablesung.png'
 ];
 
 /* Nur diese fremden Adressen werden zwischengespeichert (Bibliotheken und Schriften). */
