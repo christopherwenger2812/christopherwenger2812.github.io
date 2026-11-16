@@ -1,7 +1,7 @@
 {
   "name": "Alltag",
   "short_name": "Alltag",
-  "description": "Kalender, Aufgaben, Notizen, Einkauf, Rezepte, Verbrauch, E-Mail und Passwörter – alles an einem Ort.",
+  "description": "Kalender, Aufgaben, Notizen, Einkauf, Rezepte, Verbrauch, Wetter, E-Mail und Passwörter – alles an einem Ort.",
   "lang": "de",
   "dir": "ltr",
   "start_url": "./index.html",

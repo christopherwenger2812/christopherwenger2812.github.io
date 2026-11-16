@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-2">
+    <meta name="app-version" content="2026.11.16-3">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -121,7 +121,7 @@
         [data-area="todos"] { --area: #6d28d9; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="notes"] { --area: #a16207; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="recipes"] { --area: #be123c; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
-        [data-area="cards"] { --area: #7e22ce; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="agent"] { --area: #a21caf; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="weather"] { --area: #0369a1; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="usage"] { --area: #c2410c; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="shopping"] { --area: #15803d; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
@@ -214,15 +214,10 @@
         /* Heutiger Tag im Kalender und gewähltes Design – nehmen Akzent- und Bereichsfarbe auf */
         .istheute { background: var(--area-ink); color: var(--surface); }
         .themeon { border-color: var(--accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
-        /* Kundenkarte in der Übersicht */
-        .kcard { display: flex; flex-direction: column; gap: .6rem; padding: 1rem 1.1rem; border-radius: 1.1rem; text-align: left; min-width: 0;
-                 background: linear-gradient(145deg, var(--kc), color-mix(in srgb, var(--kc) 72%, #000)); color: #fff; box-shadow: var(--shadow-s); transition: transform .15s; }
-        .kcard:hover { transform: translateY(-2px); }
-        .kcard .kcode { display: block; background: #fff; border-radius: .4rem; padding: .25rem .35rem; }
-        .kcard .kcode img { display: block; width: 100%; height: 2.1rem; }
-        /* Große Ansicht an der Kasse */
-        .kfull { background: #fff; color: #111; border-radius: 1.2rem; padding: 1.25rem; }
-        .kfull img { display: block; width: 100%; height: 7.5rem; }
+        /* Navigation im Kopf: lieber schieben als die linke Seite zerquetschen */
+        .navscroll { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+        .navscroll::-webkit-scrollbar { display: none; }
+        .navscroll > button { flex: none; }
         .holiday { font-size: .62rem; font-weight: 700; color: #f59e0b; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); padding: .05rem .4rem; border-radius: .45rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
         .mnav { display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .15rem; flex: 1 1 0; min-width: 0; border-radius: 1rem; font-size: .65rem; font-weight: 700; color: var(--muted); transition: all .15s; }
@@ -548,9 +543,9 @@
     <div class="min-h-[100dvh] flex flex-col">
         <header class="sticky top-0 z-40 border-b backdrop-blur-xl divider" style="background: color-mix(in srgb, var(--surface) 85%, transparent);">
             <div class="mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4" :class="wideTab ? 'max-w-[1900px]' : 'max-w-7xl'">
-                <div class="flex items-center gap-3 min-w-0">
+                <div class="flex items-center gap-3 shrink-0">
                     <svg class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
-                    <div class="min-w-0">
+                    <div class="min-w-0 max-w-[9rem] lg:max-w-[14rem]">
                         <h1 class="text-base sm:text-lg font-black tracking-tight truncate"><span x-text="appTitle.first"></span><span class="accent" x-text="appTitle.last"></span></h1>
                         <p class="text-[11px] font-medium flex items-center gap-1.5 mt-0.5 muted">
                             <span class="w-2 h-2 rounded-full shrink-0" :class="headerOk ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'"></span>
@@ -566,8 +561,8 @@
                     <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                     <button type="button" @click="switchTab('settings')" class="icon-btn" :class="activeTab === 'settings' ? 'accent' : ''" title="Einstellungen" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
                 </div>
-                <div class="hidden md:flex items-center shrink-0">
-                <nav class="flex seg" aria-label="Hauptnavigation">
+                <div class="hidden md:flex items-center min-w-0">
+                <nav class="flex seg navscroll" aria-label="Hauptnavigation">
                     <template x-for="t in navTabs" :key="t.id">
                         <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden xl:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
                     </template>
@@ -983,40 +978,89 @@
                 </div>
             </section>
 
-            <!-- ================= KUNDENKARTEN ================= -->
-            <section x-show="activeTab === 'cards'" x-cloak class="space-y-5">
+            <!-- ================= ASSISTENT ================= -->
+            <section x-show="activeTab === 'agent'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-6 flex flex-wrap items-center gap-4">
-                    <span class="w-11 h-11 rounded-2xl grid place-items-center text-xl shrink-0" style="background: color-mix(in srgb, var(--area) 16%, transparent); color: var(--area-ink)"><i class="fa-regular fa-credit-card"></i></span>
+                    <span class="w-11 h-11 rounded-2xl grid place-items-center text-xl shrink-0" style="background: color-mix(in srgb, var(--area) 16%, transparent); color: var(--area-ink)"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                     <div class="min-w-0 flex-1">
-                        <h2 class="dsp text-2xl sm:text-3xl font-extrabold tracking-tight">Kundenkarten</h2>
-                        <p class="muted text-xs mt-1 font-medium">Karten einmal eintragen, an der Kasse das Handy zeigen. Funktioniert auch offline.</p>
+                        <h2 class="dsp text-2xl sm:text-3xl font-extrabold tracking-tight">Assistent</h2>
+                        <p class="muted text-xs mt-1 font-medium">Fragt deine Termine, Aufgaben, Notizen und Zähler ab und trägt auf Wunsch etwas ein.</p>
                     </div>
-                    <button @click="openCard()" class="btn btn-primary shrink-0"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Karte</span></button>
+                    <button x-show="aiChat.length" @click="aiClear()" class="btn btn-soft shrink-0"><i class="fa-regular fa-trash-can"></i><span class="hidden sm:inline">Neu</span></button>
                 </div>
 
-                <div x-show="!cards.length" class="card p-8 text-center">
-                    <i class="fa-regular fa-credit-card text-3xl opacity-70" style="color: var(--area-ink)"></i>
-                    <p class="text-sm font-bold mt-3">Noch keine Karte</p>
-                    <p class="muted text-xs mt-1 max-w-md mx-auto">Trag die Nummer von der Rückseite deiner Karte ein – Payback, DeutschlandCard, dm, Ikea Family und alle anderen mit aufgedrucktem Strichcode.</p>
-                    <button @click="openCard()" class="btn btn-soft mt-4"><i class="fa-solid fa-plus"></i>Erste Karte anlegen</button>
+                <!-- Noch nicht eingerichtet -->
+                <div x-show="!syncCfg.url || !cfg.aiOn" class="card p-6 space-y-3">
+                    <p class="label"><i class="fa-solid fa-circle-info mr-2"></i>Noch nicht eingerichtet</p>
+                    <p class="text-sm" x-show="!syncCfg.url">Der Assistent läuft über dein eigenes Google-Script – damit bleibt der Schlüssel in deinem Drive und nicht im Browser. Richte unter „Verbundene Geräte“ zuerst das Script ein.</p>
+                    <p class="text-sm" x-show="syncCfg.url && !cfg.aiOn">Der Assistent ist in den Einstellungen ausgeschaltet.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button @click="switchTab('settings'); setCat = 'agent'" class="btn btn-primary"><i class="fa-solid fa-sliders"></i>Zu den Einstellungen</button>
+                    </div>
                 </div>
 
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                    <template x-for="c in cardList" :key="c.id">
-                        <button type="button" @click="showCardFull(c)" class="kcard" :style="'--kc:' + c.color">
-                            <div class="flex items-start gap-2">
-                                <span class="font-black text-base leading-tight truncate" x-text="c.name"></span>
-                                <span class="ml-auto opacity-70 shrink-0"><i class="fa-regular fa-credit-card"></i></span>
+                <template x-if="aiBereit">
+                    <div class="space-y-4">
+                        <!-- Vorschläge -->
+                        <div x-show="!aiChat.length" class="card p-5 sm:p-6 space-y-3">
+                            <p class="label"><i class="fa-regular fa-lightbulb mr-2"></i>Zum Ausprobieren</p>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="v in ['Was steht diese Woche an?', 'Trag mir morgen 18 Uhr Sport ein', 'Setz Milch, Butter und Eier auf die Liste', 'Wie viel Strom habe ich dieses Jahr verbraucht?', 'Was ist noch offen und überfällig?']" :key="v">
+                                    <button type="button" class="chip !py-2 !px-3" @click="aiAsk(v)" x-text="v"></button>
+                                </template>
                             </div>
-                            <span class="kcode" x-show="cardSvg(c)"><img :src="cardSvg(c)" alt="" loading="lazy"></span>
-                            <span class="text-[11px] font-bold num opacity-90 truncate" x-text="cardNumberPretty(c)"></span>
-                        </button>
-                    </template>
-                </div>
+                        </div>
 
-                <p x-show="cards.length" class="muted text-[11px] leading-relaxed px-1">
-                    Karten, deren Code die jeweilige App bei jedem Einkauf neu erzeugt, lassen sich hier nicht ablegen – ein gespeicherter Abzug wäre an der Kasse ungültig. Für alle Karten mit fester, aufgedruckter Nummer funktioniert es.
-                </p>
+                        <!-- Gespräch -->
+                        <div x-show="aiChat.length" class="card p-4 sm:p-6 space-y-3">
+                            <template x-for="(m, mi) in aiChat" :key="mi">
+                                <div>
+                                    <div x-show="m.rolle === 'ich'" class="flex justify-end">
+                                        <p class="max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm font-semibold" style="background: var(--accent); color: var(--on-accent)" x-text="m.text"></p>
+                                    </div>
+                                    <div x-show="m.rolle === 'ai'" class="flex">
+                                        <p class="max-w-[90%] rounded-2xl rounded-bl-md px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed inner" x-text="m.text"></p>
+                                    </div>
+                                    <p x-show="m.rolle === 'tool'" class="text-[11px] font-bold flex items-center gap-1.5 px-1 py-0.5" :style="m.fehler ? 'color:#f43f5e' : 'color: var(--area-ink)'">
+                                        <i class="fa-solid" :class="m.fehler ? 'fa-circle-xmark' : 'fa-circle-check'"></i>
+                                        <span x-text="m.text"></span>
+                                        <span class="muted font-medium truncate" x-text="m.detail ? '· ' + m.detail : ''"></span>
+                                    </p>
+                                </div>
+                            </template>
+                            <p x-show="aiBusy" class="text-sm muted font-bold"><i class="fa-solid fa-circle-notch spin mr-2"></i>denkt nach …</p>
+                        </div>
+
+                        <!-- Rückfrage vor Änderungen -->
+                        <div x-show="aiPending" class="card p-5 sm:p-6 space-y-3" style="border-color: color-mix(in srgb, var(--accent) 45%, var(--border))">
+                            <p class="label"><i class="fa-solid fa-circle-question mr-2"></i>Soll ich das eintragen?</p>
+                            <div class="space-y-1.5">
+                                <template x-for="(t, ti) in (aiPending || [])" :key="ti">
+                                    <div class="inner p-3">
+                                        <p class="text-xs font-black" x-text="aiLabel(t.name)"></p>
+                                        <p class="text-sm font-semibold mt-0.5" x-text="aiVorschau(t)"></p>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button @click="aiConfirm()" class="btn btn-primary"><i class="fa-solid fa-check"></i>Eintragen</button>
+                                <button @click="aiReject()" class="btn btn-ghost">Lieber nicht</button>
+                            </div>
+                        </div>
+
+                        <p x-show="aiError" class="text-[12px] font-bold text-rose-400 leading-relaxed px-1" x-text="aiError"></p>
+
+                        <!-- Eingabe -->
+                        <form @submit.prevent="aiSend()" class="card p-3 sm:p-4 flex gap-2 sticky bottom-20 md:bottom-4">
+                            <input type="text" x-model="aiInput" class="field flex-1" placeholder="Frag etwas oder sag, was eingetragen werden soll …" :disabled="aiBusy" aria-label="Nachricht an den Assistenten">
+                            <button type="submit" class="btn btn-primary shrink-0" :disabled="aiBusy || !aiInput.trim()" aria-label="Senden"><i class="fa-solid fa-paper-plane"></i></button>
+                        </form>
+
+                        <p class="muted text-[11px] leading-relaxed px-1">
+                            An das Modell geht deine Frage und das, was die benutzten Werkzeuge zurückgeben – also etwa die Termine des Zeitraums, nach dem du fragst. Tresor und E-Mail-Inhalte bleiben außen vor. Der Schlüssel liegt in deinem Google-Script.
+                        </p>
+                    </div>
+                </template>
             </section>
 
             <!-- ================= WETTER ================= -->
@@ -1778,8 +1822,11 @@
 
                 <div class="grid lg:grid-cols-[14.5rem_minmax(0,1fr)] gap-5 items-start">
                     <nav class="card p-2 sm:p-3 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:sticky lg:top-24" aria-label="Einstellungs-Kategorien">
-                        <template x-for="c in settingsCats" :key="c.id">
-                            <button type="button" class="mfold" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'sync') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
+                        <template x-for="(c, ci) in settingsCats" :key="c.id">
+                            <div>
+                                <p x-show="ci === 0 || settingsCats[ci - 1].grp !== c.grp" class="text-[10px] font-black uppercase muted px-3 pt-3 pb-1" style="letter-spacing: .09em" x-text="c.grp"></p>
+                                <button type="button" class="mfold w-full" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'sync') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
+                            </div>
                         </template>
                     </nav>
 
@@ -1788,24 +1835,6 @@
                         <div x-show="setQuery.trim()" class="card p-5 sm:p-6 space-y-1">
                             <p class="label mb-3"><i class="fa-solid fa-magnifying-glass mr-2"></i>Suchergebnisse</p>
                             <p x-show="!settingsShown.length" class="muted text-sm py-4">Keine passende Einstellung gefunden.</p>
-                        </div>
-
-                        <div x-show="!setQuery.trim() && setCat === 'today' && cfg.weather" class="card p-5 sm:p-6 space-y-3">
-                                <p class="label"><i class="fa-solid fa-location-dot mr-2"></i>Ort für das Wetter</p>
-                                <p class="text-sm font-bold" x-show="cfg.weatherPlace"><span x-text="(cfg.weatherPlace || {}).name"></span><span class="muted font-semibold text-xs" x-text="(cfg.weatherPlace || {}).admin ? ' · ' + cfg.weatherPlace.admin : ''"></span></p>
-                                <form @submit.prevent="wxFind()" class="flex gap-2">
-                                    <input type="search" x-model="wxSearch" placeholder="Stadt suchen, z. B. Düsseldorf" class="field" aria-label="Ort suchen">
-                                    <button type="submit" class="btn btn-soft shrink-0" :disabled="wxBusy" aria-label="Ort suchen"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                    <button type="button" class="btn btn-soft shrink-0" @click="wxHere()" :disabled="wxBusy" title="Standort dieses Geräts"><i class="fa-solid fa-location-crosshairs"></i></button>
-                                </form>
-                                <div x-show="wxHits.length" class="space-y-1.5">
-                                    <template x-for="p in wxHits" :key="p.lat + ',' + p.lon">
-                                        <button type="button" class="inner w-full p-2.5 text-left flex items-center gap-2 hover:brightness-110" @click="setWxPlace(p)">
-                                            <i class="fa-solid fa-location-dot muted"></i><span class="font-bold text-sm" x-text="p.name"></span><span class="muted text-xs" x-text="p.admin"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            <p class="text-[11px] muted leading-relaxed">Die Daten kommen von Open-Meteo. Dabei werden nur die Koordinaten des gewählten Ortes übertragen, keine Angaben zu dir.</p>
                         </div>
 
                         <!-- Generische Einstellungen (Kategorie oder Suchtreffer) -->
@@ -1828,6 +1857,37 @@
                             </template>
                         </div>
 
+                        <div x-show="!setQuery.trim() && setCat === 'today' && cfg.weather" class="card p-5 sm:p-6 space-y-3">
+                            <p class="label"><i class="fa-solid fa-location-dot mr-2"></i>Orte für das Wetter</p>
+                            <p class="text-sm font-bold" x-show="cfg.weatherPlace">
+                                <span x-text="(cfg.weatherPlace || {}).name"></span>
+                                <span class="muted font-semibold text-xs" x-text="(cfg.weatherPlace || {}).admin ? ' · ' + cfg.weatherPlace.admin : ''"></span>
+                                <span class="chip ml-1.5 align-middle"><i class="fa-solid fa-house text-[9px]"></i>Startseite</span>
+                            </p>
+                            <p class="text-sm muted" x-show="!cfg.weatherPlace">Noch kein Ort gewählt.</p>
+                            <p class="text-[11px] muted leading-relaxed">
+                                <span x-show="wxPlaces.length > 1" x-text="'Insgesamt ' + wxPlaces.length + ' Orte gespeichert. '"></span>Orte anlegen, sortieren und entfernen geht im Bereich Wetter. Die Daten kommen von Open-Meteo; übertragen werden nur die Koordinaten des Ortes, keine Angaben zu dir.
+                            </p>
+                            <div>
+                                <button type="button" class="btn btn-soft" @click="switchTab('weather')"><i class="fa-solid fa-cloud-sun"></i>Orte verwalten</button>
+                            </div>
+                        </div>
+
+                        <div x-show="!setQuery.trim() && setCat === 'agent'" class="card p-5 sm:p-6 space-y-3">
+                            <p class="label"><i class="fa-solid fa-key mr-2"></i>Einrichtung</p>
+                            <p class="text-[12px] leading-relaxed">Der Assistent fragt das Sprachmodell über dein eigenes Google-Script. Der Schlüssel liegt damit in deinem Drive und steht nie im Browser-Speicher.</p>
+                            <ol class="text-[12px] leading-relaxed space-y-1.5 list-decimal pl-5 muted">
+                                <li>Unter <button type="button" class="accent font-bold" @click="setCat = 'sync'; loadBackups()">Verbundene Geräte</button> das Script kopieren und als neue Version bereitstellen – es enthält den Assistenten erst ab Version 2026.11.16-3.</li>
+                                <li>Bei <span class="font-bold">script.google.com</span> im Projekt links auf das Zahnrad (Projekteinstellungen).</li>
+                                <li>Ganz unten bei <span class="font-bold">Script-Eigenschaften</span> eine Eigenschaft hinzufügen: Name <code class="font-bold">AI_KEY</code>, Wert dein API-Schlüssel.</li>
+                                <li>Speichern – fertig. Die App selbst kennt den Schlüssel nicht.</li>
+                            </ol>
+                            <p class="text-[11px] muted leading-relaxed">Der Schlüssel kommt von deinem Anbieter-Konto; die Nutzung wird dort abgerechnet. Voreingestellt ist ein Modell von Anthropic. Fragst du nichts, entstehen auch keine Kosten.</p>
+                            <div x-show="!syncCfg.url">
+                                <button type="button" class="btn btn-soft" @click="setCat = 'sync'; loadBackups()"><i class="fa-solid fa-arrows-rotate"></i>Zuerst das Script einrichten</button>
+                            </div>
+                        </div>
+
                         <!-- Kategorie-spezifische Bereiche -->
                         <div x-show="!setQuery.trim() && setCat === 'design'" class="space-y-5">
 <div class="card p-5 sm:p-6 space-y-5">
@@ -1835,7 +1895,10 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <template x-for="t in themes" :key="t.id">
                             <button @click="setTheme(t.id)" class="inner p-4 text-left text-xs font-bold transition flex items-center gap-3" :class="themeSettings === t.id ? 'themeon' : 'hover:brightness-110'">
-                                <span class="w-6 h-6 rounded-full border shrink-0" :style="'background: linear-gradient(135deg,' + t.bg + ' 50%,' + t.accent + ' 50%); border-color: var(--border)'"></span><span x-text="t.label"></span>
+                                <span class="w-7 h-7 rounded-lg border shrink-0 overflow-hidden grid" style="grid-template-rows: 1fr 1fr; border-color: var(--border)">
+                                    <span :style="'background:' + t.bg"></span>
+                                    <span class="grid" style="grid-template-columns: 1fr 1fr"><span :style="'background:' + t.surface"></span><span :style="'background:' + t.accent"></span></span>
+                                </span><span x-text="t.label"></span>
                             </button>
                         </template>
                     </div>
@@ -1887,34 +1950,6 @@
                             <div class="pt-3 border-t divider"><button type="button" class="btn btn-soft" @click="openMailSetup()"><i class="fa-solid fa-plug"></i>Postfächer verwalten</button></div>
                         </div>
                         <div x-show="!setQuery.trim() && setCat === 'sync'" class="space-y-5">
-                            <div class="card p-5 sm:p-6"><div class="space-y-3">
-                        <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
-                        <template x-if="!backupReady()">
-                            <p class="text-[11px] muted">Dafür müssen deine Geräte über Google verbunden sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zu den verbundenen Geräten</button></p>
-                        </template>
-                        <template x-if="backupReady()">
-                            <div class="space-y-3">
-                                <div class="flex flex-wrap gap-3 items-center">
-                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="makeBackup()"><i class="fa-solid fa-cloud-arrow-up"></i>Jetzt sichern</button>
-                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="loadBackups()"><i class="fa-solid fa-rotate"></i>Liste aktualisieren</button>
-                                    <span class="text-[11px] muted" x-show="backupLast" x-text="'Letzte Sicherung: ' + backupLabel({ ts: backupLast })"></span>
-                                </div>
-                                <p class="text-[11px] !text-rose-400" x-show="backupMsg" x-text="backupMsg"></p>
-                                <p class="text-[11px] muted" x-show="!backups.length &amp;&amp; !backupMsg">Noch keine Sicherung vorhanden (oder Liste noch nicht geladen).</p>
-                                <div class="space-y-2">
-                                    <template x-for="b in backups" :key="b.id">
-                                        <div class="inner p-3 flex items-center justify-between gap-3">
-                                            <div class="min-w-0"><p class="text-sm font-bold" x-text="backupLabel(b)"></p><p class="text-[11px] muted" x-text="Math.max(1, Math.round(b.size / 1024)) + ' KB · verschlüsselt'"></p></div>
-                                            <button type="button" class="btn btn-soft shrink-0" :disabled="backupBusy" @click="restoreBackup(b)"><i class="fa-solid fa-clock-rotate-left"></i>Wiederherstellen</button>
-                                        </div>
-                                    </template>
-                                </div>
-                                <p class="text-[11px] muted">Sicherungen sind mit deinem Sync-Passwort verschlüsselt und liegen als Dateien <code>space-backup-…</code> in deinem Google Drive. Vor jeder Wiederherstellung wird automatisch der aktuelle Stand gesichert.</p>
-                            </div>
-                        </template>
-                    </div>
-                    </div>
-
 <div class="card p-5 sm:p-6 space-y-5">
                     <div>
                         <p class="label"><i class="fa-solid fa-link mr-2"></i>Verbundene Geräte</p>
@@ -1986,6 +2021,35 @@
 
 
                         </div>
+
+                            <div class="card p-5 sm:p-6"><div class="space-y-3">
+                        <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
+                        <template x-if="!backupReady()">
+                            <p class="text-[11px] muted">Dafür müssen deine Geräte über Google verbunden sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zu den verbundenen Geräten</button></p>
+                        </template>
+                        <template x-if="backupReady()">
+                            <div class="space-y-3">
+                                <div class="flex flex-wrap gap-3 items-center">
+                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="makeBackup()"><i class="fa-solid fa-cloud-arrow-up"></i>Jetzt sichern</button>
+                                    <button type="button" class="btn btn-soft" :disabled="backupBusy" @click="loadBackups()"><i class="fa-solid fa-rotate"></i>Liste aktualisieren</button>
+                                    <span class="text-[11px] muted" x-show="backupLast" x-text="'Letzte Sicherung: ' + backupLabel({ ts: backupLast })"></span>
+                                </div>
+                                <p class="text-[11px] !text-rose-400" x-show="backupMsg" x-text="backupMsg"></p>
+                                <p class="text-[11px] muted" x-show="!backups.length &amp;&amp; !backupMsg">Noch keine Sicherung vorhanden (oder Liste noch nicht geladen).</p>
+                                <div class="space-y-2">
+                                    <template x-for="b in backups" :key="b.id">
+                                        <div class="inner p-3 flex items-center justify-between gap-3">
+                                            <div class="min-w-0"><p class="text-sm font-bold" x-text="backupLabel(b)"></p><p class="text-[11px] muted" x-text="Math.max(1, Math.round(b.size / 1024)) + ' KB · verschlüsselt'"></p></div>
+                                            <button type="button" class="btn btn-soft shrink-0" :disabled="backupBusy" @click="restoreBackup(b)"><i class="fa-solid fa-clock-rotate-left"></i>Wiederherstellen</button>
+                                        </div>
+                                    </template>
+                                </div>
+                                <p class="text-[11px] muted">Sicherungen sind mit deinem Sync-Passwort verschlüsselt und liegen als Dateien <code>space-backup-…</code> in deinem Google Drive. Vor jeder Wiederherstellung wird automatisch der aktuelle Stand gesichert.</p>
+                            </div>
+                        </template>
+                    </div>
+                    </div>
+
                         <div x-show="!setQuery.trim() && setCat === 'data'" class="space-y-5">
                             <div class="card p-5 sm:p-6 space-y-6">
                     <div class="space-y-3">
@@ -2322,89 +2386,6 @@
                 <button type="button" @click="showRecipe = false" class="btn btn-ghost">Schließen</button>
             </div>
         </div>
-    </div>
-
-    <!-- Karte groß zeigen -->
-    <div x-show="cardView" x-transition.opacity x-cloak class="backdrop" @click.self="cardView = null">
-        <div class="card w-full max-w-md p-5 sm:p-6 space-y-4" x-show="cardView">
-            <div class="flex items-center gap-3">
-                <span class="w-9 h-9 rounded-xl shrink-0" :style="'background:' + (cardView || {}).color"></span>
-                <p class="font-black text-lg truncate mr-auto" x-text="(cardView || {}).name"></p>
-                <button type="button" class="icon-btn" @click="openCard(cardView); cardView = null" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></button>
-                <button type="button" class="icon-btn" @click="cardView = null" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <div class="kfull space-y-2.5" x-show="cardSvg(cardView)">
-                <img :src="cardSvg(cardView)" alt="Strichcode">
-                <p class="text-center text-sm font-black num tracking-wider" x-text="cardCodeText(cardView)"></p>
-            </div>
-
-            <div x-show="!cardSvg(cardView)" class="inner p-5 text-center">
-                <p class="text-2xl font-black num" x-text="cardNumberPretty(cardView)"></p>
-                <p class="muted text-[11px] mt-2" x-show="(cardView || {}).kind !== 'none'">Aus dieser Nummer lässt sich kein Strichcode bilden – an der Kasse vorlesen.</p>
-            </div>
-
-            <p x-show="(cardView || {}).note" class="muted text-xs whitespace-pre-wrap" x-text="(cardView || {}).note"></p>
-            <p class="muted text-[11px] text-center">Bildschirm möglichst hell stellen, dann liest der Scanner besser.</p>
-        </div>
-    </div>
-
-    <!-- Karte anlegen / bearbeiten -->
-    <div x-show="showCard" x-transition.opacity x-cloak class="backdrop" @click.self="showCard = false">
-        <form @submit.prevent="saveCard()" class="card w-full max-w-lg p-5 sm:p-7 space-y-4">
-            <h3 class="font-black text-xl" x-text="cardDraft?.id ? 'Karte bearbeiten' : 'Neue Karte'"></h3>
-
-            <div class="space-y-1.5">
-                <label class="label" for="kdName">Name</label>
-                <input id="kdName" type="text" x-model="cardDraft.name" class="field" placeholder="z. B. Payback" required>
-            </div>
-
-            <div class="space-y-1.5">
-                <label class="label" for="kdNum">Kartennummer</label>
-                <div class="flex gap-2">
-                    <input id="kdNum" type="text" x-model="cardDraft.number" class="field flex-1" placeholder="Nummer von der Rückseite" inputmode="numeric" autocomplete="off">
-                    <button type="button" x-show="cardScanPossible" @click="scanCard()" class="btn btn-soft shrink-0" :disabled="!!cardScan"><i class="fa-solid fa-camera"></i><span class="hidden sm:inline">Scannen</span></button>
-                </div>
-                <p x-show="cardScan" class="text-[11px] font-bold accent" x-text="cardScan"></p>
-            </div>
-
-            <div class="space-y-1.5">
-                <label class="label" for="kdKind">Codeart</label>
-                <select id="kdKind" x-model="cardDraft.kind" class="field">
-                    <template x-for="k in cardKinds" :key="k.id"><option :value="k.id" x-text="k.label"></option></template>
-                </select>
-            </div>
-
-            <!-- Vorschau, damit man vor dem Speichern sieht, ob es passt -->
-            <div class="space-y-1.5" x-show="cardDraft.number">
-                <p class="label">Vorschau</p>
-                <div class="kfull" x-show="cardSvg(cardDraft)"><img :src="cardSvg(cardDraft)" alt="Vorschau"></div>
-                <p x-show="!cardSvg(cardDraft) && cardDraft.kind !== 'none'" class="text-[11px] font-bold text-amber-500">
-                    Diese Nummer passt nicht zur gewählten Codeart. „Automatisch“ probiert alle durch; sonst wird nur die Nummer angezeigt.
-                </p>
-            </div>
-
-            <div class="space-y-1.5">
-                <p class="label">Farbe</p>
-                <div class="flex flex-wrap gap-2">
-                    <template x-for="col in cardColors" :key="col">
-                        <button type="button" class="w-8 h-8 rounded-lg shrink-0" :style="'background:' + col + (cardDraft.color === col ? '; box-shadow: 0 0 0 3px color-mix(in srgb, ' + col + ' 35%, transparent)' : '')" @click="cardDraft.color = col" :aria-label="'Farbe ' + col"></button>
-                    </template>
-                </div>
-            </div>
-
-            <div class="space-y-1.5">
-                <label class="label" for="kdNote">Notiz</label>
-                <input id="kdNote" type="text" x-model="cardDraft.note" class="field" placeholder="optional, z. B. Kundennummer oder PIN-Hinweis">
-            </div>
-
-            <div class="flex flex-wrap gap-2 pt-1">
-                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Speichern</button>
-                <button type="button" x-show="cardDraft?.id" @click="deleteCard()" class="btn btn-ghost !text-rose-400"><i class="fa-regular fa-trash-can"></i>Löschen</button>
-                <span class="flex-1"></span>
-                <button type="button" @click="showCard = false" class="btn btn-ghost">Abbrechen</button>
-            </div>
-        </form>
     </div>
 
     <!-- Geteilter Inhalt: wohin damit? -->
@@ -3032,7 +3013,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', aiOn: true, aiModel: 'claude-sonnet-5-5', aiConfirm: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -3283,8 +3264,8 @@
         async function sha1Hex(str) { return [...new Uint8Array(await crypto.subtle.digest('SHA-1', te.encode(str)))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['kd', 'cards']];
-        const SYNC_CFG_KEYS = ['appName', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings']];
+        const SYNC_CFG_KEYS = ['appName', 'aiModel', 'aiConfirm', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -3315,6 +3296,7 @@ function handle_(p) {
   var room = String(p.room || '');
   if (!/^[a-f0-9]{32}$/.test(room)) return out_({ ok: false, error: 'Ungültiger Raum' });
   if (p.action === 'fetchurl') return fetchUrl_(String(p.url || ''));
+  if (p.action === 'ai') return aiCall_(p);
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -3361,6 +3343,40 @@ function handle_(p) {
     return out_({ ok: false, error: 'Unbekannte Aktion' });
   } finally {
     lock.releaseLock();
+  }
+}
+
+/* Fragt das Sprachmodell für den Assistenten.
+   Der API-Schlüssel liegt in den Script-Eigenschaften und verlässt dein Drive nie.
+   Eintragen: Projekteinstellungen -> Script-Eigenschaften -> AI_KEY hinzufügen. */
+function aiCall_(p) {
+  var key = PropertiesService.getScriptProperties().getProperty('AI_KEY');
+  if (!key) return out_({ ok: false, error: 'Im Script ist kein Schlüssel hinterlegt. Projekteinstellungen -> Script-Eigenschaften -> AI_KEY anlegen.' });
+  var body = {
+    model: String(p.model || 'claude-sonnet-5-5'),
+    max_tokens: 2000,
+    system: String(p.system || ''),
+    messages: p.messages || []
+  };
+  if (p.tools && p.tools.length) body.tools = p.tools;
+  try {
+    var res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+      method: 'post',
+      contentType: 'application/json',
+      muteHttpExceptions: true,
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      payload: JSON.stringify(body)
+    });
+    var txt = res.getContentText(), code = res.getResponseCode();
+    var j = null;
+    try { j = JSON.parse(txt); } catch (e) {}
+    if (code >= 400) {
+      var m = j && j.error && j.error.message ? j.error.message : ('Fehler ' + code);
+      return out_({ ok: false, error: m });
+    }
+    return out_({ ok: true, answer: j });
+  } catch (err) {
+    return out_({ ok: false, error: 'Das Modell ist nicht erreichbar' });
   }
 }
 
@@ -3476,138 +3492,87 @@ function listBackups_(room) {
         const wmoIcon = (c, night) => 'fa-solid ' + (WMO[c] || ['', 'fa-cloud', 'fa-cloud'])[night ? 2 : 1];
 
         /* ---------- Rezepte ---------- */
-        /* ---------- Strichcodes für Kundenkarten ----------
-           Erzeugt die Balken selbst, damit keine fremde Bibliothek nötig ist und
-           die Karten auch offline angezeigt werden können. */
-
-        /* EAN-13 / EAN-8 */
-        const EAN_A = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
-        const EAN_B = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
-        const EAN_C = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
-        const EAN_PARITY = ['AAAAAA', 'AABABB', 'AABBAB', 'AABBBA', 'ABAABB', 'ABBAAB', 'ABBBAA', 'ABABAB', 'ABABBA', 'ABBABA'];
-
-        /* Prüfziffer für EAN-8/13 und UPC-A */
-        function eanCheck(digits) {
-            let s = 0;
-            const r = digits.split('').reverse();
-            for (let i = 0; i < r.length; i++) s += Number(r[i]) * (i % 2 === 0 ? 3 : 1);
-            return (10 - (s % 10)) % 10;
-        }
-
-        function encodeEan13(code) {
-            if (!/^\d{12,13}$/.test(code)) return null;
-            if (code.length === 12) code += eanCheck(code);
-            if (Number(code[12]) !== eanCheck(code.slice(0, 12))) return null;
-            const par = EAN_PARITY[Number(code[0])];
-            let bits = '101';
-            for (let i = 1; i <= 6; i++) bits += (par[i - 1] === 'A' ? EAN_A : EAN_B)[Number(code[i])];
-            bits += '01010';
-            for (let i = 7; i <= 12; i++) bits += EAN_C[Number(code[i])];
-            bits += '101';
-            return { bits, text: code };
-        }
-
-        function encodeEan8(code) {
-            if (!/^\d{7,8}$/.test(code)) return null;
-            if (code.length === 7) code += eanCheck(code);
-            if (Number(code[7]) !== eanCheck(code.slice(0, 7))) return null;
-            let bits = '101';
-            for (let i = 0; i < 4; i++) bits += EAN_A[Number(code[i])];
-            bits += '01010';
-            for (let i = 4; i < 8; i++) bits += EAN_C[Number(code[i])];
-            bits += '101';
-            return { bits, text: code };
-        }
-
-        /* Code 128 – Muster je Zeichenwert (Breiten der abwechselnden Balken/Lücken) */
-        const C128 = ['212222', '222122', '222221', '121223', '121322', '131222', '122213', '122312', '132212', '221213', '221312', '231212', '112232', '122132', '122231', '113222', '123122', '123221', '223211', '221132', '221231', '213212', '223112', '312131', '311222', '321122', '321221', '312212', '322112', '322211', '212123', '212321', '232121', '111323', '131123', '131321', '112313', '132113', '132311', '211313', '231113', '231311', '112133', '112331', '132131', '113123', '113321', '133121', '313121', '211331', '231131', '213113', '213311', '213131', '311123', '311321', '331121', '312113', '312311', '332111', '314111', '221411', '431111', '111224', '111422', '121124', '121421', '141122', '141221', '112214', '112412', '122114', '122411', '142112', '142211', '241211', '221114', '413111', '241112', '134111', '111242', '121142', '121241', '114212', '124112', '124211', '411212', '421112', '421211', '212141', '214121', '412121', '111143', '111341', '131141', '114113', '114311', '411113', '411311', '113141', '114131', '311141', '411131', '211412', '211214', '211232', '2331112'];
-
-        /* Wandelt Text in Code-128-Werte um und nutzt dabei den Zahlenmodus C, wo es sich lohnt */
-        function code128Values(text) {
-            const vals = [];
-            let i = 0, mode = '';
-            const ziffern = (p) => { let n = 0; while (p + n < text.length && /\d/.test(text[p + n])) n++; return n; };
-            while (i < text.length) {
-                const z = ziffern(i);
-                const lohnt = (i === 0 && z >= 4) || z >= 6 || (i + z === text.length && z >= 4);
-                if (z >= 2 && lohnt && z % 2 === 0) {
-                    if (mode !== 'C') { vals.push(mode ? 99 : 105); mode = 'C'; }      // Start C bzw. Wechsel
-                    for (let k = 0; k < z; k += 2) vals.push(Number(text.substr(i + k, 2)));
-                    i += z;
-                    continue;
+        /* ---------- Assistent: Werkzeuge ----------
+           Das Modell bekommt diese Liste mitgeschickt und darf sie aufrufen.
+           Ausgeführt wird alles hier im Browser; nach draußen geht nur, was ein
+           Werkzeug als Ergebnis zurückgibt. Werkzeuge mit schreibt:true ändern
+           Daten und werden auf Wunsch erst nach Rückfrage ausgeführt. */
+        const AI_TOOLS = [
+            {
+                name: 'tagesueberblick', schreibt: false,
+                description: 'Termine, offene Aufgaben, ungelesene Mails, Einkaufsliste und Wetter für heute und die nächsten Tage.',
+                input_schema: { type: 'object', properties: { tage: { type: 'integer', description: 'Wie viele Tage ab heute, 1 bis 14' } } }
+            },
+            {
+                name: 'suchen', schreibt: false,
+                description: 'Durchsucht Termine, Aufgaben, Notizen, Einkauf und Rezepte nach einem Begriff.',
+                input_schema: { type: 'object', properties: { begriff: { type: 'string' } }, required: ['begriff'] }
+            },
+            {
+                name: 'termine_lesen', schreibt: false,
+                description: 'Termine in einem Zeitraum.',
+                input_schema: { type: 'object', properties: { von: { type: 'string', description: 'JJJJ-MM-TT' }, bis: { type: 'string', description: 'JJJJ-MM-TT' } }, required: ['von', 'bis'] }
+            },
+            {
+                name: 'aufgaben_lesen', schreibt: false,
+                description: 'Offene oder erledigte Aufgaben, wahlweise nur fällige.',
+                input_schema: { type: 'object', properties: { nur: { type: 'string', enum: ['offen', 'erledigt', 'faellig', 'alle'] } } }
+            },
+            {
+                name: 'verbrauch_lesen', schreibt: false,
+                description: 'Zählerstände, Tagesschnitt, Hochrechnung aufs Jahr und Kosten je Zähler.',
+                input_schema: { type: 'object', properties: {} }
+            },
+            {
+                name: 'aufgabe_anlegen', schreibt: true,
+                description: 'Legt eine neue Aufgabe an.',
+                input_schema: {
+                    type: 'object',
+                    properties: {
+                        titel: { type: 'string' },
+                        faellig: { type: 'string', description: 'JJJJ-MM-TT, optional' },
+                        uhrzeit: { type: 'string', description: 'HH:MM, optional' },
+                        wichtig: { type: 'boolean' },
+                        mein_tag: { type: 'boolean', description: 'Für heute einplanen' },
+                        notiz: { type: 'string' }
+                    }, required: ['titel']
                 }
-                if (mode !== 'B') { vals.push(mode ? 100 : 104); mode = 'B'; }         // Start B bzw. Wechsel
-                const c = text.charCodeAt(i);
-                if (c < 32 || c > 126) return null;
-                vals.push(c - 32);
-                i++;
+            },
+            {
+                name: 'aufgabe_abhaken', schreibt: true,
+                description: 'Hakt eine offene Aufgabe ab. Vorher mit suchen oder aufgaben_lesen die genaue Bezeichnung holen.',
+                input_schema: { type: 'object', properties: { titel: { type: 'string' } }, required: ['titel'] }
+            },
+            {
+                name: 'termin_anlegen', schreibt: true,
+                description: 'Legt einen Termin an.',
+                input_schema: {
+                    type: 'object',
+                    properties: {
+                        titel: { type: 'string' },
+                        datum: { type: 'string', description: 'JJJJ-MM-TT' },
+                        von: { type: 'string', description: 'HH:MM, weglassen für ganztägig' },
+                        bis: { type: 'string', description: 'HH:MM' },
+                        ort: { type: 'string' },
+                        notiz: { type: 'string' }
+                    }, required: ['titel', 'datum']
+                }
+            },
+            {
+                name: 'einkauf_hinzufuegen', schreibt: true,
+                description: 'Setzt Artikel auf die aktuelle Einkaufsliste.',
+                input_schema: { type: 'object', properties: { artikel: { type: 'array', items: { type: 'string' } } }, required: ['artikel'] }
+            },
+            {
+                name: 'notiz_anlegen', schreibt: true,
+                description: 'Legt eine Notiz an.',
+                input_schema: { type: 'object', properties: { titel: { type: 'string' }, text: { type: 'string' } }, required: ['titel'] }
             }
-            if (!vals.length) return null;
-            let sum = vals[0];
-            for (let k = 1; k < vals.length; k++) sum += vals[k] * k;
-            vals.push(sum % 103);
-            vals.push(106);                                                            // Stopp
-            return vals;
-        }
-
-        function encodeCode128(text) {
-            const vals = code128Values(String(text || ''));
-            if (!vals) return null;
-            let bits = '';
-            for (const v of vals) {
-                const muster = C128[v];
-                let an = true;
-                for (const b of muster) { bits += (an ? '1' : '0').repeat(Number(b)); an = !an; }
-            }
-            return { bits, text: String(text) };
-        }
-
-        /* Wählt die passende Codeart und erzeugt die Balken */
-        function makeBarcode(text, art) {
-            const t = String(text || '').trim();
-            if (!t) return null;
-            if (art === 'ean13') return encodeEan13(t);
-            if (art === 'ean8') return encodeEan8(t);
-            if (art === 'code128') return encodeCode128(t);
-            // automatisch
-            return (/^\d{12,13}$/.test(t) && encodeEan13(t)) || (/^\d{7,8}$/.test(t) && encodeEan8(t)) || encodeCode128(t);
-        }
-
-        /* Balken als SVG. Jedes Modul ist gleich breit, damit nichts verrutscht. */
-        function barcodeSvg(bits, opt) {
-            const o = opt || {};
-            const h = o.height || 80, mq = o.quiet === undefined ? 10 : o.quiet;
-            const n = bits.length, w = n + mq * 2;
-            let d = '';
-            let i = 0;
-            while (i < n) {
-                if (bits[i] === '1') {
-                    let j = i; while (j < n && bits[j] === '1') j++;
-                    d += 'M' + (i + mq) + ' 0h' + (j - i) + 'v' + h + 'h' + -(j - i) + 'z';
-                    i = j;
-                } else i++;
-            }
-            return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" shape-rendering="crispEdges">' +
-                '<rect width="' + w + '" height="' + h + '" fill="#fff"/><path d="' + d + '" fill="#000"/></svg>';
-        }
-
-        const CARD_COLORS = ['#1e40af', '#be123c', '#15803d', '#a16207', '#6d28d9', '#0f766e', '#c2410c', '#475569'];
-        const CARD_KINDS = [
-            { id: 'auto', label: 'Automatisch' },
-            { id: 'ean13', label: 'EAN-13 (13 Ziffern)' },
-            { id: 'ean8', label: 'EAN-8 (8 Ziffern)' },
-            { id: 'code128', label: 'Code 128 (Zahlen und Buchstaben)' },
-            { id: 'none', label: 'Nur Nummer, kein Strichcode' }
         ];
-        const normCard = c => ({
-            id: c.id || uid(),
-            name: String(c.name || '').slice(0, 60),
-            number: String(c.number || '').trim().slice(0, 80),
-            kind: CARD_KINDS.some(k => k.id === c.kind) ? c.kind : 'auto',
-            color: /^#[0-9a-f]{6}$/i.test(c.color || '') ? c.color : CARD_COLORS[0],
-            note: String(c.note || '').slice(0, 300),
-            created: c.created || Date.now()
-        });
+
+        const AI_WRITES = AI_TOOLS.filter(t => t.schreibt).map(t => t.name);
+        /* Für das Modell ohne unser internes Feld */
+        const aiToolSpec = () => AI_TOOLS.map(({ name, description, input_schema }) => ({ name, description, input_schema }));
 
         const UNITS = ['g', 'kg', 'ml', 'l', 'TL', 'EL', 'Stück', 'Prise', 'Bund', 'Dose', 'Pck', 'Zehe', 'Scheibe'];
         /* „200 g Mehl“ oder „2 Zehen Knoblauch“ in Menge, Einheit und Name zerlegen */
@@ -4056,26 +4021,26 @@ function reply_(p) {
                     { id: 'recipes', label: 'Rezepte', icon: 'fa-solid fa-utensils' },
                     { id: 'usage', label: 'Verbrauch', icon: 'fa-solid fa-gauge-high' },
                     { id: 'weather', label: 'Wetter', icon: 'fa-solid fa-cloud-sun' },
-                    { id: 'cards', label: 'Karten', icon: 'fa-regular fa-credit-card' },
+                    { id: 'agent', label: 'Assistent', icon: 'fa-solid fa-wand-magic-sparkles' },
                     { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
                     { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' },
                     { id: 'passwords', label: 'Tresor', icon: 'fa-solid fa-vault' },
                     { id: 'settings', label: 'Einstellungen', icon: 'fa-solid fa-sliders' }
                 ],
                 themes: [
-                    { id: 'daylight', label: 'Tageslicht', bg: '#f4f6fb', accent: '#4f46e5' },
-                    { id: 'sky', label: 'Himmel', bg: '#eef6fd', accent: '#0369a1' },
-                    { id: 'mint', label: 'Minze', bg: '#f0f8f4', accent: '#047857' },
-                    { id: 'white', label: 'Reinweiß', bg: '#ffffff', accent: '#4f46e5' },
-                    { id: 'midnight', label: 'Mitternacht', bg: '#0b0f19', accent: '#6366f1' },
-                    { id: 'ocean', label: 'Ozean Blau', bg: '#1e293b', accent: '#6366f1' },
-                    { id: 'emerald', label: 'Emerald Grün', bg: '#064e3b', accent: '#059669' },
-                    { id: 'nord', label: 'Nordlicht', bg: '#2e3440', accent: '#5e81ac' },
-                    { id: 'graphite', label: 'Graphit', bg: '#111214', accent: '#6b7280' },
-                    { id: 'sunset', label: 'Abendrot', bg: '#2a1820', accent: '#ea580c' },
-                    { id: 'aurora', label: 'Aurora', bg: '#121c36', accent: '#8b5cf6' },
-                    { id: 'paper', label: 'Papier', bg: '#f6f1e7', accent: '#b45309' },
-                    { id: 'rose', label: 'Rosé', bg: '#fdf2f4', accent: '#be185d' }
+                    { id: 'daylight', label: 'Tageslicht', bg: '#faf9f7', surface: '#ffffff', accent: '#0f766e' },
+                    { id: 'sky', label: 'Himmel', bg: '#f6f9fc', surface: '#ffffff', accent: '#0369a1' },
+                    { id: 'mint', label: 'Minze', bg: '#f7faf8', surface: '#ffffff', accent: '#047857' },
+                    { id: 'white', label: 'Reinweiß', bg: '#f7f7f8', surface: '#ffffff', accent: '#4f46e5' },
+                    { id: 'midnight', label: 'Mitternacht', bg: '#0c1018', surface: '#151b26', accent: '#2dd4bf' },
+                    { id: 'ocean', label: 'Ozean Blau', bg: '#0e1622', surface: '#192433', accent: '#38bdf8' },
+                    { id: 'emerald', label: 'Emerald Grün', bg: '#07241d', surface: '#0d3a2e', accent: '#34d399' },
+                    { id: 'nord', label: 'Nordlicht', bg: '#2b303b', surface: '#373d4a', accent: '#88c0d0' },
+                    { id: 'graphite', label: 'Graphit', bg: '#101113', surface: '#1a1b1e', accent: '#a1a1aa' },
+                    { id: 'sunset', label: 'Abendrot', bg: '#19100f', surface: '#271a1a', accent: '#fb923c' },
+                    { id: 'aurora', label: 'Aurora', bg: '#090f1e', surface: '#111a31', accent: '#a78bfa' },
+                    { id: 'paper', label: 'Papier', bg: '#faf6ef', surface: '#fffdf9', accent: '#a16207' },
+                    { id: 'rose', label: 'Rosé', bg: '#fdf8f8', surface: '#ffffff', accent: '#be185d' }
                 ],
                 accents: ['#6366f1', '#4f46e5', '#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#65a30d', '#eab308', '#f59e0b', '#f97316', '#ef4444', '#e11d48', '#ec4899', '#d946ef', '#8b5cf6', '#7c3aed', '#64748b'],
                 eventColors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'],
@@ -4086,17 +4051,27 @@ function reply_(p) {
 
                 /* Einstellungen: werden generisch gerendert */
                 settingsCats: [
-                    { id: 'general', label: 'Allgemein', icon: 'fa-solid fa-gear' }, { id: 'design', label: 'Darstellung', icon: 'fa-solid fa-palette' },
-                    { id: 'today', label: 'Start', icon: 'fa-solid fa-house' }, { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
-                    { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' }, { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
-                    { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' }, { id: 'vault', label: 'Tresor', icon: 'fa-solid fa-vault' },
-                    { id: 'notify', label: 'Benachrichtigungen', icon: 'fa-solid fa-bell' }, { id: 'sync', label: 'Verbundene Geräte', icon: 'fa-solid fa-arrows-rotate' },
-                    { id: 'data', label: 'Daten & Backup', icon: 'fa-solid fa-floppy-disk' }, { id: 'about', label: 'App & Updates', icon: 'fa-solid fa-cloud-arrow-down' }
+                    { id: 'general', label: 'Allgemein', icon: 'fa-solid fa-gear', grp: 'App' },
+                    { id: 'design', label: 'Darstellung', icon: 'fa-solid fa-palette', grp: 'App' },
+                    { id: 'today', label: 'Start & Wetter', icon: 'fa-solid fa-house', grp: 'Bereiche' },
+                    { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days', grp: 'Bereiche' },
+                    { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check', grp: 'Bereiche' },
+                    { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping', grp: 'Bereiche' },
+                    { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope', grp: 'Bereiche' },
+                    { id: 'vault', label: 'Tresor', icon: 'fa-solid fa-vault', grp: 'Bereiche' },
+                    { id: 'agent', label: 'Assistent', icon: 'fa-solid fa-wand-magic-sparkles', grp: 'Bereiche' },
+                    { id: 'notify', label: 'Benachrichtigungen', icon: 'fa-solid fa-bell', grp: 'Gerät & Daten' },
+                    { id: 'sync', label: 'Verbundene Geräte', icon: 'fa-solid fa-arrows-rotate', grp: 'Gerät & Daten' },
+                    { id: 'data', label: 'Daten & Backup', icon: 'fa-solid fa-floppy-disk', grp: 'Gerät & Daten' },
+                    { id: 'about', label: 'App & Updates', icon: 'fa-solid fa-cloud-arrow-down', grp: 'Gerät & Daten' }
                 ],
                 setCat: 'general', setQuery: '',
                 settingsDef: [
+                    { cat: 'agent', k: 'aiOn', type: 'toggle', label: 'Assistent anzeigen', desc: 'Blendet den Bereich ein. Läuft über dein Google-Script; ohne hinterlegten Schlüssel passiert nichts.' },
+                    { cat: 'agent', k: 'aiConfirm', type: 'toggle', label: 'Vor Änderungen nachfragen', desc: 'Lesen und Suchen darf der Assistent immer. Anlegen und Abhaken zeigt er erst zur Bestätigung.', if: 'aiOn' },
+                    { cat: 'agent', k: 'aiModel', type: 'text', label: 'Modell', desc: 'Name des Sprachmodells, das dein Script anfragt.', if: 'aiOn' },
                     { cat: 'general', k: 'appName', type: 'text', label: 'Name der App', desc: 'Steht oben links, im Browser-Tab und auf dem Startbildschirm. Das letzte Wort wird farbig hervorgehoben.' },
-                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Start'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['usage', 'Verbrauch'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
+                    { cat: 'general', k: 'startTab', type: 'select', label: 'Startseite', desc: 'Bereich, der beim Öffnen angezeigt wird', o: [['last', 'Zuletzt verwendet'], ['today', 'Start'], ['calendar', 'Kalender'], ['todos', 'To-Dos'], ['notes', 'Notizen'], ['recipes', 'Rezepte'], ['usage', 'Verbrauch'], ['weather', 'Wetter'], ['agent', 'Assistent'], ['shopping', 'Einkauf'], ['mail', 'E-Mail'], ['passwords', 'Tresor']] },
                     { cat: 'general', k: 'density', type: 'select', label: 'Dichte', desc: 'Kompakt zeigt mehr Inhalt auf einmal', o: [['comfortable', 'Komfortabel'], ['compact', 'Kompakt']] },
                     { cat: 'general', k: 'fontSize', type: 'select', label: 'Schriftgröße', desc: 'Skaliert die gesamte App', o: [['normal', 'Normal'], ['large', 'Groß'], ['xl', 'Sehr groß']] },
                     { cat: 'general', k: 'reduceMotion', type: 'toggle', label: 'Weniger Animationen', desc: 'Schaltet Übergänge und Bewegungen weitgehend ab' },
@@ -4189,7 +4164,7 @@ function reply_(p) {
                 wxAll: {},
                 wxSearch: '', wxHits: [], wxBusy: false,
                 notes: [], noteQuery: '', showNoteModal: false, currentNote: { id: null, title: '', text: '', color: '', pin: false },
-                cards: [], showCard: false, cardDraft: normCard({ id: null }), cardView: null, cardScan: '',
+                aiChat: [], aiMsgs: [], aiInput: '', aiBusy: false, aiError: '', aiPending: null,
                 meters: [], readings: [], meterId: '', showMeter: false, meterDraft: normMeter({ id: null }), showReading: false, readingDraft: normReading({ id: null }),
                 recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: normRecipe({ id: null, title: '' }), recipeIngText: '', recipeUnits: UNITS,
                 showRecipeImport: false, importWay: 'url', importUrl: '', importText: '', importBusy: '', importErr: '',
@@ -4255,7 +4230,6 @@ function reply_(p) {
                     this.notes = (readJSON('organizer_notes', []) || []).filter(n => n && (n.title || n.text)).map(normNote);
                     this.recipes = (readJSON('organizer_recipes', []) || []).filter(r => r && r.title).map(normRecipe);
                     this.meters = (readJSON('organizer_meters', []) || []).filter(m => m && m.id).map(normMeter);
-                    this.cards = (readJSON('organizer_cards', []) || []).filter(c => c && c.id).map(normCard);
                     this.readings = (readJSON('organizer_readings', []) || []).filter(r => r && r.meter).map(normReading);
                     const wx = readJSON('organizer_wx', null); if (wx && wx.now) this.wx = { ...wx, busy: false };
                     const wxa = readJSON('organizer_wx_all', null);
@@ -4364,8 +4338,6 @@ function reply_(p) {
                     if (this.showNoteModal) { this.saveNote(); return; }
                     if (this.showReading) { this.showReading = false; return; }
                     if (this.showMeter) { this.showMeter = false; return; }
-                    if (this.cardView) { this.cardView = null; return; }
-                    if (this.showCard) { this.showCard = false; return; }
                     if (this.showShare) { this.showShare = false; return; }
                     if (this.showRecipeImport) { this.showRecipeImport = false; return; }
                     if (this.showRecipeEdit) { this.showRecipeEdit = false; return; }
@@ -5659,88 +5631,251 @@ function reply_(p) {
                 },
                 get wxAgo() { return this.agoText(this.wx.at); },
 
-                /* ---------- Kundenkarten ---------- */
-                cardKinds: CARD_KINDS, cardColors: CARD_COLORS,
-                get cardList() { return [...this.cards].sort((a, b) => a.name.localeCompare(b.name, 'de')); },
-                /* Strichcode als Bild-Adresse; null, wenn die Nummer nicht zur Codeart passt */
-                cardSvg(c) {
-                    if (!c || c.kind === 'none') return null;
-                    const r = makeBarcode(c.number, c.kind === 'auto' ? null : c.kind);
-                    if (!r) return null;
-                    return 'data:image/svg+xml;utf8,' + encodeURIComponent(barcodeSvg(r.bits, { height: 90 }));
+                /* ---------- Assistent ---------- */
+                aiTools: AI_TOOLS,
+                get aiBereit() { return !!(this.syncCfg.url && this.cfg.aiOn); },
+
+                /* Was das Modell über die Lage wissen muss */
+                aiSystem() {
+                    const n = (this.cfg.appName || 'Alltag').trim();
+                    return [
+                        'Du bist der Assistent in der persönlichen Organizer-App "' + n + '".',
+                        'Heute ist ' + this.longDate(this.today) + ' (' + this.today + ').',
+                        'Antworte auf Deutsch, knapp und ohne Floskeln. Keine Aufzählung, wenn ein Satz reicht.',
+                        'Benutze die Werkzeuge, statt zu raten: Fragen zu Terminen, Aufgaben, Einkauf, Notizen oder Verbrauch immer erst nachschlagen.',
+                        'Relative Datumsangaben wie "morgen" oder "nächsten Freitag" rechnest du selbst in JJJJ-MM-TT um.',
+                        'Wenn eine Angabe fehlt, die du zum Anlegen brauchst, frage nach, statt etwas zu erfinden.',
+                        'Du hast keinen Zugriff auf den Passwort-Tresor und auf E-Mail-Inhalte.'
+                    ].join('\n');
                 },
-                cardCodeText(c) {
-                    if (!c || c.kind === 'none') return '';
-                    const r = makeBarcode(c.number, c.kind === 'auto' ? null : c.kind);
-                    return r ? r.text : '';
-                },
-                /* Nummer in Vierergruppen, damit man sie vorlesen kann */
-                cardNumberPretty(c) {
-                    const n = (c && c.number || '').replace(/\s+/g, '');
-                    return /^\d+$/.test(n) ? n.replace(/(.{4})/g, '$1 ').trim() : (c && c.number || '');
-                },
-                openCard(c) {
-                    this.cardDraft = c ? normCard({ ...c }) : normCard({ id: null, color: CARD_COLORS[this.cards.length % CARD_COLORS.length] });
-                    if (!c) this.cardDraft.id = null;
-                    this.showCard = true;
-                },
-                saveCard() {
-                    const d = this.cardDraft, name = (d.name || '').trim();
-                    if (!name) return this.toast('Bitte einen Namen angeben');
-                    if (d.kind !== 'none' && d.number && !makeBarcode(d.number, d.kind === 'auto' ? null : d.kind)) {
-                        return this.toast('Diese Nummer passt nicht zur gewählten Codeart');
-                    }
-                    if (d.id) {
-                        const i = this.cards.findIndex(x => x.id === d.id);
-                        if (i >= 0) this.cards[i] = normCard(d);
-                    } else {
-                        this.cards.push(normCard({ ...d, id: uid() }));
-                    }
-                    this.showCard = false; this.saveAllData(); this.toast('Karte gespeichert');
-                },
-                async deleteCard(id) {
-                    id = id || this.cardDraft?.id;
-                    const c = this.cards.find(x => x.id === id); if (!c) return;
-                    if (!await this.ask('„' + c.name + '“ löschen?', { title: 'Karte löschen', ok: 'Löschen', danger: true })) return;
-                    this.cards = this.cards.filter(x => x.id !== id);
-                    this.showCard = false; if (this.cardView && this.cardView.id === id) this.cardView = null;
-                    this.saveAllData(); this.toast('Karte gelöscht');
-                },
-                /* Große Ansicht zum Vorzeigen an der Kasse */
-                showCardFull(c) { this.cardView = c; },
-                get cardScanPossible() { return typeof window !== 'undefined' && 'BarcodeDetector' in window; },
-                /* Karte mit der Kamera einlesen, wenn der Browser das kann */
-                async scanCard() {
-                    if (!this.cardScanPossible) return this.toast('Dieser Browser kann keine Codes scannen – Nummer bitte eintippen');
-                    let stream;
+
+                /* ---- Werkzeuge ausführen ---- */
+                async aiRun(name, ein) {
+                    const a = ein || {};
                     try {
-                        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                    } catch (e) { return this.toast('Kamera nicht freigegeben'); }
-                    const v = document.createElement('video');
-                    v.srcObject = stream; v.playsInline = true;
-                    try { await v.play(); } catch (e) {}
-                    const det = new window.BarcodeDetector();
-                    const ende = Date.now() + 20000;
-                    this.cardScan = 'Halte die Karte vor die Kamera …';
+                        if (name === 'tagesueberblick') return this.aiUeberblick(Math.min(14, Math.max(1, a.tage || 3)));
+                        if (name === 'suchen') return this.aiSuchen(String(a.begriff || ''));
+                        if (name === 'termine_lesen') return this.aiTermine(a.von, a.bis);
+                        if (name === 'aufgaben_lesen') return this.aiAufgaben(a.nur || 'offen');
+                        if (name === 'verbrauch_lesen') return this.aiVerbrauch();
+                        if (name === 'aufgabe_anlegen') return this.aiAufgabeAnlegen(a);
+                        if (name === 'aufgabe_abhaken') return this.aiAufgabeAbhaken(a);
+                        if (name === 'termin_anlegen') return this.aiTerminAnlegen(a);
+                        if (name === 'einkauf_hinzufuegen') return this.aiEinkauf(a);
+                        if (name === 'notiz_anlegen') return this.aiNotiz(a);
+                        return { fehler: 'Unbekanntes Werkzeug ' + name };
+                    } catch (e) {
+                        return { fehler: String(e && e.message || e) };
+                    }
+                },
+
+                aiUeberblick(tage) {
+                    const bis = this.addDaysStr(this.today, tage - 1);
+                    const out = {
+                        datum: this.today,
+                        termine: this.aiTermine(this.today, bis).termine,
+                        aufgaben_offen: this.todos.filter(t => !t.done).length,
+                        aufgaben_faellig: this.todos.filter(t => !t.done && t.due && t.due <= this.today).map(t => t.title),
+                        einkauf: this.shoppingItems.filter(i => !i.done).map(i => i.name),
+                        mails_ungelesen: this.mailUnread || 0
+                    };
+                    if (this.wx && this.wx.now) {
+                        out.wetter = {
+                            ort: this.wx.place, jetzt: Math.round(this.wx.now.temp) + '°', lage: wmoText(this.wx.now.code),
+                            tage: (this.wx.days || []).map(d => ({ tag: d.label, max: Math.round(d.max) + '°', min: Math.round(d.min) + '°', regen: d.rain }))
+                        };
+                    }
+                    return out;
+                },
+                aiTermine(von, bis) {
+                    const a = String(von || this.today), b = String(bis || von || this.today);
+                    const l = this.events
+                        .filter(e => e.startDate && e.endDate >= a && e.startDate <= b)
+                        .sort((x, y) => (x.startDate + (x.startTime || '')).localeCompare(y.startDate + (y.startTime || '')))
+                        .slice(0, 60)
+                        .map(e => ({ titel: e.title, datum: e.startDate, von: e.allDay ? 'ganztägig' : e.startTime, bis: e.allDay ? '' : e.endTime, ort: e.location || '', notiz: (e.notes || '').slice(0, 200) }));
+                    return { von: a, bis: b, anzahl: l.length, termine: l };
+                },
+                aiAufgaben(nur) {
+                    let l = this.todos;
+                    if (nur === 'offen') l = l.filter(t => !t.done);
+                    else if (nur === 'erledigt') l = l.filter(t => t.done);
+                    else if (nur === 'faellig') l = l.filter(t => !t.done && t.due && t.due <= this.today);
+                    return {
+                        anzahl: l.length,
+                        aufgaben: l.slice(0, 80).map(t => ({ titel: t.title, erledigt: !!t.done, faellig: t.due || '', uhrzeit: t.dueTime || '', wichtig: !!t.important, liste: (this.todoLists.find(x => x.id === t.listId) || {}).name || 'Aufgaben' }))
+                    };
+                },
+                aiVerbrauch() {
+                    return {
+                        zaehler: this.meters.map(m => {
+                            const s = this.meterStats(m);
+                            return {
+                                name: m.name, art: this.meterKind(m).label, einheit: m.unit,
+                                stand: s.last ? s.last.value : null, ablesungen: s.readings,
+                                pro_tag: s.perDay ? Number(s.perDay.toFixed(2)) : null,
+                                hochrechnung_jahr: s.readings >= 2 ? Math.round(s.year) : null,
+                                jahreswert: m.target || null,
+                                abweichung: m.target && s.readings >= 2 ? Math.round(s.diff) : null,
+                                kosten_jahr: m.price && s.readings >= 2 ? Math.round(s.costYear) : null
+                            };
+                        })
+                    };
+                },
+                aiSuchen(q) {
+                    const t = q.trim().toLowerCase();
+                    if (!t) return { fehler: 'Kein Suchbegriff' };
+                    const hat = s => String(s || '').toLowerCase().includes(t);
+                    return {
+                        begriff: q,
+                        termine: this.events.filter(e => hat(e.title) || hat(e.location) || hat(e.notes)).slice(0, 15).map(e => ({ titel: e.title, datum: e.startDate, von: e.allDay ? 'ganztägig' : e.startTime })),
+                        aufgaben: this.todos.filter(x => hat(x.title) || hat(x.note)).slice(0, 20).map(x => ({ titel: x.title, erledigt: !!x.done, faellig: x.due || '' })),
+                        notizen: this.notes.filter(n => hat(n.title) || hat(n.text)).slice(0, 10).map(n => ({ titel: n.title, text: String(n.text || '').slice(0, 300) })),
+                        einkauf: this.shoppingItems.filter(i => hat(i.name)).slice(0, 20).map(i => ({ artikel: i.name, erledigt: !!i.done })),
+                        rezepte: this.recipes.filter(r => hat(r.title) || (r.ings || []).some(i => hat(i.name))).slice(0, 10).map(r => ({ titel: r.title, portionen: r.servings }))
+                    };
+                },
+                aiAufgabeAnlegen(a) {
+                    const titel = String(a.titel || '').trim();
+                    if (!titel) return { fehler: 'Titel fehlt' };
+                    const t = newTodo({
+                        title: titel.slice(0, 200),
+                        due: /^\d{4}-\d\d-\d\d$/.test(a.faellig || '') ? a.faellig : '',
+                        dueTime: /^\d\d:\d\d$/.test(a.uhrzeit || '') ? a.uhrzeit : '',
+                        important: !!a.wichtig,
+                        myDay: a.mein_tag ? this.today : '',
+                        note: String(a.notiz || '').slice(0, 1000)
+                    });
+                    this.todos.push(t); this.saveAllData();
+                    return { angelegt: 'Aufgabe', titel: t.title, faellig: t.due || null };
+                },
+                aiAufgabeAbhaken(a) {
+                    const q = String(a.titel || '').trim().toLowerCase();
+                    const t = this.todos.find(x => !x.done && x.title.toLowerCase() === q)
+                        || this.todos.find(x => !x.done && x.title.toLowerCase().includes(q));
+                    if (!t) return { fehler: 'Keine offene Aufgabe gefunden, die passt' };
+                    t.done = true; t.doneAt = Date.now(); this.saveAllData();
+                    return { abgehakt: t.title };
+                },
+                aiTerminAnlegen(a) {
+                    const titel = String(a.titel || '').trim();
+                    if (!titel) return { fehler: 'Titel fehlt' };
+                    if (!/^\d{4}-\d\d-\d\d$/.test(a.datum || '')) return { fehler: 'Datum muss JJJJ-MM-TT sein' };
+                    const ganz = !/^\d\d:\d\d$/.test(a.von || '');
+                    const ev = normEvent({
+                        id: uid(), title: titel.slice(0, 200), startDate: a.datum, endDate: a.datum,
+                        allDay: ganz, startTime: ganz ? '' : a.von, endTime: ganz ? '' : (/^\d\d:\d\d$/.test(a.bis || '') ? a.bis : ''),
+                        location: String(a.ort || '').slice(0, 200), notes: String(a.notiz || '').slice(0, 1000),
+                        reminder: String(this.cfg.defaultReminder ?? '')
+                    });
+                    this.events.push(ev); this.saveAllData();
+                    return { angelegt: 'Termin', titel: ev.title, datum: ev.startDate, von: ev.allDay ? 'ganztägig' : ev.startTime };
+                },
+                aiEinkauf(a) {
+                    const liste = (Array.isArray(a.artikel) ? a.artikel : [a.artikel]).map(x => String(x || '').trim()).filter(Boolean).slice(0, 30);
+                    if (!liste.length) return { fehler: 'Keine Artikel angegeben' };
+                    const neu = [], schon = [];
+                    for (const name of liste) {
+                        const vorhanden = this.shopOpen.find(i => i.name.toLowerCase() === name.toLowerCase());
+                        if (vorhanden) { schon.push(vorhanden.name); continue; }
+                        const bekannt = CATALOG.find(p => p.name.toLowerCase() === name.toLowerCase());
+                        const it = normShop({ ...(bekannt || { name: name.charAt(0).toUpperCase() + name.slice(1) }), id: uid(), list: this.shopListId });
+                        this.shoppingItems.push(it); this.noteRecent(it); neu.push(it.name);
+                    }
+                    this.saveAllData();
+                    return { hinzugefuegt: neu, war_schon_drauf: schon };
+                },
+                aiNotiz(a) {
+                    const titel = String(a.titel || '').trim();
+                    if (!titel && !String(a.text || '').trim()) return { fehler: 'Notiz ist leer' };
+                    const n = normNote({ id: uid(), title: titel.slice(0, 120), text: String(a.text || '').slice(0, 5000) });
+                    this.notes.push(n); this.saveAllData();
+                    return { angelegt: 'Notiz', titel: n.title };
+                },
+
+                /* ---- Gespräch ---- */
+                aiText(m) { return (m.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n').trim(); },
+                aiLabel(name) {
+                    const l = { tagesueberblick: 'Tagesüberblick geholt', suchen: 'Gesucht', termine_lesen: 'Termine gelesen', aufgaben_lesen: 'Aufgaben gelesen', verbrauch_lesen: 'Verbrauch gelesen', aufgabe_anlegen: 'Aufgabe anlegen', aufgabe_abhaken: 'Aufgabe abhaken', termin_anlegen: 'Termin anlegen', einkauf_hinzufuegen: 'Auf die Einkaufsliste setzen', notiz_anlegen: 'Notiz anlegen' };
+                    return l[name] || name;
+                },
+                /* Kurzfassung dessen, was ein Schreibwerkzeug tun würde */
+                aiVorschau(t) {
+                    const i = t.input || {};
+                    if (t.name === 'aufgabe_anlegen') return i.titel + (i.faellig ? ' · fällig ' + i.faellig : '') + (i.uhrzeit ? ' ' + i.uhrzeit : '');
+                    if (t.name === 'aufgabe_abhaken') return i.titel;
+                    if (t.name === 'termin_anlegen') return i.titel + ' · ' + i.datum + (i.von ? ' ' + i.von + (i.bis ? '–' + i.bis : '') : ' ganztägig') + (i.ort ? ' · ' + i.ort : '');
+                    if (t.name === 'einkauf_hinzufuegen') return (i.artikel || []).join(', ');
+                    if (t.name === 'notiz_anlegen') return i.titel;
+                    return JSON.stringify(i).slice(0, 160);
+                },
+
+                async aiSend(text) {
+                    const frage = String(text ?? this.aiInput).trim();
+                    if (!frage || this.aiBusy) return;
+                    if (!this.syncCfg.url) { this.aiError = 'Dafür brauche ich das Google-Script aus „Verbundene Geräte“.'; return; }
+                    this.aiInput = ''; this.aiError = '';
+                    this.aiChat.push({ rolle: 'ich', text: frage });
+                    this.aiMsgs.push({ role: 'user', content: frage });
+                    await this.aiLoop();
+                },
+                /* Fragt das Modell, führt Werkzeuge aus, fragt erneut – bis es fertig ist. */
+                async aiLoop() {
+                    this.aiBusy = true;
                     try {
-                        while (Date.now() < ende) {
-                            let tr = [];
-                            try { tr = await det.detect(v); } catch (e) {}
-                            if (tr && tr.length) {
-                                this.cardDraft.number = String(tr[0].rawValue || '').trim();
-                                const f = String(tr[0].format || '');
-                                this.cardDraft.kind = f === 'ean_13' ? 'ean13' : f === 'ean_8' ? 'ean8' : f === 'code_128' ? 'code128' : 'auto';
-                                this.toast('Code erkannt');
-                                return;
+                        for (let runde = 0; runde < 8; runde++) {
+                            const res = await this.gCall({
+                                action: 'ai', model: this.cfg.aiModel,
+                                system: this.aiSystem(), messages: this.aiMsgs, tools: aiToolSpec()
+                            });
+                            const antwort = res && res.answer;
+                            if (!antwort || !antwort.content) throw new Error('Unerwartete Antwort');
+                            this.aiMsgs.push({ role: 'assistant', content: antwort.content });
+                            const txt = this.aiText(antwort);
+                            const rufe = antwort.content.filter(c => c.type === 'tool_use');
+                            if (txt) this.aiChat.push({ rolle: 'ai', text: txt });
+                            if (!rufe.length) return;
+
+                            const schreibend = rufe.filter(t => AI_WRITES.includes(t.name));
+                            if (schreibend.length && this.cfg.aiConfirm) {
+                                this.aiPending = rufe;
+                                this.aiBusy = false;
+                                return;                       // wartet auf aiConfirm()
                             }
-                            await new Promise(r => setTimeout(r, 180));
+                            await this.aiExec(rufe);
                         }
-                        this.toast('Kein Code erkannt – bitte eintippen');
-                    } finally {
-                        this.cardScan = '';
-                        stream.getTracks().forEach(t => t.stop());
-                    }
+                        this.aiChat.push({ rolle: 'ai', text: 'Ich drehe mich im Kreis und höre hier lieber auf.' });
+                    } catch (e) {
+                        this.aiError = /Unbekannte Aktion/.test(e.message || '')
+                            ? 'Das Google-Script kennt den Assistenten noch nicht – bitte unter „Verbundene Geräte“ das neue Script kopieren und als neue Version bereitstellen.'
+                            : (e.message || 'Das Modell ist nicht erreichbar');
+                    } finally { this.aiBusy = false; }
                 },
+                /* Werkzeuge ausführen und die Ergebnisse zurückgeben */
+                async aiExec(rufe) {
+                    const ergebnisse = [];
+                    for (const t of rufe) {
+                        const erg = await this.aiRun(t.name, t.input);
+                        this.aiChat.push({ rolle: 'tool', text: this.aiLabel(t.name), detail: this.aiVorschau(t), fehler: !!erg.fehler });
+                        ergebnisse.push({ type: 'tool_result', tool_use_id: t.id, content: JSON.stringify(erg) });
+                    }
+                    this.aiMsgs.push({ role: 'user', content: ergebnisse });
+                },
+                async aiConfirm() {
+                    const rufe = this.aiPending; this.aiPending = null;
+                    if (!rufe) return;
+                    await this.aiExec(rufe);
+                    await this.aiLoop();
+                },
+                async aiReject() {
+                    const rufe = this.aiPending; this.aiPending = null;
+                    if (!rufe) return;
+                    this.aiMsgs.push({ role: 'user', content: rufe.map(t => ({ type: 'tool_result', tool_use_id: t.id, content: JSON.stringify({ fehler: 'Vom Nutzer abgelehnt – nicht ausgeführt' }) })) });
+                    this.aiChat.push({ rolle: 'tool', text: 'Abgelehnt', detail: 'Es wurde nichts geändert', fehler: true });
+                    await this.aiLoop();
+                },
+                aiClear() { this.aiChat = []; this.aiMsgs = []; this.aiPending = null; this.aiError = ''; },
+                aiAsk(t) { this.aiSend(t); },
 
                 /* ---------- Verbrauch ---------- */
                 meterKinds: METER_KINDS,
@@ -6412,8 +6547,8 @@ function reply_(p) {
                     return out;
                 },
                 clockTime: '--:--', clockDate: '', showMore: false, online: typeof navigator === 'undefined' || navigator.onLine !== false,
-                get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'usage', 'weather', 'cards', 'passwords', 'settings'].includes(t.id)); },
-                get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'usage', 'weather', 'cards', 'passwords'].includes(t.id)); },
+                get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'usage', 'weather', 'agent', 'passwords', 'settings'].includes(t.id)); },
+                get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'usage', 'weather', 'agent', 'passwords'].includes(t.id)); },
                 get navTabs() { return this.tabs.filter(t => t.id !== 'settings'); },
                 swState: 'unbekannt', swFiles: 0,
                 /* Prüft wirklich nach: läuft ein Service Worker und liegen Dateien im Offline-Speicher? */
@@ -7026,14 +7161,13 @@ function reply_(p) {
                         localStorage.setItem('organizer_notes', JSON.stringify(this.notes));
                         localStorage.setItem('organizer_recipes', JSON.stringify(this.recipes));
                         localStorage.setItem('organizer_meters', JSON.stringify(this.meters));
-                        localStorage.setItem('organizer_cards', JSON.stringify(this.cards));
                         localStorage.setItem('organizer_readings', JSON.stringify(this.readings));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
                     this.touchSync();
                 },
                 exportData() {
-                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, recipes: this.recipes, meters: this.meters, readings: this.readings, cards: this.cards, vault: readJSON(VAULT_KEY, null),
+                    const data = { version: 3, events: this.events.filter(e => !e.isGoogle), todos: this.todos, todoLists: this.todoLists, shoppingItems: this.shoppingItems, shopLists: this.shopLists, cfg: this.cfg, notes: this.notes, recipes: this.recipes, meters: this.meters, readings: this.readings, vault: readJSON(VAULT_KEY, null),
                         vaults: this.vaults, vaultRecords: Object.fromEntries(this.vaults.filter(v => v.id !== 'main').map(v => [v.id, readJSON(vaultStoreKey(v.id), null)]).filter(([, r]) => validVaultRecord(r))) };
                     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
                     const a = Object.assign(document.createElement('a'), { href: url, download: `backup-${fmt(new Date())}.json` });
@@ -7055,7 +7189,6 @@ function reply_(p) {
                             if (Array.isArray(data.recipes)) this.recipes = data.recipes.filter(r => r && r.title).map(normRecipe);
                             if (Array.isArray(data.meters)) this.meters = data.meters.filter(m => m && m.id).map(normMeter);
                             if (Array.isArray(data.readings)) this.readings = data.readings.filter(r => r && r.meter).map(normReading);
-                            if (Array.isArray(data.cards)) this.cards = data.cards.filter(c => c && c.id).map(normCard);
                             if (data.cfg && typeof data.cfg === 'object') { this.cfg = { ...DEFAULT_CFG, ...data.cfg, views: { ...DEFAULT_CFG.views, ...(data.cfg.views || {}) } }; this.saveCfg(); this.applyCfg(); this.calendarView = this.cfg.calView; }
                             this.saveAllData();
 

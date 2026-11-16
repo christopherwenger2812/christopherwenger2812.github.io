@@ -22,9 +22,9 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
 
-**Wetter** – Eigene Seite für mehrere Orte, jeder mit aktueller Lage und vier Tagen Vorschau. Der erste Ort steht auf der Startseite. Aktualisiert sich alle 15 Minuten von selbst, solange die App offen ist.
+**Assistent** – Beantwortet Fragen zu deinen eigenen Daten und trägt auf Wunsch etwas ein: Termine, Aufgaben, Einkauf, Notizen. Er benutzt dafür Werkzeuge in der App, statt zu raten, und zeigt jeden Schritt an. Änderungen legt er erst nach deiner Bestätigung an. Tresor und E-Mail-Inhalte bleiben außen vor.
 
-**Kundenkarten** – Payback, DeutschlandCard, dm, Ikea Family und alles andere mit aufgedruckter Nummer. Der Strichcode wird in der App erzeugt (EAN-13, EAN-8, Code 128) und ist auch offline da. Karten, deren Code die jeweilige App bei jedem Einkauf neu erzeugt, lassen sich nicht ablegen – ein gespeicherter Abzug wäre an der Kasse ungültig.
+**Wetter** – Eigene Seite für mehrere Orte, jeder mit aktueller Lage und vier Tagen Vorschau. Der erste Ort steht auf der Startseite. Aktualisiert sich alle 15 Minuten von selbst, solange die App offen ist.
 
 **Verbrauch** – Zähler für Strom, Gas und Wasser. Aus den Ablesungen entstehen Tagesschnitt, Hochrechnung aufs Jahr, Vergleich mit dem geplanten Jahreswert und die Kosten gegen den monatlichen Abschlag, dazu ein Balkendiagramm je Monat.
 
@@ -92,7 +92,18 @@ Gmail wird über ein zweites, eigenes Apps-Script angebunden: Einstellungen → 
 
 Andere Anbieter (GMX, web.de, Outlook.com, iCloud) lassen sich nur über eine Weiterleitung an die Gmail-Adresse einbinden.
 
-### 4. Als App aufs Handy
+### 4. Assistent (optional)
+
+Der Assistent fragt das Sprachmodell über dasselbe Google-Script wie der Abgleich. Dadurch liegt der Schlüssel in deinem Drive und nie im Browser.
+
+1. Script aus „Verbundene Geräte" kopieren und als **neue Version** bereitstellen
+2. Bei [script.google.com](https://script.google.com) im Projekt auf das Zahnrad (Projekteinstellungen)
+3. Unter **Script-Eigenschaften** eine Eigenschaft `AI_KEY` mit deinem API-Schlüssel anlegen
+4. In der App unter Einstellungen → Assistent gegebenenfalls das Modell anpassen
+
+An das Modell geht nur deine Frage und das, was die benutzten Werkzeuge zurückgeben – etwa die Termine des Zeitraums, nach dem du fragst.
+
+### 5. Als App aufs Handy
 
 Am einfachsten: Seite in Chrome öffnen → Menü → „App installieren". Damit gibt es ein Symbol auf dem Startbildschirm, Vollbild und Offline-Betrieb.
 
@@ -105,7 +116,7 @@ Wer eine echte APK-Datei möchte (zum Weitergeben oder für ein Gerät ohne Play
 
 Damit die App ohne Adressleiste startet, muss diese Datei als `.well-known/assetlinks.json` in dieses Repository – dafür ist `.nojekyll` da.
 
-### 5. Updates
+### 6. Updates
 
 Die App prüft beim Start, beim Zurückkehren und alle 15 Minuten, ob auf GitHub eine neue Version liegt, und bietet sie an. Nach einer Änderung an `index.html` also einfach hochladen – die Geräte ziehen von selbst nach. Gespeicherte Daten bleiben dabei erhalten.
 
@@ -139,7 +150,7 @@ Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die u
 ## Grenzen
 
 - Erinnerungen erscheinen nur, solange die App im Browser geöffnet ist.
-- Kundenkarten mit wechselndem Code (von der jeweiligen App je Einkauf neu erzeugt) lassen sich nicht hinterlegen. QR-Codes werden noch nicht erzeugt, nur Strichcodes.
+- Der Assistent braucht Internet und einen eigenen API-Schlüssel; die Nutzung rechnet der Anbieter mit dir ab.
 - Passwörter lassen sich nicht automatisch in andere Apps oder Webseiten einfüllen.
 - Standortbezogene Erinnerungen sind nicht möglich.
 - E-Mail, Abgleich und das Einlesen von Rezepten aus Link oder PDF brauchen Internet; der Rest funktioniert offline.
