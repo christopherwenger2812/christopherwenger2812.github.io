@@ -10,7 +10,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 ## Was drin ist
 
-**Heute** – Übersicht über Termine, offene Aufgaben, ungelesene Mails und die Einkaufsliste. Aufgaben lassen sich direkt von hier anlegen.
+**Start** – Datum groß, darunter ein Satz zur Lage („Heute nichts mehr. Morgen um 08:00 Carolinensiel · 2 Aufgaben offen."). Darunter Kacheln: Schnellaktionen, Wetter mit Resttageslicht und Regenfenster der nächsten Stunden, Aufgaben, die nächsten Termine, das heute geplante Gericht, Zählerstände und der Einkauf. Welche Kacheln erscheinen und in welcher Reihenfolge, lässt sich einstellen – getrennt für Handy und breiten Bildschirm. Kacheln ohne Inhalt schrumpfen zu einer Zeile.
 
 **Kalender** – Monat, Woche und Tag, wiederkehrende Termine, Feiertage je Bundesland, Erinnerungen, Import aus Google Kalender, Countdown für die nächsten Termine.
 
@@ -28,7 +28,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Wetter** – Eigene Seite für mehrere Orte, jeder mit aktueller Lage und vier Tagen Vorschau. Der erste Ort steht auf der Startseite. Aktualisiert sich alle 15 Minuten von selbst, solange die App offen ist.
 
-**Verbrauch** – Zähler für Strom, Gas und Wasser. Aus den Ablesungen entstehen Tagesschnitt, Hochrechnung aufs Jahr, Vergleich mit dem geplanten Jahreswert und die Kosten gegen den monatlichen Abschlag, dazu ein Balkendiagramm je Monat.
+**Verbrauch** – Zähler für Strom, Gas und Wasser. Aus den Ablesungen entstehen Tagesschnitt, Hochrechnung aufs Jahr, Vergleich mit dem geplanten Jahreswert und die Kosten gegen den monatlichen Abschlag, dazu ein Balkendiagramm je Monat. Jede Karte ist eingefärbt, je nachdem ob du unter, im oder über dem Plan liegst.
 
 **E-Mail** – Gmail im Outlook-Aufbau: Ordnerleiste, nach Zeitraum gruppierte Nachrichtenliste, Lesebereich, Antworten und Weiterleiten, Anhänge, Signatur und Textbausteine, Auswahl der Absenderadresse („Senden als"), Umwandeln einer Mail in eine Aufgabe oder einen Termin.
 

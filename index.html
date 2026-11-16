@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-4">
+    <meta name="app-version" content="2026.11.16-5">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -213,6 +213,10 @@
         /* Heutiger Tag im Kalender und gewähltes Design – nehmen Akzent- und Bereichsfarbe auf */
         .istheute { background: var(--area-ink); color: var(--surface); }
         .themeon { border-color: var(--accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+        /* Verbrauch: die Karte zeigt am Rand und an einem zarten Verlauf, wie es steht */
+        .ampel { border-color: color-mix(in srgb, var(--am) 38%, var(--border)); }
+        .ampel.a-keine { border-color: var(--area-line); }
+        .ampel:not(.a-keine) { background: linear-gradient(180deg, color-mix(in srgb, var(--am) 9%, var(--surface)), var(--surface) 7rem); }
         /* Mikrofon-Knopf: pulsiert, solange zugehört wird */
         .micbtn.an { background: #f43f5e; color: #fff; border-color: #f43f5e; animation: micpuls 1.4s ease-in-out infinite; }
         @keyframes micpuls { 0%, 100% { box-shadow: 0 0 0 0 rgba(244,63,94,.5) } 50% { box-shadow: 0 0 0 .4rem rgba(244,63,94,0) } }
@@ -325,6 +329,7 @@
         .cardcols > * { break-inside: avoid; margin-bottom: 1.25rem; display: inline-block; width: 100%; }
         @media (min-width: 1024px) { .cardcols { columns: 2; } }
         @media (min-width: 1600px) { .cardcols { columns: 3; } }
+        @media (min-width: 2000px) { .cardcols { columns: 4; } }
         .notegrid { columns: 1; column-gap: .9rem; }
         .notegrid > * { break-inside: avoid; margin-bottom: .9rem; display: inline-block; width: 100%; }
         @media (min-width: 640px) { .notegrid { columns: 2; } }
@@ -564,12 +569,25 @@
                     <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                     <button type="button" @click="switchTab('settings')" class="icon-btn" :class="activeTab === 'settings' ? 'accent' : ''" title="Einstellungen" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
                 </div>
-                <div class="hidden md:flex items-center min-w-0">
-                <nav class="flex seg navscroll" aria-label="Hauptnavigation">
-                    <template x-for="t in navTabs" :key="t.id">
-                        <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden xl:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
-                    </template>
-                </nav>
+                <!-- Navigation: die häufigen Bereiche direkt, der Rest unter „Mehr“.
+                     Dadurch kann die Leiste nie überlaufen, egal wie viele Bereiche dazukommen. -->
+                <div class="hidden md:flex items-center min-w-0 relative" @keydown.escape="navMore = false">
+                    <nav class="flex seg navscroll" aria-label="Hauptnavigation">
+                        <template x-for="t in mainTabs" :key="t.id">
+                            <button @click="switchTab(t.id); navMore = false" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden lg:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
+                        </template>
+                        <button @click="navMore = !navMore" :class="moreTabs.some(t => t.id === activeTab) ? 'on' : ''" class="flex items-center gap-2" :aria-expanded="navMore" aria-haspopup="true" aria-label="Weitere Bereiche">
+                            <i :class="(moreTabs.find(t => t.id === activeTab) || {}).icon || 'fa-solid fa-ellipsis'"></i>
+                            <span class="hidden lg:inline" x-text="(moreTabs.find(t => t.id === activeTab) || {}).label || 'Mehr'"></span>
+                            <i class="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
+                        </button>
+                    </nav>
+                    <div x-show="navMore" x-transition.opacity.duration.120ms x-cloak @click.outside="navMore = false"
+                         class="card absolute right-0 top-full mt-2 p-1.5 w-56 z-50" style="box-shadow: var(--shadow-s)">
+                        <template x-for="t in moreTabs" :key="t.id">
+                            <button @click="switchTab(t.id); navMore = false" class="side w-full !py-2.5" :class="activeTab === t.id ? 'on' : ''"><i :class="t.icon" class="w-5 text-center"></i><span x-text="t.label"></span></button>
+                        </template>
+                    </div>
                 </div>
             </div>
         </header>
@@ -602,7 +620,7 @@
                         <p class="text-[11px] font-bold uppercase" style="letter-spacing: .08em; color: var(--area-ink)" x-text="weekdayName(today)"></p>
                         <h2 class="dsp text-4xl sm:text-5xl font-extrabold tracking-tight mt-0.5 leading-none"><span class="num" x-text="dayNumber(today)"></span> <span x-text="monthName(today)"></span></h2>
                         <p class="text-sm mt-2.5 font-semibold" x-text="greeting"></p>
-                        <p class="muted text-xs mt-0.5 font-medium" x-text="todaySummary"></p>
+                        <p class="muted text-xs mt-0.5 font-medium" x-text="tagesSatz"></p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button @click="openEventModal({ startDate: today })" class="btn btn-soft"><i class="fa-regular fa-calendar-plus"></i>Termin</button>
@@ -610,90 +628,179 @@
                     </div>
                 </div>
 
+                <!-- Kacheln in der eingestellten Reihenfolge. Ist eine Kachel leer,
+                     wird sie zu einem schmalen Streifen statt zu einer leeren Karte. -->
                 <div class="cardcols">
-                    <!-- Wetter -->
-                    <div x-show="cfg.weather" class="card p-5 sm:p-6 space-y-3">
-                        <div class="flex items-center gap-2">
-                            <p class="label"><i class="fa-solid fa-cloud-sun mr-2"></i>Wetter<span class="ct" x-show="wx.place" x-text="'· ' + wx.place"></span></p>
-                            <span class="text-[10px] muted font-semibold ml-auto mr-1" x-show="wx.at" x-text="wxAgo"></span>
-                            <button type="button" class="icon-btn !w-7 !h-7" @click="loadWeather(true)" :disabled="wx.busy" title="Jetzt aktualisieren" aria-label="Wetter aktualisieren"><i class="fa-solid fa-rotate text-[11px]" :class="wx.busy ? 'spin' : ''"></i></button>
-                        </div>
-                        <p x-show="!cfg.weatherPlace" class="muted text-sm">Noch kein Ort gewählt. <button type="button" class="accent font-bold" @click="switchTab('settings'); setCat = 'today'">Ort festlegen</button></p>
-                        <template x-if="cfg.weatherPlace && wx.now">
-                            <div class="space-y-3">
-                                <div class="flex items-center gap-4">
-                                    <i class="text-4xl shrink-0" style="color: var(--area-ink)" :class="wmoIcon(wx.now?.code, wx.now?.night)"></i>
-                                    <div class="min-w-0">
-                                        <p class="text-3xl font-black leading-none num" x-text="wxTemp(wx.now?.temp)"></p>
-                                        <p class="text-xs font-bold mt-1" x-text="wmoText(wx.now?.code)"></p>
-                                    </div>
-                                    <div class="ml-auto text-right text-[11px] muted font-semibold leading-relaxed">
-                                        <p x-text="'gefühlt ' + wxTemp(wx.now?.feels)"></p>
-                                        <p x-text="Math.round(wx.now?.wind) + ' km/h · ' + wx.now?.hum + ' %'"></p>
-                                        <p><i class="fa-solid fa-arrow-up text-[9px]"></i> <span x-text="wxTime(wx.now?.sunrise)"></span> · <i class="fa-solid fa-arrow-down text-[9px]"></i> <span x-text="wxTime(wx.now?.sunset)"></span></p>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-4 gap-2 pt-1">
-                                    <template x-for="d in wx.days" :key="d.ds">
-                                        <div class="inner py-2.5 px-1 text-center">
-                                            <p class="text-[11px] font-bold" x-text="d.label"></p>
-                                            <i class="my-1.5 block text-base accent" :class="wmoIcon(d.code, false)"></i>
-                                            <p class="text-[11px] font-black num"><span x-text="wxTemp(d.max)"></span><span class="muted font-bold" x-text="' ' + wxTemp(d.min)"></span></p>
-                                            <p class="text-[10px] muted font-bold" x-show="d.rain !== null && d.rain > 0"><i class="fa-solid fa-droplet text-[8px]"></i> <span x-text="d.rain + '%'"></span></p>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </template>
-                        <p x-show="cfg.weatherPlace && !wx.now && !wx.error" class="muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade Wetter …</p>
-                        <p x-show="wx.error" class="text-[11px] muted" x-text="wx.error"></p>
-                    </div>
-
-                    <div x-show="cfg.todayEvents" class="card p-5 sm:p-6 space-y-3">
-                        <div class="flex items-center justify-between"><p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Termine heute</p><button class="text-[11px] font-bold accent" @click="switchTab('calendar')">Kalender öffnen</button></div>
-                        <p x-show="!todayEventList.length" class="muted text-sm py-3">Heute stehen keine Termine an.</p>
-                        <template x-for="e in todayEventList" :key="e.id">
-                            <button type="button" class="inner w-full p-3 flex items-center gap-3 text-left hover:brightness-110" @click="switchTab('calendar'); anchor = today; editEvent(e)">
-                                <span class="w-1.5 self-stretch rounded-full shrink-0" :style="'background:' + e.color"></span>
-                                <span class="min-w-0 flex-1"><span class="block text-sm font-bold truncate" x-text="e.title"></span><span class="block text-[11px] muted" x-text="e.allDay ? 'Ganztägig' : e.startTime + ' – ' + e.endTime"></span></span>
+                    <template x-for="tile in startTilesView" :key="tile">
+                    <div>
+                        <!-- leer: nur eine Zeile -->
+                        <template x-if="startLeer(tile)">
+                            <button type="button" class="card w-full flex items-center gap-3 px-4 py-2.5 text-left hover:brightness-[1.03]" @click="switchTab(startLeerTab(tile))">
+                                <i :class="startTileIcon(tile)" class="text-xs shrink-0" style="color: var(--area-ink)"></i>
+                                <span class="text-[13px] font-bold truncate" x-text="startTileLabel(tile)"></span>
+                                <span class="text-[12px] muted truncate flex-1" x-text="'· ' + startLeerText(tile)"></span>
+                                <i class="fa-solid fa-chevron-right text-[10px] muted shrink-0"></i>
                             </button>
                         </template>
-                        <div x-show="tomorrowEventList.length" class="pt-3 border-t divider space-y-1.5">
-                            <p class="label">Morgen</p>
-                            <template x-for="e in tomorrowEventList" :key="e.id"><p class="text-xs flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" :style="'background:' + e.color"></span><span class="muted shrink-0" x-text="e.allDay ? 'ganztägig' : e.startTime"></span><span class="truncate font-semibold" x-text="e.title"></span></p></template>
-                        </div>
-                    </div>
-
-                    <div x-show="cfg.todayTodos" class="card p-5 sm:p-6 space-y-3">
-                        <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-list-check mr-2"></i>Aufgaben</p><button class="text-[11px] font-bold accent" @click="switchTab('todos')">To-Dos öffnen</button></div>
-                        <form @submit.prevent="todayAddTask()" class="flex gap-2"><input type="text" x-model="todayTask" placeholder="Aufgabe für heute…" class="field !py-2" aria-label="Neue Aufgabe für heute"><button class="btn btn-primary" :disabled="!todayTask.trim()" aria-label="Hinzufügen"><i class="fa-solid fa-plus"></i></button></form>
-                        <p x-show="!todayTodoList.length" class="muted text-sm py-2">Nichts offen für heute – gut gemacht.</p>
-                        <template x-for="t in todayTodoList" :key="t.id">
-                            <div class="inner p-3 flex items-center gap-3">
-                                <button @click="toggleTodo(t.id)" class="check shrink-0" :aria-label="'Erledigen: ' + t.title"><i class="fa-solid fa-check text-[10px]"></i></button>
-                                <button type="button" class="min-w-0 flex-1 text-left" @click="openTaskModal(t)"><span class="block text-sm font-bold truncate" x-text="t.title"></span><span x-show="t.due" class="block text-[11px]" :class="dueClass(t) || 'muted'" x-text="dueLabel(t)"></span></button>
-                                <i x-show="t.important" class="fa-solid fa-star text-amber-400 text-xs"></i>
+                        <template x-if="tile === 'quick'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <p class="label"><i class="fa-solid fa-bolt mr-2"></i>Schnell erledigt</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button type="button" class="tile" @click="openTaskModal()"><i class="fa-solid fa-list-check text-base" style="color: var(--area-ink)"></i><span class="text-[11px] font-bold mt-1">Aufgabe</span></button>
+                                <button type="button" class="tile" @click="openEventModal({ startDate: today })"><i class="fa-regular fa-calendar-plus text-base" style="color: var(--area-ink)"></i><span class="text-[11px] font-bold mt-1">Termin</span></button>
+                                <button type="button" class="tile" @click="switchTab('notes'); openNote()"><i class="fa-regular fa-note-sticky text-base" style="color: var(--area-ink)"></i><span class="text-[11px] font-bold mt-1">Notiz</span></button>
+                                <button type="button" class="tile" @click="switchTab('shopping')"><i class="fa-solid fa-bag-shopping text-base" style="color: var(--area-ink)"></i><span class="text-[11px] font-bold mt-1">Einkauf</span></button>
+                            </div>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'weather'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center gap-2">
+                                <p class="label"><i class="fa-solid fa-cloud-sun mr-2"></i>Wetter<span class="ct" x-show="wx.place" x-text="'· ' + wx.place"></span></p>
+                                <span class="text-[10px] muted font-semibold ml-auto mr-1" x-show="wx.at" x-text="wxAgo"></span>
+                                <button type="button" class="icon-btn !w-7 !h-7" @click="loadWeather(true)" :disabled="wx.busy" title="Jetzt aktualisieren" aria-label="Wetter aktualisieren"><i class="fa-solid fa-rotate text-[11px]" :class="wx.busy ? 'spin' : ''"></i></button>
+                            </div>
+                            <p x-show="!cfg.weatherPlace" class="muted text-sm">Noch kein Ort gewählt. <button type="button" class="accent font-bold" @click="switchTab('settings'); setCat = 'today'">Ort festlegen</button></p>
+                            <template x-if="cfg.weatherPlace && wx.now">
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-4">
+                                        <i class="text-4xl shrink-0" style="color: var(--area-ink)" :class="wmoIcon(wx.now?.code, wx.now?.night)"></i>
+                                        <div class="min-w-0">
+                                            <p class="text-3xl font-black leading-none num" x-text="wxTemp(wx.now?.temp)"></p>
+                                            <p class="text-xs font-bold mt-1" x-text="wmoText(wx.now?.code)"></p>
+                                        </div>
+                                        <div class="ml-auto text-right text-[11px] muted font-semibold leading-relaxed">
+                                            <p x-text="'gefühlt ' + wxTemp(wx.now?.feels)"></p>
+                                            <p x-text="Math.round(wx.now?.wind) + ' km/h · ' + wx.now?.hum + ' %'"></p>
+                                            <p><i class="fa-solid fa-arrow-up text-[9px]"></i> <span x-text="wxTime(wx.now?.sunrise)"></span> · <i class="fa-solid fa-arrow-down text-[9px]"></i> <span x-text="wxTime(wx.now?.sunset)"></span></p>
+                                        </div>
+                                    </div>
+                                    <!-- Tageslicht und Regenfenster -->
+                                    <div class="flex items-center gap-2 flex-wrap text-[11px] font-semibold muted pt-0.5">
+                                        <span x-show="tageslicht"><i class="fa-regular fa-sun mr-1" style="color: var(--area-ink)"></i><span x-text="tageslicht"></span></span>
+                                        <span x-show="regenText" x-text="'· ' + regenText"></span>
+                                    </div>
+                                    <div x-show="regenStunden.length" class="flex items-end gap-[3px] h-9 pt-0.5">
+                                        <template x-for="s in regenStunden" :key="s.t">
+                                            <div class="flex-1 flex flex-col items-center gap-0.5 min-w-0" :title="s.t.slice(11, 16) + ' Uhr · ' + (s.p === null ? '?' : s.p + ' %')">
+                                                <div class="w-full rounded-t-sm" :style="'height:' + Math.max(2, (s.p || 0) * 0.2) + 'px; background:' + ((s.p || 0) >= 40 ? 'var(--area-ink)' : 'var(--border)')"></div>
+                                                <span class="text-[8px] muted font-bold num" x-text="s.t.slice(11, 13)"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-2 pt-1">
+                                        <template x-for="d in wx.days" :key="d.ds">
+                                            <div class="inner py-2.5 px-1 text-center">
+                                                <p class="text-[11px] font-bold" x-text="d.label"></p>
+                                                <i class="my-1.5 block text-base accent" :class="wmoIcon(d.code, false)"></i>
+                                                <p class="text-[11px] font-black num"><span x-text="wxTemp(d.max)"></span><span class="muted font-bold" x-text="' ' + wxTemp(d.min)"></span></p>
+                                                <p class="text-[10px] muted font-bold" x-show="d.rain !== null && d.rain > 0"><i class="fa-solid fa-droplet text-[8px]"></i> <span x-text="d.rain + '%'"></span></p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                            <p x-show="cfg.weatherPlace && !wx.now && !wx.error" class="muted text-sm"><i class="fa-solid fa-circle-notch spin mr-2"></i>Lade Wetter …</p>
+                            <p x-show="wx.error" class="text-[11px] muted" x-text="wx.error"></p>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'todos'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-list-check mr-2"></i>Aufgaben</p><button class="text-[11px] font-bold accent" @click="switchTab('todos')">To-Dos öffnen</button></div>
+                            <form @submit.prevent="todayAddTask()" class="flex gap-2"><input type="text" x-model="todayTask" placeholder="Aufgabe für heute…" class="field !py-2" aria-label="Neue Aufgabe für heute"><button class="btn btn-primary" :disabled="!todayTask.trim()" aria-label="Hinzufügen"><i class="fa-solid fa-plus"></i></button></form>
+                            <p x-show="!todayTodoList.length" class="muted text-sm py-2">Nichts offen für heute – gut gemacht.</p>
+                            <template x-for="t in todayTodoList" :key="t.id">
+                                <div class="inner p-3 flex items-center gap-3">
+                                    <button @click="toggleTodo(t.id)" class="check shrink-0" :aria-label="'Erledigen: ' + t.title"><i class="fa-solid fa-check text-[10px]"></i></button>
+                                    <button type="button" class="min-w-0 flex-1 text-left" @click="openTaskModal(t)"><span class="block text-sm font-bold truncate" x-text="t.title"></span><span x-show="t.due" class="block text-[11px]" :class="dueClass(t) || 'muted'" x-text="dueLabel(t)"></span></button>
+                                    <i x-show="t.important" class="fa-solid fa-star text-amber-400 text-xs"></i>
+                                </div>
+                            </template>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'next'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center justify-between"><p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Als Nächstes</p><button class="text-[11px] font-bold accent" @click="switchTab('calendar')">Kalender öffnen</button></div>
+                            <div class="space-y-1.5">
+                                <template x-for="e in naechsteTermine" :key="e.id">
+                                    <button type="button" class="prow w-full" @click="switchTab('calendar'); calendarView = 'day'; anchor = e.startDate">
+                                        <span class="w-20 shrink-0">
+                                            <span class="block text-[11px] font-black" :style="e.startDate <= today ? 'color: var(--area-ink)' : ''" x-text="e.wann"></span>
+                                            <span class="block text-[11px] muted font-bold num" x-text="e.allDay ? 'ganztägig' : e.startTime"></span>
+                                        </span>
+                                        <span class="min-w-0 flex-1 text-left">
+                                            <span class="block text-sm font-bold truncate" x-text="e.title"></span>
+                                            <span class="block text-[11px] muted truncate" x-show="e.location" x-text="e.location"></span>
+                                        </span>
+                                        <span class="w-1.5 h-8 rounded-full shrink-0" :style="'background:' + e.color"></span>
+                                    </button>
+                                </template>
+                            </div>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'cook'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-utensils mr-2"></i>Heute wird gekocht</p><button class="text-[11px] font-bold accent" @click="switchTab('recipes')">Wochenplan</button></div>
+                            <template x-for="m in heuteGerichte" :key="m.id">
+                                <div class="inner p-3 space-y-2">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="text-2xl leading-none shrink-0" x-text="m.rezept.emoji"></span>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-black text-sm truncate" x-text="m.rezept.title"></p>
+                                            <p class="text-[11px] muted font-semibold">
+                                                <span class="num" x-text="m.servings || m.rezept.servings"></span> Portionen
+                                                <span x-show="m.rezept.minutes" x-text="' · ' + m.rezept.minutes + ' Min'"></span>
+                                            </p>
+                                        </div>
+                                        <button type="button" class="btn btn-primary !py-2 !px-3 shrink-0" @click="recipeScale = m.servings || m.rezept.servings; startCook(m.rezept)"><i class="fa-solid fa-fire-burner"></i><span class="hidden sm:inline">Kochen</span></button>
+                                    </div>
+                                    <p x-show="fehlendeZutaten(m).length" class="text-[11px] font-semibold" style="color: #b45309">
+                                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>Nicht auf der Einkaufsliste: <span x-text="fehlendeZutaten(m).slice(0, 5).join(', ')"></span><span x-show="fehlendeZutaten(m).length > 5" x-text="' und ' + (fehlendeZutaten(m).length - 5) + ' mehr'"></span>
+                                    </p>
+                                </div>
+                            </template>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'meters'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-gauge-high mr-2"></i>Zähler</p><button class="text-[11px] font-bold accent" @click="switchTab('usage')">Verbrauch öffnen</button></div>
+                            <div class="space-y-1.5">
+                                <template x-for="z in zaehlerStand" :key="z.m.id">
+                                    <div class="prow !py-2.5">
+                                        <span class="w-8 h-8 rounded-lg grid place-items-center text-xs shrink-0" :style="'background: color-mix(in srgb, ' + meterKind(z.m).color + ' 16%, transparent); color: ' + meterKind(z.m).color"><i :class="meterKind(z.m).icon"></i></span>
+                                        <span class="min-w-0 flex-1">
+                                            <span class="block text-[13px] font-bold truncate" x-text="z.m.name"></span>
+                                            <span class="block text-[11px] muted font-semibold" x-text="z.datum ? ('zuletzt ' + shortDate(z.datum) + (z.tage !== null ? ' · vor ' + z.tage + ' Tagen' : '')) : 'noch nie abgelesen'"></span>
+                                        </span>
+                                        <span x-show="z.ampel.stufe" class="chip !py-1 shrink-0 hidden sm:inline-flex" :style="'background: color-mix(in srgb, ' + z.ampel.farbe + ' 15%, transparent); color: ' + z.ampel.farbe + '; border-color: color-mix(in srgb, ' + z.ampel.farbe + ' 30%, transparent)'" x-text="z.ampel.label"></span>
+                                        <button type="button" class="btn btn-soft !py-1.5 !px-2.5 shrink-0" :class="z.faellig ? '!btn-primary' : ''" @click="switchTab('usage'); openReading(z.m)"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                    </div>
+                                </template>
+                            </div>
+                            <p x-show="zaehlerFaellig" class="text-[11px] font-semibold" style="color: #b45309"><i class="fa-regular fa-clock mr-1"></i><span x-text="zaehlerFaellig === 1 ? 'Ein Zähler ist seit über einem Monat nicht abgelesen' : zaehlerFaellig + ' Zähler sind seit über einem Monat nicht abgelesen'"></span></p>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'shopping'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-bag-shopping mr-2"></i>Einkauf</p><button class="text-[11px] font-bold accent" @click="switchTab('shopping')">Liste öffnen</button></div>
+                            <p x-show="!shopAll.length" class="muted text-sm py-2">Die Einkaufsliste ist leer.</p>
+                            <div class="flex flex-wrap gap-2"><template x-for="i in shopAll.slice(0, 14)" :key="i.id"><span class="chip !py-1.5 !px-3"><span x-text="(i.emoji || '•') + (badgeOf(i) || '')"></span><span x-text="i.name"></span></span></template></div>
+                            <p x-show="shopAll.length > 14" class="text-[11px] muted" x-text="'… und ' + (shopAll.length - 14) + ' weitere'"></p>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'mail'">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-envelope mr-2"></i>E-Mail</p><button class="text-[11px] font-bold accent" @click="switchTab('mail')">Posteingang öffnen</button></div>
+                            <p x-show="!mailCfg.accounts.length" class="muted text-sm py-2">Noch kein Postfach verbunden. <button class="font-bold accent" @click="openMailSetup()">Jetzt verbinden</button></p>
+                            <template x-for="a in mailCfg.accounts" :key="a.id">
+                                <div class="inner p-3 flex items-center gap-3"><i class="fa-regular fa-envelope muted"></i><span class="min-w-0 flex-1 text-sm font-bold truncate" x-text="a.name"></span>
+                                    <span class="chip" :class="((mailCounts[a.id] || {}).inbox || 0) ? 'run' : ''" x-text="(((mailCounts[a.id] || {}).inbox) || 0) + ' ungelesen'"></span></div>
+                            </template>
                             </div>
                         </template>
                     </div>
-
-                    <div x-show="cfg.todayMail" class="card p-5 sm:p-6 space-y-3">
-                        <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-envelope mr-2"></i>E-Mail</p><button class="text-[11px] font-bold accent" @click="switchTab('mail')">Posteingang öffnen</button></div>
-                        <p x-show="!mailCfg.accounts.length" class="muted text-sm py-2">Noch kein Postfach verbunden. <button class="font-bold accent" @click="openMailSetup()">Jetzt verbinden</button></p>
-                        <template x-for="a in mailCfg.accounts" :key="a.id">
-                            <div class="inner p-3 flex items-center gap-3"><i class="fa-regular fa-envelope muted"></i><span class="min-w-0 flex-1 text-sm font-bold truncate" x-text="a.name"></span>
-                                <span class="chip" :class="((mailCounts[a.id] || {}).inbox || 0) ? 'run' : ''" x-text="(((mailCounts[a.id] || {}).inbox) || 0) + ' ungelesen'"></span></div>
-                        </template>
-                    </div>
-
-                    <div x-show="cfg.todayShop" class="card p-5 sm:p-6 space-y-3">
-                        <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-bag-shopping mr-2"></i>Einkauf</p><button class="text-[11px] font-bold accent" @click="switchTab('shopping')">Liste öffnen</button></div>
-                        <p x-show="!shopAll.length" class="muted text-sm py-2">Die Einkaufsliste ist leer.</p>
-                        <div class="flex flex-wrap gap-2"><template x-for="i in shopAll.slice(0, 14)" :key="i.id"><span class="chip !py-1.5 !px-3"><span x-text="(i.emoji || '•') + (badgeOf(i) || '')"></span><span x-text="i.name"></span></span></template></div>
-                        <p x-show="shopAll.length > 14" class="text-[11px] muted" x-text="'… und ' + (shopAll.length - 14) + ' weitere'"></p>
-                    </div>
+                    </template>
                 </div>
-            </section>
 
             <!-- ================= KALENDER ================= -->
             <section x-show="activeTab === 'calendar'" x-cloak class="space-y-5">
@@ -1092,7 +1199,7 @@
                 </div>
 
                 <template x-for="m in meterList" :key="m.id">
-                    <div class="card p-5 sm:p-6 space-y-4" :style="'--cc:' + meterKind(m).color">
+                    <div class="card p-5 sm:p-6 space-y-4 ampel" :class="'a-' + (meterAmpel(m).stufe || 'keine')" :style="'--cc:' + meterKind(m).color + '; --am:' + (meterAmpel(m).farbe || 'var(--border)')">
                         <div class="flex items-center gap-3.5">
                             <span class="w-11 h-11 rounded-2xl grid place-items-center text-lg shrink-0" style="background: color-mix(in srgb, var(--cc) 18%, transparent); color: var(--cc)"><i :class="meterKind(m).icon"></i></span>
                             <div class="min-w-0 flex-1">
@@ -1103,6 +1210,10 @@
                                     <span x-show="meterStats(m).last" x-text="' · zuletzt ' + (meterStats(m).last ? shortDate(meterStats(m).last.date) : '')"></span>
                                 </p>
                             </div>
+                            <span x-show="meterAmpel(m).stufe" class="chip !py-1.5 shrink-0 hidden sm:inline-flex" style="background: color-mix(in srgb, var(--am) 15%, transparent); color: var(--am); border-color: color-mix(in srgb, var(--am) 32%, transparent)">
+                                <i class="fa-solid" :class="meterAmpel(m).stufe === 'ueber' ? 'fa-arrow-trend-up' : meterAmpel(m).stufe === 'unter' ? 'fa-arrow-trend-down' : 'fa-equals'"></i>
+                                <span x-text="meterAmpel(m).label"></span>
+                            </span>
                             <button type="button" class="icon-btn" @click="openMeter(m)" aria-label="Zähler bearbeiten"><i class="fa-solid fa-pen"></i></button>
                             <button type="button" class="btn btn-primary shrink-0" @click="openReading(m)"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Ablesung</span></button>
                         </div>
@@ -1138,13 +1249,13 @@
                                 <div x-show="m.target > 0" class="space-y-1.5">
                                     <div class="flex items-center justify-between text-xs font-bold">
                                         <span>Jahreswert <span class="muted font-semibold num" x-text="fmtNum(m.target) + ' ' + m.unit"></span></span>
-                                        <span :class="meterStats(m).diff > 0 ? 'text-rose-400' : 'text-emerald-400'">
-                                            <span x-text="meterStats(m).diff > 0 ? 'über Plan' : 'unter Plan'"></span>
+                                        <span :style="'color:' + (meterAmpel(m).farbe || 'var(--muted)')">
+                                            <span x-text="meterAmpel(m).label"></span>
                                             <span class="num" x-text="' · ' + (meterStats(m).diff > 0 ? '+' : '') + fmtNum(meterStats(m).diff) + ' ' + m.unit"></span>
                                         </span>
                                     </div>
                                     <div class="h-2.5 rounded-full overflow-hidden" style="background: var(--border)">
-                                        <div class="h-full rounded-full transition-all" :style="'width:' + Math.min(100, meterStats(m).pct) + '%; background:' + (meterStats(m).diff > 0 ? '#f43f5e' : '#10b981')"></div>
+                                        <div class="h-full rounded-full transition-all" :style="'width:' + Math.min(100, meterStats(m).pct) + '%; background: var(--am)'"></div>
                                     </div>
                                     <p class="text-[11px] muted font-semibold"><span class="num" x-text="meterStats(m).pct"></span> % des geplanten Jahresverbrauchs</p>
                                 </div>
@@ -1803,10 +1914,12 @@
 
                 <div class="grid lg:grid-cols-[14.5rem_minmax(0,1fr)] gap-5 items-start">
                     <nav class="card p-2 sm:p-3 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:sticky lg:top-24" aria-label="Einstellungs-Kategorien">
+                        <!-- Am Handy ist die Liste eine waagerechte Leiste: dort macht sich die
+                             Hülle mit "contents" unsichtbar und die Gruppenüberschrift entfällt. -->
                         <template x-for="(c, ci) in settingsCats" :key="c.id">
-                            <div>
-                                <p x-show="ci === 0 || settingsCats[ci - 1].grp !== c.grp" class="text-[10px] font-black uppercase muted px-3 pt-3 pb-1" style="letter-spacing: .09em" x-text="c.grp"></p>
-                                <button type="button" class="mfold w-full" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'sync') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
+                            <div class="contents lg:block">
+                                <p x-show="ci === 0 || settingsCats[ci - 1].grp !== c.grp" class="hidden lg:block text-[10px] font-black uppercase muted px-3 pt-3 pb-1" style="letter-spacing: .09em" x-text="c.grp"></p>
+                                <button type="button" class="mfold shrink-0 lg:w-full" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'sync') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
                             </div>
                         </template>
                     </nav>
@@ -1886,6 +1999,45 @@
                                     </p>
                                 </div>
                             </template>
+                        </div>
+
+                        <div x-show="!setQuery.trim() && setCat === 'today'" class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="label mr-auto"><i class="fa-solid fa-table-cells mr-2"></i>Kacheln der Startseite</p>
+                                <div class="seg" role="group" aria-label="Für welches Gerät">
+                                    <button type="button" @click="isPhone = false" :class="!isPhone ? 'on' : ''"><i class="fa-solid fa-desktop mr-1.5"></i>Breiter Bildschirm</button>
+                                    <button type="button" @click="isPhone = true" :class="isPhone ? 'on' : ''"><i class="fa-solid fa-mobile-screen mr-1.5"></i>Handy</button>
+                                </div>
+                            </div>
+                            <p class="text-[11px] muted leading-relaxed">Reihenfolge per Ziehen oder mit den Pfeilen. Abgewählte Kacheln erscheinen nicht. Beide Geräte werden getrennt gespeichert – die Umschaltung oben wählt nur, welche Liste du gerade bearbeitest.</p>
+
+                            <div class="space-y-1">
+                                <template x-for="(id, i) in startTilesView" :key="id">
+                                    <div class="prow !py-2" draggable="true"
+                                         @dragstart="startDragId = id" @dragover.prevent @drop.prevent="startDrop(id)"
+                                         :style="startDragId === id ? 'opacity:.45' : ''">
+                                        <i class="fa-solid fa-grip-vertical muted text-xs shrink-0 cursor-grab hidden sm:block"></i>
+                                        <i :class="startTileIcon(id)" class="w-5 text-center shrink-0" style="color: var(--area-ink)"></i>
+                                        <span class="text-sm font-bold flex-1 min-w-0 truncate" x-text="startTileLabel(id)"></span>
+                                        <button type="button" class="icon-btn !w-7 !h-7" @click="startMove(id, -1)" :disabled="i === 0" aria-label="Nach oben"><i class="fa-solid fa-arrow-up text-[10px]"></i></button>
+                                        <button type="button" class="icon-btn !w-7 !h-7" @click="startMove(id, 1)" :disabled="i === startTilesView.length - 1" aria-label="Nach unten"><i class="fa-solid fa-arrow-down text-[10px]"></i></button>
+                                        <button type="button" class="icon-btn !w-7 !h-7 danger" @click="startToggle(id)" aria-label="Ausblenden"><i class="fa-solid fa-eye-slash text-[10px]"></i></button>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <template x-if="startTilesOff.length">
+                                <div class="pt-1">
+                                    <p class="label !text-[11px] mb-1.5">Ausgeblendet</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <template x-for="t in startTilesOff" :key="t.id">
+                                            <button type="button" class="chip !py-2" @click="startToggle(t.id)"><i :class="t.icon"></i><span x-text="t.label"></span><i class="fa-solid fa-plus text-[9px] ml-0.5"></i></button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div><button type="button" class="btn btn-ghost !text-xs" @click="startReset()"><i class="fa-solid fa-rotate-left"></i>Standard wiederherstellen</button></div>
                         </div>
 
                         <!-- Kategorie-spezifische Bereiche -->
@@ -3113,7 +3265,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', recipeView: 'grid', morningMail: false, morningHour: 7, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -3662,6 +3814,19 @@ function listBackups_(room) {
         const wmoIcon = (c, night) => 'fa-solid ' + (WMO[c] || ['', 'fa-cloud', 'fa-cloud'])[night ? 2 : 1];
 
         /* ---------- Rezepte ---------- */
+        /* Kacheln der Startseite. Reihenfolge und Auswahl liegen in den Einstellungen. */
+        const START_TILES = [
+            { id: 'quick', label: 'Schnellaktionen', icon: 'fa-solid fa-bolt' },
+            { id: 'weather', label: 'Wetter', icon: 'fa-solid fa-cloud-sun' },
+            { id: 'todos', label: 'Aufgaben', icon: 'fa-solid fa-list-check' },
+            { id: 'next', label: 'Als Nächstes', icon: 'fa-regular fa-calendar-days' },
+            { id: 'cook', label: 'Heute wird gekocht', icon: 'fa-solid fa-utensils' },
+            { id: 'meters', label: 'Zähler', icon: 'fa-solid fa-gauge-high' },
+            { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
+            { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' }
+        ];
+        const DEFAULT_START_TILES = ['quick', 'weather', 'todos', 'next', 'cook', 'meters', 'shopping', 'mail'];
+
         const UNITS = ['g', 'kg', 'ml', 'l', 'TL', 'EL', 'Stück', 'Prise', 'Bund', 'Dose', 'Pck', 'Zehe', 'Scheibe'];
         /* „200 g Mehl“ oder „2 Zehen Knoblauch“ in Menge, Einheit und Name zerlegen */
         function parseIngredient(line) {
@@ -4187,10 +4352,6 @@ function reply_(p) {
                     { cat: 'today', k: 'weather', type: 'toggle', label: 'Wetter anzeigen', desc: 'Aktuelle Lage und die nächsten Tage – Daten von Open-Meteo, ohne Anmeldung und ohne Konto.' },
                     { cat: 'today', k: 'weatherAuto', type: 'toggle', label: 'Wetter selbst aktualisieren', desc: 'Lädt alle 15 Minuten neu, solange die App offen und sichtbar ist. Aus heißt: nur beim Öffnen und auf Knopfdruck.', if: 'weather' },
                     { cat: 'today', k: 'weatherUnit', type: 'select', if: 'weather', label: 'Temperatur in', o: [['c', 'Grad Celsius'], ['f', 'Grad Fahrenheit']] },
-                    { cat: 'today', k: 'todayEvents', type: 'toggle', label: 'Termine anzeigen' },
-                    { cat: 'today', k: 'todayTodos', type: 'toggle', label: 'Aufgaben anzeigen', desc: 'Überfällig, heute fällig und „Mein Tag“' },
-                    { cat: 'today', k: 'todayMail', type: 'toggle', label: 'Ungelesene E-Mails anzeigen' },
-                    { cat: 'today', k: 'todayShop', type: 'toggle', label: 'Einkaufsliste anzeigen' },
                     { cat: 'calendar', k: 'calView', type: 'select', label: 'Standardansicht', o: [['month', 'Monat'], ['week', 'Woche'], ['day', 'Tag'], ['year', 'Jahr']] },
                     { cat: 'calendar', k: 'weekStart', type: 'select', label: 'Wochenbeginn', o: [[1, 'Montag'], [0, 'Sonntag']] },
                     { cat: 'calendar', k: 'hourAuto', type: 'toggle', label: 'Stundenraster an die Termine anpassen', desc: 'Zeigt in Tages- und Wochenansicht nur die Stunden, in denen etwas ansteht – kein leeres Raster.' },
@@ -4373,6 +4534,11 @@ function reply_(p) {
                     this.applyAppName();
                     this.applyArea(this.activeTab);
                     this.handleLaunch();
+                    try {
+                        const mq = window.matchMedia('(max-width: 767px)');
+                        this.isPhone = mq.matches;
+                        mq.addEventListener('change', e => { this.isPhone = e.matches; });
+                    } catch (e) {}
                     setTimeout(() => this.pushAgenda(), 4000);
                     window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
                     window.addEventListener('offline', () => { this.online = false; });
@@ -5711,18 +5877,23 @@ function reply_(p) {
                     {
                         const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + p.lat + '&longitude=' + p.lon +
                             '&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m' +
+                            '&hourly=precipitation_probability,weather_code' +
                             '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset' +
                             '&forecast_days=4&timezone=auto';
                         const r = await fetch(url);
                         if (!r.ok) throw new Error('Dienst antwortet mit ' + r.status);
-                        const j = await r.json(), c = j.current || {}, d = j.daily || {};
+                        const j = await r.json(), c = j.current || {}, d = j.daily || {}, hh = j.hourly || {};
+                        const hours = (hh.time || []).map((t, i) => ({
+                            t, p: hh.precipitation_probability ? hh.precipitation_probability[i] : null,
+                            code: hh.weather_code ? hh.weather_code[i] : null
+                        })).slice(0, 48);
                         const days = (d.time || []).map((t, i) => ({
                             ds: t, code: d.weather_code[i], max: d.temperature_2m_max[i], min: d.temperature_2m_min[i],
                             rain: d.precipitation_probability_max ? d.precipitation_probability_max[i] : null,
                             label: i === 0 ? 'Heute' : i === 1 ? 'Morgen' : new Date(t + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short' })
                         }));
                         return {
-                            busy: false, error: '', at: Date.now(), place: p.name, days,
+                            busy: false, error: '', at: Date.now(), place: p.name, days, hours,
                             now: { temp: c.temperature_2m, feels: c.apparent_temperature, code: c.weather_code, night: c.is_day === 0, wind: c.wind_speed_10m, hum: c.relative_humidity_2m, sunrise: (d.sunrise || [])[0], sunset: (d.sunset || [])[0] }
                         };
                     }
@@ -5794,6 +5965,161 @@ function reply_(p) {
                 micStop() {
                     if (this.micErk) { try { this.micErk.onend = null; this.micErk.stop(); } catch (e) {} this.micErk = null; }
                     this.micFeld = ''; this.micText = '';
+                },
+
+                /* ---------- Startseite: Kacheln ----------
+                   Reihenfolge und Auswahl werden getrennt für breite Bildschirme und
+                   das Handy gespeichert, weil man die Geräte unterschiedlich benutzt. */
+                startTileDefs: START_TILES,
+                get startKey() { return this.isPhone ? 'startOrderPhone' : 'startOrder'; },
+                get startTilesView() {
+                    const gueltig = START_TILES.map(t => t.id);
+                    const l = this.cfg[this.startKey];
+                    const gewaehlt = (Array.isArray(l) ? l : []).filter(id => gueltig.includes(id));
+                    return gewaehlt.length ? gewaehlt : DEFAULT_START_TILES.slice();
+                },
+                startTileLabel(id) { return (START_TILES.find(t => t.id === id) || {}).label || id; },
+                startTileIcon(id) { return (START_TILES.find(t => t.id === id) || {}).icon || 'fa-solid fa-square'; },
+                startTileOn(id) { return this.startTilesView.includes(id); },
+                startToggle(id) {
+                    const jetzt = this.startTilesView;
+                    this.cfg[this.startKey] = jetzt.includes(id) ? jetzt.filter(x => x !== id) : [...jetzt, id];
+                    this.saveCfg();
+                },
+                startMove(id, d) {
+                    const l = [...this.startTilesView], i = l.indexOf(id), j = i + d;
+                    if (i < 0 || j < 0 || j >= l.length) return;
+                    [l[i], l[j]] = [l[j], l[i]];
+                    this.cfg[this.startKey] = l; this.saveCfg();
+                },
+                /* Ziehen mit der Maus; auf dem Handy nehmen die Pfeile diese Aufgabe */
+                startDragId: '',
+                startDrop(ziel) {
+                    const von = this.startDragId; this.startDragId = '';
+                    if (!von || von === ziel) return;
+                    const l = [...this.startTilesView], i = l.indexOf(von);
+                    if (i < 0) return;
+                    l.splice(i, 1);
+                    const j = l.indexOf(ziel);
+                    l.splice(j < 0 ? l.length : j, 0, von);
+                    this.cfg[this.startKey] = l; this.saveCfg();
+                },
+                get startTilesOff() { return START_TILES.filter(t => !this.startTilesView.includes(t.id)); },
+                startReset() { this.cfg[this.startKey] = DEFAULT_START_TILES.slice(); this.saveCfg(); },
+
+                /* Eine Kachel ohne Inhalt wird zum schmalen Streifen statt zur leeren Karte */
+                startLeer(id) {
+                    if (id === 'weather') return !this.wx.now;
+                    if (id === 'todos') return false;                      // hat immer das Eingabefeld
+                    if (id === 'next') return !this.naechsteTermine.length;
+                    if (id === 'cook') return !this.heuteGerichte.length;
+                    if (id === 'meters') return !this.meters.length;
+                    if (id === 'shopping') return !this.shopOpen.length;
+                    if (id === 'mail') return !this.mailUnread;
+                    return false;
+                },
+                startLeerText(id) {
+                    if (id === 'next') return 'Keine Termine in den nächsten vier Wochen';
+                    if (id === 'cook') return 'Für heute ist nichts eingeplant';
+                    if (id === 'meters') return 'Noch kein Zähler angelegt';
+                    if (id === 'shopping') return 'Einkaufsliste ist leer';
+                    if (id === 'mail') return 'Alles gelesen';
+                    if (id === 'weather') return 'Wetter noch nicht geladen';
+                    return '';
+                },
+                startLeerTab(id) {
+                    return { next: 'calendar', cook: 'recipes', meters: 'usage', shopping: 'shopping', mail: 'mail', weather: 'weather' }[id] || 'today';
+                },
+
+                /* ---------- Inhalte der neuen Kacheln ---------- */
+                /* Die nächsten Termine, unabhängig davon ob heute etwas ansteht */
+                get naechsteTermine() {
+                    const bis = this.addDaysStr(this.today, 28);
+                    return this.events
+                        .filter(e => e.endDate >= this.today && e.startDate <= bis)
+                        .sort((a, b) => (a.startDate + (a.startTime || '')).localeCompare(b.startDate + (b.startTime || '')))
+                        .slice(0, 4)
+                        .map(e => ({ ...e, wann: this.tagLabel(e.startDate) }));
+                },
+                /* „Heute“, „Morgen“, sonst Wochentag und Datum */
+                tagLabel(ds) {
+                    if (ds <= this.today) return 'Heute';
+                    if (ds === this.addDaysStr(this.today, 1)) return 'Morgen';
+                    const d = parseDate(ds);
+                    const nah = ds <= this.addDaysStr(this.today, 6);
+                    return d.toLocaleDateString('de-DE', nah ? { weekday: 'long' } : { weekday: 'short', day: 'numeric', month: 'short' });
+                },
+                /* Was heute laut Wochenplan gekocht wird */
+                get heuteGerichte() {
+                    return this.mealPlan.filter(m => m.date === this.today)
+                        .map(m => ({ ...m, rezept: this.recipes.find(r => r.id === m.recipe) || null }))
+                        .filter(m => m.rezept);
+                },
+                /* Zutaten eines geplanten Gerichts, die noch nicht auf der Liste stehen */
+                fehlendeZutaten(m) {
+                    return m.rezept.ings.filter(i => {
+                        const k = matchProduct(i.name);
+                        const name = (k ? k.name : i.name).toLowerCase();
+                        return !this.shopOpen.some(x => x.name.toLowerCase() === name);
+                    }).map(i => i.name);
+                },
+                /* Zähler mit Stand und Hinweis, wenn lange nicht abgelesen */
+                get zaehlerStand() {
+                    return this.meters.map(m => {
+                        const s = this.meterStats(m);
+                        const tage = s.last ? Math.round((parseDate(this.today) - parseDate(s.last.date)) / 86400000) : null;
+                        return {
+                            m, stand: s.last ? s.last.value : null, datum: s.last ? s.last.date : '',
+                            tage, faellig: tage === null || tage > 30, ampel: this.meterAmpel(m)
+                        };
+                    });
+                },
+                get zaehlerFaellig() { return this.zaehlerStand.filter(z => z.faellig).length; },
+
+                /* Ein Satz statt einer Aufzählung */
+                get tagesSatz() {
+                    const heute = this.events.filter(e => e.startDate <= this.today && e.endDate >= this.today);
+                    const jetzt = this.clockTime && this.clockTime !== '--:--' ? this.clockTime : '00:00';
+                    const spaeter = heute.filter(e => e.allDay || (e.startTime || '') >= jetzt);
+                    const offen = this.todos.filter(t => !t.done && ((t.due && t.due <= this.today) || t.myDay === this.today));
+                    const teile = [];
+                    if (spaeter.length) {
+                        const e = spaeter[0];
+                        teile.push(e.allDay ? 'Heute: ' + e.title : 'Um ' + e.startTime + ' ' + e.title);
+                        if (spaeter.length > 1) teile.push('danach noch ' + (spaeter.length - 1) + (spaeter.length === 2 ? ' Termin' : ' Termine'));
+                    } else {
+                        const n = this.naechsteTermine.find(e => e.startDate > this.today);
+                        teile.push(n ? 'Heute nichts mehr. ' + n.wann + (n.allDay ? '' : ' um ' + n.startTime) + ' ' + n.title
+                                     : 'Heute nichts mehr im Kalender');
+                    }
+                    if (offen.length) teile.push(offen.length === 1 ? 'eine Aufgabe offen' : offen.length + ' Aufgaben offen');
+                    return teile.join(' · ') + '.';
+                },
+
+                /* Wie lange es noch hell ist */
+                get tageslicht() {
+                    const n = this.wx.now;
+                    if (!n || !n.sunset) return '';
+                    const unter = new Date(n.sunset), jetzt = new Date();
+                    if (n.sunrise && jetzt < new Date(n.sunrise)) return 'Sonnenaufgang um ' + String(n.sunrise).slice(11, 16);
+                    const min = Math.round((unter - jetzt) / 60000);
+                    if (min <= 0) return 'Es ist dunkel';
+                    if (min < 60) return 'noch ' + min + ' Min. hell';
+                    return 'noch ' + Math.floor(min / 60) + ':' + String(min % 60).padStart(2, '0') + ' Std. hell';
+                },
+                /* Die nächsten Stunden mit Regenwahrscheinlichkeit */
+                get regenStunden() {
+                    const h = this.wx.hours || [];
+                    // Open-Meteo liefert Ortszeit ohne Zeitzone – also auch lokal vergleichen
+                    const d = new Date(), z = n => String(n).padStart(2, '0');
+                    const jetzt = d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()) + 'T' + z(d.getHours());
+                    return h.filter(x => x.t.slice(0, 13) >= jetzt).slice(0, 12);
+                },
+                get regenText() {
+                    const l = this.regenStunden.filter(x => x.p >= 40);
+                    if (!l.length) return this.regenStunden.length ? 'Die nächsten Stunden bleiben trocken' : '';
+                    const a = l[0].t.slice(11, 16);
+                    return 'Regen wahrscheinlich ab ' + a + ' Uhr';
                 },
 
                 /* ---------- Morgenmail ----------
@@ -5907,6 +6233,15 @@ function reply_(p) {
                         out.push({ key: fmt(d).slice(0, 7), label: d.toLocaleDateString('de-DE', { month: 'short' }), val: Math.max(0, b - a), part: d < first || end > last });
                     }
                     return out;
+                },
+                /* Ampel: unter Plan, im Rahmen (±5 %) oder darüber.
+                   Ohne Jahreswert oder vor der zweiten Ablesung gibt es keine Aussage. */
+                meterAmpel(m) {
+                    const s = this.meterStats(m);
+                    if (!m.target || s.readings < 2) return { stufe: '', label: '', farbe: '' };
+                    if (s.pct > 105) return { stufe: 'ueber', label: 'über Plan', farbe: '#e11d48' };
+                    if (s.pct < 95) return { stufe: 'unter', label: 'unter Plan', farbe: '#15803d' };
+                    return { stufe: 'plan', label: 'im Plan', farbe: '#b45309' };
                 },
                 meterMax(ms) { return Math.max(1, ...ms.map(x => x.val)); },
                 openMeter(m) {
@@ -6658,7 +6993,8 @@ function reply_(p) {
                     }
                     return out;
                 },
-                clockTime: '--:--', clockDate: '', showMore: false, navMore: false, micErk: null, online: typeof navigator === 'undefined' || navigator.onLine !== false,
+                clockTime: '--:--', clockDate: '', showMore: false, navMore: false, micErk: null,
+                isPhone: typeof window !== 'undefined' && window.innerWidth < 768, online: typeof navigator === 'undefined' || navigator.onLine !== false,
                 get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'usage', 'weather', 'passwords', 'settings'].includes(t.id)); },
                 get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'usage', 'weather', 'passwords'].includes(t.id)); },
                 get navTabs() { return this.tabs.filter(t => t.id !== 'settings'); },
