@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-10">
+    <meta name="app-version" content="2026.11.16-11">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -371,6 +371,8 @@
             input, select, textarea { font-size: 16px; }
             .mnav { font-size: .6rem; }
         }
+        /* Firefox gestaltet Bildlaufleisten über eigene Eigenschaften */
+        * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
         .spin { animation: spin 1s linear infinite; }
@@ -2246,6 +2248,7 @@
                         <div class="min-w-0">
                             <p class="text-sm font-bold">Version <span x-text="appVersion"></span></p>
                             <p class="text-[11px] muted mt-0.5" x-text="updateStatusText"></p>
+                            <p class="text-[11px] muted mt-1.5" x-show="browserLuecken.length">In diesem Browser nicht verfügbar: <span x-text="browserLuecken.join(', ')"></span>. Alles andere funktioniert unverändert.</p>
                         </div>
                         <div class="flex gap-2">
                             <button x-show="updateAvailable" @click="applyUpdate()" class="btn btn-primary"><i class="fa-solid fa-download"></i>Jetzt aktualisieren</button>
@@ -2600,7 +2603,7 @@
                         <p class="text-[11px] muted font-semibold">
                             <span class="num" x-text="recipeScale || cookRecipe.servings"></span> Portionen
                             <span x-show="cookRecipe.minutes" x-text="' · ' + cookRecipe.minutes + ' Min'"></span>
-                            <span x-show="cookWake"> · Bildschirm bleibt an</span>
+                            <span x-show="cookWake"> · Bildschirm bleibt an</span><span x-show="!cookWake && !wakeMoeglich" class="muted"> · dieser Browser kann den Bildschirm nicht wachhalten</span>
                         </p>
                     </div>
                     <button type="button" class="icon-btn" @click="recipeScale = Math.max(1, (recipeScale || cookRecipe.servings) - 1)" aria-label="Weniger Portionen">−</button>
@@ -5198,6 +5201,15 @@ function reply_(p) {
 
                 /* ---------- App-Updates ---------- */
                 get appVersion() { return APP_VERSION; },
+                /* Was in diesem Browser fehlt – damit man nicht rätselt, wo ein Knopf ist */
+                get browserLuecken() {
+                    const l = [];
+                    if (!this.micMoeglich) l.push('Diktieren (nur Chrome und Edge)');
+                    if (!this.wakeMoeglich) l.push('Bildschirm beim Kochen wachhalten');
+                    if (typeof navigator !== 'undefined' && !navigator.share) l.push('Teilen über das System');
+                    if (typeof Notification === 'undefined') l.push('Erinnerungen als Mitteilung');
+                    return l;
+                },
                 get canCheckUpdate() { return /^https?:$/.test(location.protocol); },
                 get updateStatusText() {
                     if (!this.canCheckUpdate) return 'Lokal geöffnet – die Update-Prüfung funktioniert nur bei online gehosteter Version.';
@@ -6390,6 +6402,8 @@ function reply_(p) {
                 },
                 cookNext() { if (this.cookStep < this.cookSteps.length - 1) this.cookStep++; },
                 cookPrev() { if (this.cookStep > 0) this.cookStep--; },
+                /* Firefox kann das (noch) nicht – dann sagen wir es, statt stumm zu bleiben */
+                get wakeMoeglich() { return typeof navigator !== 'undefined' && !!navigator.wakeLock; },
                 async wakeOn() {
                     try { if (navigator.wakeLock) this.cookWake = await navigator.wakeLock.request('screen'); } catch (e) {}
                 },
