@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-7">
+    <meta name="app-version" content="2026.11.16-8">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4851,6 +4851,7 @@ function reply_(p) {
                     if (p === 'rc') return normRecipe({ ...v });
                     if (p === 'mt') return normMeter({ ...v });
                     if (p === 'rd') return normReading({ ...v });
+                    if (p === 'mp') return normPlan({ ...v });
                     if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
@@ -4899,19 +4900,19 @@ function reply_(p) {
                     }
                     for (const k of Object.keys(syncMeta)) if (!(k in items)) needPush = true;
                     if (dirty.size) {
-                        if (dirty.has('ev')) this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev];
-                        if (dirty.has('td')) this.todos = cols.td;
-                        if (dirty.has('sh')) this.shoppingItems = cols.sh;
-                        if (dirty.has('ml')) this.mailStatus = cols.ml;
-                        if (dirty.has('nt')) this.notes = cols.nt;
-                        if (dirty.has('rc')) this.recipes = cols.rc;
-                        if (dirty.has('mt')) this.meters = cols.mt;
-                        if (dirty.has('rd')) this.readings = cols.rd;
-                        if (dirty.has('sl')) { this.shopLists = cols.sl; if (this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = ''; }
-                        if (dirty.has('ls')) {
-                            if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
-                            this.todoLists = cols.ls;
-                            if (this.isCustomList && !cols.ls.some(l => l.id === this.todoListId)) this.selectTodoList('myday');
+                        /* Alle Sammlungen aus SYNC_COLLECTIONS zurückschreiben – so wird eine neue
+                           Sammlung automatisch mitbedient, statt hier vergessen zu werden. */
+                        for (const [p, prop] of SYNC_COLLECTIONS) {
+                            if (!dirty.has(p)) continue;
+                            if (p === 'ev') { this.events = [...this.events.filter(e => e.isGoogle), ...cols.ev]; continue; }
+                            if (p === 'ls') {
+                                if (!cols.ls.some(l => l.id === 'inbox')) cols.ls.unshift({ id: 'inbox', name: 'Aufgaben', emoji: '🏠' });
+                                this.todoLists = cols.ls;
+                                if (this.isCustomList && !cols.ls.some(l => l.id === this.todoListId)) this.selectTodoList('myday');
+                                continue;
+                            }
+                            this[prop] = cols[p];
+                            if (p === 'sl' && this.shopListId && !cols.sl.some(l => l.id === this.shopListId)) this.shopListId = '';
                         }
                     }
                     if (mailCfgChanged) this.mailAfterCfg();
