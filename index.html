@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-8">
+    <meta name="app-version" content="2026.11.16-9">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -424,7 +424,6 @@
         .pk-t { height: 2.1rem; border-radius: .65rem; font-size: .75rem; font-weight: 700; color: var(--text); background: var(--surface2); border: 1px solid var(--border); transition: all .12s; }
         .pk-t:hover { background: var(--hover); }
         .pk-t.sel { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 6px 14px -8px var(--accent); }
-        .calgrid { display: grid; gap: 1.25rem; align-items: start; }
     </style>
 </head>
 <body class="antialiased" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
@@ -642,7 +641,7 @@
                                 <i class="fa-solid fa-chevron-right text-[10px] muted shrink-0"></i>
                             </button>
                         </template>
-                        <template x-if="tile === 'quick'">
+                        <template x-if="tile === 'quick' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <p class="label"><i class="fa-solid fa-bolt mr-2"></i>Schnell erledigt</p>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -653,7 +652,7 @@
                             </div>
                             </div>
                         </template>
-                        <template x-if="tile === 'weather'">
+                        <template x-if="tile === 'weather' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center gap-2">
                                 <p class="label"><i class="fa-solid fa-cloud-sun mr-2"></i>Wetter<span class="ct" x-show="wx.place" x-text="'· ' + wx.place"></span></p>
@@ -704,7 +703,7 @@
                             <p x-show="wx.error" class="text-[11px] muted" x-text="wx.error"></p>
                             </div>
                         </template>
-                        <template x-if="tile === 'todos'">
+                        <template x-if="tile === 'todos' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-list-check mr-2"></i>Aufgaben</p><button class="text-[11px] font-bold accent" @click="switchTab('todos')">To-Dos öffnen</button></div>
                             <form @submit.prevent="todayAddTask()" class="flex gap-2"><input type="text" x-model="todayTask" placeholder="Aufgabe für heute…" class="field !py-2" aria-label="Neue Aufgabe für heute"><button class="btn btn-primary" :disabled="!todayTask.trim()" aria-label="Hinzufügen"><i class="fa-solid fa-plus"></i></button></form>
@@ -718,7 +717,7 @@
                             </template>
                             </div>
                         </template>
-                        <template x-if="tile === 'next'">
+                        <template x-if="tile === 'next' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center justify-between"><p class="label"><i class="fa-regular fa-calendar-days mr-2"></i>Als Nächstes</p><button class="text-[11px] font-bold accent" @click="switchTab('calendar')">Kalender öffnen</button></div>
                             <div class="space-y-1.5">
@@ -738,7 +737,7 @@
                             </div>
                             </div>
                         </template>
-                        <template x-if="tile === 'cook'">
+                        <template x-if="tile === 'cook' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-utensils mr-2"></i>Heute wird gekocht</p><button class="text-[11px] font-bold accent" @click="switchTab('recipes')">Wochenplan</button></div>
                             <template x-for="m in heuteGerichte" :key="m.id">
@@ -761,7 +760,7 @@
                             </template>
                             </div>
                         </template>
-                        <template x-if="tile === 'meters'">
+                        <template x-if="tile === 'meters' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-gauge-high mr-2"></i>Zähler</p><button class="text-[11px] font-bold accent" @click="switchTab('usage')">Verbrauch öffnen</button></div>
                             <div class="space-y-1.5">
@@ -780,7 +779,7 @@
                             <p x-show="zaehlerFaellig" class="text-[11px] font-semibold" style="color: #b45309"><i class="fa-regular fa-clock mr-1"></i><span x-text="zaehlerFaellig === 1 ? 'Ein Zähler ist seit über einem Monat nicht abgelesen' : zaehlerFaellig + ' Zähler sind seit über einem Monat nicht abgelesen'"></span></p>
                             </div>
                         </template>
-                        <template x-if="tile === 'shopping'">
+                        <template x-if="tile === 'shopping' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-bag-shopping mr-2"></i>Einkauf</p><button class="text-[11px] font-bold accent" @click="switchTab('shopping')">Liste öffnen</button></div>
                             <p x-show="!shopAll.length" class="muted text-sm py-2">Die Einkaufsliste ist leer.</p>
@@ -788,7 +787,7 @@
                             <p x-show="shopAll.length > 14" class="text-[11px] muted" x-text="'… und ' + (shopAll.length - 14) + ' weitere'"></p>
                             </div>
                         </template>
-                        <template x-if="tile === 'mail'">
+                        <template x-if="tile === 'mail' && !startLeer(tile)">
                             <div class="card p-5 sm:p-6 space-y-3">
                             <div class="flex items-center justify-between"><p class="label"><i class="fa-solid fa-envelope mr-2"></i>E-Mail</p><button class="text-[11px] font-bold accent" @click="switchTab('mail')">Posteingang öffnen</button></div>
                             <p x-show="!mailCfg.accounts.length" class="muted text-sm py-2">Noch kein Postfach verbunden. <button class="font-bold accent" @click="openMailSetup()">Jetzt verbinden</button></p>
@@ -4677,7 +4676,6 @@ function reply_(p) {
                     if (k === 'calView') this.calendarView = v;
                     if (k === 'hourFrom' || k === 'hourTo') this.scrollGrid();
                 },
-                selectCfg(it, v) { const o = it.o.find(x => String(x[0]) === v); this.setCfg(it.k, o ? o[0] : v); },
                 async toggleCfg(k) {
                     if (k === 'notifications' && !this.cfg.notifications) {
                         if (!('Notification' in window)) return this.toast('Dieser Browser unterstützt keine Benachrichtigungen');
@@ -5766,7 +5764,6 @@ function reply_(p) {
                 },
 
                 /* ---------- Wetter ---------- */
-                get wxPlace() { return this.cfg.weatherPlace; },
                 /* Alle Orte: der erste ist der von der Startseite */
                 get wxPlaces() {
                     const l = Array.isArray(this.cfg.weatherPlaces) ? this.cfg.weatherPlaces : [];
@@ -5982,7 +5979,6 @@ function reply_(p) {
                 },
                 startTileLabel(id) { return (START_TILES.find(t => t.id === id) || {}).label || id; },
                 startTileIcon(id) { return (START_TILES.find(t => t.id === id) || {}).icon || 'fa-solid fa-square'; },
-                startTileOn(id) { return this.startTilesView.includes(id); },
                 startToggle(id) {
                     const jetzt = this.startTilesView;
                     this.cfg[this.startKey] = jetzt.includes(id) ? jetzt.filter(x => x !== id) : [...jetzt, id];
@@ -6752,7 +6748,6 @@ function reply_(p) {
                 },
                 /* --- Mehrere Tresore --- */
                 get vaultName() { return (this.vaults.find(v => v.id === this.vaultId) || DEFAULT_VAULTS[0]).name; },
-                get vaultIcon() { return (this.vaults.find(v => v.id === this.vaultId) || DEFAULT_VAULTS[0]).icon; },
                 vaultExists(id) { return validVaultRecord(readJSON(vaultStoreKey(id), null)); },
                 persistVaults() { try { localStorage.setItem(VAULTS_KEY, JSON.stringify(this.vaults)); } catch (e) {} },
                 switchVault(id) {
@@ -6843,18 +6838,11 @@ function reply_(p) {
                 /* ---------- Heute ---------- */
                 get greeting() { void this.nowTick; const h = new Date().getHours(); return (h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 14 ? 'Guten Tag' : h < 18 ? 'Schönen Nachmittag' : 'Guten Abend') + ', Christopher'; },
                 get todayEventList() { return this.eventsOnDate(this.today); },
-                get tomorrowEventList() { return this.eventsOnDate(fmt(addDays(parseDate(this.today), 1))).slice(0, 4); },
                 get todayTodoList() {
                     const d = this.today, key = t => (t.due || d) + (t.dueTime || '23:59');
                     return this.todos.filter(t => !t.done && ((t.due && t.due <= d) || t.myDay === d)).sort((a, b) => key(a).localeCompare(key(b)) || Number(b.important) - Number(a.important));
                 },
                 get shopAll() { return this.shoppingItems.filter(i => !i.done); },
-                get todaySummary() {
-                    const e = this.todayEventList.length, t = this.todayTodoList.length, m = this.mailUnread, h = this.holidayFor(this.today);
-                    const parts = [h, e ? `${e} Termin${e > 1 ? 'e' : ''}` : 'keine Termine', t ? `${t} offene Aufgabe${t > 1 ? 'n' : ''}` : 'keine offenen Aufgaben', m ? `${m} ungelesene Mail${m > 1 ? 's' : ''}` : ''].filter(Boolean);
-                    if (parts.length) parts[0] = parts[0].charAt(0).toUpperCase() + parts[0].slice(1); // Satzanfang groß
-                    return parts.join(' · ');
-                },
                 todayAddTask() {
                     const title = this.todayTask.trim(); if (!title) return;
                     this.todos.push(newTodo({ title, myDay: this.today, created: Date.now() })); this.todayTask = ''; this.saveAllData();
@@ -6999,7 +6987,6 @@ function reply_(p) {
                 isPhone: typeof window !== 'undefined' && window.innerWidth < 768, online: typeof navigator === 'undefined' || navigator.onLine !== false,
                 get mainTabs() { return this.tabs.filter(t => !['notes', 'recipes', 'usage', 'weather', 'passwords', 'settings'].includes(t.id)); },
                 get moreTabs() { return this.tabs.filter(t => ['notes', 'recipes', 'usage', 'weather', 'passwords'].includes(t.id)); },
-                get navTabs() { return this.tabs.filter(t => t.id !== 'settings'); },
                 swState: 'unbekannt', swFiles: 0,
                 /* Prüft wirklich nach: läuft ein Service Worker und liegen Dateien im Offline-Speicher? */
                 async checkOffline() {

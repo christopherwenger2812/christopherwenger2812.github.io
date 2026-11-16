@@ -18,7 +18,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Notizen** – Pinnwand mit Farben, Anheften, Volltextsuche und „als Aufgabe übernehmen".
 
-**Einkauf** – Im Stil von Bring!: 535 Produkte mit eigenem Symbol je Artikel, nach Kategorien gruppiert und einklappbar, mehrere Listen, Mengen und Varianten, Teilen als Text.
+**Einkauf** – Im Stil von Bring!: 579 Produkte mit eigenem Symbol je Artikel, nach Kategorien gruppiert und einklappbar, mehrere Listen, Mengen und Varianten, Teilen als Text.
 
 **Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Wählbares Symbol je Rezept, Kachel- oder Listenansicht. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
 
@@ -44,7 +44,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 Jeder Bereich hat eine eigene Farbwelt: Kalender blau, To-Dos violett, Notizen ocker, Rezepte rot, Verbrauch orange, Einkauf grün, E-Mail dunkelblau, Tresor stahlgrau. Die Farbe steckt nicht nur im Symbol, sondern auch in den Flächen und Rändern der Karten – man sieht also, wo man ist, bevor man etwas liest.
 
-Je Bereich ist dafür genau eine Farbe hinterlegt. Schriftfarbe, Flächen- und Randton werden daraus berechnet und passen sich dem gewählten Design an: in hellen Designs dunkelt die Farbe ab, in dunklen hellt sie auf. Alle 130 Kombinationen aus 13 Designs und 10 Bereichen liegen über dem Lesbarkeitsgrenzwert von 4,5:1.
+Je Bereich ist dafür genau eine Farbe hinterlegt. Schriftfarbe, Flächen- und Randton werden daraus berechnet und passen sich dem gewählten Design an: in hellen Designs dunkelt die Farbe ab, in dunklen hellt sie auf. Alle 143 Kombinationen aus 13 Designs und 11 Bereichen liegen über dem Lesbarkeitsgrenzwert von 4,5:1.
 
 Die frei wählbare Akzentfarbe bleibt davon unberührt – sie steuert Knöpfe, Links und Auswahlzustände. Ob die Schrift darauf schwarz oder weiß ist, entscheidet die App anhand der Helligkeit.
 
@@ -78,9 +78,9 @@ Danach die Seite einmal mit Internet öffnen. Von da an startet sie auch ohne Ve
 
 ### 2. Verbundene Geräte (optional)
 
-Das Script übernimmt auch das Laden von Rezeptseiten, weil der Browser fremde Seiten nicht selbst lesen darf.
+Der Abgleich läuft über ein eigenes Google-Apps-Script im eigenen Google-Drive, zusätzlich direkt zwischen Geräten im selben Netz über PeerJS. Dasselbe Script lädt auch Rezeptseiten, weil der Browser fremde Seiten nicht selbst lesen darf.
 
-Der Abgleich läuft über ein eigenes Google-Apps-Script im eigenen Google-Drive, zusätzlich direkt zwischen Geräten im selben Netz über PeerJS.
+Abgeglichen werden Termine, Aufgaben und Listen, Einkauf, Notizen, Rezepte samt Wochenplan, Zähler und Ablesungen – dazu die gemeinsamen Einstellungen. Was am Gerät hängt, bleibt am Gerät: Design, Kachelreihenfolge und die Rezeptansicht.
 
 1. In der App: Einstellungen → Verbundene Geräte
 2. Raumname und Sync-Passwort festlegen (beides auf allen Geräten gleich)
@@ -140,7 +140,7 @@ Beim Löschen der Browserdaten ist alles weg, was nicht abgeglichen oder gesiche
 
 ## Technisch
 
-Eine einzige HTML-Datei, rund 550 KB, ohne Build-Schritt. Aus dem Netz kommen nur [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
+Eine einzige HTML-Datei, rund 650 KB, ohne Build-Schritt. Aus dem Netz kommen nur [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
 
 Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die untere Navigationsleiste, unter 640 Pixel Dialoge als Blatt von unten, bei Touchbedienung größere Tippflächen.
 
@@ -150,7 +150,7 @@ Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die u
 
 - Erinnerungen erscheinen nur, solange die App im Browser geöffnet ist.
 - Diktieren funktioniert nur in Browsern mit Spracherkennung (Chrome, Edge) und schickt die Aufnahme an den Browser-Hersteller.
-- Für die Morgenmail liegt eine unverschlüsselte Kurzfassung des Kalenders in deinem Drive (siehe unten).
+- Für die Morgenmail liegt eine unverschlüsselte Kurzfassung des Kalenders in deinem Drive (siehe „Einrichten“, Punkt 5).
 - Passwörter lassen sich nicht automatisch in andere Apps oder Webseiten einfüllen.
 - Standortbezogene Erinnerungen sind nicht möglich.
 - E-Mail, Abgleich und das Einlesen von Rezepten aus Link oder PDF brauchen Internet; der Rest funktioniert offline.
