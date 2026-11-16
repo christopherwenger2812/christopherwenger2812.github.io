@@ -20,9 +20,11 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Einkauf** – Im Stil von Bring!: 535 Produkte mit eigenem Symbol je Artikel, nach Kategorien gruppiert und einklappbar, mehrere Listen, Mengen und Varianten, Teilen als Text.
 
-**Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
+**Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Wählbares Symbol je Rezept, Kachel- oder Listenansicht. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
 
-**Assistent** – Beantwortet Fragen zu deinen eigenen Daten und trägt auf Wunsch etwas ein: Termine, Aufgaben, Einkauf, Notizen. Er benutzt dafür Werkzeuge in der App, statt zu raten, und zeigt jeden Schritt an. Änderungen legt er erst nach deiner Bestätigung an. Tresor und E-Mail-Inhalte bleiben außen vor.
+**Kochansicht** – Schritt für Schritt im Vollbild, Zutaten zum Abhaken und auf die Portionszahl umgerechnet. Der Bildschirm bleibt dabei an.
+
+**Wochenplan** – Gerichte auf die Tage der Woche legen, Portionen je Tag anpassen. Ein Knopf zählt alle Zutaten der Woche zusammen und setzt sie auf die Einkaufsliste – zusammengefasst und skaliert.
 
 **Wetter** – Eigene Seite für mehrere Orte, jeder mit aktueller Lage und vier Tagen Vorschau. Der erste Ort steht auf der Startseite. Aktualisiert sich alle 15 Minuten von selbst, solange die App offen ist.
 
@@ -32,7 +34,9 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Tresor** – Passwortverwaltung im Stil von Bitwarden: mehrere Tresore mit je eigenem Master-Passwort, Logins, Karten, Notizen und Identitäten, Ordner, Passwortgenerator, 2FA-Codes (TOTP), Passwort-Gesundheitscheck inklusive Abgleich mit bekannten Datenlecks, automatische Sperre, Import und Export (auch Bitwarden-Format).
 
-**Dazu** – Aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
+**Morgenmail** – Einmal am Morgen eine Mail mit den Terminen des Tages, allem was offen oder überfällig ist und dem Stand der Zähler. Sie kommt auch, wenn die App geschlossen ist.
+
+**Dazu** – Diktieren per Mikrofon an den Eingabefeldern, aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
 
 ---
 
@@ -92,18 +96,7 @@ Gmail wird über ein zweites, eigenes Apps-Script angebunden: Einstellungen → 
 
 Andere Anbieter (GMX, web.de, Outlook.com, iCloud) lassen sich nur über eine Weiterleitung an die Gmail-Adresse einbinden.
 
-### 4. Assistent (optional)
-
-Der Assistent fragt das Sprachmodell über dasselbe Google-Script wie der Abgleich. Dadurch liegt der Schlüssel in deinem Drive und nie im Browser.
-
-1. Script aus „Verbundene Geräte" kopieren und als **neue Version** bereitstellen
-2. Bei [script.google.com](https://script.google.com) im Projekt auf das Zahnrad (Projekteinstellungen)
-3. Unter **Script-Eigenschaften** eine Eigenschaft `AI_KEY` mit deinem API-Schlüssel anlegen
-4. In der App unter Einstellungen → Assistent gegebenenfalls das Modell anpassen
-
-An das Modell geht nur deine Frage und das, was die benutzten Werkzeuge zurückgeben – etwa die Termine des Zeitraums, nach dem du fragst.
-
-### 5. Als App aufs Handy
+### 4. Als App aufs Handy
 
 Am einfachsten: Seite in Chrome öffnen → Menü → „App installieren". Damit gibt es ein Symbol auf dem Startbildschirm, Vollbild und Offline-Betrieb.
 
@@ -115,6 +108,12 @@ Danach kommen zwei Dinge dazu, die nur der installierten App zur Verfügung steh
 Wer eine echte APK-Datei möchte (zum Weitergeben oder für ein Gerät ohne Play-Dienste): [pwabuilder.com](https://www.pwabuilder.com) aufrufen, die Adresse der Seite eintragen, bei Android auf „Package for stores" gehen und das Paket erzeugen lassen. Darin liegen die signierte `.apk`, ein Schlüssel (gut aufheben, er wird für jedes Update gebraucht) und eine `assetlinks.json`.
 
 Damit die App ohne Adressleiste startet, muss diese Datei als `.well-known/assetlinks.json` in dieses Repository – dafür ist `.nojekyll` da.
+
+### 5. Morgenmail (optional)
+
+Einstellungen → Benachrichtigungen → Morgenmail → Einschalten. Das Script legt sich dabei selbst einen täglichen Auslöser an und schickt die Mail an die Adresse deines Google-Kontos.
+
+Der Abgleich selbst ist verschlüsselt, das Script kann ihn also nicht lesen. Für die Mail legt die App deshalb zusätzlich eine **unverschlüsselte** Kurzfassung in deinem Drive ab (`space-agenda-….json`): Datum, Uhrzeit und Titel der nächsten sieben Tage sowie offene Aufgaben. Notizen, Orte, Einkauf, Rezepte und der Tresor bleiben außen vor. Die Datei lässt sich jederzeit löschen, dann bleibt die Mail leer.
 
 ### 6. Updates
 
@@ -150,7 +149,8 @@ Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die u
 ## Grenzen
 
 - Erinnerungen erscheinen nur, solange die App im Browser geöffnet ist.
-- Der Assistent braucht Internet und einen eigenen API-Schlüssel; die Nutzung rechnet der Anbieter mit dir ab.
+- Diktieren funktioniert nur in Browsern mit Spracherkennung (Chrome, Edge) und schickt die Aufnahme an den Browser-Hersteller.
+- Für die Morgenmail liegt eine unverschlüsselte Kurzfassung des Kalenders in deinem Drive (siehe unten).
 - Passwörter lassen sich nicht automatisch in andere Apps oder Webseiten einfüllen.
 - Standortbezogene Erinnerungen sind nicht möglich.
 - E-Mail, Abgleich und das Einlesen von Rezepten aus Link oder PDF brauchen Internet; der Rest funktioniert offline.
