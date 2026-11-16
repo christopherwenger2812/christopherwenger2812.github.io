@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-9">
+    <meta name="app-version" content="2026.11.16-10">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -731,6 +731,7 @@
                                             <span class="block text-sm font-bold truncate" x-text="e.title"></span>
                                             <span class="block text-[11px] muted truncate" x-show="e.location" x-text="e.location"></span>
                                         </span>
+                                        <span class="chip shrink-0" :class="e.state" x-show="e.cd.toLowerCase() !== e.wann.toLowerCase()" x-text="e.cd"></span>
                                         <span class="w-1.5 h-8 rounded-full shrink-0" :style="'background:' + e.color"></span>
                                     </button>
                                 </template>
@@ -753,9 +754,6 @@
                                         </div>
                                         <button type="button" class="btn btn-primary !py-2 !px-3 shrink-0" @click="recipeScale = m.servings || m.rezept.servings; startCook(m.rezept)"><i class="fa-solid fa-fire-burner"></i><span class="hidden sm:inline">Kochen</span></button>
                                     </div>
-                                    <p x-show="fehlendeZutaten(m).length" class="text-[11px] font-semibold" style="color: #b45309">
-                                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>Nicht auf der Einkaufsliste: <span x-text="fehlendeZutaten(m).slice(0, 5).join(', ')"></span><span x-show="fehlendeZutaten(m).length > 5" x-text="' und ' + (fehlendeZutaten(m).length - 5) + ' mehr'"></span>
-                                    </p>
                                 </div>
                             </template>
                             </div>
@@ -6032,12 +6030,16 @@ function reply_(p) {
                 /* ---------- Inhalte der neuen Kacheln ---------- */
                 /* Die nächsten Termine, unabhängig davon ob heute etwas ansteht */
                 get naechsteTermine() {
-                    const bis = this.addDaysStr(this.today, 28);
+                    void this.nowTick;                       // alle 30 s neu, damit der Countdown läuft
+                    const bis = this.addDaysStr(this.today, 28), jetzt = Date.now();
                     return this.events
                         .filter(e => e.endDate >= this.today && e.startDate <= bis)
                         .sort((a, b) => (a.startDate + (a.startTime || '')).localeCompare(b.startDate + (b.startTime || '')))
                         .slice(0, 4)
-                        .map(e => ({ ...e, wann: this.tagLabel(e.startDate) }));
+                        .map(e => {
+                            const c = this.countdown(e, this.evStart(e), this.evEnd(e), jetzt);
+                            return { ...e, wann: this.tagLabel(e.startDate), cd: c.cd, state: c.state };
+                        });
                 },
                 /* „Heute“, „Morgen“, sonst Wochentag und Datum */
                 tagLabel(ds) {
@@ -6052,14 +6054,6 @@ function reply_(p) {
                     return this.mealPlan.filter(m => m.date === this.today)
                         .map(m => ({ ...m, rezept: this.recipes.find(r => r.id === m.recipe) || null }))
                         .filter(m => m.rezept);
-                },
-                /* Zutaten eines geplanten Gerichts, die noch nicht auf der Liste stehen */
-                fehlendeZutaten(m) {
-                    return m.rezept.ings.filter(i => {
-                        const k = matchProduct(i.name);
-                        const name = (k ? k.name : i.name).toLowerCase();
-                        return !this.shopOpen.some(x => x.name.toLowerCase() === name);
-                    }).map(i => i.name);
                 },
                 /* Zähler mit Stand und Hinweis, wenn lange nicht abgelesen */
                 get zaehlerStand() {
