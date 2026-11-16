@@ -1,6 +1,6 @@
-# Christopher's Space
+# Alltag
 
-Eine persönliche All-in-One-App für Kalender, Aufgaben, Notizen, Einkauf, E-Mail und Passwörter – als einzelne HTML-Datei, gehostet über GitHub Pages.
+Eine persönliche All-in-One-App für Kalender, Aufgaben, Notizen, Einkauf, Rezepte, Verbrauch, E-Mail und Passwörter – als einzelne HTML-Datei, gehostet über GitHub Pages.
 
 **→ [christopherwenger2812.github.io](https://christopherwenger2812.github.io/)**
 
@@ -29,6 +29,18 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 **Tresor** – Passwortverwaltung im Stil von Bitwarden: mehrere Tresore mit je eigenem Master-Passwort, Logins, Karten, Notizen und Identitäten, Ordner, Passwortgenerator, 2FA-Codes (TOTP), Passwort-Gesundheitscheck inklusive Abgleich mit bekannten Datenlecks, automatische Sperre, Import und Export (auch Bitwarden-Format).
 
 **Dazu** – Aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
+
+---
+
+## Wie es aussieht
+
+Jeder Bereich hat eine eigene Farbwelt: Kalender blau, To-Dos violett, Notizen ocker, Rezepte rot, Verbrauch orange, Einkauf grün, E-Mail dunkelblau, Tresor stahlgrau. Die Farbe steckt nicht nur im Symbol, sondern auch in den Flächen und Rändern der Karten – man sieht also, wo man ist, bevor man etwas liest.
+
+Je Bereich ist dafür genau eine Farbe hinterlegt. Schriftfarbe, Flächen- und Randton werden daraus berechnet und passen sich dem gewählten Design an: in hellen Designs dunkelt die Farbe ab, in dunklen hellt sie auf. Alle 130 Kombinationen aus 13 Designs und 10 Bereichen liegen über dem Lesbarkeitsgrenzwert von 4,5:1.
+
+Die frei wählbare Akzentfarbe bleibt davon unberührt – sie steuert Knöpfe, Links und Auswahlzustände. Ob die Schrift darauf schwarz oder weiß ist, entscheidet die App anhand der Helligkeit.
+
+Überschriften und große Zahlen laufen in Bricolage Grotesque, die Oberfläche in Manrope. Zahlen stehen auf fester Breite, damit Beträge und Zählerstände untereinander passen.
 
 ---
 
@@ -106,7 +118,7 @@ Beim Löschen der Browserdaten ist alles weg, was nicht abgeglichen oder gesiche
 
 ## Technisch
 
-Eine einzige HTML-Datei, rund 550 KB, ohne Build-Schritt. Aus dem Netz kommen nur [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Plus Jakarta Sans und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
+Eine einzige HTML-Datei, rund 550 KB, ohne Build-Schritt. Aus dem Netz kommen nur [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
 
 Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die untere Navigationsleiste, unter 640 Pixel Dialoge als Blatt von unten, bei Touchbedienung größere Tippflächen.
 

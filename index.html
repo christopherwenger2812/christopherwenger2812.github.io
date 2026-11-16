@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.14-6">
+    <meta name="app-version" content="2026.11.16-1">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Space">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M43.1 22.8A16 16 0 1 0 43.1 41.2' fill='none' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='46.5' cy='32' r='3.8' fill='white'/%3E%3C/svg%3E">
-    <title>Christopher’s All in One App</title>
+    <title>Alltag</title>
     <script>
         // Theme, Akzentfarbe und Dichte vor dem ersten Rendern setzen (verhindert Aufblitzen)
         try {
@@ -23,7 +23,7 @@
                 if (!c.font || c.font === 'system') { c.font = 'default'; localStorage.setItem('organizer_cfg', JSON.stringify(c)); }
             }
             r.dataset.theme = ['daylight', 'sky', 'mint', 'white', 'paper', 'rose', 'midnight', 'ocean', 'emerald', 'nord', 'graphite', 'sunset', 'aurora'].includes(t) ? t : 'daylight';
-            if (c.accent) r.style.setProperty('--accent', c.accent); // die zweite Logofarbe setzt die App gleich nach dem Start
+            if (c.accent) r.style.setProperty('--accent', c.accent); // Logo-Zweitfarbe und Schriftfarbe setzt die App gleich nach dem Start
             if (c.density) r.dataset.density = c.density;
             if (c.fontSize) r.dataset.fsize = c.fontSize;
             if (c.font) r.dataset.font = c.font;
@@ -86,7 +86,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -94,19 +94,49 @@
         [x-cloak] { display: none !important; }
 
         /* ---------- Themes (alle Farben laufen über Variablen) ---------- */
-        :root, [data-theme="daylight"] { --bg:#f4f6fb; --surface:#ffffff; --surface2:#eef1f8; --border:#dde3ef; --text:#111828; --muted:#5b6478; --hover:#e9edf7; --accent:#4f46e5; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
-        [data-theme="sky"]      { --bg:#eef6fd; --surface:#ffffff; --surface2:#e3effb; --border:#cfe2f3; --text:#0d2234; --muted:#4e6480; --hover:#ddecfa; --accent:#0369a1; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
-        [data-theme="mint"]     { --bg:#f0f8f4; --surface:#ffffff; --surface2:#e4f2ea; --border:#cde5d8; --text:#0f2a20; --muted:#4c6b5c; --hover:#def0e7; --accent:#047857; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
-        [data-theme="white"]    { --bg:#f1f5f9; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0; --text:#0f172a; --muted:#586579; --hover:#f8fafc; --accent:#4f46e5; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
-        [data-theme="paper"]    { --bg:#f6f1e7; --surface:#fffdf8; --surface2:#f3ede0; --border:#e4dccb; --text:#2b2417; --muted:#74684f; --hover:#faf5ea; --accent:#b45309; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
-        [data-theme="rose"]     { --bg:#fdf2f4; --surface:#ffffff; --surface2:#fbe8ec; --border:#f0cdd5; --text:#3b1220; --muted:#85556a; --hover:#fff5f7; --accent:#be185d; --shadow: 0 1px 2px rgba(17,24,39,.05), 0 10px 26px -16px rgba(17,24,39,.22); --shadow-s: 0 4px 12px -8px rgba(17,24,39,.28); --scrim: rgba(15,23,42,.42); color-scheme: light; }
-        [data-theme="midnight"] { --bg:#0b0f19; --surface:#131c2e; --surface2:#0e1524; --border:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --hover:#1a2740; --accent:#6366f1; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
-        [data-theme="ocean"]    { --bg:#0f172a; --surface:#1e293b; --surface2:#162033; --border:#334155; --text:#f8fafc; --muted:#94a3b8; --hover:#27354d; --accent:#6366f1; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
-        [data-theme="emerald"]  { --bg:#022c22; --surface:#064e3b; --surface2:#053f31; --border:#047857; --text:#ecfdf5; --muted:#a7d8c3; --hover:#075e47; --accent:#059669; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
-        [data-theme="nord"]     { --bg:#2e3440; --surface:#3b4252; --surface2:#343a48; --border:#4c566a; --text:#eceff4; --muted:#aab4c8; --hover:#434c5e; --accent:#5e81ac; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
-        [data-theme="graphite"] { --bg:#111214; --surface:#1b1c1f; --surface2:#151618; --border:#2b2d31; --text:#f4f4f5; --muted:#9a9ca3; --hover:#232529; --accent:#6b7280; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
-        [data-theme="sunset"]   { --bg:#1a1013; --surface:#2a1820; --surface2:#211219; --border:#4a2a35; --text:#fdf2f0; --muted:#d3aaaa; --hover:#35202a; --accent:#ea580c; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
-        [data-theme="aurora"]   { --bg:#0a1020; --surface:#121c36; --surface2:#0d1630; --border:#24335c; --text:#eef4ff; --muted:#a0b1d8; --hover:#192646; --accent:#8b5cf6; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 36px -20px rgba(0,0,0,.65); --shadow-s: 0 8px 20px -14px rgba(0,0,0,.7); --scrim: rgba(2,6,23,.72); color-scheme: dark; }
+        :root, [data-theme="daylight"] { --bg:#faf9f7; --surface:#ffffff; --surface2:#f3f1ec; --border:#e9e5dd; --text:#1c1a17; --muted:#6d6760; --hover:#efebe3; --accent:#0f766e; --shadow: 0 1px 2px rgba(28,26,23,.035), 0 6px 18px -14px rgba(28,26,23,.14); --shadow-s: 0 2px 8px -6px rgba(28,26,23,.2); --scrim: rgba(28,26,23,.34); --on-accent:#ffffff; color-scheme: light; }
+        [data-theme="sky"]       { --bg:#f6f9fc; --surface:#ffffff; --surface2:#eef4fa; --border:#dfe8f1; --text:#16212c; --muted:#5d6c7b; --hover:#e7eff7; --accent:#0369a1; --shadow: 0 1px 2px rgba(28,26,23,.035), 0 6px 18px -14px rgba(28,26,23,.14); --shadow-s: 0 2px 8px -6px rgba(28,26,23,.2); --scrim: rgba(28,26,23,.34); --on-accent:#ffffff; color-scheme: light; }
+        [data-theme="mint"]      { --bg:#f7faf8; --surface:#ffffff; --surface2:#eef5f1; --border:#dde9e3; --text:#16241e; --muted:#5e6f67; --hover:#e6f1ec; --accent:#047857; --shadow: 0 1px 2px rgba(28,26,23,.035), 0 6px 18px -14px rgba(28,26,23,.14); --shadow-s: 0 2px 8px -6px rgba(28,26,23,.2); --scrim: rgba(28,26,23,.34); --on-accent:#ffffff; color-scheme: light; }
+        [data-theme="white"]     { --bg:#f7f7f8; --surface:#ffffff; --surface2:#f1f1f3; --border:#e5e5e9; --text:#18181b; --muted:#67676f; --hover:#ededf0; --accent:#4f46e5; --shadow: 0 1px 2px rgba(28,26,23,.035), 0 6px 18px -14px rgba(28,26,23,.14); --shadow-s: 0 2px 8px -6px rgba(28,26,23,.2); --scrim: rgba(28,26,23,.34); --on-accent:#ffffff; color-scheme: light; }
+        [data-theme="paper"]     { --bg:#faf6ef; --surface:#fffdf9; --surface2:#f4efe4; --border:#e7dfd0; --text:#272016; --muted:#746c5b; --hover:#f0e9db; --accent:#a16207; --shadow: 0 1px 2px rgba(28,26,23,.035), 0 6px 18px -14px rgba(28,26,23,.14); --shadow-s: 0 2px 8px -6px rgba(28,26,23,.2); --scrim: rgba(28,26,23,.34); --on-accent:#ffffff; color-scheme: light; }
+        [data-theme="rose"]      { --bg:#fdf8f8; --surface:#ffffff; --surface2:#f9eff0; --border:#eedde0; --text:#2c1a1e; --muted:#7a6166; --hover:#f6e8ea; --accent:#be185d; --shadow: 0 1px 2px rgba(28,26,23,.035), 0 6px 18px -14px rgba(28,26,23,.14); --shadow-s: 0 2px 8px -6px rgba(28,26,23,.2); --scrim: rgba(28,26,23,.34); --on-accent:#ffffff; color-scheme: light; }
+        [data-theme="midnight"]  { --bg:#0c1018; --surface:#151b26; --surface2:#11161f; --border:#222a38; --text:#f0f3f7; --muted:#949bab; --hover:#1b2330; --accent:#2dd4bf; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+        [data-theme="ocean"]     { --bg:#0e1622; --surface:#192433; --surface2:#131d2a; --border:#2a3a4d; --text:#f5f8fb; --muted:#93a1b4; --hover:#1f2c3d; --accent:#38bdf8; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+        [data-theme="emerald"]   { --bg:#07241d; --surface:#0d3a2e; --surface2:#0a3026; --border:#145643; --text:#eafaf3; --muted:#9ccbb9; --hover:#114d3d; --accent:#34d399; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+        [data-theme="nord"]      { --bg:#2b303b; --surface:#373d4a; --surface2:#313743; --border:#49505f; --text:#eceff4; --muted:#a8b2c4; --hover:#414957; --accent:#88c0d0; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+        [data-theme="graphite"]  { --bg:#101113; --surface:#1a1b1e; --surface2:#151619; --border:#292a2e; --text:#f3f3f4; --muted:#97989e; --hover:#212226; --accent:#a1a1aa; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+        [data-theme="sunset"]    { --bg:#19100f; --surface:#271a1a; --surface2:#1f1414; --border:#432a28; --text:#fdf3f0; --muted:#cfa9a2; --hover:#33201e; --accent:#fb923c; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+        [data-theme="aurora"]    { --bg:#090f1e; --surface:#111a31; --surface2:#0c152b; --border:#213055; --text:#edf3ff; --muted:#9eaed6; --hover:#182443; --accent:#a78bfa; --shadow: 0 1px 2px rgba(0,0,0,.22), 0 10px 26px -18px rgba(0,0,0,.5); --shadow-s: 0 4px 14px -10px rgba(0,0,0,.55); --scrim: rgba(6,8,14,.68); --on-accent:#0d1117; color-scheme: dark; }
+
+        /* ---------- Farbwelten je Bereich ----------
+           Jeder Bereich hat einen eigenen Ton. Daraus werden drei Werte gemischt:
+           --area-ink  für Schrift und Symbole (dunkelt in hellen Designs ab, hellt in dunklen auf),
+           --area-tint für Flächen, --area-line für Ränder. Dadurch reicht eine Farbe je Bereich
+           für alle 13 Designs, hell wie dunkel. */
+        /* Die abgeleiteten Werte stehen in jeder Regel mit, weil color-mix sonst schon
+           im :root ausgerechnet und als fertige Farbe weitervererbt würde. */
+        :root { --area: var(--accent); --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="today"] { --area: #0f766e; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="calendar"] { --area: #2563eb; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="todos"] { --area: #6d28d9; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="notes"] { --area: #a16207; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="recipes"] { --area: #be123c; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="usage"] { --area: #c2410c; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="shopping"] { --area: #15803d; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="mail"] { --area: #0369a1; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="passwords"] { --area: #475569; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="settings"] { --area: #57534e; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        /* In dunklen Designs müssen die Bereichsfarben aufhellen statt abdunkeln,
+           sonst stehen Symbole und Chips zu dunkel auf dunklem Grund. */
+        [data-theme="midnight"],
+        [data-theme="ocean"],
+        [data-theme="emerald"],
+        [data-theme="nord"],
+        [data-theme="graphite"],
+        [data-theme="sunset"],
+        [data-theme="aurora"] { --area-ink: color-mix(in srgb, var(--area) 40%, var(--text)); }
+
+
         :root { --row-pad: .9rem 1rem; }
         [data-density="compact"] { --row-pad: .45rem .8rem; }
 
@@ -115,14 +145,22 @@
         html { overflow-x: clip; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         body { overflow-x: clip; }
         body { background: var(--bg); color: var(--text); transition: background-color .3s, color .3s; -webkit-tap-highlight-color: transparent;
-               font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; letter-spacing: -.011em; }
-        h1, h2, h3, .num { font-feature-settings: 'ss01'; }
-        .num, .tnum { font-variant-numeric: tabular-nums; }
+               font-family: var(--font-ui); letter-spacing: -.008em; }
+        :root {
+            --font-ui: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-display: 'Bricolage Grotesque', var(--font-ui);
+        }
+        /* Überschriften und große Zahlen in der Anzeigeschrift, alles andere in der Oberflächenschrift */
+        h1, h2, h3, .dsp { font-family: var(--font-display); letter-spacing: -.021em; }
+        h1, h2 { font-weight: 800; }
+        /* Zahlen laufen auf fester Breite, damit Beträge und Zählerstände untereinander stehen */
+        .num, .tnum, input[type=number], .clock { font-variant-numeric: tabular-nums; }
 
-        .card   { background: var(--surface); border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: var(--shadow); }
-        /* Erste Karte eines Bereichs bekommt einen zarten Hauch der Akzentfarbe */
-        .hero   { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--surface)), var(--surface) 55%); border-color: color-mix(in srgb, var(--accent) 22%, var(--border)); }
-        .inner  { background: var(--surface2); border: 1px solid var(--border); border-radius: 1rem; }
+        .card   { background: var(--surface); border: 1px solid var(--area-line); border-radius: 1.4rem; box-shadow: var(--shadow); }
+        /* Die erste Karte eines Bereichs trägt dessen Farbwelt als Fläche */
+        .hero   { background: var(--area-soft); border-color: color-mix(in srgb, var(--area) 26%, var(--border)); box-shadow: none; }
+        /* Flächen innerhalb einer Karte sind leicht in der Bereichsfarbe getönt */
+        .inner  { background: var(--area-tint); border: 1px solid color-mix(in srgb, var(--area) 13%, var(--border)); border-radius: .85rem; }
         .row    { padding: var(--row-pad); }
         /* Kompakte To-Do-Ansicht: schmalere Zeilen, Zusatzangaben nur als Symbole */
         .tdc { padding: .45rem .7rem; gap: .6rem; border-radius: .7rem; }
@@ -133,13 +171,13 @@
         .muted  { color: var(--muted); }
         .divider { border-color: var(--border); }
         .accent { color: var(--accent); }
-        .field  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: .9rem; padding: .7rem 1rem; font-size: .8rem; font-weight: 600; width: 100%; outline: none; font-family: inherit; line-height: 1.5; transition: border-color .15s, box-shadow .15s; }
+        .field  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: .7rem; padding: .7rem 1rem; font-size: .8rem; font-weight: 600; width: 100%; outline: none; font-family: inherit; line-height: 1.5; transition: border-color .15s, box-shadow .15s; }
         .field::placeholder { color: var(--muted); opacity: .75; font-weight: 500; }
         .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .7rem 1.1rem; border-radius: .9rem; font-size: .75rem; font-weight: 700; transition: all .15s; cursor: pointer; white-space: nowrap; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .7rem 1.1rem; border-radius: .7rem; font-size: .75rem; font-weight: 700; transition: all .15s; cursor: pointer; white-space: nowrap; }
         .btn:disabled { opacity: .45; cursor: not-allowed; }
-        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 16px -10px var(--accent); }
+        .btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 10px -8px var(--accent); }
         .btn-primary:not(:disabled):hover { filter: brightness(1.12); }
         .btn-soft   { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
         .btn-soft:hover { background: var(--hover); }
@@ -147,50 +185,55 @@
         .btn-ghost:hover { color: var(--text); background: var(--hover); }
         .btn-danger { background: #e11d48; color: #fff; }
         .btn-danger:not(:disabled):hover { filter: brightness(1.1); }
-        .icon-btn { width: 2.25rem; height: 2.25rem; display: inline-flex; align-items: center; justify-content: center; border-radius: .75rem; color: var(--muted); transition: all .15s; flex-shrink: 0; }
+        .icon-btn { width: 2.25rem; height: 2.25rem; display: inline-flex; align-items: center; justify-content: center; border-radius: .6rem; color: var(--muted); transition: all .15s; flex-shrink: 0; }
         .icon-btn:hover { background: var(--hover); color: var(--text); }
         .icon-btn.danger:hover { color: #f43f5e; }
 
-        .seg { display: inline-flex; gap: .2rem; padding: .3rem; border-radius: 1rem; background: var(--surface2); border: 1px solid var(--border); }
-        .seg > button { padding: .5rem .85rem; border-radius: .7rem; font-size: .75rem; font-weight: 700; color: var(--muted); transition: all .15s; }
+        .seg { display: inline-flex; gap: .2rem; padding: .25rem; border-radius: .85rem; background: var(--area-tint); border: 1px solid color-mix(in srgb, var(--area) 13%, var(--border)); }
+        .seg > button { padding: .5rem .85rem; border-radius: .6rem; font-size: .75rem; font-weight: 700; color: var(--muted); transition: all .15s; }
         .seg > button:hover { color: var(--text); }
         .clock { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; padding: .3rem .6rem; border-radius: .8rem; font-variant-numeric: tabular-nums; font-weight: 800; font-size: .95rem; color: var(--text); transition: background .15s; }
         .clock:hover { background: var(--hover); }
         .clock .dt { font-size: .6rem; font-weight: 700; color: var(--muted); letter-spacing: .01em; }
         @media (max-width: 360px) { .clock { display: none; } }
-        .seg > button.on { background: var(--accent); color: #fff; box-shadow: 0 4px 12px -8px var(--accent); }
+        .seg > button.on { background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 12px -8px var(--accent); }
 
         .label { display: block; font-size: .78rem; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
-        .label > i:first-child { color: var(--accent); }
+        .label > i:first-child { color: var(--area-ink); }
         /* Logo nimmt die gewählte Akzentfarbe an */
-        #lgApp stop:first-child { stop-color: var(--accent, #4f46e5); }
-        #lgApp stop:last-child { stop-color: var(--accent2, #10b981); }
+        #lgApp stop:first-child { stop-color: var(--accent, #0f766e); }
+        #lgApp stop:last-child { stop-color: var(--accent2, #14b8a6); }
         .label .ct { color: var(--muted); font-weight: 600; }
-        .chip { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .6rem; border-radius: .6rem; font-size: .68rem; font-weight: 700; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+        .chip { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .6rem; border-radius: .5rem; font-size: .68rem; font-weight: 700; background: color-mix(in srgb, var(--area) 11%, transparent); color: var(--area-ink); border: 1px solid color-mix(in srgb, var(--area) 22%, transparent); }
         button.chip { cursor: pointer; transition: all .15s; }
-        button.chip.on { background: var(--accent); color: #fff; }
+        button.chip.on { background: var(--accent); color: var(--on-accent); }
         .pill { display: flex; width: 100%; align-items: center; gap: .35rem; text-align: left; font-size: .68rem; font-weight: 600; padding: .25rem .5rem; border-radius: .55rem; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 18%, transparent); overflow: hidden; }
         .pill > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        /* Heutiger Tag im Kalender und gewähltes Design – nehmen Akzent- und Bereichsfarbe auf */
+        .istheute { background: var(--area-ink); color: var(--surface); }
+        .themeon { border-color: var(--accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
         .holiday { font-size: .62rem; font-weight: 700; color: #f59e0b; background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); padding: .05rem .4rem; border-radius: .45rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
         .mnav { display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .15rem; flex: 1 1 0; min-width: 0; border-radius: 1rem; font-size: .65rem; font-weight: 700; color: var(--muted); transition: all .15s; }
-        .mnav.on { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+        .mnav { border-radius: .75rem; }
+        .mnav.on { color: var(--area-ink); background: color-mix(in srgb, var(--area) 12%, transparent); }
 
         .side { display: flex; align-items: center; gap: .7rem; width: 100%; padding: .6rem .8rem; border-radius: .8rem; font-size: .8rem; font-weight: 700; text-align: left; transition: background .15s; }
         .side:hover { background: var(--hover); }
-        .side.on { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+        .side { border-radius: .65rem; }
+        .side.on { background: color-mix(in srgb, var(--area) 13%, transparent); color: var(--area-ink); }
         .check { width: 1.5rem; height: 1.5rem; border-radius: 9999px; border: 2px solid var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: transparent; font-size: .6rem; transition: all .15s; }
         .check:hover { border-color: var(--accent); }
-        .check.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .check.done { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
-        .tile { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .8rem .4rem; border-radius: 1rem; background: var(--surface2); border: 1px solid var(--border); text-align: center; position: relative; transition: all .15s; cursor: pointer; min-width: 0; }
+        .tile { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .8rem .4rem; border-radius: .85rem; background: var(--area-tint); border: 1px solid color-mix(in srgb, var(--area) 13%, var(--border)); text-align: center; position: relative; transition: all .15s; cursor: pointer; min-width: 0; }
         .tile:hover { background: var(--hover); transform: translateY(-1px); }
         .tile .em { font-size: 1.9rem; line-height: 1.1; }
         .tile .nm { font-size: .72rem; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .tile .badge { position: absolute; top: .3rem; right: .3rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 9999px; background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .tile .badge { position: absolute; top: .3rem; right: .3rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 9999px; background: var(--accent); color: var(--on-accent); font-size: .62rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
         .tile.off { opacity: .45; }
-        .logo { position: relative; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: .8rem; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent); }
-        .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: .45rem; border-radius: .8rem; background: var(--surface); }
+        .logo { position: relative; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: .7rem; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--area) 11%, transparent); border: 1px solid color-mix(in srgb, var(--area) 22%, transparent); color: var(--area-ink); }
+        .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: .45rem; border-radius: .7rem; background: var(--surface); }
 
         .switch { position: relative; width: 2.6rem; height: 1.5rem; border-radius: 9999px; background: var(--border); transition: .2s; flex-shrink: 0; }
         .switch::after { content: ''; position: absolute; top: .2rem; left: .2rem; width: 1.1rem; height: 1.1rem; border-radius: 9999px; background: #fff; transition: .2s; }
@@ -225,6 +268,11 @@
         .mstar { color: var(--muted); } .mstar.on { color: #fbbf24; }
         /* ---------- Stil-Optionen (Einstellungen → Darstellung) ---------- */
         [data-fsize="large"] { font-size: 112.5%; } [data-fsize="xl"] { font-size: 125%; }
+        /* Nur bei eigener Schriftwahl zieht die Anzeigeschrift mit – bei "default" bleibt Bricolage. */
+        [data-font]:not([data-font="default"]) body h1,
+        [data-font]:not([data-font="default"]) body h2,
+        [data-font]:not([data-font="default"]) body h3,
+        [data-font]:not([data-font="default"]) .dsp { font-family: inherit; letter-spacing: -.015em; }
         [data-font="system"] body { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         [data-font="inter"] body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; letter-spacing: -.012em; }
         [data-font="grotesk"] body { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; letter-spacing: -.005em; }
@@ -234,9 +282,9 @@
         [data-font="rounded"] body { font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif; }
         [data-font="serif"] body { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif; }
         [data-font="mono"] body { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; letter-spacing: -.01em; }
-        [data-radius="sharp"] .card { border-radius: .6rem; } [data-radius="sharp"] .inner { border-radius: .45rem; }
+        [data-radius="sharp"] .card { border-radius: .5rem; } [data-radius="sharp"] .inner { border-radius: .35rem; }
         [data-radius="sharp"] .btn, [data-radius="sharp"] .field, [data-radius="sharp"] .seg, [data-radius="sharp"] .seg > button { border-radius: .4rem; }
-        [data-radius="round"] .card { border-radius: 2.2rem; } [data-radius="round"] .inner { border-radius: 1.5rem; }
+        [data-radius="round"] .card { border-radius: 2rem; } [data-radius="round"] .inner { border-radius: 1.25rem; }
         [data-radius="round"] .btn { border-radius: 999px; } [data-radius="round"] .field { border-radius: 1.2rem; }
         [data-card="glass"] .card { background: color-mix(in srgb, var(--surface) 68%, transparent); backdrop-filter: blur(16px) saturate(1.25); -webkit-backdrop-filter: blur(16px) saturate(1.25); }
         [data-card="flat"] .card { box-shadow: none; }
@@ -365,7 +413,7 @@
         .calgrid { display: grid; gap: 1.25rem; align-items: start; }
     </style>
 </head>
-<body class="antialiased selection:bg-indigo-500 selection:text-white" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
+<body class="antialiased" x-data="organizerApp()" @keydown.escape.window="closeModals()" @keydown.ctrl.k.window.prevent="openSearch()" @keydown.meta.k.window.prevent="openSearch()">
 
     <!-- Eigene Logos: App („C“ mit Umlauf-Punkt) und Tresor (Safe-Wählscheibe mit Schlüsselloch) -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -442,8 +490,9 @@
             </symbol>
             <symbol id="logoApp" viewBox="0 0 64 64">
                 <rect width="64" height="64" rx="16" fill="url(#lgApp)"/>
-                <path d="M43.1 22.8A16 16 0 1 0 43.1 41.2" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
-                <circle cx="46.5" cy="32" r="3.8" fill="#fff"/>
+                <rect x="18" y="15" width="28" height="7" rx="3.5" fill="#fff" fill-opacity=".42"/>
+                <rect x="11" y="27" width="42" height="10" rx="5" fill="#fff"/>
+                <rect x="18" y="42" width="28" height="7" rx="3.5" fill="#fff" fill-opacity=".42"/>
             </symbol>
             <symbol id="logoVault" viewBox="0 0 64 64">
                 <rect width="64" height="64" rx="16" fill="url(#lgVault)"/>
@@ -458,16 +507,16 @@
     <!-- Erinnerungs-Banner -->
     <div class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-[70] space-y-2">
         <template x-for="b in banners" :key="b.id">
-            <div x-transition class="bg-indigo-600 text-white p-4 rounded-3xl shadow-2xl border border-white/10 flex items-start justify-between gap-3">
+            <div x-transition class="p-4 rounded-2xl border flex items-start justify-between gap-3" style="background: var(--accent); color: var(--on-accent); border-color: color-mix(in srgb, var(--on-accent) 18%, transparent); box-shadow: var(--shadow)">
                 <div class="flex items-start gap-3 min-w-0">
                     <div class="bg-white/20 p-2.5 rounded-2xl"><i class="fa-solid fa-bell animate-bounce"></i></div>
                     <div class="min-w-0">
-                        <p class="text-[10px] uppercase font-extrabold tracking-widest text-indigo-200" x-text="b.kind"></p>
+                        <p class="text-[10px] uppercase font-extrabold tracking-widest opacity-75" x-text="b.kind"></p>
                         <p class="text-sm font-bold break-words" x-text="b.title"></p>
-                        <p class="text-xs text-indigo-100 mt-0.5" x-text="b.info"></p>
+                        <p class="text-xs opacity-85 mt-0.5" x-text="b.info"></p>
                     </div>
                 </div>
-                <button @click="banners = banners.filter(x => x.id !== b.id)" class="text-indigo-200 hover:text-white p-1" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
+                <button @click="banners = banners.filter(x => x.id !== b.id)" class="opacity-70 hover:opacity-100 p-1" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </template>
     </div>
@@ -489,7 +538,7 @@
         <header class="sticky top-0 z-40 border-b backdrop-blur-xl divider" style="background: color-mix(in srgb, var(--surface) 85%, transparent);">
             <div class="mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4" :class="wideTab ? 'max-w-[1900px]' : 'max-w-7xl'">
                 <div class="flex items-center gap-3 min-w-0">
-                    <svg class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-xl shadow-indigo-600/20 shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
+                    <svg class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
                     <div class="min-w-0">
                         <h1 class="text-base sm:text-lg font-black tracking-tight truncate"><span x-text="appTitle.first"></span><span class="accent" x-text="appTitle.last"></span></h1>
                         <p class="text-[11px] font-medium flex items-center gap-1.5 mt-0.5 muted">
@@ -539,12 +588,12 @@
 
             <!-- ================= HEUTE ================= -->
             <section x-show="activeTab === 'today'" x-cloak class="space-y-5">
-                <div class="card hero p-5 sm:p-7 flex flex-wrap items-center gap-4">
-                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoStart"/></svg>
+                <div class="card hero p-5 sm:p-7 flex flex-wrap items-end gap-x-6 gap-y-4">
                     <div class="mr-auto min-w-0">
-                        <p class="label" x-text="longDate(today)"></p>
-                        <h2 class="text-2xl sm:text-4xl font-black tracking-tight mt-1" x-text="greeting"></h2>
-                        <p class="muted text-xs mt-1.5 font-medium" x-text="todaySummary"></p>
+                        <p class="text-[11px] font-bold uppercase" style="letter-spacing: .08em; color: var(--area-ink)" x-text="weekdayName(today)"></p>
+                        <h2 class="dsp text-4xl sm:text-5xl font-extrabold tracking-tight mt-0.5 leading-none"><span class="num" x-text="dayNumber(today)"></span> <span x-text="monthName(today)"></span></h2>
+                        <p class="text-sm mt-2.5 font-semibold" x-text="greeting"></p>
+                        <p class="muted text-xs mt-0.5 font-medium" x-text="todaySummary"></p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button @click="openEventModal({ startDate: today })" class="btn btn-soft"><i class="fa-regular fa-calendar-plus"></i>Termin</button>
@@ -564,7 +613,7 @@
                         <template x-if="cfg.weatherPlace && wx.now">
                             <div class="space-y-3">
                                 <div class="flex items-center gap-4">
-                                    <i class="text-4xl accent shrink-0" :class="wmoIcon(wx.now?.code, wx.now?.night)"></i>
+                                    <i class="text-4xl shrink-0" style="color: var(--area-ink)" :class="wmoIcon(wx.now?.code, wx.now?.night)"></i>
                                     <div class="min-w-0">
                                         <p class="text-3xl font-black leading-none num" x-text="wxTemp(wx.now?.temp)"></p>
                                         <p class="text-xs font-bold mt-1" x-text="wmoText(wx.now?.code)"></p>
@@ -675,7 +724,7 @@
                             <div @click="openEventModalForDate(day.dateString)" class="min-h-[88px] sm:min-h-[120px] p-1.5 sm:p-2.5 flex flex-col gap-1.5 cursor-pointer min-w-0 hover:brightness-110"
                                  :style="'background:' + (day.isCurrentMonth ? 'var(--surface)' : 'var(--surface2)')" :class="day.isCurrentMonth ? '' : 'opacity-50'">
                                 <div class="flex items-center justify-between gap-1 min-w-0">
-                                    <span class="text-xs font-bold rounded-lg w-7 h-7 shrink-0 flex items-center justify-center" :class="day.isToday ? 'bg-indigo-600 text-white shadow-lg' : ''" x-text="day.dayNumber"></span>
+                                    <span class="text-xs font-bold rounded-lg w-7 h-7 shrink-0 flex items-center justify-center" :class="day.isToday ? 'istheute' : ''" x-text="day.dayNumber"></span>
                                     <span x-show="day.holiday" class="holiday" x-text="day.holiday"></span>
                                 </div>
                                 <div class="space-y-1 overflow-y-auto max-h-[84px]">
@@ -701,7 +750,7 @@
                                     <div class="flex-1 min-w-0 p-2 border-l divider">
                                         <div class="flex items-center gap-2 flex-wrap">
                                             <span class="label" x-text="d.weekday"></span>
-                                            <span class="text-sm font-black rounded-lg w-7 h-7 flex items-center justify-center" :class="d.isToday ? 'bg-indigo-600 text-white' : ''" x-text="d.dayNumber"></span>
+                                            <span class="text-sm font-black rounded-lg w-7 h-7 flex items-center justify-center" :class="d.isToday ? 'istheute' : ''" x-text="d.dayNumber"></span>
                                             <span x-show="d.holiday" class="holiday" x-text="d.holiday"></span>
                                         </div>
                                         <div class="mt-1.5 space-y-1">
@@ -745,11 +794,11 @@
                 <div x-show="calendarView === 'year'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <template x-for="(mName, mIdx) in monthNames" :key="mName">
                         <div @click="setMonth(mIdx); calendarView = 'month'" class="card p-5 cursor-pointer group hover:brightness-110 transition">
-                            <h3 class="text-sm font-extrabold mb-3 text-center group-hover:text-indigo-400 transition-colors" x-text="mName"></h3>
+                            <h3 class="text-sm font-extrabold mb-3 text-center group-hover:accent transition-colors" x-text="mName"></h3>
                             <div class="grid grid-cols-7 text-center text-[10px] font-bold muted mb-1.5"><template x-for="d in dayHeads" :key="d"><div x-text="d.charAt(0)"></div></template></div>
                             <div class="grid grid-cols-7 gap-1 text-center text-[10px]">
                                 <template x-for="(c, ci) in getYearMonthDays(mIdx)" :key="ci">
-                                    <div class="py-1 rounded-md" :class="{'bg-indigo-600 text-white font-bold': c.isToday, 'text-amber-500 font-bold': c.holiday && !c.isToday, 'underline decoration-indigo-400 underline-offset-2': c.hasEvents && !c.isToday}" :title="c.holiday || ''" x-text="c.dayNum || ''"></div>
+                                    <div class="py-1 rounded-md" :class="{'istheute font-bold': c.isToday, 'text-amber-500 font-bold': c.holiday && !c.isToday, 'underline decoration-current underline-offset-2 accent': c.hasEvents && !c.isToday}" :title="c.holiday || ''" x-text="c.dayNum || ''"></div>
                                 </template>
                             </div>
                         </div>
@@ -1646,7 +1695,7 @@
                     <p class="label"><i class="fa-solid fa-palette mr-2"></i>Design</p>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <template x-for="t in themes" :key="t.id">
-                            <button @click="setTheme(t.id)" class="inner p-4 text-left text-xs font-bold transition flex items-center gap-3" :class="themeSettings === t.id ? '!border-indigo-500 ring-2 ring-indigo-500/30' : 'hover:brightness-110'">
+                            <button @click="setTheme(t.id)" class="inner p-4 text-left text-xs font-bold transition flex items-center gap-3" :class="themeSettings === t.id ? 'themeon' : 'hover:brightness-110'">
                                 <span class="w-6 h-6 rounded-full border shrink-0" :style="'background: linear-gradient(135deg,' + t.bg + ' 50%,' + t.accent + ' 50%); border-color: var(--border)'"></span><span x-text="t.label"></span>
                             </button>
                         </template>
@@ -2262,7 +2311,7 @@
         <form @submit.prevent="saveShopList()" class="card w-full max-w-sm p-6 sm:p-8 space-y-4">
             <h3 class="font-black text-lg" x-text="shopListDraft.id ? 'Liste bearbeiten' : 'Neue Einkaufsliste'"></h3>
             <input type="text" x-model="shopListDraft.name" maxlength="40" required placeholder="Name (z. B. Baumarkt)" class="field" aria-label="Name der Liste">
-            <div class="flex flex-wrap gap-2"><template x-for="e in ['🛒','🧺','🔨','🌱','🐶','🎉','💊','🍕','📦','🎁']" :key="e"><button type="button" @click="shopListDraft.emoji = e" class="w-10 h-10 rounded-xl inner text-lg" :class="shopListDraft.emoji === e ? '!border-indigo-500 ring-2 ring-indigo-500/30' : ''" x-text="e"></button></template></div>
+            <div class="flex flex-wrap gap-2"><template x-for="e in ['🛒','🧺','🔨','🌱','🐶','🎉','💊','🍕','📦','🎁']" :key="e"><button type="button" @click="shopListDraft.emoji = e" class="w-10 h-10 rounded-xl inner text-lg" :class="shopListDraft.emoji === e ? 'themeon' : ''" x-text="e"></button></template></div>
             <div class="flex items-center justify-between gap-3 pt-2">
                 <button type="button" x-show="shopListDraft.id" @click="deleteShopList()" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
                 <span class="flex-1"></span>
@@ -2329,7 +2378,7 @@
             </div>
 
             <div x-show="picker.kind !== 'date'" class="space-y-3" :class="picker.kind === 'datetime' ? 'pt-4 border-t divider' : ''">
-                <div class="flex items-center justify-center text-4xl font-black tabular-nums tracking-tight"><span x-text="pad2(picker.hh)"></span><span class="px-1 muted">:</span><span x-text="pad2(picker.mm)"></span></div>
+                <div class="flex items-center justify-center text-4xl font-black tabular-nums tracking-tight dsp"><span x-text="pad2(picker.hh)"></span><span class="px-1 muted">:</span><span x-text="pad2(picker.mm)"></span></div>
                 <div>
                     <p class="label mb-1.5">Stunde</p>
                     <div class="grid grid-cols-8 gap-1">
@@ -2570,7 +2619,7 @@
         <div class="card w-full max-w-lg p-6 sm:p-8 space-y-4">
             <h3 class="font-black text-lg flex items-center gap-2"><i class="fa-solid fa-shield-heart accent"></i>Passwort-Check</h3>
             <div class="inner p-4 flex items-center gap-4">
-                <div class="text-4xl font-black" :class="health.score >= 80 ? 'text-emerald-400' : health.score >= 50 ? 'text-amber-400' : 'text-rose-400'" x-text="health.score"></div>
+                <div class="text-4xl font-black dsp" :class="health.score >= 80 ? 'text-emerald-400' : health.score >= 50 ? 'text-amber-400' : 'text-rose-400'" x-text="health.score"></div>
                 <p class="text-xs muted leading-relaxed">Sicherheitswert von 100 für <b x-text="health.total"></b> Zugangsdaten mit Passwort. Geprüft wird nur auf diesem Gerät: schwache, mehrfach verwendete und (optional) bekannte geleakte Passwörter.</p>
             </div>
             <div class="space-y-4 max-h-[45vh] overflow-y-auto pr-1">
@@ -2732,7 +2781,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Christopher’s Space', weather: false, weatherPlace: null, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', weather: false, weatherPlace: null, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -2876,6 +2925,17 @@
 
         /* ============ Tresor-Kryptografie (WebCrypto) ============ */
         /* Zweite Logo-Farbe: dieselbe Farbe, um 45 Grad im Farbkreis gedreht */
+        /* Schwarz oder Weiß auf einer Farbe – je nachdem, was besser lesbar ist.
+           Nötig, weil die Akzentfarbe frei wählbar ist und sowohl sehr hell als auch sehr dunkel sein kann. */
+        function readableOn(hex) {
+            const c = String(hex || '').replace('#', '');
+            if (c.length !== 6) return '#ffffff';
+            const lin = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+            const L = .2126 * lin(parseInt(c.slice(0, 2), 16)) + .7152 * lin(parseInt(c.slice(2, 4), 16)) + .0722 * lin(parseInt(c.slice(4, 6), 16));
+            // Kontrast gegen Weiß bzw. gegen ein dunkles Grau vergleichen
+            return (1.05 / (L + .05)) >= ((L + .05) / .105) ? '#ffffff' : '#0d1117';
+        }
+
         function shiftHue(hex, deg) {
             const m = /^#([0-9a-f]{6})$/i.exec(String(hex || '')); if (!m) return hex;
             const n = parseInt(m[1], 16); let r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
@@ -3829,6 +3889,7 @@ function reply_(p) {
                     window.addEventListener('resize', () => { clearTimeout(this._refitT); this._refitT = setTimeout(() => this.mailRefit(), 250); }, { passive: true });
                     this.tickClock(); setInterval(() => this.tickClock(), 20000);
                     this.applyAppName();
+                    this.applyArea(this.activeTab);
                     window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
                     window.addEventListener('offline', () => { this.online = false; });
                     this.$watch('activeTab', v => { if (v === 'today') this.loadWeather(); this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
@@ -3850,11 +3911,17 @@ function reply_(p) {
                 /* ---------- Allgemein ---------- */
                 switchTab(tab) {
                     this.activeTab = tab;
+                    this.applyArea(tab);
                     localStorage.setItem('organizer_start_tab', tab);
                     if (tab === 'mail') this.mailEnter();
                     if (tab === 'today') this.todayEnter();
                     if (tab === 'passwords' && this.vaultState === 'locked') this.$nextTick(() => this.$refs.unlockInput?.focus());
                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                /* Färbt die Oberfläche in der Farbwelt des Bereichs */
+                applyArea(tab) {
+                    try { document.documentElement.dataset.area = tab || 'today'; } catch (e) {}
+                    this.syncThemeColor();
                 },
                 setTheme(theme) { this.themeSettings = theme; localStorage.setItem('organizer_theme', theme); document.documentElement.dataset.theme = theme; this.syncThemeColor(); },
                 /* Farbe der Systemleiste auf Mobilgeräten an das Design angleichen */
@@ -3867,6 +3934,9 @@ function reply_(p) {
                 get today() { void this.nowTick; return fmt(new Date()); },
                 addDaysStr(ds, n) { return fmt(addDays(parseDate(ds), n)); },
                 longDate(ds) { return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); },
+                weekdayName(ds) { return parseDate(ds).toLocaleDateString('de-DE', { weekday: 'long' }); },
+                dayNumber(ds) { return parseDate(ds).getDate() + '.'; },
+                monthName(ds) { return parseDate(ds).toLocaleDateString('de-DE', { month: 'long' }); },
                 shortDate(ds) { if (!ds) return ''; return parseDate(ds).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' }); },
                 toast(msg) { this.toastMsg = msg; clearTimeout(this._toastTimer); this._toastTimer = setTimeout(() => this.toastMsg = '', 2800); },
                 confirmBox: { open: false, title: '', text: '', ok: 'Löschen', danger: true, res: null },
@@ -3924,8 +3994,13 @@ function reply_(p) {
                 applyCfg() {
                     const r = document.documentElement;
                     r.dataset.density = this.cfg.density;
-                    if (this.cfg.accent) { r.style.setProperty('--accent', this.cfg.accent); r.style.setProperty('--accent2', shiftHue(this.cfg.accent, 45)); }
-                    else { r.style.removeProperty('--accent'); r.style.removeProperty('--accent2'); }
+                    if (this.cfg.accent) {
+                        r.style.setProperty('--accent', this.cfg.accent);
+                        r.style.setProperty('--accent2', shiftHue(this.cfg.accent, 45));
+                        r.style.setProperty('--on-accent', readableOn(this.cfg.accent));
+                    } else {
+                        r.style.removeProperty('--accent'); r.style.removeProperty('--accent2'); r.style.removeProperty('--on-accent');
+                    }
                     r.dataset.fsize = this.cfg.fontSize; r.dataset.font = this.cfg.font; r.dataset.radius = this.cfg.radius; r.dataset.card = this.cfg.cardStyle; r.dataset.bg = this.cfg.bgStyle;
                     if (this.cfg.reduceMotion) r.dataset.motion = 'reduce'; else delete r.dataset.motion;
                 },
@@ -4796,7 +4871,7 @@ function reply_(p) {
                 dueClass(t) {
                     if (t.done) return '';
                     if (dtOf(t.due, t.dueTime || '23:59') < new Date()) return 'text-rose-400 font-bold';
-                    return t.due === this.today ? 'text-indigo-400 font-bold' : '';
+                    return t.due === this.today ? 'accent font-bold' : '';
                 },
                 remindTimeOf(t) {
                     if (!t.reminder || t.done) return null;
@@ -5737,7 +5812,7 @@ function reply_(p) {
                 },
                 /* Letztes Wort des App-Namens farbig */
                 applyAppName() {
-                    const n = String(this.cfg.appName || '').trim() || 'Christopher’s Space';
+                    const n = String(this.cfg.appName || '').trim() || 'Alltag';
                     try {
                         document.title = n;
                         const l = document.querySelector('link[rel=manifest]');
@@ -5749,7 +5824,7 @@ function reply_(p) {
                         };
                         if (l.href.startsWith('data:')) {
                             setze(JSON.parse(decodeURIComponent(l.href.replace('data:application/manifest+json,', ''))));
-                        } else if (n !== 'Christophers Space' && n !== 'Christopher’s Space') {
+                        } else if (n !== 'Alltag') {
                             // Eigener Name: die Datei einmal laden und mit dem Namen überschreiben
                             fetch(l.href).then(r => r.json()).then(mf => {
                                 const basis = l.href.replace(/[^/]*$/, '');
@@ -5762,7 +5837,7 @@ function reply_(p) {
                     } catch (e) {}
                 },
                 get appTitle() {
-                    const n = String(this.cfg.appName || 'Christopher’s Space').trim() || 'Christopher’s Space';
+                    const n = String(this.cfg.appName || 'Alltag').trim() || 'Alltag';
                     const i = n.lastIndexOf(' ');
                     return i < 1 ? { first: '', last: n } : { first: n.slice(0, i + 1), last: n.slice(i + 1) };
                 },
