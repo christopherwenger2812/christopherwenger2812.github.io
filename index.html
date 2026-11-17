@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.17-6">
+    <meta name="app-version" content="2026.11.17-8">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3978,11 +3978,26 @@ function doPost(e) {
   return handle_(body);
 }
 
+/* Ohne diesen Mantel beantwortet Google einen Programmfehler mit einer
+   HTML-Fehlerseite ohne CORS-Kopfzeilen. Im Browser kommt dann nur
+   „Failed to fetch“ an und niemand weiß, woran es lag. */
+function sicher_(fn) {
+  try { return fn(); }
+  catch (err) {
+    var t = String(err && err.message || err);
+    if (/autoris|authoriz|permission|Berechtigung/i.test(t))
+      t = 'Dem Script fehlen Berechtigungen. Bitte im Script-Editor einmal die Funktion morgenmail ausführen, zustimmen und danach eine neue Version bereitstellen. (' + t + ')';
+    return out_({ ok: false, error: t });
+  }
+}
+
 function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-function handle_(p) {
+function handle_(p) { return sicher_(function () { return handle2_(p); }); }
+
+function handle2_(p) {
   var room = String(p.room || '');
   if (!/^[a-f0-9]{32}$/.test(room)) return out_({ ok: false, error: 'Ungültiger Raum' });
   if (p.action === 'fetchurl') return fetchUrl_(String(p.url || ''));
@@ -7096,9 +7111,14 @@ function reply_(p) {
                     finally { this.pushBusy = false; }
                 },
                 mailDayErr(e) {
-                    return /Unbekannte Aktion/.test(e.message || '')
-                        ? 'Das Google-Script kennt die Morgenmail noch nicht – bitte das neue Script kopieren und als neue Version bereitstellen.'
-                        : (e.message || 'Hat nicht geklappt');
+                    const m = e.message || '';
+                    if (/Unbekannte Aktion/.test(m)) return 'Das Google-Script kennt diese Aktion noch nicht – bitte das neue Script kopieren und als neue Version bereitstellen.';
+                    /* „Failed to fetch“ heißt: Der Browser kam gar nicht erst beim Script an.
+                       Die Meldung allein hilft niemandem, deshalb die üblichen Ursachen. */
+                    if (/Failed to fetch|NetworkError|Load failed|fetch/i.test(m))
+                        return 'Der Browser erreicht das Script nicht. Meist liegt es an der Bereitstellung: Zugriff muss auf „Jeder“ stehen (nicht „Jeder mit Google-Konto“), ausgeführt als „Ich“. Prüfe außerdem, ob die hinterlegte URL auf /exec endet und ob der Abgleich sonst funktioniert.';
+                    if (/abort/i.test(m)) return 'Das Script hat nicht rechtzeitig geantwortet. Nochmal versuchen.';
+                    return m || 'Hat nicht geklappt';
                 },
 
                 /* ---------- Verbrauch ---------- */
