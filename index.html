@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.16-11">
+    <meta name="app-version" content="2026.11.17-6">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -84,12 +84,17 @@
             }
         } catch (e) {}
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <!-- Bibliotheken: zuerst aus dem Ordner lib/ neben dieser Datei, sonst aus dem Netz.
+         Wer die Dateien dort ablegt, startet schneller, bleibt offline vollständig
+         und hängt an keinem fremden Server. Fehlt der Ordner, greift der Rückfall. -->
+    <link rel="stylesheet" href="lib/tailwind.css"
+          onerror="this.remove(); const s = document.createElement('script'); s.src = 'https://cdn.tailwindcss.com/3.4.17'; document.head.appendChild(s)">
+    <link rel="stylesheet" href="lib/fontawesome.css"
+          onerror="this.onerror=null; this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'">
+    <link rel="stylesheet" href="lib/fonts.css"
+          onerror="this.onerror=null; this.href='https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap'">
+    <script defer src="lib/alpine.js"
+            onerror="const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js'; s.defer = true; document.head.appendChild(s)"></script>
     <style>
         [x-cloak] { display: none !important; }
 
@@ -325,16 +330,16 @@
         .note .nx { font-size: .8rem; line-height: 1.5; color: var(--muted); white-space: pre-wrap; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
         .note .nd { font-size: .68rem; font-weight: 600; color: var(--muted); margin-top: .15rem; }
         /* Karten dicht untereinander packen, statt Lücken neben kurzen Karten zu lassen */
+        details[open] > summary > .fa-chevron-right { transform: rotate(90deg); }
+        summary > .fa-chevron-right { transition: transform .15s; }
         .cardcols { columns: 1; column-gap: 1.25rem; }
         .cardcols > * { break-inside: avoid; margin-bottom: 1.25rem; display: inline-block; width: 100%; }
         @media (min-width: 1024px) { .cardcols { columns: 2; } }
         @media (min-width: 1600px) { .cardcols { columns: 3; } }
         @media (min-width: 2000px) { .cardcols { columns: 4; } }
-        .notegrid { columns: 1; column-gap: .9rem; }
-        .notegrid > * { break-inside: avoid; margin-bottom: .9rem; display: inline-block; width: 100%; }
-        @media (min-width: 640px) { .notegrid { columns: 2; } }
-        @media (min-width: 1024px) { .notegrid { columns: 3; } }
-        @media (min-width: 1536px) { .notegrid { columns: 4; } }
+        /* Echtes Raster statt Spaltenumbruch: so stehen die Notizen in der
+           Reihenfolge, in der sie gelesen werden – angeheftete zuerst. */
+        .notegrid { display: grid; gap: .9rem; align-items: start; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
         /* ---------- Handy ---------- */
         @media (pointer: coarse) {
             .icon-btn { width: 2.6rem; height: 2.6rem; }
@@ -616,7 +621,7 @@
 
             <!-- ================= HEUTE ================= -->
             <section x-show="activeTab === 'today'" x-cloak class="space-y-5">
-                <div class="card hero p-5 sm:p-7 flex flex-wrap items-end gap-x-6 gap-y-4">
+                <div class="card hero p-5 sm:p-7 flex flex-wrap items-start gap-x-6 gap-y-4">
                     <div class="mr-auto min-w-0">
                         <p class="text-[11px] font-bold uppercase" style="letter-spacing: .08em; color: var(--area-ink)" x-text="weekdayName(today)"></p>
                         <h2 class="dsp text-4xl sm:text-5xl font-extrabold tracking-tight mt-0.5 leading-none"><span class="num" x-text="dayNumber(today)"></span> <span x-text="monthName(today)"></span></h2>
@@ -636,10 +641,11 @@
                     <div>
                         <!-- leer: nur eine Zeile -->
                         <template x-if="startLeer(tile)">
-                            <button type="button" class="card w-full flex items-center gap-3 px-4 py-2.5 text-left hover:brightness-[1.03]" @click="switchTab(startLeerTab(tile))">
-                                <i :class="startTileIcon(tile)" class="text-xs shrink-0" style="color: var(--area-ink)"></i>
-                                <span class="text-[13px] font-bold truncate" x-text="startTileLabel(tile)"></span>
-                                <span class="text-[12px] muted truncate flex-1" x-text="'· ' + startLeerText(tile)"></span>
+                            <!-- Gleiche Breite, gleicher Innenabstand und gleiche Überschrift wie eine
+                                 volle Karte – nur flacher. So bleibt die Seite ruhig. -->
+                            <button type="button" class="card w-full px-5 sm:px-6 py-3.5 text-left hover:brightness-[1.03] flex items-center gap-3" @click="switchTab(startLeerTab(tile))">
+                                <span class="label flex items-center gap-2 shrink-0"><i :class="startTileIcon(tile)" style="color: var(--area-ink)"></i><span x-text="startTileLabel(tile)"></span></span>
+                                <span class="text-[12px] muted font-semibold truncate flex-1" x-text="startLeerText(tile)"></span>
                                 <i class="fa-solid fa-chevron-right text-[10px] muted shrink-0"></i>
                             </button>
                         </template>
@@ -1072,19 +1078,37 @@
                     <button x-show="!noteQuery.trim()" @click="openNote()" class="btn btn-soft mt-4"><i class="fa-solid fa-plus"></i>Erste Notiz schreiben</button>
                 </div>
 
-                <div class="notegrid">
-                    <template x-for="n in notesView" :key="n.id">
-                        <div>
+                <!-- Angeheftetes zuerst, deutlich abgesetzt -->
+                <div x-show="notesPinned.length" class="space-y-2">
+                    <p class="label"><i class="fa-solid fa-thumbtack mr-2"></i>Angeheftet</p>
+                    <div class="notegrid">
+                        <template x-for="n in notesPinned" :key="n.id">
                             <div class="note" :class="[n.color ? 'col' : '', n.pin ? 'pin' : '']" :style="n.color ? '--nc:' + n.color : ''" role="button" tabindex="0" @click="openNote(n)" @keydown.enter.self="openNote(n)">
-                                <div class="flex items-start gap-2">
-                                    <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
-                                    <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
-                                </div>
-                                <p class="nx" x-show="n.text" x-text="n.text"></p>
-                                <p class="nd" x-text="noteDate(n.updated)"></p>
+                            <div class="flex items-start gap-2">
+                                <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
+                                <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
                             </div>
+                            <p class="nx" x-show="n.text" x-text="n.text"></p>
+                            <p class="nd" x-text="noteDate(n.updated)"></p>
                         </div>
-                    </template>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="notesRest.length" class="space-y-2">
+                    <p class="label" x-show="notesPinned.length">Weitere</p>
+                    <div class="notegrid">
+                        <template x-for="n in notesRest" :key="n.id">
+                            <div class="note" :class="[n.color ? 'col' : '', n.pin ? 'pin' : '']" :style="n.color ? '--nc:' + n.color : ''" role="button" tabindex="0" @click="openNote(n)" @keydown.enter.self="openNote(n)">
+                            <div class="flex items-start gap-2">
+                                <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
+                                <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
+                            </div>
+                            <p class="nx" x-show="n.text" x-text="n.text"></p>
+                            <p class="nd" x-text="noteDate(n.updated)"></p>
+                        </div>
+                        </template>
+                    </div>
                 </div>
             </section>
 
@@ -1224,51 +1248,77 @@
 
                         <template x-if="meterStats(m).readings >= 2">
                             <div class="space-y-4">
-                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-                                    <div class="inner p-3">
-                                        <p class="label !text-[10px]">Aktueller Stand</p>
-                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).last.value, 1)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                <!-- Antwort zuerst: Wie stehe ich da? -->
+                                <div class="inner p-4" :style="meterAmpel(m).stufe ? 'background: color-mix(in srgb, var(--am) 10%, var(--surface)); border-color: color-mix(in srgb, var(--am) 28%, transparent)' : ''">
+                                    <p class="text-base sm:text-lg font-black leading-snug" x-text="meterSatz(m)"></p>
+                                    <p class="text-[12px] muted font-semibold mt-1" x-text="meterSatzKosten(m)"></p>
+                                    <div x-show="m.target > 0" class="mt-3 space-y-1">
+                                        <div class="h-2.5 rounded-full overflow-hidden" style="background: var(--border)">
+                                            <div class="h-full rounded-full transition-all" :style="'width:' + Math.min(100, meterStats(m).pct) + '%; background: var(--am)'"></div>
+                                        </div>
+                                        <div class="flex justify-between text-[10px] font-bold muted">
+                                            <span>0</span>
+                                            <span class="num" x-text="'Jahreswert ' + fmtNum(m.target) + ' ' + m.unit"></span>
+                                        </div>
                                     </div>
-                                    <div class="inner p-3">
-                                        <p class="label !text-[10px]">Pro Tag</p>
-                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).perDay, 2)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
-                                        <p class="text-[10px] muted font-semibold" x-text="'über ' + meterStats(m).days + ' Tage'"></p>
-                                    </div>
-                                    <div class="inner p-3">
-                                        <p class="label !text-[10px]">Letzte 30 Tage</p>
-                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).month30, 1)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
-                                    </div>
-                                    <div class="inner p-3">
-                                        <p class="label !text-[10px]">Hochrechnung Jahr</p>
-                                        <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).year)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
-                                        <p class="text-[10px] muted font-semibold" x-show="!meterStats(m).ready">noch wenige Tage – ungenau</p>
-                                    </div>
+                                    <p x-show="!m.target" class="text-[11px] muted mt-2">
+                                        Trag unter „Zähler bearbeiten" deinen geplanten Jahresverbrauch ein – dann steht hier, ob du drüber oder drunter liegst.
+                                    </p>
                                 </div>
 
-                                <!-- Vergleich mit dem Jahreswert -->
-                                <div x-show="m.target > 0" class="space-y-1.5">
-                                    <div class="flex items-center justify-between text-xs font-bold">
-                                        <span>Jahreswert <span class="muted font-semibold num" x-text="fmtNum(m.target) + ' ' + m.unit"></span></span>
-                                        <span :style="'color:' + (meterAmpel(m).farbe || 'var(--muted)')">
-                                            <span x-text="meterAmpel(m).label"></span>
-                                            <span class="num" x-text="' · ' + (meterStats(m).diff > 0 ? '+' : '') + fmtNum(meterStats(m).diff) + ' ' + m.unit"></span>
-                                        </span>
-                                    </div>
-                                    <div class="h-2.5 rounded-full overflow-hidden" style="background: var(--border)">
-                                        <div class="h-full rounded-full transition-all" :style="'width:' + Math.min(100, meterStats(m).pct) + '%; background: var(--am)'"></div>
-                                    </div>
-                                    <p class="text-[11px] muted font-semibold"><span class="num" x-text="meterStats(m).pct"></span> % des geplanten Jahresverbrauchs</p>
+                                <!-- Vertrag -->
+                                <div x-show="(m.contracts || []).length" class="inner p-3 space-y-2">
+                                    <template x-if="vertragAktiv(m)">
+                                        <div class="space-y-1.5">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <p class="label !text-[11px] mr-auto"><i class="fa-solid fa-file-signature mr-1.5"></i><span x-text="vertragAktiv(m).name || 'Laufender Vertrag'"></span></p>
+                                                <span class="text-[11px] muted font-semibold" x-text="vertragZeitraum(vertragAktiv(m))"></span>
+                                            </div>
+                                            <p class="text-[11px] muted font-semibold">
+                                                <span class="num" x-text="fmtNum(vertragAktiv(m).price, 2)"></span> € je <span x-text="m.unit"></span>
+                                                <span x-show="vertragAktiv(m).base"> · Grundpreis <span class="num" x-text="fmtEuro(vertragAktiv(m).base)"></span> im Monat</span>
+                                                <span x-show="vertragAktiv(m).monthly"> · Abschlag <span class="num" x-text="fmtEuro(vertragAktiv(m).monthly)"></span></span>
+                                                <span x-show="vertragTage(vertragAktiv(m)) !== null"> · noch <span class="num" x-text="vertragTage(vertragAktiv(m))"></span> Tage</span>
+                                            </p>
+                                            <div x-show="vertragWarnung(m)" class="flex items-center gap-2 flex-wrap text-[11px] font-bold" style="color: #b45309">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <span x-text="vertragWarnung(m)"></span>
+                                                <button type="button" class="btn btn-soft !py-1 !px-2 !text-[11px]" @click="vertragErinnern(m)"><i class="fa-solid fa-bell"></i>Erinnern</button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <p x-show="!vertragAktiv(m)" class="text-[11px] muted">Zurzeit läuft kein hinterlegter Vertrag – gerechnet wird mit den Preisen am Zähler.</p>
                                 </div>
 
-                                <!-- Kosten -->
-                                <div x-show="m.price > 0" class="flex flex-wrap gap-2.5">
-                                    <span class="chip !py-2"><i class="fa-solid fa-euro-sign"></i>Jahr etwa <b class="num" x-text="fmtEuro(meterStats(m).costYear)"></b></span>
-                                    <span class="chip !py-2" x-show="m.monthly > 0"><i class="fa-solid fa-file-invoice"></i>Abschlag <b class="num" x-text="fmtEuro(m.monthly * 12)"></b></span>
-                                    <span class="chip !py-2" x-show="m.monthly > 0" :class="meterStats(m).costDiff > 0 ? '!text-rose-400' : '!text-emerald-400'">
-                                        <i class="fa-solid" :class="meterStats(m).costDiff > 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'"></i>
-                                        <span x-text="meterStats(m).costDiff > 0 ? 'Nachzahlung etwa ' : 'Guthaben etwa '"></span><b class="num" x-text="fmtEuro(Math.abs(meterStats(m).costDiff))"></b>
-                                    </span>
-                                </div>
+                                <!-- Die Zahlen dahinter, erklärt -->
+                                <details>
+                                    <summary class="label cursor-pointer select-none"><i class="fa-solid fa-chevron-right text-[9px] mr-1.5 muted"></i>Zahlen im Einzelnen</summary>
+                                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-2">                                        <div class="inner p-3">
+                                            <p class="label !text-[10px]">Zählerstand</p>
+                                            <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).last.value, 1)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                            <p class="text-[10px] muted font-semibold">was auf dem Zähler steht</p>
+                                        </div>
+                                        <div class="inner p-3">
+                                            <p class="label !text-[10px]">Pro Tag</p>
+                                            <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).perDay, 2)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                            <p class="text-[10px] muted font-semibold" x-text="'Schnitt über ' + meterStats(m).days + ' Tage'"></p>
+                                        </div>
+                                        <div class="inner p-3">
+                                            <p class="label !text-[10px]">Letzte 30 Tage</p>
+                                            <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).month30, 1)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                            <p class="text-[10px] muted font-semibold">zuletzt verbraucht</p>
+                                        </div>
+                                        <div class="inner p-3">
+                                            <p class="label !text-[10px]">Aufs Jahr gerechnet</p>
+                                            <p class="text-lg font-black num mt-0.5"><span x-text="fmtNum(meterStats(m).year)"></span> <span class="text-xs muted" x-text="m.unit"></span></p>
+                                            <p class="text-[10px] muted font-semibold" x-text="meterStats(m).ready ? 'bei gleichem Verbrauch' : 'noch wenige Tage – ungenau'"></p>
+                                        </div>
+                                    </div>
+                                    <p class="text-[11px] muted leading-relaxed mt-2">
+                                        Die Hochrechnung nimmt den Schnitt aller Ablesungen mal 365 Tage. Je länger du mitschreibst,
+                                        desto belastbarer wird sie – im Winter liegt sie bei Gas und Strom naturgemäß zu hoch.
+                                    </p>
+                                </details>
 
                                 <!-- Monatsbalken -->
                                 <div x-show="meterMonths(m).length > 1" class="space-y-1.5">
@@ -1287,7 +1337,7 @@
 
                                 <!-- Ablesungen -->
                                 <details class="pt-1">
-                                    <summary class="label cursor-pointer select-none">Ablesungen <span class="ct" x-text="meterStats(m).readings"></span></summary>
+                                    <summary class="label cursor-pointer select-none"><i class="fa-solid fa-chevron-right text-[9px] mr-1.5 muted"></i>Ablesungen <span class="ct" x-text="meterStats(m).readings"></span></summary>
                                     <div class="mt-2 space-y-1">
                                         <template x-for="r in meterRead(m.id).slice().reverse()" :key="r.id">
                                             <button type="button" class="prow w-full" @click="openReading(m, r)">
@@ -1313,7 +1363,7 @@
                         <p class="muted text-xs mt-1 font-medium"><span x-text="recipes.length"></span> gespeichert · Zutaten wandern auf Knopfdruck in die Einkaufsliste</p>
                     </div>
                     <div class="flex gap-2">
-                        <input type="search" x-model="recipeQuery" placeholder="Suchen…" class="field sm:!w-52" aria-label="Rezepte durchsuchen">
+                        <input type="search" x-model="recipeQuery" @input="recipePage = 0" placeholder="Suchen…" class="field sm:!w-52" aria-label="Rezepte durchsuchen">
                         <div class="seg shrink-0" role="group" aria-label="Ansicht">
                             <button type="button" @click="cfg.recipeView = 'grid'; saveCfg()" :class="cfg.recipeView !== 'list' ? 'on' : ''" aria-label="Kacheln"><i class="fa-solid fa-table-cells-large"></i></button>
                             <button type="button" @click="cfg.recipeView = 'list'; saveCfg()" :class="cfg.recipeView === 'list' ? 'on' : ''" aria-label="Liste"><i class="fa-solid fa-list"></i></button>
@@ -1373,7 +1423,7 @@
 
                 <!-- Liste -->
                 <div x-show="cfg.recipeView === 'list'" class="card p-2 sm:p-3">
-                    <template x-for="r in recipesView" :key="r.id">
+                    <template x-for="r in recipesPaged" :key="r.id">
                         <div class="prow !gap-3">
                             <button type="button" class="flex items-center gap-3 flex-1 min-w-0 text-left" @click="openRecipe(r)">
                                 <span class="text-xl leading-none shrink-0" x-text="r.emoji"></span>
@@ -1393,7 +1443,7 @@
                 </div>
 
                 <div x-show="cfg.recipeView !== 'list'" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                    <template x-for="r in recipesView" :key="r.id">
+                    <template x-for="r in recipesPaged" :key="r.id">
                         <button type="button" class="card p-4 text-left flex gap-3.5 items-start hover:brightness-[1.04] transition" @click="openRecipe(r)">
                             <span class="text-3xl leading-none shrink-0 mt-0.5" x-text="r.emoji"></span>
                             <span class="min-w-0 flex-1">
@@ -1407,6 +1457,12 @@
                             <span class="shrink-0" :class="r.fav ? 'text-amber-400' : 'muted opacity-40'" @click.stop="toggleRecipeFav(r)"><i :class="r.fav ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></span>
                         </button>
                     </template>
+                </div>
+
+                <div x-show="recipePages > 1" class="flex items-center justify-center gap-3 pt-1">
+                    <button type="button" class="btn btn-soft" :disabled="recipePage === 0" @click="recipeGo(-1)"><i class="fa-solid fa-chevron-left"></i>Zurück</button>
+                    <span class="text-[12px] font-bold muted">Seite <span class="num" x-text="recipePage + 1"></span> von <span class="num" x-text="recipePages"></span><span class="hidden sm:inline" x-text="' · ' + recipesView.length + ' Rezepte'"></span></span>
+                    <button type="button" class="btn btn-soft" :disabled="recipePage >= recipePages - 1" @click="recipeGo(1)">Weiter<i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </section>
 
@@ -1565,6 +1621,9 @@
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost mstar shrink-0" :class="mailCurRow.star ? 'on' : ''" :disabled="!mailSel" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren" aria-label="Markieren"><i :class="mailCurRow.star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
                         <span x-show="mailCfg.accounts.length" class="sep"></span>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="laterOpen('snooze')" title="Später wieder vorlegen"><i class="fa-solid fa-clock-rotate-left"></i><span class="hidden lg:inline">Später</span></button>
+                        <button x-show="mailCfg.accounts.length && abbestellLink" class="btn btn-ghost shrink-0" @click="window.open(abbestellLink, '_blank', 'noopener')" title="Newsletter abbestellen"><i class="fa-solid fa-envelope-circle-check"></i><span class="hidden xl:inline">Abbestellen</span></button>
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="blockSender(mailCurRow)" title="Absender künftig in den Spam"><i class="fa-solid fa-user-slash"></i></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailToTodo()" title="Als Aufgabe merken"><i class="fa-solid fa-list-check"></i><span class="hidden lg:inline">Aufgabe</span></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailToEvent()" title="Als Termin eintragen"><i class="fa-regular fa-calendar-plus"></i><span class="hidden lg:inline">Termin</span></button>
                         <span class="flex-1 min-w-[.5rem]"></span>
@@ -1602,6 +1661,46 @@
                                 </template>
                             </div>
                         </div>
+                        <!-- Eigene Ordner (Gmail-Labels) -->
+                        <div x-show="mailLabels.length" class="pt-2 border-t divider">
+                            <p class="label px-2 pb-1.5">Ordner</p>
+                            <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
+                                <template x-for="l in mailLabels" :key="l.name">
+                                    <button class="mfold" :class="mailFolder === 'label:' + l.name ? 'on' : ''" @click="mailSetFolder('label:' + l.name)">
+                                        <i class="fa-solid fa-folder w-4 text-center"></i><span class="truncate" x-text="l.name"></span>
+                                        <span x-show="l.unread > 0" class="ml-auto text-[10px] font-black px-1.5 rounded-full" style="background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent)" x-text="l.unread"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                        <!-- Entwürfe (nur auf diesem Gerät) -->
+                        <div x-show="entwuerfe.length" class="pt-2 border-t divider">
+                            <p class="label px-2 pb-1.5">Entwürfe</p>
+                            <template x-for="e in entwuerfe" :key="e.id">
+                                <div class="flex items-start gap-1.5 px-2 py-1">
+                                    <i class="fa-regular fa-pen-to-square w-4 text-center text-[10px] mt-1 muted"></i>
+                                    <button type="button" class="min-w-0 flex-1 text-left" @click="entwurfOeffnen(e)">
+                                        <span class="block text-[11px] font-bold truncate" x-text="entwurfLabel(e)"></span>
+                                        <span class="block text-[10px] muted font-semibold" x-text="mailDayZeit(new Date(e.at).toISOString())"></span>
+                                    </button>
+                                    <button type="button" class="shrink-0 muted hover:opacity-100 opacity-60 px-1" @click="entwurfLoeschen(e.id)" aria-label="Entwurf löschen"><i class="fa-solid fa-xmark text-[11px]"></i></button>
+                                </div>
+                            </template>
+                        </div>
+                        <!-- Vorgemerkt: später senden und Wiedervorlage -->
+                        <div x-show="laterItems.length" class="pt-2 border-t divider">
+                            <p class="label px-2 pb-1.5">Vorgemerkt</p>
+                            <template x-for="j in laterItems" :key="j.id">
+                                <div class="flex items-start gap-1.5 px-2 py-1">
+                                    <i class="fa-solid w-4 text-center text-[10px] mt-1 muted" :class="j.art === 'send' ? 'fa-paper-plane' : 'fa-clock-rotate-left'"></i>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-[11px] font-bold truncate" x-text="j.was"></p>
+                                        <p class="text-[10px] muted font-semibold" x-text="mailDayZeit(new Date(j.wann).toISOString())"></p>
+                                    </div>
+                                    <button type="button" class="shrink-0 muted hover:opacity-100 opacity-60 px-1" @click="laterAbbrechen(j.id)" aria-label="Abbrechen"><i class="fa-solid fa-xmark text-[11px]"></i></button>
+                                </div>
+                            </template>
+                        </div>
                         <div class="pt-2 border-t divider space-y-1.5">
                             <button x-show="mailCfg.accounts.length > 1" class="mfold w-full" :class="mailAcc === 'all' ? 'on' : ''" @click="mailSetAcc('all')"><i class="fa-solid fa-layer-group w-4 text-center"></i>Alle Postfächer</button>
                             <template x-for="a in mailCfg.accounts" :key="a.id">
@@ -1632,6 +1731,9 @@
                         <div x-show="mailSelMode && mailSelected.length" class="px-3 pb-2.5 pt-2.5 flex gap-1.5 overflow-x-auto" style="background: color-mix(in srgb, var(--accent) 12%, var(--surface))">
                             <template x-for="a in quickActions" :key="'m' + a.id">
                                 <button type="button" x-show="quickOk(a, mailPicked)" class="chip !py-2 !px-3 shrink-0" @click="runQuick(a, mailPicked)"><i :class="a.icon"></i><span x-text="a.label"></span></button>
+                            </template>
+                            <template x-for="l in mailLabels" :key="'mv' + l.name">
+                                <button type="button" class="chip !py-2 !px-3 shrink-0" @click="inOrdner(l.name)"><i class="fa-solid fa-folder"></i><span x-text="l.name"></span></button>
                             </template>
                         </div>
                         <div class="px-3 pt-3 pb-2 flex items-center gap-2">
@@ -1991,14 +2093,65 @@
                                         <button type="button" class="btn btn-primary" x-show="!cfg.morningMail" :disabled="mailDayBusy" @click="mailDayOn()"><i class="fa-solid fa-play"></i>Einschalten</button>
                                         <button type="button" class="btn btn-soft" x-show="cfg.morningMail" :disabled="mailDayBusy" @click="mailDayOff()"><i class="fa-solid fa-stop"></i>Abschalten</button>
                                         <button type="button" class="btn btn-soft" :disabled="mailDayBusy" @click="mailDayTest()"><i class="fa-regular fa-paper-plane"></i>Jetzt testen</button>
+                                        <button type="button" class="btn btn-soft" :disabled="mailDayBusy" @click="mailDayCheck()"><i class="fa-solid fa-stethoscope"></i>Prüfen</button>
                                         <span x-show="mailDayBusy" class="text-[12px] font-bold accent self-center"><i class="fa-solid fa-circle-notch spin mr-1.5"></i>einen Moment …</span>
                                     </div>
                                     <p x-show="mailDayMsg" class="text-[12px] font-bold" x-text="mailDayMsg"></p>
+                                    <div x-show="mailDayStat" class="inner p-3 text-[11px] space-y-1 font-semibold">
+                                        <p><span class="muted">Täglicher Auslöser:</span> <span x-text="mailDayStat?.ausloeser ? 'vorhanden, ' + String(mailDayStat.stunde).padStart(2, '0') + ':00 Uhr (' + mailDayStat.zeitzone + ')' : 'fehlt'"></span></p>
+                                        <p><span class="muted">Empfänger:</span> <span x-text="mailDayStat?.an"></span></p>
+                                        <p><span class="muted">Letzter Lauf:</span> <span x-text="mailDayZeit(mailDayStat?.letzterLauf) + (mailDayStat?.letzterLauf ? (mailDayStat.letzterOk ? ' · erfolgreich' : ' · gescheitert') : '')"></span></p>
+                                        <p x-show="mailDayStat?.letzterFehler" class="text-amber-400" x-text="'Fehler: ' + mailDayStat?.letzterFehler"></p>
+                                        <p><span class="muted">Übersicht im Drive:</span> <span x-text="mailDayStat?.datei ? 'vorhanden, ' + mailDayStat.dateiAlterStd + ' Std alt' : 'fehlt'"></span></p>
+                                        <p><span class="muted">Freie Mails heute:</span> <span class="num" x-text="mailDayStat?.restKontingent"></span></p>
+                                    </div>
                                     <p class="text-[11px] muted leading-relaxed">
                                         Wichtig: Dein Abgleich ist verschlüsselt, das Script kann ihn nicht lesen. Für die Mail legt die App deshalb zusätzlich eine <b>unverschlüsselte</b> Kurzfassung in deinem Drive ab – Datum, Uhrzeit und Titel der nächsten sieben Tage, dazu offene Aufgaben. Notizen, Orte, Einkauf, Rezepte und der Tresor bleiben außen vor. Die Datei heißt <code>space-agenda-…</code> und lässt sich dort jederzeit löschen.
                                     </p>
                                 </div>
                             </template>
+                        </div>
+
+                        <!-- Erinnerungen, wenn die App zu ist -->
+                        <div x-show="!setQuery.trim() && setCat === 'notify'" class="card p-5 sm:p-6 space-y-3">
+                            <p class="label"><i class="fa-solid fa-bell mr-2"></i>Erinnerungen aufs Handy</p>
+                            <p class="text-[11px] muted leading-relaxed">
+                                Benachrichtigungen im Browser erscheinen nur, solange die App offen ist. Damit eine Erinnerung
+                                auch bei geschlossener App ankommt, schaut dein Google-Script alle fünf Minuten nach, was fällig ist,
+                                und schickt es an <b>ntfy</b> – eine kostenlose Push-App ohne Konto.
+                            </p>
+                            <ol class="text-[11px] muted leading-relaxed list-decimal pl-5 space-y-0.5">
+                                <li>ntfy aus dem Play Store oder App Store installieren</li>
+                                <li>Hier einschalten – dabei entsteht ein zufälliger Themenname</li>
+                                <li>In ntfy auf „+" tippen und genau diesen Namen abonnieren</li>
+                            </ol>
+                            <div x-show="cfg.pushTopic" class="inner p-3 space-y-1.5">
+                                <p class="label">Dein Thema</p>
+                                <div class="flex items-center gap-2">
+                                    <code class="text-[12px] font-bold break-all flex-1" x-text="cfg.pushTopic"></code>
+                                    <button type="button" class="icon-btn !w-8 !h-8 shrink-0" @click="copy(cfg.pushTopic); toast('Kopiert')" aria-label="Thema kopieren"><i class="fa-regular fa-copy text-xs"></i></button>
+                                </div>
+                                <p class="text-[11px] muted">Wer diesen Namen kennt, sieht deine Erinnerungen. Gib ihn nicht weiter.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-primary" x-show="!cfg.pushOn" :disabled="pushBusy || !mailDayReady" @click="pushAn()"><i class="fa-solid fa-play"></i>Einschalten</button>
+                                <button type="button" class="btn btn-soft" x-show="cfg.pushOn" :disabled="pushBusy" @click="pushAus()"><i class="fa-solid fa-stop"></i>Abschalten</button>
+                                <button type="button" class="btn btn-soft" x-show="cfg.pushOn" :disabled="pushBusy" @click="pushTest()"><i class="fa-regular fa-paper-plane"></i>Testnachricht</button>
+                                <button type="button" class="btn btn-soft" x-show="cfg.pushOn" :disabled="pushBusy" @click="pushPruefen()"><i class="fa-solid fa-stethoscope"></i>Prüfen</button>
+                                <span x-show="pushBusy" class="text-[12px] font-bold accent self-center"><i class="fa-solid fa-circle-notch spin mr-1.5"></i>einen Moment …</span>
+                            </div>
+                            <p x-show="!mailDayReady" class="text-[12px] font-bold">Dafür muss zuerst das Google-Script unter „Verbundene Geräte" eingerichtet sein.</p>
+                            <p x-show="pushMsg" class="text-[12px] font-bold" x-text="pushMsg"></p>
+                            <div x-show="pushStat" class="inner p-3 text-[11px] space-y-1 font-semibold">
+                                <p><span class="muted">Dienst:</span> <span x-text="pushStat?.ausloeser ? 'läuft, alle 5 Minuten' : 'läuft nicht'"></span></p>
+                                <p><span class="muted">Zuletzt geprüft:</span> <span x-text="mailDayZeit(pushStat?.letzterLauf)"></span></p>
+                                <p><span class="muted">Bisher verschickt:</span> <span class="num" x-text="pushStat?.verschickt"></span></p>
+                                <p x-show="pushStat?.letzterFehler" class="text-amber-400" x-text="'Fehler: ' + pushStat?.letzterFehler"></p>
+                            </div>
+                            <p class="text-[11px] muted leading-relaxed">
+                                Damit das Script weiß, was ansteht, liegt dieselbe unverschlüsselte Kurzfassung in deinem Drive
+                                wie bei der Morgenmail – Datum, Uhrzeit und Titel. Notizen, Einkauf, Rezepte und der Tresor bleiben außen vor.
+                            </p>
                         </div>
 
                         <div x-show="!setQuery.trim() && setCat === 'today'" class="card p-5 sm:p-6 space-y-3">
@@ -2098,6 +2251,21 @@
                                     </div>
                                 </template>
                                 <button type="button" class="btn btn-soft" x-show="mailCfg.settings.templates.length < 12" @click="mailCfg.settings.templates.push({ name: 'Neuer Baustein', text: '' }); saveMailCfg()"><i class="fa-solid fa-plus"></i>Baustein hinzufügen</button>
+                            </div>
+                            <div class="pt-3 border-t divider space-y-2">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="text-sm font-bold mr-auto">Regeln</p>
+                                    <button type="button" class="btn btn-soft !py-2 !px-3 !text-xs" @click="ruleOpen(null)"><i class="fa-solid fa-plus"></i>Neue Regel</button>
+                                </div>
+                                <p class="text-[11px] muted leading-relaxed">Sortiert eingehende Mails automatisch ein – der Reihe nach, die erste passende Regel gewinnt.</p>
+                                <p x-show="!mailRules.length" class="text-[11px] muted">Noch keine Regel angelegt.</p>
+                                <template x-for="r in mailRules" :key="r.id">
+                                    <button type="button" class="prow w-full text-left" @click="ruleOpen(r)">
+                                        <i class="fa-solid shrink-0 text-xs" :class="r.an ? 'fa-circle-check accent' : 'fa-circle-pause muted'"></i>
+                                        <span class="text-[12px] font-semibold flex-1 min-w-0 truncate" x-text="ruleText(r)"></span>
+                                        <i class="fa-solid fa-chevron-right text-[10px] muted shrink-0"></i>
+                                    </button>
+                                </template>
                             </div>
                             <div class="pt-3 border-t divider"><button type="button" class="btn btn-soft" @click="openMailSetup()"><i class="fa-solid fa-plug"></i>Postfächer verwalten</button></div>
                         </div>
@@ -2266,6 +2434,61 @@
     </div>
 
     <!-- ================= DIALOGE ================= -->
+    <!-- Regel für eingehende Mails -->
+    <div x-show="showRule" x-transition.opacity x-cloak class="backdrop" @click.self="showRule = false">
+        <template x-if="ruleDraft">
+        <div class="card w-full max-w-md p-5 sm:p-6 space-y-4">
+            <h3 class="font-black text-xl">Regel</h3>
+            <p class="text-[11px] muted leading-relaxed">Die Regel läuft in der App, sobald neue Mails geladen werden – nicht bei Google. Du kannst sie jederzeit abschalten, ohne dass in Gmail etwas zurückbleibt.</p>
+            <div class="space-y-2">
+                <p class="label">Wenn</p>
+                <div class="flex gap-2">
+                    <select x-model="ruleDraft.feld" class="field !w-auto" aria-label="Feld">
+                        <option value="from">Absender</option><option value="subject">Betreff</option><option value="any">Irgendwo</option>
+                    </select>
+                    <input type="text" x-model="ruleDraft.text" maxlength="120" class="field flex-1" placeholder="enthält …" aria-label="Suchtext">
+                </div>
+            </div>
+            <div class="space-y-2">
+                <p class="label">Dann</p>
+                <select x-model="ruleDraft.tun" class="field" aria-label="Aktion">
+                    <template x-for="a in ruleActions" :key="a.id"><option :value="a.id" x-text="a.label"></option></template>
+                </select>
+                <input x-show="ruleDraft.tun === 'label'" type="text" x-model="ruleDraft.ordner" maxlength="100" class="field" placeholder="Name des Ordners" aria-label="Ordner">
+            </div>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" class="switch" x-model="ruleDraft.an" aria-label="Regel aktiv">
+                <span class="text-sm font-bold">Regel ist aktiv</span>
+            </label>
+            <div class="flex items-center justify-between gap-3 pt-3 border-t divider">
+                <button type="button" x-show="mailRules.some(r => r.id === ruleDraft.id)" @click="ruleDelete(ruleDraft.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showRule = false" class="btn btn-ghost">Abbrechen</button>
+                <button type="button" @click="ruleSave()" class="btn btn-primary">Speichern</button>
+            </div>
+        </div>
+        </template>
+    </div>
+
+    <!-- Später senden / Wiedervorlage -->
+    <div x-show="showLater" x-transition.opacity x-cloak class="backdrop" @click.self="showLater = false">
+        <div class="card w-full max-w-sm p-5 sm:p-6 space-y-4">
+            <h3 class="font-black text-xl" x-text="laterArt === 'send' ? 'Später senden' : 'Später wieder vorlegen'"></h3>
+            <p class="text-[11px] muted leading-relaxed" x-text="laterArt === 'send' ? 'Die Mail wird zum gewählten Zeitpunkt von deinem Google-Script verschickt – dein Gerät muss dafür nicht an sein.' : 'Die Nachricht verschwindet aus dem Posteingang und kommt zum gewählten Zeitpunkt als ungelesen zurück.'"></p>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" class="chip !py-2 !px-3" @click="laterSchnell(3)">In 3 Stunden</button>
+                <button type="button" class="chip !py-2 !px-3" @click="laterSchnell(18)">Morgen früh</button>
+                <button type="button" class="chip !py-2 !px-3" @click="laterSchnell(24 * 7)">Nächste Woche</button>
+            </div>
+            <label class="block"><span class="label">Zeitpunkt</span>
+                <input type="datetime-local" x-model="laterWann" class="field mt-1" aria-label="Zeitpunkt"></label>
+            <div class="flex justify-end gap-2 pt-3 border-t divider">
+                <button type="button" @click="showLater = false" class="btn btn-ghost">Abbrechen</button>
+                <button type="button" @click="laterSpeichern()" class="btn btn-primary">Vormerken</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Termin -->
     <div x-show="showEventModal" x-transition.opacity x-cloak class="backdrop" @click.self="showEventModal = false">
         <form @submit.prevent="saveEvent()" class="card w-full max-w-lg p-6 sm:p-8 space-y-5">
@@ -2289,11 +2512,76 @@
                     <button x-show="!currentEvent.allDay" type="button" @click="pickTime(currentEvent, 'endTime', { cb: 'onEventEnd', title: 'Endzeit' })" class="field pickbtn !w-auto" aria-label="Endzeit"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="currentEvent.endTime || '--:--'"></span></button>
                 </div>
             </div>
+            <!-- Geburtstag: jährlich, ganztägig, mit Alter -->
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" class="switch" :checked="!!currentEvent.born" @change="bdayAn($event.target.checked)" aria-label="Geburtstag">
+                <span class="min-w-0">
+                    <span class="block text-sm font-bold">Geburtstag</span>
+                    <span class="block text-[11px] muted">Jedes Jahr, ganztägig. Mit Geburtsjahr steht das Alter dabei.</span>
+                </span>
+                <input x-show="currentEvent.born" type="number" min="1900" max="2200" class="field !w-24 !py-1.5 !text-xs num ml-auto" x-model.number="currentEvent.born" placeholder="Jahr" aria-label="Geburtsjahr">
+            </label>
+
+            <!-- Wiederholung -->
+            <div class="space-y-2" x-show="!currentEvent.born">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <p class="label mr-auto">Wiederholen</p>
+                    <select class="field !w-auto !py-1.5 !text-xs" aria-label="Wiederholung"
+                            :value="currentEvent.rep ? currentEvent.rep.f : ''"
+                            @change="repSetze($event.target.value)">
+                        <option value="">Einmalig</option>
+                        <option value="d">Täglich</option>
+                        <option value="w">Wöchentlich</option>
+                        <option value="m">Monatlich</option>
+                        <option value="y">Jährlich</option>
+                    </select>
+                </div>
+                <template x-if="currentEvent.rep">
+                    <div class="inner p-3 space-y-2.5">
+                        <div class="flex items-center gap-2 flex-wrap text-[12px] font-semibold">
+                            <span class="muted">Jede</span>
+                            <input type="number" min="1" max="99" class="field !w-16 !py-1.5 !text-xs num" x-model.number="currentEvent.rep.n" aria-label="Abstand">
+                            <span x-text="{ d: 'Tage', w: 'Wochen', m: 'Monate', y: 'Jahre' }[currentEvent.rep.f]"></span>
+                        </div>
+                        <!-- wöchentlich: an welchen Tagen -->
+                        <div x-show="currentEvent.rep.f === 'w'" class="flex gap-1 flex-wrap">
+                            <template x-for="(nm, i) in ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']" :key="nm">
+                                <button type="button" class="chip !px-2.5 !py-1 !text-[11px]"
+                                        :class="(currentEvent.rep.wd || []).includes((i + 1) % 7) ? 'on' : ''"
+                                        @click="repTag((i + 1) % 7)" x-text="nm"></button>
+                            </template>
+                        </div>
+                        <!-- monatlich: nach Datum oder nach Wochentag -->
+                        <select x-show="currentEvent.rep.f === 'm'" class="field !py-1.5 !text-xs" x-model="currentEvent.rep.mo" aria-label="Monatsregel">
+                            <option value="date" x-text="'Am ' + Number(currentEvent.startDate.slice(8)) + '. des Monats'"></option>
+                            <option value="nth" x-text="repNthText(currentEvent.startDate)"></option>
+                            <option value="last" x-text="'Am letzten ' + repWdName(currentEvent.startDate) + ' des Monats'"></option>
+                        </select>
+                        <div class="flex items-center gap-2 flex-wrap text-[12px] font-semibold">
+                            <span class="muted">Endet</span>
+                            <select class="field !w-auto !py-1.5 !text-xs" :value="currentEvent.rep.bis ? 'bis' : (currentEvent.rep.anzahl ? 'anzahl' : 'nie')" @change="repEnde($event.target.value)" aria-label="Ende der Serie">
+                                <option value="nie">nie</option>
+                                <option value="bis">am Datum</option>
+                                <option value="anzahl">nach Anzahl</option>
+                            </select>
+                            <button x-show="currentEvent.rep.bis" type="button" class="field pickbtn !w-auto !py-1.5 !text-xs" @click="pickDate(currentEvent.rep, 'bis', { title: 'Serie endet am', min: currentEvent.startDate })"><span x-text="fmtPickDate(currentEvent.rep.bis)"></span></button>
+                            <input x-show="currentEvent.rep.anzahl" type="number" min="1" max="999" class="field !w-20 !py-1.5 !text-xs num" x-model.number="currentEvent.rep.anzahl" aria-label="Anzahl">
+                            <span x-show="currentEvent.rep.anzahl" class="muted">Termine</span>
+                        </div>
+                        <p class="text-[11px] muted font-semibold" x-text="repText(normRep(currentEvent.rep))"></p>
+                    </div>
+                </template>
+                <!-- Gehört der Termin zu einer Serie: gilt die Änderung für einen oder für alle? -->
+                <div x-show="currentEvent.ser" class="seg w-full" role="group" aria-label="Umfang der Änderung">
+                    <button type="button" @click="evScope = 'einzeln'" :class="evScope === 'einzeln' ? 'on' : ''">Nur dieser Termin</button>
+                    <button type="button" @click="evScope = 'serie'" :class="evScope === 'serie' ? 'on' : ''">Ganze Serie</button>
+                </div>
+            </div>
             <div>
                 <p class="label mb-2">Erinnerung</p>
                 <select x-model="currentEvent.reminder" class="field" aria-label="Erinnerung">
                     <option value="">Keine</option><option value="0">Zur Startzeit</option><option value="5">5 Minuten vorher</option><option value="15">15 Minuten vorher</option>
-                    <option value="30">30 Minuten vorher</option><option value="60">1 Stunde vorher</option><option value="1440">1 Tag vorher</option>
+                    <option value="30">30 Minuten vorher</option><option value="60">1 Stunde vorher</option><option value="1440">1 Tag vorher</option><option value="2880">2 Tage vorher</option><option value="10080">1 Woche vorher</option>
                 </select>
             </div>
             <textarea x-model="currentEvent.notes" rows="2" class="field" placeholder="Notizen (optional)" aria-label="Notizen"></textarea>
@@ -2302,7 +2590,7 @@
                 <div class="flex gap-2.5"><template x-for="c in eventColors" :key="c"><button type="button" @click="currentEvent.color = c" class="swatch" :class="currentEvent.color === c ? 'on' : ''" :style="'background:' + c" :aria-label="'Farbe ' + c"></button></template></div>
             </div>
             <div class="flex items-center justify-between gap-3 pt-4 border-t divider">
-                <button type="button" x-show="currentEvent.id" @click="deleteEvent(currentEvent.id); showEventModal = false" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <button type="button" x-show="currentEvent.id" @click="deleteEvent(currentEvent.ser || currentEvent.id, currentEvent.occ); showEventModal = false" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i><span x-text="currentEvent.ser ? (evScope === 'einzeln' ? 'Diesen löschen' : 'Serie löschen') : 'Löschen'"></span></button>
                 <span x-show="!currentEvent.id"></span>
                 <div class="flex gap-2"><button type="button" @click="showEventModal = false" class="btn btn-ghost">Abbrechen</button><button type="submit" class="btn btn-primary">Speichern</button></div>
             </div>
@@ -2446,6 +2734,42 @@
                 </div>
             </div>
 
+            <!-- Verträge -->
+            <div class="space-y-2 pt-3 border-t divider">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <p class="label mr-auto"><i class="fa-solid fa-file-signature mr-1.5"></i>Verträge</p>
+                    <button type="button" class="btn btn-soft !py-1.5 !px-2.5 !text-xs" @click="vertragNeu()"><i class="fa-solid fa-plus"></i>Vertrag</button>
+                </div>
+                <p class="text-[11px] muted leading-relaxed">
+                    Mit Laufzeit hinterlegt, rechnet die App mit den Preisen des Vertrags, der heute gilt – und erinnert dich rechtzeitig an die Kündigungsfrist.
+                    Ohne Vertrag gelten die Preise oben.
+                </p>
+                <template x-for="(c, i) in (meterDraft?.contracts || [])" :key="c.id">
+                    <div class="inner p-3 space-y-2">
+                        <div class="flex gap-2">
+                            <input type="text" x-model="c.name" maxlength="60" class="field !py-2" placeholder="Anbieter oder Tarifname" aria-label="Name des Vertrags">
+                            <button type="button" class="icon-btn shrink-0" @click="meterDraft.contracts.splice(i, 1)" aria-label="Vertrag löschen"><i class="fa-solid fa-trash-can text-rose-400 text-xs"></i></button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="block"><span class="label !text-[10px]">Beginn</span>
+                                <input type="date" x-model="c.von" class="field !py-2 mt-0.5" aria-label="Beginn"></label>
+                            <label class="block"><span class="label !text-[10px]">Ende</span>
+                                <input type="date" x-model="c.bis" class="field !py-2 mt-0.5" aria-label="Ende"></label>
+                            <label class="block"><span class="label !text-[10px]">Kündigungsfrist (Monate)</span>
+                                <input type="number" min="0" max="24" x-model.number="c.frist" class="field !py-2 mt-0.5 num" placeholder="3" aria-label="Kündigungsfrist"></label>
+                            <label class="block"><span class="label !text-[10px]">Abschlag je Monat (€)</span>
+                                <input type="number" step="any" min="0" x-model.number="c.monthly" class="field !py-2 mt-0.5 num" aria-label="Abschlag"></label>
+                            <label class="block"><span class="label !text-[10px]">Preis je Einheit (€)</span>
+                                <input type="number" step="any" min="0" x-model.number="c.price" class="field !py-2 mt-0.5 num" aria-label="Arbeitspreis"></label>
+                            <label class="block"><span class="label !text-[10px]">Grundpreis je Monat (€)</span>
+                                <input type="number" step="any" min="0" x-model.number="c.base" class="field !py-2 mt-0.5 num" aria-label="Grundpreis"></label>
+                        </div>
+                        <p class="text-[11px] font-semibold" :class="vertragFrist(c) ? 'accent' : 'muted'"
+                           x-text="vertragFrist(c) ? 'Kündigen bis spätestens ' + shortDate(vertragFrist(c)) : 'Für die Erinnerung braucht es Ende und Frist.'"></p>
+                    </div>
+                </template>
+            </div>
+
             <div class="flex flex-wrap gap-2 pt-1">
                 <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Speichern</button>
                 <button type="button" x-show="meterDraft?.id" @click="deleteMeter()" class="btn btn-ghost !text-rose-400"><i class="fa-regular fa-trash-can"></i>Löschen</button>
@@ -2573,9 +2897,11 @@
 
     <!-- Gericht für einen Tag wählen -->
     <div x-show="planPick" x-transition.opacity x-cloak class="backdrop" @click.self="planPick = null">
-        <div class="card w-full max-w-md p-5 sm:p-6 space-y-3" x-show="planPick">
+        <!-- x-if statt x-show: sonst wird x-model ausgewertet, solange planPick noch null ist -->
+        <template x-if="planPick">
+        <div class="card w-full max-w-md p-5 sm:p-6 space-y-3">
             <h3 class="font-black text-xl">Gericht einplanen</h3>
-            <p class="muted text-xs font-semibold" x-text="planPick ? longDate(planPick.date) : ''"></p>
+            <p class="muted text-xs font-semibold" x-text="longDate(planPick.date)"></p>
             <input type="search" x-model="planPick.q" class="field" placeholder="Rezept suchen…" aria-label="Rezept suchen">
             <div class="max-h-72 overflow-y-auto space-y-1">
                 <template x-for="r in planPickList" :key="r.id">
@@ -2589,6 +2915,7 @@
             </div>
             <div class="flex"><span class="flex-1"></span><button type="button" @click="planPick = null" class="btn btn-ghost">Abbrechen</button></div>
         </div>
+        </template>
     </div>
 
     <!-- Kochansicht -->
@@ -3068,6 +3395,8 @@
             </div>
             <p x-show="mailComp.error" class="text-xs font-bold text-rose-400" x-text="mailComp.error"></p>
             <div class="flex justify-end gap-2 pt-1">
+                <button type="button" @click="entwurfSpeichern(); showMailCompose = false" class="btn btn-ghost"><i class="fa-regular fa-floppy-disk"></i><span class="hidden sm:inline">Entwurf</span></button>
+                <button type="button" @click="laterOpen('send')" class="btn btn-ghost"><i class="fa-regular fa-clock"></i><span class="hidden sm:inline">Später senden</span></button>
                 <button type="button" @click="mailCloseCompose()" class="btn btn-ghost">Abbrechen</button>
                 <button type="submit" class="btn btn-primary" :disabled="mailComp.busy"><i class="fa-solid" :class="mailComp.busy ? 'fa-circle-notch spin' : 'fa-paper-plane'"></i>Senden</button>
             </div>
@@ -3266,7 +3595,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushTopic: '', weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -3288,7 +3617,115 @@
                 o.startTime = o.startTime || '09:00';
                 if (!o.endTime) { const s = toMin(o.startTime) + 60; o.endTime = s >= 1440 ? '23:59' : minToTime(s); }
             }
+            o.rep = normRep(o.rep);
+            o.rskip = Array.isArray(o.rskip) ? o.rskip.filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x)).slice(0, 400) : [];
+            o.ser = o.ser ? String(o.ser) : '';        // gehört zu dieser Serie (geänderter Einzeltermin)
+            o.occ = /^\d{4}-\d{2}-\d{2}$/.test(o.occ || '') ? o.occ : '';
+            o.born = Number(o.born) > 1900 && Number(o.born) <= 2200 ? Number(o.born) : 0;
             return o;
+        }
+
+        /* ---------- Wiederholungsregel ----------
+           f  d täglich · w wöchentlich · m monatlich · y jährlich
+           n  Abstand (jede n-te Einheit)
+           wd bei w: Wochentage 0=So … 6=Sa
+           mo bei m: date = am gleichen Datum, nth = am n-ten Wochentag, last = am letzten Wochentag
+           bis / anzahl begrenzen die Serie (leer = ohne Ende) */
+        function normRep(r) {
+            if (!r || typeof r !== 'object' || !['d', 'w', 'm', 'y'].includes(r.f)) return null;
+            const o = { f: r.f, n: Math.min(99, Math.max(1, Number(r.n) || 1)) };
+            if (r.f === 'w') {
+                o.wd = Array.isArray(r.wd) ? [...new Set(r.wd.map(Number).filter(d => d >= 0 && d <= 6))].sort() : [];
+            }
+            if (r.f === 'm') o.mo = ['date', 'nth', 'last'].includes(r.mo) ? r.mo : 'date';
+            o.bis = /^\d{4}-\d{2}-\d{2}$/.test(r.bis || '') ? r.bis : '';
+            o.anzahl = Math.min(999, Math.max(0, Number(r.anzahl) || 0));
+            return o;
+        }
+
+        /* Alle Termine einer Serie im Zeitfenster [von, bis]. Gibt Startdaten zurück. */
+        function repDates(ev, von, bis) {
+            const r = ev.rep;
+            if (!r) return [];
+            const grenze = r.bis && r.bis < bis ? r.bis : bis;
+            const start = parseDate(ev.startDate);
+            const aus = [];
+            const schieb = (d, tage) => { const x = new Date(d); x.setDate(x.getDate() + tage); return x; };
+            let zaehler = 0;                              // zählt ab dem ersten Termin, auch vor dem Fenster
+            const nimm = d => {
+                const ds = fmt(d);
+                if (ds < ev.startDate) return true;
+                zaehler++;
+                if (r.anzahl && zaehler > r.anzahl) return false;
+                if (ds > grenze) return false;
+                if (ds >= von && !ev.rskip.includes(ds)) aus.push(ds);
+                return true;
+            };
+            if (r.f === 'd') {
+                for (let d = new Date(start); ; d = schieb(d, r.n)) if (!nimm(d)) break;
+            } else if (r.f === 'w') {
+                const tage = r.wd && r.wd.length ? r.wd : [start.getDay()];
+                // Beginn der Woche, in der der erste Termin liegt (Montag als Wochenanfang)
+                const wochenStart = schieb(start, -((start.getDay() + 6) % 7));
+                for (let w = new Date(wochenStart); ; w = schieb(w, 7 * r.n)) {
+                    let weiter = true;
+                    for (const wd of tage) {
+                        const d = schieb(w, (wd + 6) % 7);
+                        if (!nimm(d)) { weiter = false; break; }
+                    }
+                    if (!weiter) break;
+                }
+            } else if (r.f === 'm') {
+                const tag = start.getDate(), wd = start.getDay();
+                const nte = Math.ceil(tag / 7);
+                for (let i = 0; ; i++) {
+                    const b = new Date(start.getFullYear(), start.getMonth() + i * r.n, 1);
+                    let d;
+                    if (r.mo === 'date') {
+                        const letzter = new Date(b.getFullYear(), b.getMonth() + 1, 0).getDate();
+                        if (tag > letzter) continue;                     // 31. in kurzen Monaten auslassen
+                        d = new Date(b.getFullYear(), b.getMonth(), tag);
+                    } else if (r.mo === 'last') {
+                        d = new Date(b.getFullYear(), b.getMonth() + 1, 0);
+                        while (d.getDay() !== wd) d.setDate(d.getDate() - 1);
+                    } else {
+                        d = new Date(b);
+                        while (d.getDay() !== wd) d.setDate(d.getDate() + 1);
+                        d.setDate(d.getDate() + (nte - 1) * 7);
+                        if (d.getMonth() !== b.getMonth()) continue;     // z. B. 5. Dienstag gibt es nicht
+                    }
+                    if (!nimm(d)) break;
+                    if (i > 1200) break;
+                }
+            } else {
+                for (let i = 0; ; i++) {
+                    const d = new Date(start.getFullYear() + i * r.n, start.getMonth(), start.getDate());
+                    if (d.getDate() !== start.getDate()) continue;       // 29. Februar
+                    if (!nimm(d)) break;
+                    if (i > 300) break;
+                }
+            }
+            return aus;
+        }
+
+        /* Text für die Anzeige, z. B. „alle 2 Wochen · Di, Do" */
+        function repText(r) {
+            if (!r) return '';
+            const WD = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+            const n = r.n;
+            let t;
+            if (r.f === 'd') t = n === 1 ? 'täglich' : 'alle ' + n + ' Tage';
+            else if (r.f === 'w') {
+                t = n === 1 ? 'wöchentlich' : 'alle ' + n + ' Wochen';
+                if (r.wd && r.wd.length) t += ' · ' + r.wd.map(d => WD[d]).join(', ');
+            } else if (r.f === 'm') {
+                t = n === 1 ? 'monatlich' : 'alle ' + n + ' Monate';
+                if (r.mo === 'nth') t += ' · am gleichen Wochentag';
+                if (r.mo === 'last') t += ' · am letzten Wochentag';
+            } else t = n === 1 ? 'jährlich' : 'alle ' + n + ' Jahre';
+            if (r.bis) t += ' · bis ' + r.bis.split('-').reverse().join('.');
+            else if (r.anzahl) t += ' · ' + r.anzahl + '×';
+            return t;
         }
         const newTodo = (p = {}) => ({ id: uid(), title: '', done: false, important: false, myDay: '', listId: 'inbox', due: '', dueTime: '', reminder: '', remindAt: '', repeat: '', steps: [], note: '', created: Date.now(), doneAt: 0, ...p });
         function normTodo(t, groupMap) {
@@ -3518,7 +3955,7 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan']];
-        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -3553,6 +3990,11 @@ function handle_(p) {
   if (p.action === 'mailon') return mailOn_(room, p);
   if (p.action === 'mailoff') return mailOff_();
   if (p.action === 'mailtest') return out_(mailSend_(true));
+  if (p.action === 'mailstat') return out_(mailStat_(room));
+  if (p.action === 'pushon') return pushOn_(room, p);
+  if (p.action === 'pushoff') return pushOff_();
+  if (p.action === 'pushtest') return out_(pushSend_('Alltag', 'Test – so sieht eine Erinnerung aus.', 'bell'));
+  if (p.action === 'pushstat') return out_(pushStat_());
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -3637,8 +4079,45 @@ function mailOff_() {
   return out_({ ok: true });
 }
 
-/* Wird vom Auslöser gerufen. */
-function morgenmail() { mailSend_(false); }
+/* Wird vom Auslöser gerufen. Jeder Lauf wird protokolliert – sonst merkt
+   man nie, ob er stattgefunden hat und woran er gescheitert ist. */
+function morgenmail() {
+  var props = PropertiesService.getScriptProperties();
+  var r;
+  try { r = mailSend_(false); }
+  catch (e) { r = { ok: false, error: String(e && e.message || e) }; }
+  props.setProperty('AGENDA_LAST', new Date().toISOString());
+  props.setProperty('AGENDA_LASTOK', r.ok ? '1' : '0');
+  props.setProperty('AGENDA_LASTERR', r.ok ? '' : String(r.error || '').slice(0, 300));
+  return r;
+}
+
+/* Sagt der App, in welchem Zustand die Morgenmail wirklich ist. */
+function mailStat_(room) {
+  var props = PropertiesService.getScriptProperties();
+  var ts = ScriptApp.getProjectTriggers(), ausloeser = 0;
+  for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'morgenmail') ausloeser++;
+  var datei = null, alter = null;
+  var it = DriveApp.getFilesByName(agendaName_(room || props.getProperty('AGENDA_ROOM') || ''));
+  if (it.hasNext()) {
+    var f = it.next();
+    datei = f.getName();
+    alter = Math.round((new Date() - f.getLastUpdated()) / 3600000);
+  }
+  return {
+    ok: true,
+    ausloeser: ausloeser,
+    stunde: Number(props.getProperty('AGENDA_HOUR') || 0),
+    an: props.getProperty('AGENDA_TO') || Session.getEffectiveUser().getEmail(),
+    zeitzone: Session.getScriptTimeZone(),
+    datei: datei,
+    dateiAlterStd: alter,
+    letzterLauf: props.getProperty('AGENDA_LAST') || '',
+    letzterOk: props.getProperty('AGENDA_LASTOK') === '1',
+    letzterFehler: props.getProperty('AGENDA_LASTERR') || '',
+    restKontingent: MailApp.getRemainingDailyQuota()
+  };
+}
 
 function mailSend_(test) {
   var props = PropertiesService.getScriptProperties();
@@ -3703,6 +4182,103 @@ function mailSend_(test) {
   return { ok: true, to: an, betreff: betreff };
 }
 
+/* ---------- Erinnerungen bei geschlossener App ----------
+   Alle fünf Minuten wird die Übersicht im Drive durchgesehen. Was in den
+   letzten Minuten fällig geworden ist, geht als Push an ntfy. Was schon
+   verschickt wurde, wird vermerkt, damit nichts doppelt kommt. */
+function pushOn_(room, p) {
+  var topic = String(p.topic || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+  if (topic.length < 12) return out_({ ok: false, error: 'Themenname zu kurz' });
+  pushOff_();
+  ScriptApp.newTrigger('erinnerungen').timeBased().everyMinutes(5).create();
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty('PUSH_TOPIC', topic);
+  props.setProperty('AGENDA_ROOM', room);
+  props.setProperty('PUSH_SENT', '[]');
+  return out_({ ok: true, topic: topic });
+}
+
+function pushOff_() {
+  var ts = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'erinnerungen') ScriptApp.deleteTrigger(ts[i]);
+  return out_({ ok: true });
+}
+
+function pushStat_() {
+  var props = PropertiesService.getScriptProperties();
+  var ts = ScriptApp.getProjectTriggers(), n = 0;
+  for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'erinnerungen') n++;
+  return {
+    ok: true, ausloeser: n, thema: props.getProperty('PUSH_TOPIC') || '',
+    letzterLauf: props.getProperty('PUSH_LAST') || '',
+    letzterFehler: props.getProperty('PUSH_LASTERR') || '',
+    verschickt: Number(props.getProperty('PUSH_COUNT') || 0)
+  };
+}
+
+function pushSend_(titel, text, tag) {
+  var topic = PropertiesService.getScriptProperties().getProperty('PUSH_TOPIC');
+  if (!topic) return { ok: false, error: 'Kein Thema hinterlegt' };
+  var res = UrlFetchApp.fetch('https://ntfy.sh/', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    payload: JSON.stringify({ topic: topic, title: titel, message: text, tags: [tag || 'calendar'], priority: 4 })
+  });
+  var code = res.getResponseCode();
+  return code >= 200 && code < 300 ? { ok: true } : { ok: false, error: 'ntfy antwortet ' + code };
+}
+
+/* Wird vom Auslöser gerufen. */
+function erinnerungen() {
+  var props = PropertiesService.getScriptProperties();
+  try {
+    var room = props.getProperty('AGENDA_ROOM');
+    if (!room) throw new Error('Noch keine Übersicht hinterlegt');
+    var it = DriveApp.getFilesByName(agendaName_(room));
+    if (!it.hasNext()) throw new Error('Übersicht nicht gefunden');
+    var data = JSON.parse(it.next().getBlob().getDataAsString());
+
+    var jetzt = new Date().getTime();
+    var von = jetzt - 7 * 60000, bis = jetzt + 60000;      // Fenster etwas größer als der Takt
+    var gesendet;
+    try { gesendet = JSON.parse(props.getProperty('PUSH_SENT') || '[]'); } catch (e) { gesendet = []; }
+    var neu = 0;
+
+    var faellig = [];
+    var tage = data.days || [];
+    for (var d = 0; d < tage.length; d++) {
+      var items = tage[d].items || [];
+      for (var i = 0; i < items.length; i++) {
+        var e = items[i];
+        if (!e.rem) continue;
+        faellig.push({ key: 'e|' + tage[d].date + '|' + e.title + '|' + e.rem, zeit: new Date(e.rem).getTime(),
+                       titel: 'Termin', text: e.title + (e.time ? '  ' + e.time + ' Uhr' : '  ganztägig') + (e.place ? '\\n' + e.place : ''), tag: 'calendar' });
+      }
+    }
+    var todos = data.todos || [];
+    for (var t = 0; t < todos.length; t++) {
+      if (!todos[t].rem) continue;
+      faellig.push({ key: 't|' + todos[t].title + '|' + todos[t].rem, zeit: new Date(todos[t].rem).getTime(),
+                     titel: 'Aufgabe', text: todos[t].title + (todos[t].due ? '\\nFällig: ' + todos[t].due : ''), tag: 'white_check_mark' });
+    }
+
+    for (var f = 0; f < faellig.length; f++) {
+      var x = faellig[f];
+      if (!(x.zeit >= von && x.zeit < bis)) continue;
+      if (gesendet.indexOf(x.key) !== -1) continue;
+      var r = pushSend_(x.titel, x.text, x.tag);
+      if (!r.ok) throw new Error(r.error);
+      gesendet.push(x.key);
+      neu++;
+    }
+    props.setProperty('PUSH_SENT', JSON.stringify(gesendet.slice(-200)));
+    props.setProperty('PUSH_COUNT', String(Number(props.getProperty('PUSH_COUNT') || 0) + neu));
+    props.setProperty('PUSH_LASTERR', '');
+  } catch (e) {
+    props.setProperty('PUSH_LASTERR', String(e && e.message || e).slice(0, 300));
+  }
+  props.setProperty('PUSH_LAST', new Date().toISOString());
+}
+
 /* Holt eine Webseite, damit die App Rezepte von Koch-Seiten lesen kann.
    Der Browser darf das wegen CORS nicht selbst. */
 function fetchUrl_(url) {
@@ -3759,6 +4335,22 @@ function listBackups_(room) {
             gas:   { label: 'Gas', unit: 'm³', icon: 'fa-solid fa-fire-flame-simple', color: '#f97316', price: 0.12, base: 15 },
             wasser:{ label: 'Wasser', unit: 'm³', icon: 'fa-solid fa-droplet', color: '#0ea5e9', price: 4.5, base: 8 }
         };
+            /* Verträge je Zähler: Laufzeit, Preise und Kündigungsfrist.
+               Der gerade laufende Vertrag liefert die Preise für die Rechnung. */
+            function normContracts(v) {
+                if (!Array.isArray(v)) return [];
+                return v.slice(0, 20).map(c => ({
+                    id: String(c.id ?? uid()),
+                    name: String(c.name || '').slice(0, 60),
+                    von: /^\d{4}-\d{2}-\d{2}$/.test(c.von || '') ? c.von : '',
+                    bis: /^\d{4}-\d{2}-\d{2}$/.test(c.bis || '') ? c.bis : '',
+                    frist: Math.min(24, Math.max(0, Number(c.frist) || 0)),   // Kündigungsfrist in Monaten
+                    price: Math.max(0, Number(c.price) || 0),
+                    base: Math.max(0, Number(c.base) || 0),
+                    monthly: Math.max(0, Number(c.monthly) || 0),
+                    note: String(c.note || '').slice(0, 300)
+                })).filter(c => c.name || c.von).sort((a, b) => (a.von || '').localeCompare(b.von || ''));
+            }
             function normMeter(m) {
             const kind = METER_KINDS[m.kind] ? m.kind : 'strom', d = METER_KINDS[kind];
             return {
@@ -3772,6 +4364,7 @@ function listBackups_(room) {
                 base: Math.max(0, Number(m.base) || 0),
                 monthly: Math.max(0, Number(m.monthly) || 0),
                 factor: Math.max(0, Number(m.factor) || (kind === 'gas' ? 10 : 0)),
+                contracts: normContracts(m.contracts),
                 created: Number(m.created) || Date.now()
             };
         }
@@ -4030,6 +4623,27 @@ function listBackups_(room) {
             { id: 'sent', label: 'Gesendet', icon: 'fa-paper-plane' }, { id: 'archive', label: 'Archiv', icon: 'fa-box-archive' },
             { id: 'spam', label: 'Spam', icon: 'fa-ban' }, { id: 'trash', label: 'Papierkorb', icon: 'fa-trash-can' }
         ];
+        /* Regeln sortieren ankommende Mails automatisch ein. Sie laufen in der App,
+           nicht bei Google – so bleibt alles nachvollziehbar und abschaltbar. */
+        const RULE_ACTIONS = [
+            { id: 'label', label: 'in Ordner legen', braucht: true },
+            { id: 'archive', label: 'archivieren' },
+            { id: 'read', label: 'als gelesen markieren' },
+            { id: 'star', label: 'markieren' },
+            { id: 'trash', label: 'in den Papierkorb' },
+            { id: 'spam', label: 'als Spam' }
+        ];
+        function normRules(v) {
+            if (!Array.isArray(v)) return [];
+            return v.slice(0, 40).map(r => ({
+                id: String(r.id || uid()),
+                an: r.an !== false,
+                feld: ['from', 'subject', 'any'].includes(r.feld) ? r.feld : 'from',
+                text: String(r.text || '').slice(0, 120),
+                tun: RULE_ACTIONS.some(a => a.id === r.tun) ? r.tun : 'label',
+                ordner: String(r.ordner || '').slice(0, 100)
+            })).filter(r => r.text);
+        }
         const MAIL_OVERLAY_DAYS = 14;
         const mailDocCache = new Map();
         function normMailCfg(v) {
@@ -4044,7 +4658,7 @@ function listBackups_(room) {
             }
             const s = v.settings && typeof v.settings === 'object' ? v.settings : {};
             const templates = (Array.isArray(s.templates) ? s.templates : []).filter(t => t && typeof t === 'object').slice(0, 12).map(t => ({ name: String(t.name || '').slice(0, 40), text: String(t.text || '').slice(0, 3000) }));
-            return { accounts, settings: { quick: Array.isArray(s.quick) ? s.quick.filter(x => QUICK_ACTIONS.some(a => a.id === x)).slice(0, 4) : [...DEFAULT_QUICK], poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, images: !!s.images, notify: s.notify !== false, preview: s.preview !== false, signature: String(s.signature || '').slice(0, 1500), templates } };
+            return { accounts, settings: { quick: Array.isArray(s.quick) ? s.quick.filter(x => QUICK_ACTIONS.some(a => a.id === x)).slice(0, 4) : [...DEFAULT_QUICK], poll: [0, 2, 5, 15].includes(Number(s.poll)) ? Number(s.poll) : 5, rules: normRules(s.rules), images: !!s.images, notify: s.notify !== false, preview: s.preview !== false, signature: String(s.signature || '').slice(0, 1500), templates } };
         }
         const normOverlay = v => ({ id: String(v.id), t: Number(v.t) || 0, ...(v.r === 0 || v.r === 1 ? { r: v.r } : {}), ...(v.s === 0 || v.s === 1 ? { s: v.s } : {}), ...(['a', 'd', 'i', 'sp'].includes(v.x) ? { x: v.x } : {}) });
         /* Macht fremdes HTML zum Anzeigen sicher: keine Skripte/Frames/Formulare, keine Weiterleitungen; Bilder nur auf Wunsch. */
@@ -4100,6 +4714,12 @@ function doPost(e) {
     if (p.action === 'mark') return out_(mark_(p));
     if (p.action === 'send') return out_(send_(p));
     if (p.action === 'reply') return out_(reply_(p));
+    if (p.action === 'labels') return out_({ ok: true, labels: labels_() });
+    if (p.action === 'label') return out_(label_(p));
+    if (p.action === 'later') return out_(later_(p));
+    if (p.action === 'laterlist') return out_({ ok: true, items: laterList_() });
+    if (p.action === 'latercancel') return out_(laterCancel_(p));
+    if (p.action === 'snooze') return out_(snooze_(p));
     return out_({ ok: false, error: 'Unbekannte Aktion' });
   } catch (err) {
     return out_({ ok: false, error: String((err && err.message) || err) });
@@ -4133,8 +4753,118 @@ function hasAtt_(ms) {
   return false;
 }
 
+/* ---------- Eigene Ordner (Gmail-Labels) ---------- */
+function labels_() {
+  var ls = GmailApp.getUserLabels(), out = [];
+  for (var i = 0; i < ls.length; i++) {
+    var n = ls[i].getName();
+    if (n.indexOf('Alltag/intern') === 0) continue;      // interne Hilfslabels verstecken
+    out.push({ name: n, unread: ls[i].getUnreadCount() });
+  }
+  return out;
+}
+
+function label_(p) {
+  var name = String(p.name || '').slice(0, 100);
+  if (!name) return { ok: false, error: 'Kein Ordnername' };
+  var l = GmailApp.getUserLabelByName(name) || GmailApp.createLabel(name);
+  var ids = (p.ids || []).slice(0, 100), ts = [];
+  for (var i = 0; i < ids.length; i++) { var t = GmailApp.getThreadById(String(ids[i])); if (t) ts.push(t); }
+  if (ts.length) {
+    if (p.entfernen) l.removeFromThreads(ts); else l.addToThreads(ts);
+    if (p.archivieren) GmailApp.moveThreadsToArchive(ts);
+  }
+  return { ok: true, n: ts.length };
+}
+
+/* ---------- Später senden und Wiedervorlage ----------
+   Beides hängt an einem Auslöser, der alle fünf Minuten nachsieht. */
+function jobs_() {
+  var raw = PropertiesService.getScriptProperties().getProperty('MAIL_JOBS');
+  try { return JSON.parse(raw || '[]'); } catch (e) { return []; }
+}
+function jobsSetze_(l) {
+  PropertiesService.getScriptProperties().setProperty('MAIL_JOBS', JSON.stringify(l.slice(0, 200)));
+  var ts = ScriptApp.getProjectTriggers(), da = false;
+  for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'mailJobs') da = true;
+  if (l.length && !da) ScriptApp.newTrigger('mailJobs').timeBased().everyMinutes(5).create();
+  if (!l.length && da) for (var k = 0; k < ts.length; k++) if (ts[k].getHandlerFunction() === 'mailJobs') ScriptApp.deleteTrigger(ts[k]);
+}
+
+function later_(p) {
+  var wann = Number(p.wann) || 0;
+  if (wann < Date.now()) return { ok: false, error: 'Zeitpunkt liegt in der Vergangenheit' };
+  var l = jobs_();
+  l.push({ art: 'send', id: 'j' + Date.now() + Math.floor(Math.random() * 1000), wann: wann,
+           an: String(p.to || '').slice(0, 500), cc: String(p.cc || '').slice(0, 500),
+           betreff: String(p.subject || '').slice(0, 300), text: String(p.body || '').slice(0, 20000),
+           von: String(p.from || '') });
+  jobsSetze_(l);
+  return { ok: true, n: l.length };
+}
+
+function snooze_(p) {
+  var wann = Number(p.wann) || 0;
+  if (wann < Date.now()) return { ok: false, error: 'Zeitpunkt liegt in der Vergangenheit' };
+  var ids = (p.ids || []).slice(0, 50), ts = [];
+  for (var i = 0; i < ids.length; i++) { var t = GmailApp.getThreadById(String(ids[i])); if (t) ts.push(t); }
+  if (!ts.length) return { ok: false, error: 'Nichts ausgewählt' };
+  var l = GmailApp.getUserLabelByName('Alltag/intern/Wiedervorlage') || GmailApp.createLabel('Alltag/intern/Wiedervorlage');
+  l.addToThreads(ts);
+  GmailApp.moveThreadsToArchive(ts);
+  var jobs = jobs_();
+  for (var k = 0; k < ids.length; k++) jobs.push({ art: 'back', id: 'j' + Date.now() + k, wann: wann, thread: String(ids[k]) });
+  jobsSetze_(jobs);
+  return { ok: true, n: ts.length };
+}
+
+function laterList_() {
+  var l = jobs_(), out = [];
+  for (var i = 0; i < l.length; i++) {
+    out.push({ id: l[i].id, art: l[i].art, wann: l[i].wann,
+               was: l[i].art === 'send' ? (l[i].betreff || '(kein Betreff)') + ' → ' + l[i].an : 'Wiedervorlage' });
+  }
+  return out;
+}
+
+function laterCancel_(p) {
+  var id = String(p.id || '');
+  jobsSetze_(jobs_().filter(function (j) { return j.id !== id; }));
+  return { ok: true };
+}
+
+/* Wird vom Auslöser gerufen. */
+function mailJobs() {
+  var props = PropertiesService.getScriptProperties();
+  var l = jobs_(), jetzt = Date.now(), rest = [], fehler = '';
+  for (var i = 0; i < l.length; i++) {
+    var j = l[i];
+    if (j.wann > jetzt) { rest.push(j); continue; }
+    try {
+      if (j.art === 'send') {
+        var o = { htmlBody: String(j.text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\\n/g, '<br>') };
+        if (j.cc) o.cc = j.cc;
+        if (j.von) o.from = j.von;
+        GmailApp.sendEmail(j.an, j.betreff, j.text, o);
+      } else {
+        var t = GmailApp.getThreadById(j.thread);
+        if (t) {
+          GmailApp.moveThreadToInbox(t);
+          t.markUnread();
+          var lab = GmailApp.getUserLabelByName('Alltag/intern/Wiedervorlage');
+          if (lab) lab.removeFromThread(t);
+        }
+      }
+    } catch (e) { fehler = String(e && e.message || e).slice(0, 200); }
+  }
+  props.setProperty('MAIL_JOBS_LAST', new Date().toISOString());
+  props.setProperty('MAIL_JOBS_ERR', fehler);
+  jobsSetze_(rest);
+}
+
 function list_(p) {
   var q = QUERIES[p.folder] || QUERIES.inbox;
+  if (String(p.folder || '').indexOf('label:') === 0) q = 'label:"' + String(p.folder).slice(6).replace(/"/g, '') + '"';
   if (p.unreadOnly) q += ' is:unread';
   if (p.q) q += ' ' + String(p.q).slice(0, 200);
   var start = Math.max(0, Number(p.start) || 0);
@@ -4390,7 +5120,7 @@ function reply_(p) {
                     { cat: 'notify', k: 'quietTo', type: 'time', label: 'Ruhezeit bis', if: 'quietOn' }
                 ],
 
-                activeTab: 'calendar',
+                activeTab: 'today',
                 cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)),
                 themeSettings: 'midnight',
                 syncStatus: 'Nur auf diesem Gerät', syncOk: false,
@@ -4445,7 +5175,7 @@ function reply_(p) {
                 mpInput: '', mpConfirm: '', mpCurrent: '', mpShow: false, failCount: 0, cooldownUntil: 0,
                 passwords: [], revealed: {}, vaultFolders: [...DEFAULT_FOLDERS], folderDraft: [],
                 pwSearch: '', pwFolderFilter: 'all', pwType: 'all', newMenu: false, pwMenu: null, pwEditShow: false,
-                mailFolders: MAIL_FOLDERS, mailNewestFirst: true, mailCfg: { accounts: [], settings: { quick: [...DEFAULT_QUICK], poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false,
+                mailFolders: MAIL_FOLDERS, mailNewestFirst: true, mailCfg: { accounts: [], settings: { quick: [...DEFAULT_QUICK], poll: 5, images: false, notify: true, preview: true, signature: '', templates: [] } }, mailStatus: [], mailAcc: 'all', mailFolder: 'inbox', mailQuery: '', mailUnreadOnly: false, showRule: false, mailLabels: [], laterItems: [], showLater: false, laterWann: '', laterArt: 'send',
                 mailList: [], mailLoading: false, mailError: '', mailMoreOk: false, mailCounts: {}, mailSel: null, mailCur: null, mailLoaded: 0, mailLastPoll: 0, mailReq: 0, mailThreadReq: 0,
                 mailThread: { loading: false, error: '', msgs: [], open: {}, imgs: false },
                 showSearch: false, gq: '', gSel: 0, todayTask: '', mailCountsAt: 0,
@@ -4473,9 +5203,10 @@ function reply_(p) {
 
                     const th = localStorage.getItem('organizer_theme');
                     this.themeSettings = this.themes.some(t => t.id === th) ? th : 'daylight';
+                    this.ladeEntwuerfe();
                     const last = localStorage.getItem('organizer_start_tab');
                     const start = this.cfg.startTab === 'last' ? last : this.cfg.startTab;
-                    this.activeTab = this.tabs.some(t => t.id === start) ? start : 'calendar';
+                    this.activeTab = this.tabs.some(t => t.id === start) ? start : 'today';
                     this.calendarView = this.cfg.calView;
                     this.doneOpen = this.cfg.showDone;
                     this.shopRecent = (readJSON('organizer_shop_recent', []) || []).filter(r => r && r.name).slice(0, 14);
@@ -5252,7 +5983,8 @@ function reply_(p) {
                 checkReminders() {
                     const fired = new Set(readJSON('organizer_fired', [])), now = Date.now();
                     const due = (key, trig) => { if (now >= trig && now < trig + 5 * 60000 && !fired.has(key)) { fired.add(key); return true; } return false; };
-                    for (const e of this.events) {
+                    // Serien ebenfalls auflösen, sonst erinnert nur der erste Termin
+                    for (const e of this.evIn(this.addDaysStr(this.today, -1), this.addDaysStr(this.today, 2))) {
                         if (e.reminder === '') continue;
                         const start = dtOf(e.startDate, e.allDay ? this.cfg.remindTime : e.startTime).getTime(), r = Number(e.reminder);
                         if (due(`e|${e.id}|${e.startDate}|${e.startTime}|${r}`, start - r * 60000))
@@ -5282,7 +6014,7 @@ function reply_(p) {
                     if (this.calendarView === 'week') { const w = this.weekDays, f = ds => parseDate(ds).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' }); return `${f(w[0].dateString)} – ${f(w[6].dateString)}`; }
                     if (this.calendarView === 'day') return this.holidayFor(this.anchor) || 'Tagesübersicht';
                     const p = this.calendarView === 'year' ? String(this.currentYear) : `${this.currentYear}-${pad(this.currentMonth + 1)}`;
-                    const n = this.events.filter(e => e.startDate.slice(0, p.length) <= p && e.endDate.slice(0, p.length) >= p).length;
+                    const n = this.evIn(p + '-01', p + '-31').length;
                     return `${n} ${n === 1 ? 'Termin' : 'Termine'} ${this.calendarView === 'year' ? 'in diesem Jahr' : 'in diesem Monat'}`;
                 },
                 /* Nächste Termine mit Countdown (aktualisiert sich über nowTick alle 30 s) */
@@ -5318,7 +6050,7 @@ function reply_(p) {
                 },
                 get upcoming() {
                     void this.nowTick; const now = Date.now(), out = [];
-                    for (const ev of this.events) { const s = this.evStart(ev), e = this.evEnd(ev); if (e > now) out.push({ ev, s, e }); }
+                    for (const ev of this.evIn(this.addDaysStr(this.today, -1), this.addDaysStr(this.today, 400))) { const s = this.evStart(ev), e = this.evEnd(ev); if (e > now) out.push({ ev, s, e }); }
                     out.sort((a, b) => a.s - b.s || a.e - b.e);
                     return out.slice(0, Number(this.cfg.upcomingCount) || 5).map(o => ({ ev: o.ev, ...this.countdown(o.ev, o.s, o.e, now) }));
                 },
@@ -5404,7 +6136,7 @@ function reply_(p) {
                     const cells = Array.from({ length: this.weekOffset(first) }, () => ({ dayNum: 0 }));
                     for (let i = 1; i <= total; i++) {
                         const ds = `${y}-${pad(mIdx + 1)}-${pad(i)}`;
-                        cells.push({ dayNum: i, isToday: ds === this.today, holiday: this.holidayFor(ds), hasEvents: this.events.some(e => e.startDate <= ds && ds <= e.endDate) });
+                        cells.push({ dayNum: i, isToday: ds === this.today, holiday: this.holidayFor(ds), hasEvents: this.evIn(ds, ds).length > 0 });
                     }
                     return cells;
                 },
@@ -5425,8 +6157,32 @@ function reply_(p) {
                     }, 40));
                 },
 
+                /* Alle Termine, die das Fenster [von, bis] berühren. Serien werden dabei
+                   in einzelne Termine aufgelöst; geänderte Einzeltermine liegen als
+                   eigene Einträge vor und stehen in rskip der Serie. */
+                evIn(von, bis) {
+                    const aus = [];
+                    for (const e of this.events) {
+                        if (!e.rep) {
+                            if (e.endDate >= von && e.startDate <= bis) aus.push(e);
+                            continue;
+                        }
+                        const dauer = Math.round((parseDate(e.endDate) - parseDate(e.startDate)) / 86400000);
+                        for (const ds of repDates(e, this.addDaysStr(von, -dauer), bis)) {
+                            /* Bei einem Geburtstag steht das Alter im Titel – gerechnet für
+                               das Jahr des jeweiligen Termins, nicht für heute. */
+                            const alter = e.born ? Number(ds.slice(0, 4)) - e.born : 0;
+                            aus.push({
+                                ...e, id: e.id + '@' + ds, startDate: ds, endDate: this.addDaysStr(ds, dauer),
+                                ser: e.id, occ: ds, rohTitel: e.title,
+                                title: alter > 0 ? e.title + ' (' + alter + ')' : e.title
+                            });
+                        }
+                    }
+                    return aus;
+                },
                 eventsOnDate(ds) {
-                    return this.events.filter(e => e.startDate <= ds && ds <= e.endDate)
+                    return this.evIn(ds, ds)
                         .sort((a, b) => Number(b.allDay) - Number(a.allDay) || a.startTime.localeCompare(b.startTime));
                 },
                 bannerEvents(ds) { return this.eventsOnDate(ds).filter(e => e.allDay || e.startDate !== e.endDate); },
@@ -5434,7 +6190,7 @@ function reply_(p) {
                 evLabel(ev, ds) { return (ev.startDate === ds && !ev.allDay ? ev.startTime + ' ' : '') + ev.title; },
                 dayLayout(ds) { // positioniert Termine im Stundenraster; überlappende Termine teilen sich die Breite
                     const from = this.gridFrom * 60, to = this.gridTo * 60;
-                    const items = this.events.filter(e => !e.allDay && e.startDate === ds && e.endDate === ds)
+                    const items = this.evIn(ds, ds).filter(e => !e.allDay && e.startDate === ds && e.endDate === ds)
                         .map(ev => { const s = toMin(ev.startTime); return { ev, s, e: Math.max(toMin(ev.endTime), s + 30) }; })
                         .filter(x => x.e > from && x.s < to).sort((a, b) => a.s - b.s || b.e - a.e);
                     const out = []; let cols = [], group = [], clusterEnd = 0;
@@ -5461,14 +6217,54 @@ function reply_(p) {
                     const st = p.startTime || minToTime((d === this.today ? Math.min(new Date().getHours() + 1, 23) : 9) * 60);
                     const end = addMin(d, st, this.cfg.defaultDuration);
                     this.evDur = this.cfg.defaultDuration;
-                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.cfg.defaultEventColor || this.eventColors[0], reminder: this.cfg.defaultReminder, notes: '' };
+                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.cfg.defaultEventColor || this.eventColors[0], reminder: this.cfg.defaultReminder, notes: '', rep: null, rskip: [], ser: '', occ: '', born: 0 };
+                    this.evScope = 'serie';
                     this.showEventModal = true;
                     this.$nextTick(() => this.$refs.evTitle?.focus());
+                },
+                /* ---------- Bedienung der Wiederholungsregel ---------- */
+                evScope: 'serie',
+                normRep, repText,                    // für die Vorschau im Dialog
+                repSetze(f) {
+                    if (!f) { this.currentEvent.rep = null; return; }
+                    const d = parseDate(this.currentEvent.startDate);
+                    this.currentEvent.rep = { f, n: 1, wd: f === 'w' ? [d.getDay()] : [], mo: 'date', bis: '', anzahl: 0 };
+                },
+                repTag(wd) {
+                    const l = this.currentEvent.rep.wd || [];
+                    const neu = l.includes(wd) ? l.filter(x => x !== wd) : [...l, wd].sort();
+                    this.currentEvent.rep.wd = neu.length ? neu : [parseDate(this.currentEvent.startDate).getDay()];
+                },
+                repEnde(art) {
+                    const r = this.currentEvent.rep;
+                    if (art === 'bis') { r.anzahl = 0; r.bis = this.addDaysStr(this.currentEvent.startDate, 365); }
+                    else if (art === 'anzahl') { r.bis = ''; r.anzahl = 10; }
+                    else { r.bis = ''; r.anzahl = 0; }
+                },
+                repWdName(ds) { return ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][parseDate(ds).getDay()]; },
+                repNthText(ds) {
+                    const n = Math.ceil(Number(ds.slice(8)) / 7);
+                    return 'Am ' + n + '. ' + this.repWdName(ds) + ' des Monats';
+                },
+                bdayAn(an) {
+                    const e = this.currentEvent;
+                    if (!an) { e.born = 0; e.rep = null; return; }
+                    e.born = parseDate(e.startDate).getFullYear();
+                    e.allDay = true; e.endDate = e.startDate;
+                    e.rep = { f: 'y', n: 1, wd: [], mo: 'date', bis: '', anzahl: 0 };
+                    if (e.reminder === '') e.reminder = '1440';
                 },
                 openEventModalForDate(ds) { this.anchor = ds; this.openEventModal({ startDate: ds }); },
                 editEvent(ev) {
                     if (ev.isGoogle) return this.toast('Google-Termine sind schreibgeschützt');
                     this.currentEvent = { ...ev };
+                    /* Bei einem Termin aus einer Serie wird gefragt, ob die Änderung
+                       für diesen Termin oder für alle gilt. Standard: nur dieser. */
+                    this.evScope = ev.ser ? 'einzeln' : 'serie';
+                    if (ev.ser) {
+                        const serie = this.events.find(e => e.id === ev.ser);
+                        if (serie) this.currentEvent.rep = serie.rep;
+                    }
                     if (ev.allDay) { this.currentEvent.startTime = '09:00'; this.currentEvent.endTime = '10:00'; this.evDur = 60; }
                     else this.evDur = Math.max(15, (dtOf(ev.endDate, ev.endTime) - dtOf(ev.startDate, ev.startTime)) / 60000);
                     this.showEventModal = true;
@@ -5489,11 +6285,39 @@ function reply_(p) {
                 saveEvent() {
                     this.onEventEnd();
                     const ev = normEvent({ ...this.currentEvent, title: this.currentEvent.title.trim() || 'Ohne Titel' });
-                    const i = this.events.findIndex(e => e.id === ev.id);
-                    if (i !== -1 && ev.id) this.events[i] = ev; else this.events.push({ ...ev, id: uid() });
+                    /* Ein Termin aus einer Serie, den man nur einmal ändern will: Das Datum
+                       wird in der Serie übersprungen und der geänderte Termin steht
+                       danach als eigener Eintrag daneben. */
+                    if (ev.rohTitel && ev.title === ev.rohTitel + ' (' + (Number(ev.startDate.slice(0, 4)) - ev.born) + ')') ev.title = ev.rohTitel;
+                    if (ev.ser && ev.occ && this.evScope === 'einzeln') {
+                        const serie = this.events.find(e => e.id === ev.ser);
+                        if (serie && !serie.rskip.includes(ev.occ)) serie.rskip = [...serie.rskip, ev.occ];
+                        const vorhanden = this.events.findIndex(e => e.ser === ev.ser && e.occ === ev.occ && !e.rep);
+                        const einzeln = { ...ev, id: vorhanden !== -1 ? this.events[vorhanden].id : uid(), rep: null, rskip: [] };
+                        if (vorhanden !== -1) this.events[vorhanden] = einzeln; else this.events.push(einzeln);
+                        this.saveAllData(); this.showEventModal = false;
+                        this.toast('Nur dieser Termin geändert');
+                        return;
+                    }
+                    const echteId = ev.ser || ev.id;
+                    const i = this.events.findIndex(e => e.id === echteId);
+                    if (i !== -1 && echteId) this.events[i] = { ...ev, id: echteId, ser: '', occ: '' };
+                    else this.events.push({ ...ev, id: uid(), ser: '', occ: '' });
                     this.saveAllData(); this.showEventModal = false;
                 },
-                deleteEvent(id) { this.events = this.events.filter(e => e.id !== id); this.saveAllData(); this.toast('Termin gelöscht'); },
+                /* Löschen: bei einer Serie entweder nur dieses Datum oder die ganze Serie */
+                deleteEvent(id, occ) {
+                    const [basis] = String(id).split('@');
+                    const serie = this.events.find(e => e.id === basis && e.rep);
+                    if (serie && occ && this.evScope === 'einzeln') {
+                        if (!serie.rskip.includes(occ)) serie.rskip = [...serie.rskip, occ];
+                        this.events = this.events.filter(e => !(e.ser === basis && e.occ === occ));
+                        this.saveAllData(); this.toast('Dieser Termin entfällt');
+                        return;
+                    }
+                    this.events = this.events.filter(e => e.id !== basis && e.ser !== basis);
+                    this.saveAllData(); this.toast(serie ? 'Serie gelöscht' : 'Termin gelöscht');
+                },
 
                 /* ---------- To-Dos ---------- */
                 loadTodoData(todos, lists, groups) {
@@ -5739,6 +6563,8 @@ function reply_(p) {
 
                 /* ---------- Notizen ---------- */
                 noteColors: NOTE_COLORS,
+                get notesPinned() { return this.notesView.filter(n => n.pin); },
+                get notesRest() { return this.notesView.filter(n => !n.pin); },
                 get notesView() {
                     const q = this.noteQuery.trim().toLowerCase();
                     const hit = n => !q || (n.title + ' ' + n.text).toLowerCase().includes(q);
@@ -6044,8 +6870,8 @@ function reply_(p) {
                 get naechsteTermine() {
                     void this.nowTick;                       // alle 30 s neu, damit der Countdown läuft
                     const bis = this.addDaysStr(this.today, 28), jetzt = Date.now();
-                    return this.events
-                        .filter(e => e.endDate >= this.today && e.startDate <= bis)
+                    return this.evIn(this.today, bis)
+                        .filter(e => e.endDate >= this.today)
                         .sort((a, b) => (a.startDate + (a.startTime || '')).localeCompare(b.startDate + (b.startTime || '')))
                         .slice(0, 4)
                         .map(e => {
@@ -6082,7 +6908,7 @@ function reply_(p) {
 
                 /* Ein Satz statt einer Aufzählung */
                 get tagesSatz() {
-                    const heute = this.events.filter(e => e.startDate <= this.today && e.endDate >= this.today);
+                    const heute = this.evIn(this.today, this.today);
                     const jetzt = this.clockTime && this.clockTime !== '--:--' ? this.clockTime : '00:00';
                     const spaeter = heute.filter(e => e.allDay || (e.startTime || '') >= jetzt);
                     const offen = this.todos.filter(t => !t.done && ((t.due && t.due <= this.today) || t.myDay === this.today));
@@ -6137,18 +6963,27 @@ function reply_(p) {
                     const tage = [];
                     for (let i = 0; i < 7; i++) {
                         const ds = this.addDaysStr(this.today, i);
-                        const items = this.events
-                            .filter(e => e.startDate <= ds && e.endDate >= ds)
+                        const items = this.evIn(ds, ds)
                             .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
                             .slice(0, 20)
-                            .map(e => ({ time: e.allDay ? '' : e.startTime, title: String(e.title || '').slice(0, 120), place: String(e.location || '').slice(0, 60) }));
+                            .map(e => ({
+                                time: e.allDay ? '' : e.startTime,
+                                title: String(e.title || '').slice(0, 120),
+                                place: String(e.location || '').slice(0, 60),
+                                /* Zeitpunkt der Erinnerung, damit das Script auch bei
+                                   geschlossener App anklopfen kann */
+                                rem: e.reminder === '' ? '' : new Date(dtOf(ds, e.allDay ? this.cfg.remindTime : e.startTime).getTime() - Number(e.reminder) * 60000).toISOString()
+                            }));
                         tage.push({ date: ds, items });
                     }
                     const grenze = this.addDaysStr(this.today, 2);
                     return {
                         days: tage,
                         todos: this.todos.filter(t => !t.done && (!t.due || t.due <= grenze))
-                            .slice(0, 40).map(t => ({ title: String(t.title || '').slice(0, 120), due: t.due || '' })),
+                            .slice(0, 40).map(t => {
+                                const r = this.remindTimeOf(t);
+                                return { title: String(t.title || '').slice(0, 120), due: t.due || '', rem: r ? r.toISOString() : '' };
+                            }),
                         meters: this.meters.map(m => {
                             const s = this.meterStats(m);
                             return { name: m.name, last: s.last ? s.last.date : 'noch nie' };
@@ -6157,9 +6992,11 @@ function reply_(p) {
                 },
                 /* Lädt die Übersicht hoch – höchstens einmal pro Stunde */
                 async pushAgenda(force) {
-                    if (!this.cfg.morningMail || !this.mailDayReady) return;
+                    if ((!this.cfg.morningMail && !this.cfg.pushOn) || !this.mailDayReady) return;
                     const letzte = Number(localStorage.getItem('organizer_agenda_at') || 0);
-                    if (!force && Date.now() - letzte < 3600000) return;
+                    /* Mit Push muss die Übersicht häufiger frisch sein, sonst klopft
+                       das Script für Termine an, die es längst nicht mehr gibt. */
+                    if (!force && Date.now() - letzte < (this.cfg.pushOn ? 900000 : 3600000)) return;
                     try {
                         await this.gCall({ action: 'agenda', ...this.agendaDaten() });
                         localStorage.setItem('organizer_agenda_at', String(Date.now()));
@@ -6191,6 +7028,73 @@ function reply_(p) {
                     } catch (e) { this.mailDayMsg = this.mailDayErr(e); }
                     finally { this.mailDayBusy = false; }
                 },
+                /* Fragt das Script, in welchem Zustand die Morgenmail wirklich ist.
+                   Ohne das rät man nur, warum keine Mail ankommt. */
+                mailDayStat: null,
+                async mailDayCheck() {
+                    this.mailDayBusy = true; this.mailDayMsg = ''; this.mailDayStat = null;
+                    try {
+                        const r = await this.gCall({ action: 'mailstat' });
+                        this.mailDayStat = r;
+                        if (!r.ausloeser) this.mailDayMsg = 'Es gibt keinen täglichen Auslöser. Bitte einmal abschalten und wieder einschalten.';
+                        else if (r.letzterFehler) this.mailDayMsg = 'Der letzte Lauf ist gescheitert: ' + r.letzterFehler;
+                        else if (!r.letzterLauf) this.mailDayMsg = 'Der Auslöser steht, ist aber noch nie gelaufen. Die erste Mail kommt morgen früh.';
+                        else this.mailDayMsg = 'Alles in Ordnung.';
+                    } catch (e) { this.mailDayMsg = this.mailDayErr(e); }
+                    finally { this.mailDayBusy = false; }
+                },
+                mailDayZeit(iso) {
+                    if (!iso) return 'noch nie';
+                    const d = new Date(iso);
+                    return d.toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                },
+                /* ---------- Erinnerungen aufs Handy (ntfy) ---------- */
+                pushBusy: false, pushMsg: '', pushStat: null,
+                get pushUrl() { return this.cfg.pushTopic ? 'https://ntfy.sh/' + this.cfg.pushTopic : ''; },
+                neuesThema() {
+                    /* Der Themenname ist das einzige Geheimnis – wer ihn kennt, sieht die
+                       Erinnerungen. Deshalb lang und zufällig. */
+                    const b = new Uint8Array(12);
+                    (window.crypto || crypto).getRandomValues(b);
+                    return 'alltag-' + [...b].map(x => x.toString(36)).join('').slice(0, 18);
+                },
+                async pushAn() {
+                    this.pushBusy = true; this.pushMsg = '';
+                    try {
+                        if (!this.cfg.pushTopic) { this.cfg.pushTopic = this.neuesThema(); this.saveCfg(); }
+                        await this.gCall({ action: 'agenda', ...this.agendaDaten() });
+                        await this.gCall({ action: 'pushon', topic: this.cfg.pushTopic });
+                        localStorage.setItem('organizer_agenda_at', String(Date.now()));
+                        this.cfg.pushOn = true; this.saveCfg();
+                        this.pushMsg = 'Eingeschaltet. Jetzt in der ntfy-App das Thema abonnieren.';
+                    } catch (e) { this.pushMsg = this.mailDayErr(e); this.cfg.pushOn = false; this.saveCfg(); }
+                    finally { this.pushBusy = false; }
+                },
+                async pushAus() {
+                    this.pushBusy = true; this.pushMsg = '';
+                    try { await this.gCall({ action: 'pushoff' }); this.pushMsg = 'Abgeschaltet.'; }
+                    catch (e) { this.pushMsg = this.mailDayErr(e); }
+                    finally { this.cfg.pushOn = false; this.saveCfg(); this.pushBusy = false; }
+                },
+                async pushTest() {
+                    this.pushBusy = true; this.pushMsg = '';
+                    try {
+                        const r = await this.gCall({ action: 'pushtest' });
+                        this.pushMsg = r.ok ? 'Testnachricht verschickt – sie sollte gleich ankommen.' : (r.error || 'Hat nicht geklappt');
+                    } catch (e) { this.pushMsg = this.mailDayErr(e); }
+                    finally { this.pushBusy = false; }
+                },
+                async pushPruefen() {
+                    this.pushBusy = true; this.pushMsg = ''; this.pushStat = null;
+                    try {
+                        const r = await this.gCall({ action: 'pushstat' });
+                        this.pushStat = r;
+                        if (!r.ausloeser) this.pushMsg = 'Es läuft kein Erinnerungsdienst. Bitte einmal aus- und wieder einschalten.';
+                        else if (r.letzterFehler) this.pushMsg = 'Letzter Durchlauf mit Fehler: ' + r.letzterFehler;
+                        else this.pushMsg = 'Läuft. Zuletzt geprüft: ' + this.mailDayZeit(r.letzterLauf) + '.';
+                    } catch (e) { this.pushMsg = this.mailDayErr(e); }
+                    finally { this.pushBusy = false; }
+                },
                 mailDayErr(e) {
                     return /Unbekannte Aktion/.test(e.message || '')
                         ? 'Das Google-Script kennt die Morgenmail noch nicht – bitte das neue Script kopieren und als neue Version bereitstellen.'
@@ -6205,6 +7109,85 @@ function reply_(p) {
                 fmtNum(n, d = 0) { return (Number(n) || 0).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }); },
                 fmtEuro(n) { return (Number(n) || 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }); },
                 /* Alle Kennzahlen eines Zählers: Verbrauch, Schnitt, Hochrechnung, Kosten */
+                /* ---------- Verträge ----------
+                   Der Vertrag, der heute gilt. Ohne Vertrag zählen die Werte
+                   direkt am Zähler – so bleibt alles Alte weiter richtig. */
+                vertragAktiv(m) {
+                    const h = this.today;
+                    return (m.contracts || []).find(c => (!c.von || c.von <= h) && (!c.bis || c.bis >= h)) || null;
+                },
+                /* Preise, mit denen gerechnet wird */
+                tarif(m) {
+                    const c = this.vertragAktiv(m);
+                    return c ? { price: c.price || m.price, base: c.base || m.base, monthly: c.monthly || m.monthly, name: c.name }
+                             : { price: m.price, base: m.base, monthly: m.monthly, name: '' };
+                },
+                /* Wann muss gekündigt werden, damit der Vertrag ausläuft? */
+                vertragFrist(c) {
+                    if (!c || !c.bis || !c.frist) return '';
+                    const d = parseDate(c.bis);
+                    d.setMonth(d.getMonth() - c.frist);
+                    return fmt(d);
+                },
+                vertragTage(c) {
+                    if (!c || !c.bis) return null;
+                    return Math.round((parseDate(c.bis) - parseDate(this.today)) / 86400000);
+                },
+                /* Hinweis, wenn die Kündigungsfrist in Sichtweite ist */
+                vertragWarnung(m) {
+                    const c = this.vertragAktiv(m);
+                    const f = this.vertragFrist(c);
+                    if (!f) return '';
+                    const tage = Math.round((parseDate(f) - parseDate(this.today)) / 86400000);
+                    if (tage < 0) return 'Kündigungsfrist war am ' + this.shortDate(f) + ' – der Vertrag verlängert sich.';
+                    if (tage <= 60) return 'Kündigen bis ' + this.shortDate(f) + ' (noch ' + tage + ' Tage).';
+                    return '';
+                },
+                /* Aus der Frist eine Aufgabe machen, damit sie nicht untergeht */
+                vertragErinnern(m) {
+                    const c = this.vertragAktiv(m), f = this.vertragFrist(c);
+                    if (!f) { this.toast('Dafür braucht der Vertrag ein Ende und eine Kündigungsfrist'); return; }
+                    const titel = 'Vertrag ' + (c.name || m.name) + ' kündigen oder verlängern';
+                    if (this.todos.some(t => t.title === titel && !t.done)) { this.toast('Steht schon auf der Liste'); return; }
+                    this.todos.push(newTodo({ title: titel, due: this.addDaysStr(f, -14), important: true, note: 'Läuft bis ' + this.shortDate(c.bis) + ', Frist ' + c.frist + ' Monate.', created: Date.now() }));
+                    this.saveAllData();
+                    this.toast('Aufgabe zwei Wochen vor der Frist angelegt');
+                },
+                vertragZeitraum(c) {
+                    if (!c.von && !c.bis) return 'ohne Zeitraum';
+                    if (!c.bis) return 'seit ' + this.shortDate(c.von);
+                    if (!c.von) return 'bis ' + this.shortDate(c.bis);
+                    return this.shortDate(c.von) + ' – ' + this.shortDate(c.bis);
+                },
+                /* Ein Satz statt vier Zahlen: Wo stehe ich? */
+                vertragNeu() {
+                    if (!this.meterDraft) return;
+                    if (!Array.isArray(this.meterDraft.contracts)) this.meterDraft.contracts = [];
+                    const letzter = this.meterDraft.contracts[this.meterDraft.contracts.length - 1];
+                    this.meterDraft.contracts.push({
+                        id: uid(), name: '', von: letzter && letzter.bis ? this.addDaysStr(letzter.bis, 1) : this.today,
+                        bis: '', frist: 3, price: this.meterDraft.price || 0, base: this.meterDraft.base || 0,
+                        monthly: this.meterDraft.monthly || 0, note: ''
+                    });
+                },
+                meterSatz(m) {
+                    const s = this.meterStats(m), e = m.unit;
+                    if (!m.target) return 'Hochgerechnet ' + this.fmtNum(s.year) + ' ' + e + ' im Jahr.';
+                    const d = Math.abs(Math.round(s.diff)), p = Math.abs(100 - s.pct);
+                    if (s.pct > 105) return 'Du liegst über Plan: hochgerechnet ' + this.fmtNum(s.year) + ' ' + e + ' statt ' + this.fmtNum(m.target) + ' ' + e + ' – ' + this.fmtNum(d) + ' ' + e + ' zu viel (' + p + ' %).';
+                    if (s.pct < 95) return 'Du liegst unter Plan: hochgerechnet ' + this.fmtNum(s.year) + ' ' + e + ' statt ' + this.fmtNum(m.target) + ' ' + e + ' – ' + this.fmtNum(d) + ' ' + e + ' weniger (' + p + ' %).';
+                    return 'Du liegst im Plan: hochgerechnet ' + this.fmtNum(s.year) + ' ' + e + ' bei ' + this.fmtNum(m.target) + ' ' + e + ' geplant.';
+                },
+                meterSatzKosten(m) {
+                    const s = this.meterStats(m), t = this.tarif(m);
+                    if (!t.price) return 'Trag den Arbeitspreis ein, dann rechne ich auch die Kosten aus.';
+                    const teile = ['Das sind etwa ' + this.fmtEuro(s.costYear) + ' im Jahr'];
+                    if (t.monthly > 0) {
+                        teile.push('du zahlst ' + this.fmtEuro(t.monthly) + ' im Monat, also ' + this.fmtEuro(t.monthly * 12));
+                        teile.push(s.costDiff > 0 ? 'es fehlen rund ' + this.fmtEuro(s.costDiff) : 'du bekommst rund ' + this.fmtEuro(-s.costDiff) + ' zurück');
+                    }
+                    return teile.join(' · ') + '.';
+                },
                 meterStats(m) {
                     const rs = this.meterRead(m.id), n = rs.length;
                     const out = { readings: n, first: rs[0] || null, last: rs[n - 1] || null, days: 0, total: 0, perDay: 0, year: 0, diff: 0, pct: 0, cost: 0, costYear: 0, month30: 0, ready: false };
@@ -6219,9 +7202,11 @@ function reply_(p) {
                     out.month30 = Math.max(0, rs[n - 1].value - valueAt(rs, fmt(d30)));
                     if (m.target > 0) { out.diff = out.year - m.target; out.pct = Math.round(out.year / m.target * 100); }
                     const units = u => m.kind === 'gas' && m.factor > 0 ? u * m.factor : u;
-                    out.cost = units(out.total) * m.price + m.base * (out.days / 30.44);
-                    out.costYear = units(out.year) * m.price + m.base * 12;
-                    if (m.monthly > 0) out.costDiff = out.costYear - m.monthly * 12;
+                    const t = this.tarif(m);
+                    out.preis = t.price; out.abschlag = t.monthly; out.tarifName = t.name;
+                    out.cost = units(out.total) * t.price + t.base * (out.days / 30.44);
+                    out.costYear = units(out.year) * t.price + t.base * 12;
+                    if (t.monthly > 0) out.costDiff = out.costYear - t.monthly * 12;
                     return out;
                 },
                 /* Verbrauch je Monat für das Balkendiagramm */
@@ -6596,6 +7581,19 @@ function reply_(p) {
                     const hit = r => !q || (r.title + ' ' + r.ings.map(i => i.name).join(' ') + ' ' + r.steps).toLowerCase().includes(q);
                     return this.recipes.filter(hit).sort((a, b) => (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || a.title.localeCompare(b.title, 'de'));
                 },
+                /* Ab 20 Treffern wird geblättert – sonst wird die Seite endlos */
+                recipePage: 0,
+                recipePer: 20,
+                get recipePages() { return Math.max(1, Math.ceil(this.recipesView.length / this.recipePer)); },
+                get recipesPaged() {
+                    const seiten = this.recipePages;
+                    const p = Math.min(Math.max(0, this.recipePage), seiten - 1);
+                    return this.recipesView.slice(p * this.recipePer, (p + 1) * this.recipePer);
+                },
+                recipeGo(d) {
+                    this.recipePage = Math.min(Math.max(0, this.recipePage + d), this.recipePages - 1);
+                    if (typeof window !== 'undefined' && window.scrollTo) window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
                 get recipeStepList() { return this.recipeDraft ? this.recipeDraft.steps.split(/\n+/).map(s => s.trim()).filter(Boolean) : []; },
                 openRecipe(r) { this.recipeDraft = normRecipe({ ...r }); this.recipeScale = r.servings; this.showRecipe = true; },
                 openRecipeEdit(r) {
@@ -6953,8 +7951,12 @@ function reply_(p) {
                     if (this.activeTab === 'mail' && !this.showMailCompose) this.mailRefresh({ silent: true }); else this.mailPollCounts();
                 },
                 mailEnter() {
-                    if (this.mailCfg.accounts.length && (!this.mailLoaded || Date.now() - this.mailLoaded > 120000)) this.mailRefresh({ silent: !!this.mailList.length });
+                    if (!this.mailCfg.accounts.length) return;
+                    if (!this.mailLoaded || Date.now() - this.mailLoaded > 120000) this.mailRefresh({ silent: !!this.mailList.length });
+                    /* Ordner und Vorgemerktes höchstens alle fünf Minuten nachladen */
+                    if (Date.now() - (this._ordnerAt || 0) > 300000) { this._ordnerAt = Date.now(); this.ladeOrdner(); this.ladeLater(); }
                 },
+                _ordnerAt: 0,
                 async mailRefresh(o = {}) {
                     const accs = this.mailAccs; if (!accs.length) return;
                     const req = ++this.mailReq, ft = Date.now(), more = !!o.more && accs.length === 1, start = more ? this.mailList.length : 0;
@@ -6972,6 +7974,166 @@ function reply_(p) {
                     else if (errs.length < accs.length) this.mailList = items;
                     this.mailMoreOk = accs.length === 1 && moreOk; this.mailError = errs.join(' · '); this.mailLoading = false; this.mailLoaded = Date.now(); this.mailPrune();
                     if (o.manual && !errs.length) this.mailLastPoll = Date.now();
+                    if (items.length) this.regelnAnwenden(items);
+                },
+                /* ---------- Regeln ----------
+                   Nach jedem Abruf des Posteingangs wird geprüft, was auf eine Regel
+                   passt. Angewandt wird nur einmal je Nachricht. */
+                get mailRules() { return this.mailCfg.settings.rules || []; },
+                ruleActions: RULE_ACTIONS,
+                ruleDraft: null,
+                ruleOpen(r) {
+                    this.ruleDraft = r ? { ...r } : { id: uid(), an: true, feld: 'from', text: '', tun: 'label', ordner: '' };
+                    this.showRule = true;
+                },
+                ruleSave() {
+                    const d = normRules([this.ruleDraft])[0];
+                    if (!d) { this.toast('Bitte einen Suchtext angeben'); return; }
+                    const l = [...this.mailRules], i = l.findIndex(x => x.id === d.id);
+                    if (i !== -1) l[i] = d; else l.push(d);
+                    this.mailCfg.settings.rules = l; this.saveMailCfg();
+                    this.showRule = false; this.toast('Regel gespeichert');
+                },
+                ruleDelete(id) {
+                    this.mailCfg.settings.rules = this.mailRules.filter(r => r.id !== id);
+                    this.saveMailCfg(); this.showRule = false;
+                },
+                ruleText(r) {
+                    const feld = { from: 'Absender', subject: 'Betreff', any: 'Irgendwo' }[r.feld];
+                    const tun = (RULE_ACTIONS.find(a => a.id === r.tun) || {}).label || r.tun;
+                    return feld + ' enthält „' + r.text + '" → ' + tun + (r.tun === 'label' ? ' „' + r.ordner + '"' : '');
+                },
+                ruleTrifft(r, m) {
+                    const t = r.text.toLowerCase();
+                    if (!t) return false;
+                    if (r.feld === 'from') return String(m.from || '').toLowerCase().includes(t);
+                    if (r.feld === 'subject') return String(m.subj || '').toLowerCase().includes(t);
+                    return (String(m.from || '') + ' ' + String(m.subj || '') + ' ' + String(m.snip || '')).toLowerCase().includes(t);
+                },
+                /* Wendet die Regeln auf frisch geladene Nachrichten an */
+                async regelnAnwenden(items) {
+                    const regeln = this.mailRules.filter(r => r.an);
+                    if (!regeln.length || this.mailFolder !== 'inbox') return;
+                    let getan = new Set(readJSON('organizer_rules_done', []));
+                    const proKonto = new Map();
+                    for (const m of items) {
+                        const key = m.acc + '.' + m.id;
+                        if (getan.has(key)) continue;
+                        const r = regeln.find(x => this.ruleTrifft(x, m));
+                        if (!r) continue;
+                        getan.add(key);
+                        if (!proKonto.has(r.id)) proKonto.set(r.id, { regel: r, zeilen: [] });
+                        proKonto.get(r.id).zeilen.push(m);
+                    }
+                    if (!proKonto.size) return;
+                    for (const { regel, zeilen } of proKonto.values()) {
+                        try {
+                            if (regel.tun === 'label') {
+                                for (const acc of new Set(zeilen.map(z => z.acc))) {
+                                    const a = this.mailCfg.accounts.find(x => x.id === acc); if (!a) continue;
+                                    await this.mailCall(a, { action: 'label', name: regel.ordner || 'Alltag', ids: zeilen.filter(z => z.acc === acc).map(z => z.id), archivieren: true });
+                                }
+                                this.mailSet(zeilen, { x: 'a' }, true);
+                            } else {
+                                const patch = { archive: { x: 'a' }, read: { r: 1 }, star: { s: 1 }, trash: { x: 'd' }, spam: { x: 'sp' } }[regel.tun];
+                                if (patch) this.mailSet(zeilen, patch, true);
+                            }
+                        } catch (e) { /* beim nächsten Abruf erneut */ }
+                    }
+                    try { localStorage.setItem('organizer_rules_done', JSON.stringify([...getan].slice(-500))); } catch (_) {}
+                    this.toast(proKonto.size === 1 ? 'Eine Regel angewendet' : proKonto.size + ' Regeln angewendet');
+                },
+                /* Absender sperren: legt eine Regel an und räumt gleich auf */
+                blockSender(row) {
+                    const m = /<([^>]+)>/.exec(row.from || '');
+                    const adresse = (m ? m[1] : row.from || '').trim();
+                    if (!adresse) return;
+                    this.mailCfg.settings.rules = [...this.mailRules, normRules([{ an: true, feld: 'from', text: adresse, tun: 'spam' }])[0]];
+                    this.saveMailCfg();
+                    this.mailSet([row], { x: 'sp' });
+                    this.toast('Künftige Mails von ' + adresse + ' gehen in den Spam');
+                },
+                /* ---------- Eigene Ordner ---------- */
+                async ladeOrdner() {
+                    const a = this.mailCfg.accounts[0]; if (!a) return;
+                    try { const r = await this.mailCall(a, { action: 'labels' }); this.mailLabels = r.labels || []; }
+                    catch (e) { this.mailLabels = []; }
+                },
+                get ordnerName() { return this.mailFolder.startsWith('label:') ? this.mailFolder.slice(6) : ''; },
+                async inOrdner(name) {
+                    const rows = this.mailPicked.length ? this.mailPicked : (this.mailCurRow.id ? [this.mailCurRow] : []);
+                    if (!rows.length || !name) return;
+                    for (const acc of new Set(rows.map(r => r.acc))) {
+                        const a = this.mailAccount(acc); if (!a) continue;
+                        try { await this.mailCall(a, { action: 'label', name, ids: rows.filter(r => r.acc === acc).map(r => r.id), archivieren: true }); }
+                        catch (e) { this.toast('Verschieben fehlgeschlagen'); return; }
+                    }
+                    this.mailSet(rows, { x: 'a' });
+                    this.mailSelEnd(); this.toast('Nach „' + name + '" verschoben');
+                    this.ladeOrdner();
+                },
+                ordnerNeuName: '',
+                ordnerAnlegen() {
+                    const n = this.ordnerNeuName.trim().slice(0, 100);
+                    if (!n) return;
+                    this.ordnerNeuName = '';
+                    this.inOrdner(n);
+                },
+
+                /* ---------- Wiedervorlage und später senden ---------- */
+                laterOpen(art) {
+                    this.laterArt = art;
+                    const d = new Date(Date.now() + 3600000);
+                    d.setMinutes(0, 0, 0); d.setHours(d.getHours() + 1);
+                    this.laterWann = fmt(d) + 'T' + pad(d.getHours()) + ':00';
+                    this.showLater = true;
+                },
+                laterSchnell(stunden) {
+                    const d = new Date(Date.now() + stunden * 3600000);
+                    d.setMinutes(0, 0, 0);
+                    this.laterWann = fmt(d) + 'T' + pad(d.getHours()) + ':00';
+                },
+                get laterZeit() { return this.laterWann ? new Date(this.laterWann).getTime() : 0; },
+                async laterSpeichern() {
+                    const wann = this.laterZeit;
+                    if (!wann || wann < Date.now()) { this.toast('Bitte einen Zeitpunkt in der Zukunft wählen'); return; }
+                    const a = this.mailAccount(this.mailComp.acc) || this.mailCfg.accounts[0];
+                    if (!a) return;
+                    try {
+                        if (this.laterArt === 'send') {
+                            await this.mailCall(a, { action: 'later', wann, to: this.mailComp.to, cc: this.mailComp.cc, subject: this.mailComp.subject, body: this.mailComp.body, from: this.mailComp.from || '' });
+                            this.showLater = false; this.showCompose = false;
+                            this.toast('Wird am ' + this.mailDayZeit(new Date(wann).toISOString()) + ' verschickt');
+                        } else {
+                            const rows = this.mailPicked.length ? this.mailPicked : (this.mailCurRow.id ? [this.mailCurRow] : []);
+                            for (const acc of new Set(rows.map(r => r.acc))) {
+                                const k = this.mailAccount(acc); if (!k) continue;
+                                await this.mailCall(k, { action: 'snooze', wann, ids: rows.filter(r => r.acc === acc).map(r => r.id) });
+                            }
+                            this.mailSet(rows, { x: 'a' });
+                            this.showLater = false; this.mailSelEnd(); this.mailBack();
+                            this.toast('Kommt am ' + this.mailDayZeit(new Date(wann).toISOString()) + ' zurück');
+                        }
+                        this.ladeLater();
+                    } catch (e) { this.toast(e.message || 'Hat nicht geklappt'); }
+                },
+                async ladeLater() {
+                    const a = this.mailCfg.accounts[0]; if (!a) return;
+                    try { const r = await this.mailCall(a, { action: 'laterlist' }); this.laterItems = r.items || []; }
+                    catch (e) { this.laterItems = []; }
+                },
+                async laterAbbrechen(id) {
+                    const a = this.mailCfg.accounts[0]; if (!a) return;
+                    try { await this.mailCall(a, { action: 'latercancel', id }); this.ladeLater(); this.toast('Abgebrochen'); }
+                    catch (e) { this.toast('Hat nicht geklappt'); }
+                },
+                /* Abbestellen-Link aus dem Text der Mail fischen */
+                get abbestellLink() {
+                    const msgs = (this.mailThread && this.mailThread.msgs) || [];
+                    const h = String((msgs[msgs.length - 1] || {}).html || '');
+                    const treffer = [...h.matchAll(/href="(https?:\/\/[^"]+)"[^>]*>([^<]{0,80})</gi)];
+                    const t = treffer.find(m => /unsubscribe|abmelden|abbestellen/i.test(m[1] + ' ' + m[2]));
+                    return t ? t[1] : '';
                 },
                 mailSetAcc(id) { this.mailAcc = id; this.mailBack(); this.mailList = []; this.mailRefresh(); },
                 mailSetFolder(f) {
@@ -7045,8 +8207,17 @@ function reply_(p) {
                             fetch(l.href).then(r => r.json()).then(mf => {
                                 const basis = l.href.replace(/[^/]*$/, '');
                                 (mf.icons || []).forEach(i => { if (!/^https?:|^data:/.test(i.src)) i.src = basis + i.src; });
-                                if (mf.start_url && !/^https?:/.test(mf.start_url)) mf.start_url = basis + mf.start_url.replace(/^\.\//, '');
-                                if (mf.scope && !/^https?:/.test(mf.scope)) mf.scope = basis + mf.scope.replace(/^\.\//, '');
+                                const abs = v => /^https?:|^data:/.test(v) ? v : basis + String(v).replace(/^\.\//, '');
+                                if (mf.start_url) mf.start_url = abs(mf.start_url);
+                                if (mf.scope) mf.scope = abs(mf.scope);
+                                /* Kurzbefehle und Teilen-Ziel zeigen sonst ins Leere, sobald das
+                                   Manifest als data:-Adresse hinterlegt ist – relative Pfade haben
+                                   dann keinen Bezugspunkt mehr. */
+                                (mf.shortcuts || []).forEach(sc => {
+                                    if (sc.url) sc.url = abs(sc.url);
+                                    (sc.icons || []).forEach(i => { i.src = abs(i.src); });
+                                });
+                                if (mf.share_target && mf.share_target.action) mf.share_target.action = abs(mf.share_target.action);
                                 setze(mf);
                             }).catch(() => {});
                         }
@@ -7264,8 +8435,47 @@ function reply_(p) {
                 },
                 async mailCloseCompose() {
                     const c = this.mailComp, dirty = c.att.length || c.body !== c.initBody || (c.mode === 'new' && c.to.trim());
-                    if (this.showMailCompose && dirty && !await this.askBox('Der geschriebene Text geht verloren.', { title: 'Nachricht verwerfen?', ok: 'Verwerfen' })) return;
+                    if (this.showMailCompose && dirty) {
+                        /* Angefangenes nicht einfach wegwerfen: als Entwurf behalten */
+                        const w = await this.askBox('Soll der angefangene Text als Entwurf gespeichert werden?', { title: 'Nachricht schließen', ok: 'Als Entwurf behalten', danger: false });
+                        if (w) this.entwurfSpeichern();
+                        else if (!await this.askBox('Der geschriebene Text geht verloren.', { title: 'Wirklich verwerfen?', ok: 'Verwerfen' })) return;
+                    }
                     this.showMailCompose = false;
+                },
+                /* ---------- Entwürfe ----------
+                   Entwürfe liegen nur auf diesem Gerät. Anhänge werden nicht
+                   mitgespeichert, die müsste man ohnehin neu auswählen. */
+                entwuerfe: [],
+                ladeEntwuerfe() { this.entwuerfe = readJSON('organizer_mail_drafts', []) || []; },
+                speichereEntwuerfe() {
+                    try { localStorage.setItem('organizer_mail_drafts', JSON.stringify(this.entwuerfe.slice(0, 30))); } catch (_) {}
+                },
+                entwurfSpeichern() {
+                    const c = this.mailComp;
+                    const e = {
+                        id: c.draftId || uid(), at: Date.now(), mode: c.mode, acc: c.acc, from: c.from,
+                        to: c.to, cc: c.cc, subject: c.subject, body: c.body,
+                        refId: c.refId, refMi: c.refMi, all: c.all, info: c.info
+                    };
+                    const i = this.entwuerfe.findIndex(x => x.id === e.id);
+                    if (i !== -1) this.entwuerfe[i] = e; else this.entwuerfe = [e, ...this.entwuerfe];
+                    c.draftId = e.id;          // weiteres Speichern aktualisiert denselben Entwurf
+                    this.speichereEntwuerfe();
+                    this.toast('Als Entwurf gespeichert');
+                },
+                entwurfOeffnen(e) {
+                    this.mailNew({ mode: e.mode, acc: e.acc, from: e.from, to: e.to, subject: e.subject, body: e.body, refId: e.refId, refMi: e.refMi, all: e.all, info: e.info });
+                    this.mailComp.cc = e.cc || '';
+                    this.mailComp.draftId = e.id;
+                    this.mailComp.initBody = e.body;        // sonst gilt er sofort wieder als geändert
+                },
+                entwurfLoeschen(id) {
+                    this.entwuerfe = this.entwuerfe.filter(e => e.id !== id);
+                    this.speichereEntwuerfe();
+                },
+                entwurfLabel(e) {
+                    return (e.subject || '(kein Betreff)') + (e.to ? ' → ' + e.to.split(',')[0].trim() : '');
                 },
                 /* Adressen, die Gmail unter „Senden als“ erlaubt */
                 mailAliases(acc) { const a = this.mailAccount(acc); return a ? (a.aliases || (a.email ? [a.email] : [])) : []; },
@@ -7293,6 +8503,7 @@ function reply_(p) {
                         if (isNew) await this.mailCall(a, { action: 'send', to: this.mailNormAddrs(c.to), subject: c.subject, ...common }, 120000);
                         else await this.mailCall(a, { action: 'reply', id: c.refId, mi: c.refMi, all: c.all, ...common }, 120000);
                         this.toast('E-Mail gesendet'); this.showMailCompose = false;
+                        if (this.mailComp.draftId) this.entwurfLoeschen(this.mailComp.draftId);
                         if (this.activeTab === 'mail') setTimeout(() => this.mailRefresh({ silent: true }), 1500);
                     } catch (e) { c.error = 'Senden fehlgeschlagen: ' + e.message; }
                     finally { c.busy = false; }

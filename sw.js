@@ -6,12 +6,14 @@
  * auch ohne Internet startet. Deine Daten liegen weiterhin im Browser-Speicher
  * und werden hier nicht angefasst.
  */
-const CACHE = 'space-cache-v1';
+const CACHE = 'space-cache-v2';
 const APP_URLS = [
     './', './index.html',
     './manifest.webmanifest', './icon-192.png', './icon-512.png',
     './icon-maskable-512.png', './apple-touch-icon.png',
-    './shortcut-aufgabe.png', './shortcut-einkauf.png', './shortcut-ablesung.png'
+    './shortcut-aufgabe.png', './shortcut-einkauf.png', './shortcut-ablesung.png',
+    // Bibliotheken aus dem eigenen Ordner, falls vorhanden (fehlen sie, wird es still übersprungen)
+    './lib/tailwind.css', './lib/fontawesome.css', './lib/fonts.css', './lib/alpine.js'
 ];
 
 /* Nur diese fremden Adressen werden zwischengespeichert (Bibliotheken und Schriften). */

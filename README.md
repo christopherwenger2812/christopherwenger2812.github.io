@@ -12,15 +12,19 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Start** – Datum groß, darunter ein Satz zur Lage („Heute nichts mehr. Morgen um 08:00 Carolinensiel · 2 Aufgaben offen."). Darunter Kacheln: Schnellaktionen, Wetter mit Resttageslicht und Regenfenster der nächsten Stunden, Aufgaben, die nächsten Termine, das heute geplante Gericht, Zählerstände und der Einkauf. Welche Kacheln erscheinen und in welcher Reihenfolge, lässt sich einstellen – getrennt für Handy und breiten Bildschirm. Kacheln ohne Inhalt schrumpfen zu einer Zeile.
 
-**Kalender** – Monat, Woche und Tag, wiederkehrende Termine, Feiertage je Bundesland, Erinnerungen, Import aus Google Kalender, Countdown für die nächsten Termine.
+**Kalender** – Monat, Woche und Tag, Feiertage je Bundesland, Erinnerungen bis zu einer Woche vorher, Import aus Google Kalender, Countdown für die nächsten Termine.
+
+**Serientermine** – täglich, wöchentlich (auch mehrere Wochentage), monatlich am Datum oder am n-ten bzw. letzten Wochentag, jährlich; jede n-te Wiederholung („jeder zweite Dienstag“, „alle 3 Monate“), Ende nach Datum oder Anzahl. Ein einzelner Termin lässt sich verschieben oder löschen, ohne die Serie anzufassen.
+
+**Geburtstage** – ein Schalter im Termin: jährlich, ganztägig, das Alter steht automatisch dabei.
 
 **To-Dos** – Listen im Stil von Microsoft To Do: Mein Tag, Wichtig, Geplant, eigene Listen, Fälligkeiten, wiederkehrende Aufgaben, Notizen je Aufgabe.
 
-**Notizen** – Pinnwand mit Farben, Anheften, Volltextsuche und „als Aufgabe übernehmen".
+**Notizen** – Raster mit Farben, Volltextsuche und „als Aufgabe übernehmen“. Angeheftetes steht als eigene Gruppe oben.
 
 **Einkauf** – Im Stil von Bring!: 579 Produkte mit eigenem Symbol je Artikel, nach Kategorien gruppiert und einklappbar, mehrere Listen, Mengen und Varianten, Teilen als Text.
 
-**Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Wählbares Symbol je Rezept, Kachel- oder Listenansicht. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
+**Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Wählbares Symbol je Rezept, Kachel- oder Listenansicht, ab 20 Rezepten wird geblättert. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
 
 **Kochansicht** – Schritt für Schritt im Vollbild, Zutaten zum Abhaken und auf die Portionszahl umgerechnet. Der Bildschirm bleibt dabei an.
 
@@ -28,13 +32,19 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Wetter** – Eigene Seite für mehrere Orte, jeder mit aktueller Lage und vier Tagen Vorschau. Der erste Ort steht auf der Startseite. Aktualisiert sich alle 15 Minuten von selbst, solange die App offen ist.
 
-**Verbrauch** – Zähler für Strom, Gas und Wasser. Aus den Ablesungen entstehen Tagesschnitt, Hochrechnung aufs Jahr, Vergleich mit dem geplanten Jahreswert und die Kosten gegen den monatlichen Abschlag, dazu ein Balkendiagramm je Monat. Jede Karte ist eingefärbt, je nachdem ob du unter, im oder über dem Plan liegst.
+**Verbrauch** – Zähler für Strom, Gas und Wasser. Ganz oben steht als Satz, wo du stehst: „Du liegst über Plan: hochgerechnet 2.700 kWh statt 2.500 kWh – 200 kWh zu viel", darunter die Kosten gegen deinen Abschlag und ein Balken gegen den Jahreswert. Die Einzelzahlen (Zählerstand, pro Tag, letzte 30 Tage, Hochrechnung) sind eingeklappt und erklärt. Dazu ein Balkendiagramm je Monat. Die Karte ist eingefärbt, je nachdem ob du unter, im oder über dem Plan liegst.
 
-**E-Mail** – Gmail im Outlook-Aufbau: Ordnerleiste, nach Zeitraum gruppierte Nachrichtenliste, Lesebereich, Antworten und Weiterleiten, Anhänge, Signatur und Textbausteine, Auswahl der Absenderadresse („Senden als"), Umwandeln einer Mail in eine Aufgabe oder einen Termin.
+**Verträge** – je Zähler mit Laufzeit, Kündigungsfrist, Arbeits- und Grundpreis und Abschlag. Gerechnet wird mit dem Vertrag, der heute gilt. Läuft die Kündigungsfrist in den nächsten 60 Tagen ab, erscheint eine Warnung mit Datum und ein Knopf, der daraus eine Aufgabe macht.
+
+**E-Mail** – Gmail im Outlook-Aufbau: Ordnerleiste, nach Zeitraum gruppierte Nachrichtenliste, Lesebereich, Antworten und Weiterleiten, Anhänge, Signatur und Textbausteine, Auswahl der Absenderadresse („Senden als“), Umwandeln einer Mail in eine Aufgabe oder einen Termin. Dazu Suche und Filter, Mehrfachauswahl mit Sammelaktionen, eigene Ordner, Entwürfe, später senden und Wiedervorlage.
+
+**Regeln** – „Absender enthält X → in Ordner Y", außerdem archivieren, als gelesen, markieren, Papierkorb oder Spam. Sie laufen in der App beim Laden neuer Mails, nicht bei Google, und lassen sich jederzeit abschalten. Ein Knopf sperrt einen Absender, ein anderer öffnet den Abmeldelink eines Newsletters.
 
 **Tresor** – Passwortverwaltung im Stil von Bitwarden: mehrere Tresore mit je eigenem Master-Passwort, Logins, Karten, Notizen und Identitäten, Ordner, Passwortgenerator, 2FA-Codes (TOTP), Passwort-Gesundheitscheck inklusive Abgleich mit bekannten Datenlecks, automatische Sperre, Import und Export (auch Bitwarden-Format).
 
-**Morgenmail** – Einmal am Morgen eine Mail mit den Terminen des Tages, allem was offen oder überfällig ist und dem Stand der Zähler. Sie kommt auch, wenn die App geschlossen ist.
+**Morgenmail** – Einmal am Morgen eine Mail mit den Terminen des Tages, allem was offen oder überfällig ist und dem Stand der Zähler. Sie kommt auch, wenn die App geschlossen ist. Ein „Prüfen"-Knopf zeigt, ob der tägliche Auslöser steht, wann er zuletzt lief und woran es gehakt hat.
+
+**Erinnerungen aufs Handy** – Benachrichtigungen im Browser erscheinen nur bei offener App. Für alles andere schaut das Google-Script alle fünf Minuten nach, was fällig ist, und schickt es als Push an [ntfy](https://ntfy.sh) – kostenlos, ohne Konto.
 
 **Dazu** – Diktieren per Mikrofon an den Eingabefeldern, aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
 
@@ -61,6 +71,8 @@ Beide Dateien in dieses Repository legen und GitHub Pages aktivieren (Settings �
 ```
 index.html                 die komplette App
 sw.js                      für den Offline-Betrieb
+lib/tailwind.css           Gestaltung, fertig erzeugt (ersetzt den Compiler aus dem Netz)
+lib/alpine.js              die Bibliothek, die die Oberfläche lebendig macht
 manifest.webmanifest       Name und Symbol der installierten App
 icon-192.png               Symbol
 icon-512.png               Symbol
@@ -73,6 +85,8 @@ shortcut-ablesung.png      Symbol für den Kurzbefehl
 ```
 
 Nur `index.html` und `sw.js` sind zwingend nötig. Ohne die übrigen Dateien läuft alles weiter, die App erzeugt Symbol und Manifest dann selbst – nur APK-Generatoren können sie dann nicht lesen.
+
+Der Ordner `lib/` ist ebenfalls freiwillig: Liegt er daneben, lädt die App ihre Bibliotheken von dort statt aus dem Netz – schnellerer Start, vollständig offline, keine fremden Server. Fehlt eine Datei, holt die App sie automatisch wieder aus dem Netz. **Wichtig:** `lib/tailwind.css` wird aus `index.html` erzeugt. Nach einer Änderung an der App muss sie neu gebaut werden, sonst fehlen Regeln für neue Oberflächenelemente.
 
 Danach die Seite einmal mit Internet öffnen. Von da an startet sie auch ohne Verbindung, und über „Zum Startbildschirm hinzufügen" verhält sie sich wie eine installierte App.
 
@@ -109,13 +123,24 @@ Wer eine echte APK-Datei möchte (zum Weitergeben oder für ein Gerät ohne Play
 
 Damit die App ohne Adressleiste startet, muss diese Datei als `.well-known/assetlinks.json` in dieses Repository – dafür ist `.nojekyll` da.
 
-### 5. Morgenmail (optional)
+### 5. Erinnerungen aufs Handy (optional)
+
+Damit eine Erinnerung auch bei geschlossener App ankommt, braucht es einen Dienst, der von außen anklopft. Die App nutzt dafür [ntfy](https://ntfy.sh) – kostenlos, ohne Konto.
+
+1. ntfy aus dem Play Store oder App Store installieren
+2. In der App: Einstellungen → Benachrichtigungen → Erinnerungen aufs Handy → Einschalten
+3. Den angezeigten Themennamen in ntfy über „+" abonnieren
+4. „Testnachricht" drücken
+
+Das Script legt dafür einen Auslöser an, der alle fünf Minuten nachsieht. Der Themenname ist das einzige Geheimnis – wer ihn kennt, sieht die Erinnerungen, also nicht weitergeben.
+
+### 6. Morgenmail (optional)
 
 Einstellungen → Benachrichtigungen → Morgenmail → Einschalten. Das Script legt sich dabei selbst einen täglichen Auslöser an und schickt die Mail an die Adresse deines Google-Kontos.
 
 Der Abgleich selbst ist verschlüsselt, das Script kann ihn also nicht lesen. Für die Mail legt die App deshalb zusätzlich eine **unverschlüsselte** Kurzfassung in deinem Drive ab (`space-agenda-….json`): Datum, Uhrzeit und Titel der nächsten sieben Tage sowie offene Aufgaben. Notizen, Orte, Einkauf, Rezepte und der Tresor bleiben außen vor. Die Datei lässt sich jederzeit löschen, dann bleibt die Mail leer.
 
-### 6. Updates
+### 7. Updates
 
 Die App prüft beim Start, beim Zurückkehren und alle 15 Minuten, ob auf GitHub eine neue Version liegt, und bietet sie an. Nach einer Änderung an `index.html` also einfach hochladen – die Geräte ziehen von selbst nach. Gespeicherte Daten bleiben dabei erhalten.
 
@@ -140,7 +165,7 @@ Beim Löschen der Browserdaten ist alles weg, was nicht abgeglichen oder gesiche
 
 ## Technisch
 
-Eine einzige HTML-Datei, rund 650 KB, ohne Build-Schritt. Aus dem Netz kommen nur [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
+Eine einzige HTML-Datei, rund 730 KB, ohne Build-Schritt. Mit dem Ordner `lib/` kommt nichts Wesentliches mehr aus dem Netz. Ohne ihn werden geladen: [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
 
 Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die untere Navigationsleiste, unter 640 Pixel Dialoge als Blatt von unten, bei Touchbedienung größere Tippflächen.
 
@@ -148,9 +173,9 @@ Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die u
 
 ## Grenzen
 
-- Erinnerungen erscheinen nur, solange die App im Browser geöffnet ist.
+- Erinnerungen im Browser erscheinen nur, solange die App geöffnet ist – für alles andere die Push-Erinnerungen über ntfy einschalten.
 - Diktieren funktioniert nur in Browsern mit Spracherkennung (Chrome, Edge) und schickt die Aufnahme an den Browser-Hersteller.
-- Für die Morgenmail liegt eine unverschlüsselte Kurzfassung des Kalenders in deinem Drive (siehe „Einrichten“, Punkt 5).
+- Für die Morgenmail liegt eine unverschlüsselte Kurzfassung des Kalenders in deinem Drive (siehe „Einrichten“, Punkt 6).
 - Passwörter lassen sich nicht automatisch in andere Apps oder Webseiten einfüllen.
 - Standortbezogene Erinnerungen sind nicht möglich.
 - E-Mail, Abgleich und das Einlesen von Rezepten aus Link oder PDF brauchen Internet; der Rest funktioniert offline.
