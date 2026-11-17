@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.17-8">
+    <meta name="app-version" content="2026.11.17-7">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3978,26 +3978,11 @@ function doPost(e) {
   return handle_(body);
 }
 
-/* Ohne diesen Mantel beantwortet Google einen Programmfehler mit einer
-   HTML-Fehlerseite ohne CORS-Kopfzeilen. Im Browser kommt dann nur
-   „Failed to fetch“ an und niemand weiß, woran es lag. */
-function sicher_(fn) {
-  try { return fn(); }
-  catch (err) {
-    var t = String(err && err.message || err);
-    if (/autoris|authoriz|permission|Berechtigung/i.test(t))
-      t = 'Dem Script fehlen Berechtigungen. Bitte im Script-Editor einmal die Funktion morgenmail ausführen, zustimmen und danach eine neue Version bereitstellen. (' + t + ')';
-    return out_({ ok: false, error: t });
-  }
-}
-
 function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-function handle_(p) { return sicher_(function () { return handle2_(p); }); }
-
-function handle2_(p) {
+function handle_(p) {
   var room = String(p.room || '');
   if (!/^[a-f0-9]{32}$/.test(room)) return out_({ ok: false, error: 'Ungültiger Raum' });
   if (p.action === 'fetchurl') return fetchUrl_(String(p.url || ''));
