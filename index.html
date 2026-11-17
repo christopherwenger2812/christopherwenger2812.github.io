@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.17-9">
+    <meta name="app-version" content="2026.11.17-10">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -315,7 +315,21 @@
         .backdrop > * { margin-block: auto; }
         .swatch { width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 2px solid transparent; transition: transform .15s; flex-shrink: 0; }
         .swatch.on { border-color: var(--text); transform: scale(1.12); }
+        /* Wetterstimmung: ein weicher Schleier von oben, mehr nicht. */
+        [data-wetter] body { background-image: radial-gradient(120% 55% at 50% -12%, var(--wx-tint) 0%, transparent 62%); background-attachment: fixed; }
+        [data-wetter="klar"]    { --wx-tint: color-mix(in srgb, #f59e0b 14%, transparent); }
+        [data-wetter="wolkig"]  { --wx-tint: color-mix(in srgb, #94a3b8 16%, transparent); }
+        [data-wetter="regen"]   { --wx-tint: color-mix(in srgb, #3b82f6 15%, transparent); }
+        [data-wetter="schnee"]  { --wx-tint: color-mix(in srgb, #67e8f9 16%, transparent); }
+        [data-wetter="nebel"]   { --wx-tint: color-mix(in srgb, #a8a29e 18%, transparent); }
+        [data-wetter="gewitter"]{ --wx-tint: color-mix(in srgb, #7c3aed 16%, transparent); }
+        [data-wetter="nacht"]   { --wx-tint: color-mix(in srgb, #4338ca 15%, transparent); }
         .safe-bottom { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
+        /* Beim Lesen soll die Leiste nicht im Weg stehen: Sie rutscht beim
+           Herunterblättern weg und kommt beim Hochblättern sofort zurück. */
+        .navbar { transition: transform .22s ease, opacity .22s ease; }
+        .navbar.weg { transform: translateY(140%); opacity: 0; pointer-events: none; }
+        @media (prefers-reduced-motion: reduce) { .navbar { transition: none; } }
         /* Notizen */
         .note { position: relative; display: flex; flex-direction: column; gap: .4rem; padding: 1rem 1.1rem; border-radius: .85rem; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-s); cursor: pointer; text-align: left; transition: transform .15s, box-shadow .15s; width: 100%; }
         /* Farbige Notizen sind komplett hinterlegt – wie ein Haftzettel */
@@ -598,7 +612,8 @@
             </div>
         </header>
 
-        <nav class="md:hidden fixed bottom-3 left-3 right-3 z-40 card px-1.5 pt-2 safe-bottom flex justify-around backdrop-blur-xl" aria-label="Hauptnavigation">
+        <nav class="md:hidden fixed bottom-3 left-3 right-3 z-40 card px-1.5 pt-2 safe-bottom flex justify-around backdrop-blur-xl navbar"
+             :class="navWeg ? 'weg' : ''" aria-label="Hauptnavigation">
             <template x-for="t in mainTabs" :key="t.id">
                 <button @click="switchTab(t.id)" :class="activeTab === t.id ? 'on' : ''" class="mnav relative"><i :class="t.icon" class="text-base"></i><span x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="absolute top-0 right-[18%] min-w-[1rem] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
             </template>
@@ -1621,6 +1636,7 @@
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost mstar shrink-0" :class="mailCurRow.star ? 'on' : ''" :disabled="!mailSel" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren" aria-label="Markieren"><i :class="mailCurRow.star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
                         <span x-show="mailCfg.accounts.length" class="sep"></span>
+                        <button x-show="mailFolder === 'spam' && mailList.length" class="btn btn-ghost shrink-0 !text-rose-400" @click="spamLeeren()" title="Spam in den Papierkorb räumen"><i class="fa-solid fa-dumpster-fire"></i><span class="hidden sm:inline">Spam leeren</span></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="laterOpen('snooze')" title="Später wieder vorlegen"><i class="fa-solid fa-clock-rotate-left"></i><span class="hidden lg:inline">Später</span></button>
                         <button x-show="mailCfg.accounts.length && abbestellLink" class="btn btn-ghost shrink-0" @click="window.open(abbestellLink, '_blank', 'noopener')" title="Newsletter abbestellen"><i class="fa-solid fa-envelope-circle-check"></i><span class="hidden xl:inline">Abbestellen</span></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="blockSender(mailCurRow)" title="Absender künftig in den Spam"><i class="fa-solid fa-user-slash"></i></button>
@@ -2195,6 +2211,17 @@
 
                         <!-- Kategorie-spezifische Bereiche -->
                         <div x-show="!setQuery.trim() && setCat === 'design'" class="space-y-5">
+<div class="card p-5 sm:p-6 space-y-3">
+                    <p class="label"><i class="fa-solid fa-cloud-sun mr-2"></i>Wetterstimmung</p>
+                    <div class="flex items-center gap-3">
+                        <button type="button" role="switch" aria-label="Wetterstimmung" :aria-checked="cfg.wxMood" class="switch shrink-0" :class="cfg.wxMood ? 'on' : ''" @click="cfg.wxMood = !cfg.wxMood; saveCfg(); applyWetter()"></button>
+                        <span class="min-w-0 flex-1">
+                            <span class="block text-sm font-bold">Farbe nach Wetter</span>
+                            <span class="block text-[11px] muted">Ein zarter Schleier von oben – sonnig warm, Regen bläulich, nachts dunkelblau. Das gewählte Design bleibt wie es ist.</span>
+                        </span>
+                    </div>
+                    <p x-show="cfg.wxMood" class="text-[11px] muted font-semibold" x-text="wetterLageText ? 'Gerade: ' + wetterLageText : 'Noch kein Wetter geladen – stell auf der Startseite einen Ort ein.'"></p>
+                </div>
 <div class="card p-5 sm:p-6 space-y-5">
                     <p class="label"><i class="fa-solid fa-palette mr-2"></i>Design</p>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -2457,10 +2484,10 @@
                 </select>
                 <input x-show="ruleDraft.tun === 'label'" type="text" x-model="ruleDraft.ordner" maxlength="100" class="field" placeholder="Name des Ordners" aria-label="Ordner">
             </div>
-            <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" class="switch" x-model="ruleDraft.an" aria-label="Regel aktiv">
+            <div class="flex items-center gap-3">
+                <button type="button" role="switch" aria-label="Regel aktiv" :aria-checked="ruleDraft.an" class="switch shrink-0" :class="ruleDraft.an ? 'on' : ''" @click="ruleDraft.an = !ruleDraft.an"></button>
                 <span class="text-sm font-bold">Regel ist aktiv</span>
-            </label>
+            </div>
             <div class="flex items-center justify-between gap-3 pt-3 border-t divider">
                 <button type="button" x-show="mailRules.some(r => r.id === ruleDraft.id)" @click="ruleDelete(ruleDraft.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
                 <span class="flex-1"></span>
@@ -2514,17 +2541,17 @@
                 </div>
             </div>
             <!-- Geburtstag: jährlich, ganztägig, mit Alter -->
-            <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" class="switch" :checked="!!currentEvent.born" @change="bdayAn($event.target.checked)" aria-label="Geburtstag">
-                <span class="min-w-0">
+            <div class="flex items-center gap-3">
+                <button type="button" role="switch" aria-label="Geburtstag" :aria-checked="currentEvent.bday" class="switch shrink-0" :class="currentEvent.bday ? 'on' : ''" @click="bdayAn(!currentEvent.bday)"></button>
+                <span class="min-w-0 flex-1">
                     <span class="block text-sm font-bold">Geburtstag</span>
-                    <span class="block text-[11px] muted">Jedes Jahr, ganztägig. Mit Geburtsjahr steht das Alter dabei.</span>
+                    <span class="block text-[11px] muted">Jedes Jahr, ganztägig. Geburtsjahr eintragen, dann steht das Alter dabei – es geht auch ohne.</span>
                 </span>
-                <input x-show="currentEvent.born" type="number" min="1900" max="2200" class="field !w-24 !py-1.5 !text-xs num ml-auto" x-model.number="currentEvent.born" placeholder="Jahr" aria-label="Geburtsjahr">
-            </label>
+                <input x-show="currentEvent.bday" type="number" inputmode="numeric" class="field !w-24 !py-1.5 !text-xs num ml-auto" x-model.number="currentEvent.born" placeholder="Jahr" aria-label="Geburtsjahr">
+            </div>
 
             <!-- Wiederholung -->
-            <div class="space-y-2" x-show="!currentEvent.born">
+            <div class="space-y-2" x-show="!currentEvent.bday">
                 <div class="flex items-center gap-2 flex-wrap">
                     <p class="label mr-auto">Wiederholen</p>
                     <select class="field !w-auto !py-1.5 !text-xs" aria-label="Wiederholung"
@@ -2541,7 +2568,7 @@
                     <div class="inner p-3 space-y-2.5">
                         <div class="flex items-center gap-2 flex-wrap text-[12px] font-semibold">
                             <span class="muted">Jede</span>
-                            <input type="number" min="1" max="99" class="field !w-16 !py-1.5 !text-xs num" x-model.number="currentEvent.rep.n" aria-label="Abstand">
+                            <input type="number" inputmode="numeric" class="field !w-16 !py-1.5 !text-xs num" x-model.number="currentEvent.rep.n" aria-label="Abstand">
                             <span x-text="{ d: 'Tage', w: 'Wochen', m: 'Monate', y: 'Jahre' }[currentEvent.rep.f]"></span>
                         </div>
                         <!-- wöchentlich: an welchen Tagen -->
@@ -2566,7 +2593,10 @@
                                 <option value="anzahl">nach Anzahl</option>
                             </select>
                             <button x-show="currentEvent.rep.bis" type="button" class="field pickbtn !w-auto !py-1.5 !text-xs" @click="pickDate(currentEvent.rep, 'bis', { title: 'Serie endet am', min: currentEvent.startDate })"><span x-text="fmtPickDate(currentEvent.rep.bis)"></span></button>
-                            <input x-show="currentEvent.rep.anzahl" type="number" min="1" max="999" class="field !w-20 !py-1.5 !text-xs num" x-model.number="currentEvent.rep.anzahl" aria-label="Anzahl">
+                            <!-- Ohne min/max: Das Feld steht auf 0, wenn die Serie kein Ende hat.
+                                 Ein ungültiger Wert in einem ausgeblendeten Feld lässt den Browser
+                                 das Absenden des ganzen Formulars wortlos verweigern. -->
+                            <input x-show="currentEvent.rep.anzahl" type="number" inputmode="numeric" class="field !w-20 !py-1.5 !text-xs num" x-model.number="currentEvent.rep.anzahl" aria-label="Anzahl">
                             <span x-show="currentEvent.rep.anzahl" class="muted">Termine</span>
                         </div>
                         <p class="text-[11px] muted font-semibold" x-text="repText(normRep(currentEvent.rep))"></p>
@@ -3596,7 +3626,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushTopic: '', weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushTopic: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -3623,6 +3653,9 @@
             o.ser = o.ser ? String(o.ser) : '';        // gehört zu dieser Serie (geänderter Einzeltermin)
             o.occ = /^\d{4}-\d{2}-\d{2}$/.test(o.occ || '') ? o.occ : '';
             o.born = Number(o.born) > 1900 && Number(o.born) <= 2200 ? Number(o.born) : 0;
+            /* Ob es ein Geburtstag ist, hängt am Schalter – nicht daran, ob ein
+               Jahr eingetragen ist. Ältere Termine mit Jahr gelten weiter als Geburtstag. */
+            o.bday = o.bday === undefined ? o.born > 0 : !!o.bday;
             return o;
         }
 
@@ -3956,7 +3989,7 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan']];
-        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -4420,6 +4453,19 @@ function listBackups_(room) {
             85: ['Schneeschauer', 'fa-snowflake', 'fa-snowflake'], 86: ['Starke Schneeschauer', 'fa-snowflake', 'fa-snowflake'],
             95: ['Gewitter', 'fa-cloud-bolt', 'fa-cloud-bolt'], 96: ['Gewitter mit Hagel', 'fa-cloud-bolt', 'fa-cloud-bolt'], 99: ['Schweres Gewitter mit Hagel', 'fa-cloud-bolt', 'fa-cloud-bolt']
         };
+        /* Stimmung aus dem Wettercode: ein Hauch Farbe über der ganzen App.
+           Absichtlich zurückhaltend – die Bereichsfarben sollen führend bleiben. */
+        function wetterStimmung(code, nacht) {
+            if (nacht) return 'nacht';
+            if (code === null || code === undefined) return '';
+            if (code <= 1) return 'klar';
+            if (code <= 3) return 'wolkig';
+            if (code === 45 || code === 48) return 'nebel';
+            if (code >= 95) return 'gewitter';
+            if ((code >= 71 && code <= 77) || code === 85 || code === 86 || code === 56 || code === 57 || code === 66 || code === 67) return 'schnee';
+            return 'regen';
+        }
+        const STIMMUNG_TEXT = { klar: 'Sonnig', wolkig: 'Bewölkt', regen: 'Regnerisch', schnee: 'Winterlich', nebel: 'Trüb', gewitter: 'Stürmisch', nacht: 'Nacht' };
         const wmoText = c => (WMO[c] || ['Unbekannt', 'fa-cloud', 'fa-cloud'])[0];
         const wmoIcon = (c, night) => 'fa-solid ' + (WMO[c] || ['', 'fa-cloud', 'fa-cloud'])[night ? 2 : 1];
 
@@ -4736,6 +4782,7 @@ function doPost(e) {
     if (p.action === 'laterlist') return out_({ ok: true, items: laterList_() });
     if (p.action === 'latercancel') return out_(laterCancel_(p));
     if (p.action === 'snooze') return out_(snooze_(p));
+    if (p.action === 'empty') return out_(empty_(p));
     return out_({ ok: false, error: 'Unbekannte Aktion' });
   } catch (err) {
     return out_({ ok: false, error: String((err && err.message) || err) });
@@ -4767,6 +4814,19 @@ function hasAtt_(ms) {
     for (var i = 0; i < ms.length; i++) if (ms[i].getAttachments({ includeInlineImages: false, includeAttachments: true }).length > 0) return true;
   } catch (err) {}
   return false;
+}
+
+/* Raeumt den Spam-Ordner in den Papierkorb. Nur Spam - sonst koennte ein
+   Tippfehler den Posteingang kosten. Endgueltig loeschen kann dieses Script
+   nicht; Gmail entfernt den Papierkorb nach 30 Tagen von selbst. */
+function empty_(p) {
+  if (String(p.folder || '') !== 'spam') return { ok: false, error: 'Nur der Spam-Ordner laesst sich leeren' };
+  var ts = GmailApp.search('in:spam', 0, 400), n = 0;
+  for (var i = 0; i < ts.length; i += 50) {          // in Haeppchen, sonst laeuft die Zeit ab
+    var teil = ts.slice(i, i + 50);
+    try { GmailApp.moveThreadsToTrash(teil); n += teil.length; } catch (e) {}
+  }
+  return { ok: true, n: n, rest: Math.max(0, ts.length - n) };
 }
 
 /* ---------- Eigene Ordner (Gmail-Labels) ---------- */
@@ -5220,6 +5280,7 @@ function reply_(p) {
                     const th = localStorage.getItem('organizer_theme');
                     this.themeSettings = this.themes.some(t => t.id === th) ? th : 'daylight';
                     this.ladeEntwuerfe();
+                    this.beobachteScrollen();
                     const last = localStorage.getItem('organizer_start_tab');
                     const start = this.cfg.startTab === 'last' ? last : this.cfg.startTab;
                     this.activeTab = this.tabs.some(t => t.id === start) ? start : 'today';
@@ -5247,6 +5308,7 @@ function reply_(p) {
                     this.mealPlan = (readJSON('organizer_plan', []) || []).filter(m => m && m.date && m.recipe).map(normPlan);
                     this.readings = (readJSON('organizer_readings', []) || []).filter(r => r && r.meter).map(normReading);
                     const wx = readJSON('organizer_wx', null); if (wx && wx.now) this.wx = { ...wx, busy: false };
+                    this.applyWetter();
                     const wxa = readJSON('organizer_wx_all', null);
                     if (wxa && typeof wxa === 'object') {
                         this.wxAll = {};
@@ -5309,6 +5371,7 @@ function reply_(p) {
                 /* ---------- Allgemein ---------- */
                 switchTab(tab) {
                     this.activeTab = tab;
+                    this.navWeg = false;              // nach einem Wechsel ist die Leiste wieder da
                     this.applyArea(tab);
                     localStorage.setItem('organizer_start_tab', tab);
                     if (tab === 'mail') this.mailEnter();
@@ -5318,6 +5381,19 @@ function reply_(p) {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
                 /* Färbt die Oberfläche in der Farbwelt des Bereichs */
+                /* ---------- Stimmung nach Wetter ---------- */
+                get wetterLage() {
+                    const n = this.wx && this.wx.now;
+                    return n ? wetterStimmung(n.code, n.night) : '';
+                },
+                get wetterLageText() { return STIMMUNG_TEXT[this.wetterLage] || ''; },
+                applyWetter() {
+                    try {
+                        const an = this.cfg.wxMood && this.wetterLage;
+                        if (an) document.documentElement.dataset.wetter = this.wetterLage;
+                        else delete document.documentElement.dataset.wetter;
+                    } catch (e) {}
+                },
                 applyArea(tab) {
                     try { document.documentElement.dataset.area = tab || 'today'; } catch (e) {}
                     this.syncThemeColor();
@@ -5963,6 +6039,21 @@ function reply_(p) {
                     if (this.updateAvailable) return `Neue Version ${this.remoteVersion} verfügbar.`;
                     return this.lastUpdateCheck ? 'Aktuell · zuletzt geprüft ' + new Date(this.lastUpdateCheck).toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht geprüft.';
                 },
+                /* ---------- Menüleiste am Handy ---------- */
+                navWeg: false,
+                _navY: 0,
+                beobachteScrollen() {
+                    if (typeof window === 'undefined') return;
+                    this._navY = window.scrollY || 0;
+                    window.addEventListener('scroll', () => {
+                        const y = window.scrollY || 0;
+                        const unten = y + window.innerHeight >= document.documentElement.scrollHeight - 80;
+                        if (y < 60 || unten) this.navWeg = false;                 // oben und ganz unten immer sichtbar
+                        else if (y > this._navY + 12) this.navWeg = true;          // herunterblättern
+                        else if (y < this._navY - 12) this.navWeg = false;         // hochblättern
+                        this._navY = y;
+                    }, { passive: true });
+                },
                 maybeAutoCheck() { if (this.cfg.autoUpdate && this.canCheckUpdate && Date.now() - this.lastUpdateCheck > 15 * 60 * 1000) this.checkForUpdate(false); },
                 async checkForUpdate(manual = false) {
                     if (!this.canCheckUpdate) { if (manual) this.toast('Update-Prüfung nur bei online gehosteter Version möglich'); return; }
@@ -6248,7 +6339,7 @@ function reply_(p) {
                     const st = p.startTime || minToTime((d === this.today ? Math.min(new Date().getHours() + 1, 23) : 9) * 60);
                     const end = addMin(d, st, this.cfg.defaultDuration);
                     this.evDur = this.cfg.defaultDuration;
-                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.cfg.defaultEventColor || this.eventColors[0], reminder: this.cfg.defaultReminder, notes: '', rep: null, rskip: [], ser: '', occ: '', born: 0 };
+                    this.currentEvent = { id: null, title: '', allDay: false, startDate: d, startTime: st, endDate: end.date, endTime: end.time, color: this.cfg.defaultEventColor || this.eventColors[0], reminder: this.cfg.defaultReminder, notes: '', rep: null, rskip: [], ser: '', occ: '', born: 0, bday: false };
                     this.evScope = 'serie';
                     this.showEventModal = true;
                     this.$nextTick(() => this.$refs.evTitle?.focus());
@@ -6279,8 +6370,10 @@ function reply_(p) {
                 },
                 bdayAn(an) {
                     const e = this.currentEvent;
+                    e.bday = !!an;
                     if (!an) { e.born = 0; e.rep = null; return; }
-                    e.born = parseDate(e.startDate).getFullYear();
+                    /* Das Geburtsjahr bleibt leer – es ist freiwillig und wird nicht geraten. */
+                    if (!e.born) e.born = '';
                     e.allDay = true; e.endDate = e.startDate;
                     e.rep = { f: 'y', n: 1, wd: [], mo: 'date', bis: '', anzahl: 0 };
                     if (e.reminder === '') e.reminder = '1440';
@@ -6725,6 +6818,7 @@ function reply_(p) {
                     if (this.wxKey(this.cfg.weatherPlace) === k) {
                         this.wx = erg;
                         try { localStorage.setItem('organizer_wx', JSON.stringify(this.wx)); } catch (e) {}
+                        this.applyWetter();
                     }
                     return erg;
                 },
@@ -8170,6 +8264,19 @@ function reply_(p) {
                     const treffer = [...h.matchAll(/href="(https?:\/\/[^"]+)"[^>]*>([^<]{0,80})</gi)];
                     const t = treffer.find(m => /unsubscribe|abmelden|abbestellen/i.test(m[1] + ' ' + m[2]));
                     return t ? t[1] : '';
+                },
+                /* Spam in den Papierkorb räumen – über alle eingerichteten Postfächer */
+                async spamLeeren() {
+                    const anzahl = this.mailList.filter(m => true).length;
+                    if (!await this.askBox('Alle Nachrichten im Spam-Ordner wandern in den Papierkorb. Gmail löscht sie dort nach 30 Tagen endgültig.', { title: 'Spam leeren', ok: 'In den Papierkorb' })) return;
+                    let n = 0;
+                    for (const a of this.mailCfg.accounts) {
+                        try { const r = await this.mailCall(a, { action: 'empty', folder: 'spam' }); n += r.n || 0; }
+                        catch (e) { this.toast('Bei ' + a.name + ' hat es nicht geklappt'); }
+                    }
+                    this.mailList = []; this.mailBack();
+                    await this.mailRefresh({ manual: true });
+                    this.toast(n ? n + (n === 1 ? ' Nachricht' : ' Nachrichten') + ' in den Papierkorb' : 'Der Spam-Ordner war schon leer');
                 },
                 mailSetAcc(id) { this.mailAcc = id; this.mailBack(); this.mailList = []; this.mailRefresh(); },
                 mailSetFolder(f) {
