@@ -24,7 +24,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Einkauf** – Im Stil von Bring!: 579 Produkte mit eigenem Symbol je Artikel, nach Kategorien gruppiert und einklappbar, mehrere Listen, Mengen und Varianten, Teilen als Text.
 
-**Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Wählbares Symbol je Rezept, Kachel- oder Listenansicht, ab 20 Rezepten wird geblättert. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
+**Rezepte** – Eigene Rezepte mit Zutaten und Schritten, Portionen hoch- und runterrechnen, Zutaten direkt auf die Einkaufsliste. Wählbares Symbol je Rezept, Kachel- oder Listenansicht, ab 20 Rezepten wird geblättert. Im Wochenplan lassen sich auch Gerichte ohne hinterlegtes Rezept eintragen – „Reste“ oder „essen gehen“ genügt als Text. Einlesen per Link (über das eigene Google-Script), aus einer PDF oder aus eingefügtem Text.
 
 **Kochansicht** – Schritt für Schritt im Vollbild, Zutaten zum Abhaken und auf die Portionszahl umgerechnet. Der Bildschirm bleibt dabei an.
 
@@ -34,7 +34,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Verbrauch** – Zähler für Strom, Gas und Wasser. Ganz oben steht als Satz, wo du stehst: „Du liegst über Plan: hochgerechnet 2.700 kWh statt 2.500 kWh – 200 kWh zu viel", darunter die Kosten gegen deinen Abschlag und ein Balken gegen den Jahreswert. Die Einzelzahlen (Zählerstand, pro Tag, letzte 30 Tage, Hochrechnung) sind eingeklappt und erklärt. Dazu ein Balkendiagramm je Monat. Die Karte ist eingefärbt, je nachdem ob du unter, im oder über dem Plan liegst.
 
-**Verträge** – je Zähler mit Laufzeit, Kündigungsfrist, Arbeits- und Grundpreis und Abschlag. Gerechnet wird mit dem Vertrag, der heute gilt. Läuft die Kündigungsfrist in den nächsten 60 Tagen ab, erscheint eine Warnung mit Datum und ein Knopf, der daraus eine Aufgabe macht.
+**Verträge** – je Zähler mit Laufzeit, Kündigungsfrist, Arbeitspreis, Grundpreis je Jahr und Abschlag. Gerechnet wird mit dem Vertrag, der heute gilt – und zwar über die tatsächliche Laufzeit statt über ein Kalenderjahr: was bis zum Vertragsende noch zusammenkommt, was die ganze Laufzeit kostet und wie das gegen die gezahlten Abschläge steht. Läuft die Kündigungsfrist in den nächsten 60 Tagen ab, erscheint eine Warnung mit Datum und ein Knopf, der daraus eine Aufgabe macht.
 
 **E-Mail** – Gmail im Outlook-Aufbau: Ordnerleiste, nach Zeitraum gruppierte Nachrichtenliste, Lesebereich, Antworten und Weiterleiten, Anhänge, Signatur und Textbausteine, Auswahl der Absenderadresse („Senden als“), Umwandeln einer Mail in eine Aufgabe oder einen Termin. Dazu Suche und Filter, Mehrfachauswahl mit Sammelaktionen, eigene Ordner, Entwürfe, später senden und Wiedervorlage.
 

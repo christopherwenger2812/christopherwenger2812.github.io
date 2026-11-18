@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.17-11">
+    <meta name="app-version" content="2026.11.18-1">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -767,15 +767,16 @@
                             <template x-for="m in heuteGerichte" :key="m.id">
                                 <div class="inner p-3 space-y-2">
                                     <div class="flex items-center gap-2.5">
-                                        <span class="text-2xl leading-none shrink-0" x-text="m.rezept.emoji"></span>
+                                        <span class="text-2xl leading-none shrink-0" x-text="m.emoji"></span>
                                         <div class="min-w-0 flex-1">
-                                            <p class="font-black text-sm truncate" x-text="m.rezept.title"></p>
+                                            <p class="font-black text-sm truncate" x-text="m.name"></p>
                                             <p class="text-[11px] muted font-semibold">
-                                                <span class="num" x-text="m.servings || m.rezept.servings"></span> Portionen
-                                                <span x-show="m.rezept.minutes" x-text="' · ' + m.rezept.minutes + ' Min'"></span>
+                                                <span class="num" x-text="m.portionen"></span> Portionen
+                                                <span x-show="m.rezept && m.rezept.minutes" x-text="' · ' + (m.rezept ? m.rezept.minutes : '') + ' Min'"></span>
+                                                <span x-show="!m.rezept"> · ohne Rezept</span>
                                             </p>
                                         </div>
-                                        <button type="button" class="btn btn-primary !py-2 !px-3 shrink-0" @click="recipeScale = m.servings || m.rezept.servings; startCook(m.rezept)"><i class="fa-solid fa-fire-burner"></i><span class="hidden sm:inline">Kochen</span></button>
+                                        <button x-show="m.rezept" type="button" class="btn btn-primary !py-2 !px-3 shrink-0" @click="recipeScale = m.portionen; startCook(m.rezept)"><i class="fa-solid fa-fire-burner"></i><span class="hidden sm:inline">Kochen</span></button>
                                     </div>
                                 </div>
                             </template>
@@ -1291,10 +1292,11 @@
                                             </div>
                                             <p class="text-[11px] muted font-semibold">
                                                 <span class="num" x-text="fmtNum(vertragAktiv(m).price, 2)"></span> € je <span x-text="m.unit"></span>
-                                                <span x-show="vertragAktiv(m).base"> · Grundpreis <span class="num" x-text="fmtEuro(vertragAktiv(m).base)"></span> im Monat</span>
+                                                <span x-show="vertragAktiv(m).baseY"> · Grundpreis <span class="num" x-text="fmtEuro(vertragAktiv(m).baseY)"></span> im Jahr</span>
                                                 <span x-show="vertragAktiv(m).monthly"> · Abschlag <span class="num" x-text="fmtEuro(vertragAktiv(m).monthly)"></span></span>
                                                 <span x-show="vertragTage(vertragAktiv(m)) !== null"> · noch <span class="num" x-text="vertragTage(vertragAktiv(m))"></span> Tage</span>
                                             </p>
+                                            <p x-show="meterSatzLaufzeit(m)" class="text-[11px] font-semibold leading-relaxed" x-text="meterSatzLaufzeit(m)"></p>
                                             <div x-show="vertragWarnung(m)" class="flex items-center gap-2 flex-wrap text-[11px] font-bold" style="color: #b45309">
                                                 <i class="fa-solid fa-triangle-exclamation"></i>
                                                 <span x-text="vertragWarnung(m)"></span>
@@ -1398,8 +1400,9 @@
                     </div>
                 </div>
 
-                <!-- Wochenplan -->
-                <div x-show="recipes.length" class="card p-5 sm:p-6 space-y-4">
+                <!-- Wochenplan: auch ohne ein einziges Rezept nutzbar, weil sich
+                     Gerichte frei eintragen lassen -->
+                <div class="card p-5 sm:p-6 space-y-4">
                     <div class="flex items-center gap-2 flex-wrap">
                         <p class="label mr-auto"><i class="fa-regular fa-calendar-days mr-2"></i>Wochenplan <span class="ct" x-text="planLabel"></span></p>
                         <button type="button" class="icon-btn" @click="planShift(-1)" aria-label="Woche zurück"><i class="fa-solid fa-chevron-left text-xs"></i></button>
@@ -1415,13 +1418,13 @@
                                 <template x-for="m in t.eintraege" :key="m.id">
                                     <div class="rounded-lg p-1.5" style="background: var(--surface)">
                                         <div class="flex items-start gap-1">
-                                            <span class="text-sm leading-none" x-text="m.rezept.emoji"></span>
-                                            <button type="button" class="text-[11px] font-bold leading-tight text-left flex-1 min-w-0 break-words" @click="openRecipe(m.rezept)" x-text="m.rezept.title"></button>
+                                            <span class="text-sm leading-none" x-text="m.emoji"></span>
+                                            <button type="button" class="text-[11px] font-bold leading-tight text-left flex-1 min-w-0 break-words" :class="m.rezept ? '' : 'cursor-default'" @click="m.rezept && openRecipe(m.rezept)" x-text="m.name"></button>
                                             <button type="button" class="muted opacity-60 hover:opacity-100 shrink-0" @click="planRemove(m.id)" aria-label="Entfernen"><i class="fa-solid fa-xmark text-[10px]"></i></button>
                                         </div>
                                         <div class="flex items-center gap-1 mt-1">
                                             <button type="button" class="muted text-[10px] px-1" @click="planServings(m, -1)" aria-label="Weniger">−</button>
-                                            <span class="text-[10px] font-bold num" x-text="(m.servings || m.rezept.servings) + ' P.'"></span>
+                                            <span class="text-[10px] font-bold num" x-text="m.portionen + ' P.'"></span>
                                             <button type="button" class="muted text-[10px] px-1" @click="planServings(m, 1)" aria-label="Mehr">+</button>
                                         </div>
                                     </div>
@@ -2756,8 +2759,8 @@
                     <input id="mtPrice" type="number" step="any" min="0" x-model.number="meterDraft.price" class="field" placeholder="0,35">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="label" for="mtBase">Grundpreis je Monat (€)</label>
-                    <input id="mtBase" type="number" step="any" min="0" x-model.number="meterDraft.base" class="field" placeholder="12">
+                    <label class="label" for="mtBase">Grundpreis je Jahr (€)</label>
+                    <input id="mtBase" type="number" step="any" min="0" x-model.number="meterDraft.baseY" class="field" placeholder="144">
                 </div>
                 <div class="space-y-1.5">
                     <label class="label" for="mtAb">Abschlag je Monat (€)</label>
@@ -2792,8 +2795,8 @@
                                 <input type="number" step="any" min="0" x-model.number="c.monthly" class="field !py-2 mt-0.5 num" aria-label="Abschlag"></label>
                             <label class="block"><span class="label !text-[10px]">Preis je Einheit (€)</span>
                                 <input type="number" step="any" min="0" x-model.number="c.price" class="field !py-2 mt-0.5 num" aria-label="Arbeitspreis"></label>
-                            <label class="block"><span class="label !text-[10px]">Grundpreis je Monat (€)</span>
-                                <input type="number" step="any" min="0" x-model.number="c.base" class="field !py-2 mt-0.5 num" aria-label="Grundpreis"></label>
+                            <label class="block"><span class="label !text-[10px]">Grundpreis je Jahr (€)</span>
+                                <input type="number" step="any" min="0" x-model.number="c.baseY" class="field !py-2 mt-0.5 num" aria-label="Grundpreis"></label>
                         </div>
                         <p class="text-[11px] font-semibold" :class="vertragFrist(c) ? 'accent' : 'muted'"
                            x-text="vertragFrist(c) ? 'Kündigen bis spätestens ' + shortDate(vertragFrist(c)) : 'Für die Erinnerung braucht es Ende und Frist.'"></p>
@@ -2933,7 +2936,15 @@
         <div class="card w-full max-w-md p-5 sm:p-6 space-y-3">
             <h3 class="font-black text-xl">Gericht einplanen</h3>
             <p class="muted text-xs font-semibold" x-text="longDate(planPick.date)"></p>
-            <input type="search" x-model="planPick.q" class="field" placeholder="Rezept suchen…" aria-label="Rezept suchen">
+            <input type="search" x-model="planPick.q" @keydown.enter.prevent="planPickList.length ? planAdd(planPickList[0]) : planAddFrei()" class="field" placeholder="Rezept suchen oder Gericht eintippen…" aria-label="Rezept suchen">
+            <button type="button" x-show="planPick.q.trim()" class="prow w-full text-left" @click="planAddFrei()">
+                <span class="text-lg leading-none shrink-0">🍽️</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-[13px] font-bold truncate" x-text="'„' + planPick.q.trim() + '“ eintragen'"></span>
+                    <span class="block text-[11px] muted">Gericht ohne Rezept – zum Beispiel Reste oder auswärts essen</span>
+                </span>
+                <i class="fa-solid fa-plus text-[11px] muted shrink-0"></i>
+            </button>
             <div class="max-h-72 overflow-y-auto space-y-1">
                 <template x-for="r in planPickList" :key="r.id">
                     <button type="button" class="prow w-full" @click="planAdd(r)">
@@ -4380,9 +4391,9 @@ function listBackups_(room) {
 
         /* ---------- Verbrauch: Zähler und Zählerstände ---------- */
         const METER_KINDS = {
-            strom: { label: 'Strom', unit: 'kWh', icon: 'fa-solid fa-bolt', color: '#eab308', price: 0.35, base: 12 },
-            gas:   { label: 'Gas', unit: 'm³', icon: 'fa-solid fa-fire-flame-simple', color: '#f97316', price: 0.12, base: 15 },
-            wasser:{ label: 'Wasser', unit: 'm³', icon: 'fa-solid fa-droplet', color: '#0ea5e9', price: 4.5, base: 8 }
+            strom: { label: 'Strom', unit: 'kWh', icon: 'fa-solid fa-bolt', color: '#eab308', price: 0.35, baseY: 144 },
+            gas:   { label: 'Gas', unit: 'm³', icon: 'fa-solid fa-fire-flame-simple', color: '#f97316', price: 0.12, baseY: 180 },
+            wasser:{ label: 'Wasser', unit: 'm³', icon: 'fa-solid fa-droplet', color: '#0ea5e9', price: 4.5, baseY: 96 }
         };
             /* Verträge je Zähler: Laufzeit, Preise und Kündigungsfrist.
                Der gerade laufende Vertrag liefert die Preise für die Rechnung. */
@@ -4395,7 +4406,9 @@ function listBackups_(room) {
                     bis: /^\d{4}-\d{2}-\d{2}$/.test(c.bis || '') ? c.bis : '',
                     frist: Math.min(24, Math.max(0, Number(c.frist) || 0)),   // Kündigungsfrist in Monaten
                     price: Math.max(0, Number(c.price) || 0),
-                    base: Math.max(0, Number(c.base) || 0),
+                    /* Grundpreis steht jetzt als Jahresbetrag auf der Rechnung.
+                       Ältere Einträge waren je Monat und werden einmalig umgerechnet. */
+                    baseY: c.baseY === undefined ? Math.max(0, Number(c.base) || 0) * 12 : Math.max(0, Number(c.baseY) || 0),
                     monthly: Math.max(0, Number(c.monthly) || 0),
                     note: String(c.note || '').slice(0, 300)
                 })).filter(c => c.name || c.von).sort((a, b) => (a.von || '').localeCompare(b.von || ''));
@@ -4410,7 +4423,7 @@ function listBackups_(room) {
                 number: String(m.number || '').slice(0, 30),
                 target: Math.max(0, Number(m.target) || 0),
                 price: Math.max(0, Number(m.price) || 0),
-                base: Math.max(0, Number(m.base) || 0),
+                baseY: m.baseY === undefined ? Math.max(0, Number(m.base) || 0) * 12 : Math.max(0, Number(m.baseY) || 0),
                 monthly: Math.max(0, Number(m.monthly) || 0),
                 factor: Math.max(0, Number(m.factor) || (kind === 'gas' ? 10 : 0)),
                 contracts: normContracts(m.contracts),
@@ -4638,6 +4651,8 @@ function listBackups_(room) {
             id: String(m.id ?? uid()),
             date: String(m.date || '').slice(0, 10),
             recipe: String(m.recipe || ''),
+            /* Gerichte ohne hinterlegtes Rezept stehen einfach als Text da */
+            title: String(m.title || '').slice(0, 80),
             servings: Math.min(99, Math.max(1, Number(m.servings) || 0)) || 0,
             note: String(m.note || '').slice(0, 120)
         });
@@ -5305,7 +5320,7 @@ function reply_(p) {
                     this.notes = (readJSON('organizer_notes', []) || []).filter(n => n && (n.title || n.text)).map(normNote);
                     this.recipes = (readJSON('organizer_recipes', []) || []).filter(r => r && r.title).map(normRecipe);
                     this.meters = (readJSON('organizer_meters', []) || []).filter(m => m && m.id).map(normMeter);
-                    this.mealPlan = (readJSON('organizer_plan', []) || []).filter(m => m && m.date && m.recipe).map(normPlan);
+                    this.mealPlan = (readJSON('organizer_plan', []) || []).filter(m => m && m.date && (m.recipe || m.title)).map(normPlan);
                     this.readings = (readJSON('organizer_readings', []) || []).filter(r => r && r.meter).map(normReading);
                     const wx = readJSON('organizer_wx', null); if (wx && wx.now) this.wx = { ...wx, busy: false };
                     this.applyWetter();
@@ -7015,8 +7030,20 @@ function reply_(p) {
                 /* Was heute laut Wochenplan gekocht wird */
                 get heuteGerichte() {
                     return this.mealPlan.filter(m => m.date === this.today)
-                        .map(m => ({ ...m, rezept: this.recipes.find(r => r.id === m.recipe) || null }))
-                        .filter(m => m.rezept);
+                        .map(m => this.planEintrag(m))
+                        .filter(m => m.name);
+                },
+                /* Ein Eintrag im Wochenplan: entweder ein Rezept oder nur ein Name.
+                   Ein gelöschtes Rezept fällt damit nicht aus dem Plan, sondern
+                   bleibt als Text stehen. */
+                planEintrag(m) {
+                    const r = m.recipe ? this.recipes.find(x => x.id === m.recipe) : null;
+                    return {
+                        ...m, rezept: r,
+                        name: r ? r.title : (m.title || ''),
+                        emoji: r ? r.emoji : '🍽️',
+                        portionen: m.servings || (r ? r.servings : 2)
+                    };
                 },
                 /* Zähler mit Stand und Hinweis, wenn lange nicht abgelesen */
                 get zaehlerStand() {
@@ -7249,8 +7276,8 @@ function reply_(p) {
                 /* Preise, mit denen gerechnet wird */
                 tarif(m) {
                     const c = this.vertragAktiv(m);
-                    return c ? { price: c.price || m.price, base: c.base || m.base, monthly: c.monthly || m.monthly, name: c.name }
-                             : { price: m.price, base: m.base, monthly: m.monthly, name: '' };
+                    return c ? { price: c.price || m.price, baseY: c.baseY || m.baseY, monthly: c.monthly || m.monthly, name: c.name }
+                             : { price: m.price, baseY: m.baseY, monthly: m.monthly, name: '' };
                 },
                 /* Wann muss gekündigt werden, damit der Vertrag ausläuft? */
                 vertragFrist(c) {
@@ -7296,7 +7323,7 @@ function reply_(p) {
                     const letzter = this.meterDraft.contracts[this.meterDraft.contracts.length - 1];
                     this.meterDraft.contracts.push({
                         id: uid(), name: '', von: letzter && letzter.bis ? this.addDaysStr(letzter.bis, 1) : this.today,
-                        bis: '', frist: 3, price: this.meterDraft.price || 0, base: this.meterDraft.base || 0,
+                        bis: '', frist: 3, price: this.meterDraft.price || 0, baseY: this.meterDraft.baseY || 0,
                         monthly: this.meterDraft.monthly || 0, note: ''
                     });
                 },
@@ -7334,10 +7361,49 @@ function reply_(p) {
                     const units = u => m.kind === 'gas' && m.factor > 0 ? u * m.factor : u;
                     const t = this.tarif(m);
                     out.preis = t.price; out.abschlag = t.monthly; out.tarifName = t.name;
-                    out.cost = units(out.total) * t.price + t.base * (out.days / 30.44);
-                    out.costYear = units(out.year) * t.price + t.base * 12;
+                    out.cost = units(out.total) * t.price + t.baseY * (out.days / 365);
+                    out.costYear = units(out.year) * t.price + t.baseY;
                     if (t.monthly > 0) out.costDiff = out.costYear - t.monthly * 12;
+                    out.laufzeit = this.laufzeitKosten(m, out.perDay);
                     return out;
+                },
+                /* ---------- Kosten über die Vertragslaufzeit ----------
+                   Ein Jahreswert hilft wenig, wenn der Vertrag im März ausläuft.
+                   Gerechnet wird deshalb vom Vertragsbeginn bis zum Vertragsende:
+                   was schon gelaufen ist, was noch kommt, und was unterm Strich
+                   gegen die gezahlten Abschläge steht. */
+                laufzeitKosten(m, perDay) {
+                    const c = this.vertragAktiv(m);
+                    if (!c || !c.bis || !perDay) return null;
+                    const einheiten = u => m.kind === 'gas' && m.factor > 0 ? u * m.factor : u;
+                    const tage = (a, b) => Math.max(0, Math.round((parseDate(b) - parseDate(a)) / 86400000));
+                    const von = c.von || this.today;
+                    const gesamt = tage(von, c.bis) + 1;
+                    const bisher = Math.min(gesamt, tage(von, this.today) + 1);
+                    const rest = Math.max(0, gesamt - bisher);
+                    const jahre = gesamt / 365;
+                    const menge = perDay * gesamt;
+                    const kosten = einheiten(menge) * (c.price || m.price) + (c.baseY || m.baseY) * jahre;
+                    const abschlag = (c.monthly || 0) * (gesamt / 30.44);
+                    return {
+                        gesamtTage: gesamt, restTage: rest, bisherTage: bisher,
+                        menge, mengeRest: perDay * rest,
+                        kosten, kostenRest: einheiten(perDay * rest) * (c.price || m.price) + (c.baseY || m.baseY) * (rest / 365),
+                        abschlag, diff: c.monthly ? kosten - abschlag : null,
+                        bis: c.bis, name: c.name
+                    };
+                },
+                /* Ein Satz zur Laufzeit, für die Karte */
+                meterSatzLaufzeit(m) {
+                    const l = this.meterStats(m).laufzeit;
+                    if (!l) return '';
+                    const e = m.unit;
+                    const teile = [];
+                    if (l.restTage > 0) teile.push('Bis zum Vertragsende am ' + this.shortDate(l.bis) + ' sind es noch ' + l.restTage + ' Tage, etwa ' + this.fmtNum(l.mengeRest) + ' ' + e + ' für rund ' + this.fmtEuro(l.kostenRest));
+                    else teile.push('Die Laufzeit ist abgelaufen');
+                    teile.push('über die ganze Laufzeit etwa ' + this.fmtNum(l.menge) + ' ' + e + ' für ' + this.fmtEuro(l.kosten));
+                    if (l.diff !== null) teile.push(l.diff > 0 ? 'bei ' + this.fmtEuro(l.abschlag) + ' Abschlägen fehlen rund ' + this.fmtEuro(l.diff) : 'bei ' + this.fmtEuro(l.abschlag) + ' Abschlägen gibt es rund ' + this.fmtEuro(-l.diff) + ' zurück');
+                    return teile.join(' · ') + '.';
                 },
                 /* Verbrauch je Monat für das Balkendiagramm */
                 meterMonths(m, count = 12) {
@@ -7365,13 +7431,13 @@ function reply_(p) {
                 meterMax(ms) { return Math.max(1, ...ms.map(x => x.val)); },
                 openMeter(m) {
                     const k = m ? null : 'strom';
-                    this.meterDraft = m ? normMeter({ ...m }) : normMeter({ id: null, kind: k, name: METER_KINDS[k].label, target: 0, price: METER_KINDS[k].price, base: METER_KINDS[k].base });
+                    this.meterDraft = m ? normMeter({ ...m }) : normMeter({ id: null, kind: k, name: METER_KINDS[k].label, target: 0, price: METER_KINDS[k].price, baseY: METER_KINDS[k].baseY });
                     if (!m) this.meterDraft.id = null;
                     this.showMeter = true;
                 },
                 meterKindChange(kind) {
                     const d = METER_KINDS[kind] || METER_KINDS.strom, m = this.meterDraft;
-                    this.meterDraft = { ...m, kind, unit: d.unit, price: m.price || d.price, base: m.base || d.base, factor: kind === 'gas' ? (m.factor || 10) : 0, name: Object.values(METER_KINDS).some(x => x.label === m.name) || !m.name ? d.label : m.name };
+                    this.meterDraft = { ...m, kind, unit: d.unit, price: m.price || d.price, baseY: m.baseY || d.baseY, factor: kind === 'gas' ? (m.factor || 10) : 0, name: Object.values(METER_KINDS).some(x => x.label === m.name) || !m.name ? d.label : m.name };
                 },
                 saveMeter() {
                     const d = this.meterDraft; if (!d) return;
@@ -7540,8 +7606,8 @@ function reply_(p) {
                             tag: parseDate(ds).getDate(),
                             heute: ds === this.today,
                             eintraege: this.mealPlan.filter(m => m.date === ds)
-                                .map(m => ({ ...m, rezept: this.recipes.find(r => r.id === m.recipe) || null }))
-                                .filter(m => m.rezept)
+                                .map(m => this.planEintrag(m))
+                                .filter(m => m.name)
                         };
                     });
                 },
@@ -7561,9 +7627,17 @@ function reply_(p) {
                     this.planPick = null; this.saveAllData();
                     this.toast(r.title + ' eingeplant');
                 },
+                /* Gericht ohne Rezept – zum Beispiel „Reste“ oder „essen gehen“ */
+                planAddFrei() {
+                    const t = (this.planPick?.q || '').trim().slice(0, 80);
+                    if (!t) return;
+                    this.mealPlan.push(normPlan({ date: this.planPick.date, title: t, servings: 2 }));
+                    this.planPick = null; this.saveAllData();
+                    this.toast(t + ' eingeplant');
+                },
                 planRemove(id) { this.mealPlan = this.mealPlan.filter(m => m.id !== id); this.saveAllData(); },
                 planServings(m, n) {
-                    const neu = Math.min(99, Math.max(1, (m.servings || (m.rezept ? m.rezept.servings : 2)) + n));
+                    const neu = Math.min(99, Math.max(1, (m.portionen || 2) + n));
                     this.mealPlan = this.mealPlan.map(x => x.id === m.id ? { ...x, servings: neu } : x);
                     this.saveAllData();
                 },
@@ -7577,6 +7651,7 @@ function reply_(p) {
                     const summe = new Map();
                     for (const tag of this.planWeek) {
                         for (const m of tag.eintraege) {
+                            if (!m.rezept) continue;                 // freies Gericht, keine Zutatenliste
                             const f = (m.servings || m.rezept.servings) / m.rezept.servings;
                             for (const i of m.rezept.ings) {
                                 const key = i.name.toLowerCase() + '|' + i.unit;
