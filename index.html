@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.19-6">
+    <meta name="app-version" content="2026.11.19-7">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2256,6 +2256,16 @@
                                 </div>
                                 <p class="text-[11px] muted">Wer diesen Namen kennt, sieht deine Erinnerungen. Gib ihn nicht weiter.</p>
                             </div>
+                            <div class="inner p-3 space-y-1.5">
+                                <p class="label">Zugangsschlüssel (freiwillig)</p>
+                                <input type="text" class="inp" x-model="cfg.pushToken" @change="saveCfg()" placeholder="tk_…" autocomplete="off" spellcheck="false" aria-label="ntfy-Zugangsschlüssel">
+                                <p class="text-[11px] muted leading-relaxed">
+                                    Ohne Konto rechnet ntfy sein Kontingent pro IP-Adresse ab – und die teilt dein Google-Script mit
+                                    allen anderen Google-Scripten. Dann kommt die Antwort <b>429</b>, obwohl du selbst kaum etwas
+                                    verschickt hast. Ein kostenloses Konto auf ntfy.sh behebt das: dort unter „Account → Access tokens“
+                                    einen Schlüssel erzeugen und hier einsetzen. Nach dem Eintragen einmal aus- und wieder einschalten.
+                                </p>
+                            </div>
                             <div class="flex flex-wrap gap-2">
                                 <button type="button" class="btn btn-primary" x-show="!cfg.pushOn" :disabled="pushBusy || !mailDayReady" @click="pushAn()"><i class="fa-solid fa-play"></i>Einschalten</button>
                                 <button type="button" class="btn btn-soft" x-show="cfg.pushOn" :disabled="pushBusy" @click="pushAus()"><i class="fa-solid fa-stop"></i>Abschalten</button>
@@ -3803,7 +3813,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushTopic: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushTopic: '', pushToken: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -4166,7 +4176,7 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan'], ['ro', 'routinen']];
-        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'pushToken', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -4464,6 +4474,7 @@ function pushOn_(room, p) {
   ScriptApp.newTrigger('erinnerungen').timeBased().everyMinutes(5).create();
   var props = PropertiesService.getScriptProperties();
   props.setProperty('PUSH_TOPIC', topic);
+  props.setProperty('PUSH_TOKEN', String(p.token || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64));
   props.setProperty('AGENDA_ROOM', room);
   props.setProperty('PUSH_SENT', '[]');
   return out_({ ok: true, topic: topic });
@@ -4488,14 +4499,31 @@ function pushStat_() {
 }
 
 function pushSend_(titel, text, tag) {
-  var topic = PropertiesService.getScriptProperties().getProperty('PUSH_TOPIC');
+  var props = PropertiesService.getScriptProperties();
+  var topic = props.getProperty('PUSH_TOPIC');
   if (!topic) return { ok: false, error: 'Kein Thema hinterlegt' };
-  var res = UrlFetchApp.fetch('https://ntfy.sh/', {
+  var token = props.getProperty('PUSH_TOKEN') || '';
+  var opt = {
     method: 'post', contentType: 'application/json', muteHttpExceptions: true,
     payload: JSON.stringify({ topic: topic, title: titel, message: text, tags: [tag || 'calendar'], priority: 4 })
-  });
-  var code = res.getResponseCode();
-  return code >= 200 && code < 300 ? { ok: true } : { ok: false, error: 'ntfy antwortet ' + code };
+  };
+  /* Ohne Konto rechnet ntfy das Kontingent pro IP-Adresse ab. Google-Scripte
+     teilen sich wenige Adressen mit allen anderen, deshalb kommt 429 auch
+     dann, wenn man selbst kaum etwas verschickt hat. Ein kostenloses Konto
+     bindet das Kontingent an den Zugangsschlüssel statt an die Adresse. */
+  if (token) opt.headers = { Authorization: 'Bearer ' + token };
+  var code = 0;
+  for (var v = 0; v < 2; v++) {
+    code = UrlFetchApp.fetch('https://ntfy.sh/', opt).getResponseCode();
+    if (code < 400 || code !== 429) break;
+    Utilities.sleep(3000);           // einmal kurz warten und erneut versuchen
+  }
+  if (code >= 200 && code < 300) return { ok: true };
+  if (code === 429) return { ok: false, error: token
+    ? 'ntfy hat das Kontingent erschöpft (429). Bitte in einer Stunde erneut versuchen.'
+    : 'ntfy lehnt mit 429 ab: Das Kontingent ohne Konto hängt an der IP-Adresse, die dein Google-Script mit vielen anderen teilt. Lege ein kostenloses Konto auf ntfy.sh an, erzeuge dort einen Zugangsschlüssel und trage ihn hier ein.' };
+  if (code === 401 || code === 403) return { ok: false, error: 'ntfy weist den Zugangsschlüssel ab (' + code + '). Bitte neu erzeugen und hier eintragen.' };
+  return { ok: false, error: 'ntfy antwortet ' + code };
 }
 
 /* Wird vom Auslöser gerufen. */
@@ -7756,7 +7784,7 @@ function reply_(p) {
                     try {
                         if (!this.cfg.pushTopic) { this.cfg.pushTopic = this.neuesThema(); this.saveCfg(); }
                         await this.gCall({ action: 'agenda', ...this.agendaDaten() });
-                        await this.gCall({ action: 'pushon', topic: this.cfg.pushTopic });
+                        await this.gCall({ action: 'pushon', topic: this.cfg.pushTopic, token: this.cfg.pushToken || '' });
                         localStorage.setItem('organizer_agenda_at', String(Date.now()));
                         this.cfg.pushOn = true; this.saveCfg();
                         this.pushMsg = 'Eingeschaltet. Jetzt in der ntfy-App das Thema abonnieren.';
