@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.19-7">
+    <meta name="app-version" content="2026.11.19-8">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4176,7 +4176,13 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan'], ['ro', 'routinen']];
-        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'pushToken', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
+        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'pushToken', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength',
+            /* Benachrichtigungen gelten überall gleich: Wann du Ruhe haben willst,
+               hängt an dir und nicht am Gerät. „notifications“ wandert mit, die
+               Erlaubnis des Browsers dagegen nicht – die muss jedes Gerät selbst
+               erteilen, deshalb wird sie beim Einschalten dort nachgefragt. */
+            'notifications', 'quietOn', 'quietFrom', 'quietTo'];
+        // Design, Dichte, Start-Seite, Ansichten und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -5874,6 +5880,7 @@ function reply_(p) {
                     for (const k of SYNC_CFG_KEYS) if (k in v && typeof v[k] === typeof DEFAULT_CFG[k]) this.cfg[k] = v[k];
                     this.persistCfg(); this.applyCfg();
                     if (this.cfg.calView !== before) this.calendarView = this.cfg.calView;
+                    this.hinweisErlaubnis();
                 },
                 applyCfg() {
                     const r = document.documentElement;
@@ -5904,6 +5911,20 @@ function reply_(p) {
                     if (k === 'appName') this.applyAppName();
                     if (k === 'calView') this.calendarView = v;
                     if (k === 'hourFrom' || k === 'hourTo') this.scrollGrid();
+                },
+                /* Der Schalter wandert zwischen den Geräten, die Erlaubnis des
+                   Browsers nicht. Also wird vor jedem Systemhinweis beides geprüft. */
+                darfHinweisen() {
+                    const N = window.Notification;
+                    return this.cfg.notifications && !this.inQuietHours() && !!N && N.permission === 'granted';
+                },
+                /* Kam der Schalter vom anderen Gerät, fehlt hier noch die Erlaubnis.
+                   Einmal nachfragen, sonst bleibt es still und niemand weiss warum. */
+                async hinweisErlaubnis() {
+                    const N = window.Notification;
+                    if (!this.cfg.notifications || !N || N.permission !== 'default') return;
+                    if (await N.requestPermission() !== 'granted')
+                        this.toast('Benachrichtigungen sind eingeschaltet, dieser Browser erlaubt sie aber nicht');
                 },
                 async toggleCfg(k) {
                     if (k === 'notifications' && !this.cfg.notifications) {
@@ -6512,7 +6533,7 @@ function reply_(p) {
                 },
                 fire(kind, title, info) {
                     this.banners = [...this.banners.slice(-3), { id: uid(), kind, title, info }];
-                    if (this.cfg.notifications && !this.inQuietHours() && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body: info });
+                    if (this.darfHinweisen()) new Notification(title, { body: info });
                 },
                 checkReminders() {
                     const fired = new Set(readJSON('organizer_fired', [])), now = Date.now();
@@ -8725,7 +8746,7 @@ function reply_(p) {
                 noteCounts(a, u) {
                     if (!u || typeof u !== 'object') return;
                     const prev = this.mailCounts[a.id], n = { inbox: Number(u.inbox) || 0, spam: Number(u.spam) || 0 };
-                    if (prev && n.inbox > prev.inbox && this.mailCfg.settings.notify) { const d = n.inbox - prev.inbox, msg = `${d} neue E-Mail${d > 1 ? 's' : ''} – ${a.name}`; this.toast(msg); if (this.cfg.notifications && !this.inQuietHours() && 'Notification' in window && Notification.permission === 'granted') new Notification('E-Mail', { body: msg }); }
+                    if (prev && n.inbox > prev.inbox && this.mailCfg.settings.notify) { const d = n.inbox - prev.inbox, msg = `${d} neue E-Mail${d > 1 ? 's' : ''} – ${a.name}`; this.toast(msg); if (this.darfHinweisen()) new Notification('E-Mail', { body: msg }); }
                     this.mailCounts = { ...this.mailCounts, [a.id]: n }; this.mailCountsAt = Date.now();
                 },
                 async mailPollCounts() {
