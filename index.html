@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.19-2">
+    <meta name="app-version" content="2026.11.19-4">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2220,12 +2220,13 @@
                                     </div>
                                     <p x-show="mailDayMsg" class="text-[12px] font-bold" x-text="mailDayMsg"></p>
                                     <div x-show="mailDayStat" class="inner p-3 text-[11px] space-y-1 font-semibold">
-                                        <p><span class="muted">Täglicher Auslöser:</span> <span x-text="mailDayStat?.ausloeser ? 'vorhanden, ' + String(mailDayStat.stunde).padStart(2, '0') + ':00 Uhr (' + mailDayStat.zeitzone + ')' : 'fehlt'"></span></p>
+                                        <p x-show="mailDayStat?.fehlendeFreigabe" class="text-amber-400" x-text="'Dem Script fehlt die Freigabe ' + mailDayStat?.fehlendeFreigabe + ' – siehe Hinweis unten.'"></p>
+                        <p><span class="muted">Täglicher Auslöser:</span> <span x-text="mailDayStat?.ausloeser === null ? 'nicht abfragbar' : (mailDayStat?.ausloeser ? 'vorhanden, ' + String(mailDayStat.stunde).padStart(2, '0') + ':00 Uhr (' + mailDayStat.zeitzone + ')' : 'fehlt')"></span></p>
                                         <p><span class="muted">Empfänger:</span> <span x-text="mailDayStat?.an"></span></p>
                                         <p><span class="muted">Letzter Lauf:</span> <span x-text="mailDayZeit(mailDayStat?.letzterLauf) + (mailDayStat?.letzterLauf ? (mailDayStat.letzterOk ? ' · erfolgreich' : ' · gescheitert') : '')"></span></p>
                                         <p x-show="mailDayStat?.letzterFehler" class="text-amber-400" x-text="'Fehler: ' + mailDayStat?.letzterFehler"></p>
                                         <p><span class="muted">Übersicht im Drive:</span> <span x-text="mailDayStat?.datei ? 'vorhanden, ' + mailDayStat.dateiAlterStd + ' Std alt' : 'fehlt'"></span></p>
-                                        <p><span class="muted">Freie Mails heute:</span> <span class="num" x-text="mailDayStat?.restKontingent"></span></p>
+                                        <p><span class="muted">Freie Mails heute:</span> <span class="num" x-text="mailDayStat?.restKontingent === null ? 'nicht abfragbar' : mailDayStat?.restKontingent"></span></p>
                                     </div>
                                     <p class="text-[11px] muted leading-relaxed">
                                         Wichtig: Dein Abgleich ist verschlüsselt, das Script kann ihn nicht lesen. Für die Mail legt die App deshalb zusätzlich eine <b>unverschlüsselte</b> Kurzfassung in deinem Drive ab – Datum, Uhrzeit und Titel der nächsten sieben Tage, dazu offene Aufgaben. Notizen, Orte, Einkauf, Rezepte und der Tresor bleiben außen vor. Die Datei heißt <code>space-agenda-…</code> und lässt sich dort jederzeit löschen.
@@ -4195,7 +4196,16 @@ function sicher_(fn) {
   try { return fn(); }
   catch (err) {
     var t = String(err && err.message || err);
-    if (/autoris|authoriz|permission|Berechtigung/i.test(t))
+    /* Fehlt eine einzelne Freigabe, steht sie im Text. Dann hilft kein erneutes
+       Ausführen, sondern nur die Datei appsscript.json: Sind dort Freigaben
+       fest eingetragen, fragt Google keine weiteren mehr nach. */
+    var m = /auth\\/([a-z._]+)/.exec(t);
+    if (m) t = 'Dem Script fehlt die Freigabe „' + m[1] + '“. Projekteinstellungen öffnen, '
+             + '„appsscript.json-Manifestdatei im Editor anzeigen“ ankreuzen, und im Abschnitt '
+             + '"oauthScopes" https://www.googleapis.com/auth/' + m[1] + ' ergänzen – oder den ganzen '
+             + 'Abschnitt löschen, dann ermittelt Google die Freigaben selbst. Danach speichern, '
+             + 'die Funktion morgenmail ausführen, zustimmen und eine neue Version bereitstellen.';
+    else if (/autoris|authoriz|permission|Berechtigung/i.test(t))
       t = 'Dem Script fehlen Berechtigungen. Bitte im Script-Editor einmal die Funktion morgenmail ausführen, zustimmen und danach eine neue Version bereitstellen. (' + t + ')';
     return out_({ ok: false, error: t });
   }
@@ -4304,6 +4314,25 @@ function mailOff_() {
   return out_({ ok: true });
 }
 
+/* Diese Funktion einmal im Editor ausführen. Sie fasst alles an, was das
+   Script braucht – dadurch fragt Google alle Freigaben auf einmal ab.
+   morgenmail allein genügt nicht: Es rührt die Auslöser nicht an, also
+   verlangt Google auch die Freigabe dafür nicht. */
+function freigabenPruefen() {
+  var zeilen = [];
+  try { ScriptApp.getProjectTriggers(); zeilen.push('Auslöser: ok'); }
+  catch (e) { zeilen.push('Auslöser: FEHLT (script.scriptapp)'); }
+  try { MailApp.getRemainingDailyQuota(); zeilen.push('Mailversand: ok'); }
+  catch (e) { zeilen.push('Mailversand: FEHLT (script.send_mail)'); }
+  try { DriveApp.getRootFolder().getName(); zeilen.push('Drive: ok'); }
+  catch (e) { zeilen.push('Drive: FEHLT (drive)'); }
+  try { UrlFetchApp.fetch('https://ntfy.sh/', { method: 'get', muteHttpExceptions: true }); zeilen.push('Internet: ok'); }
+  catch (e) { zeilen.push('Internet: FEHLT (script.external_request)'); }
+  zeilen.push('Konto: ' + Session.getEffectiveUser().getEmail());
+  Logger.log(zeilen.join('\\n'));
+  return zeilen.join(' | ');
+}
+
 /* Wird vom Auslöser gerufen. Jeder Lauf wird protokolliert – sonst merkt
    man nie, ob er stattgefunden hat und woran er gescheitert ist. */
 function morgenmail() {
@@ -4320,8 +4349,17 @@ function morgenmail() {
 /* Sagt der App, in welchem Zustand die Morgenmail wirklich ist. */
 function mailStat_(room) {
   var props = PropertiesService.getScriptProperties();
-  var ts = ScriptApp.getProjectTriggers(), ausloeser = 0;
-  for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'morgenmail') ausloeser++;
+  /* Jede Auskunft einzeln absichern: Fehlt eine Freigabe, soll der Rest
+     trotzdem ankommen – sonst sieht man nur eine Fehlermeldung und nicht,
+     was sonst in Ordnung ist. */
+  var ausloeser = null, fehlt = '';
+  try {
+    var ts = ScriptApp.getProjectTriggers();
+    ausloeser = 0;
+    for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'morgenmail') ausloeser++;
+  } catch (e) { fehlt = 'script.scriptapp'; }
+  var kontingent = null;
+  try { kontingent = MailApp.getRemainingDailyQuota(); } catch (e) { fehlt = fehlt || 'script.send_mail'; }
   var datei = null, alter = null;
   var it = DriveApp.getFilesByName(agendaName_(room || props.getProperty('AGENDA_ROOM') || ''));
   if (it.hasNext()) {
@@ -4331,6 +4369,7 @@ function mailStat_(room) {
   }
   return {
     ok: true,
+    fehlendeFreigabe: fehlt,
     ausloeser: ausloeser,
     stunde: Number(props.getProperty('AGENDA_HOUR') || 0),
     an: props.getProperty('AGENDA_TO') || Session.getEffectiveUser().getEmail(),
@@ -4340,7 +4379,7 @@ function mailStat_(room) {
     letzterLauf: props.getProperty('AGENDA_LAST') || '',
     letzterOk: props.getProperty('AGENDA_LASTOK') === '1',
     letzterFehler: props.getProperty('AGENDA_LASTERR') || '',
-    restKontingent: MailApp.getRemainingDailyQuota()
+    restKontingent: kontingent
   };
 }
 
@@ -7682,7 +7721,8 @@ function reply_(p) {
                            Felder als Diagnose hinstellen – das sah bisher so aus, als
                            wäre der Auslöser weg, obwohl das Script schlicht veraltet war. */
                         this.mailDayStat = r;
-                        if (!r.ausloeser) this.mailDayMsg = 'Es gibt keinen täglichen Auslöser. Bitte einmal abschalten und wieder einschalten.';
+                        if (r.fehlendeFreigabe) this.mailDayMsg = 'Dem Script fehlt die Freigabe „' + r.fehlendeFreigabe + '“. In den Projekteinstellungen „appsscript.json-Manifestdatei im Editor anzeigen“ ankreuzen und dort unter "oauthScopes" https://www.googleapis.com/auth/' + r.fehlendeFreigabe + ' ergänzen – oder den Abschnitt ganz löschen. Danach speichern, morgenmail ausführen, zustimmen, neue Version bereitstellen.';
+                    else if (!r.ausloeser) this.mailDayMsg = 'Es gibt keinen täglichen Auslöser. Bitte einmal abschalten und wieder einschalten.';
                         else if (r.letzterFehler) this.mailDayMsg = 'Der letzte Lauf ist gescheitert: ' + r.letzterFehler;
                         else if (!r.letzterLauf) this.mailDayMsg = 'Der Auslöser steht, ist aber noch nie gelaufen. Die erste Mail kommt morgen früh.';
                         else this.mailDayMsg = 'Alles in Ordnung.';
