@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.19-4">
+    <meta name="app-version" content="2026.11.19-6">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2223,7 +2223,7 @@
                                         <p x-show="mailDayStat?.fehlendeFreigabe" class="text-amber-400" x-text="'Dem Script fehlt die Freigabe ' + mailDayStat?.fehlendeFreigabe + ' – siehe Hinweis unten.'"></p>
                         <p><span class="muted">Täglicher Auslöser:</span> <span x-text="mailDayStat?.ausloeser === null ? 'nicht abfragbar' : (mailDayStat?.ausloeser ? 'vorhanden, ' + String(mailDayStat.stunde).padStart(2, '0') + ':00 Uhr (' + mailDayStat.zeitzone + ')' : 'fehlt')"></span></p>
                                         <p><span class="muted">Empfänger:</span> <span x-text="mailDayStat?.an"></span></p>
-                                        <p><span class="muted">Letzter Lauf:</span> <span x-text="mailDayZeit(mailDayStat?.letzterLauf) + (mailDayStat?.letzterLauf ? (mailDayStat.letzterOk ? ' · erfolgreich' : ' · gescheitert') : '')"></span></p>
+                                        <p><span class="muted">Letzter Lauf:</span> <span x-text="mailDayZeit(mailDayStat?.letzterLauf) + (mailDayStat?.letzterLauf ? (mailDayStat.letzterOk ? ' · erfolgreich' : ' · gescheitert') + (mailDayStat.letzterTest ? ' (Test)' : '') : '')"></span></p>
                                         <p x-show="mailDayStat?.letzterFehler" class="text-amber-400" x-text="'Fehler: ' + mailDayStat?.letzterFehler"></p>
                                         <p><span class="muted">Übersicht im Drive:</span> <span x-text="mailDayStat?.datei ? 'vorhanden, ' + mailDayStat.dateiAlterStd + ' Std alt' : 'fehlt'"></span></p>
                                         <p><span class="muted">Freie Mails heute:</span> <span class="num" x-text="mailDayStat?.restKontingent === null ? 'nicht abfragbar' : mailDayStat?.restKontingent"></span></p>
@@ -4224,7 +4224,7 @@ function handle2_(p) {
   if (p.action === 'agenda') return agendaPut_(room, p);
   if (p.action === 'mailon') return mailOn_(room, p);
   if (p.action === 'mailoff') return mailOff_();
-  if (p.action === 'mailtest') return out_(mailSend_(true));
+  if (p.action === 'mailtest') return out_(lauf_(true));
   if (p.action === 'mailstat') return out_(mailStat_(room));
   if (p.action === 'pushon') return pushOn_(room, p);
   if (p.action === 'pushoff') return pushOff_();
@@ -4335,14 +4335,20 @@ function freigabenPruefen() {
 
 /* Wird vom Auslöser gerufen. Jeder Lauf wird protokolliert – sonst merkt
    man nie, ob er stattgefunden hat und woran er gescheitert ist. */
-function morgenmail() {
+function morgenmail() { return lauf_(false); }
+
+/* Jeder Versand wird protokolliert, auch der von Hand ausgelöste Test.
+   Sonst bleibt ein alter Fehler in der Übersicht stehen, obwohl er längst
+   behoben ist – und man traut der Anzeige nicht mehr. */
+function lauf_(test) {
   var props = PropertiesService.getScriptProperties();
   var r;
-  try { r = mailSend_(false); }
+  try { r = mailSend_(!!test); }
   catch (e) { r = { ok: false, error: String(e && e.message || e) }; }
   props.setProperty('AGENDA_LAST', new Date().toISOString());
   props.setProperty('AGENDA_LASTOK', r.ok ? '1' : '0');
   props.setProperty('AGENDA_LASTERR', r.ok ? '' : String(r.error || '').slice(0, 300));
+  props.setProperty('AGENDA_LASTTEST', test ? '1' : '0');
   return r;
 }
 
@@ -4379,6 +4385,7 @@ function mailStat_(room) {
     letzterLauf: props.getProperty('AGENDA_LAST') || '',
     letzterOk: props.getProperty('AGENDA_LASTOK') === '1',
     letzterFehler: props.getProperty('AGENDA_LASTERR') || '',
+    letzterTest: props.getProperty('AGENDA_LASTTEST') === '1',
     restKontingent: kontingent
   };
 }
@@ -7766,19 +7773,32 @@ function reply_(p) {
                     this.pushBusy = true; this.pushMsg = '';
                     try {
                         const r = await this.gCall({ action: 'pushtest' });
-                        this.pushMsg = r.ok ? 'Testnachricht verschickt – sie sollte gleich ankommen.' : (r.error || 'Hat nicht geklappt');
-                    } catch (e) { this.pushMsg = this.mailDayErr(e); }
+                        this.pushMsg = 'Testnachricht verschickt – sie sollte gleich ankommen.';
+                    } catch (e) { this.pushMsg = this.pushFehler(e); }
                     finally { this.pushBusy = false; }
+                },
+                /* Das Script ist die Wahrheit. Weiss es nichts von einem Thema, dann
+                   ist hier nichts eingeschaltet – egal was gespeichert war. Sonst
+                   bleibt der Schalter auf „ein“ und der Weg zurück ist versteckt. */
+                pushFehler(e) {
+                    const m = e.message || '';
+                    if (/Kein Thema/i.test(m)) {
+                        this.cfg.pushOn = false; this.saveCfg();
+                        return 'Das Script kennt noch kein Thema – die Erinnerungen waren nie wirklich eingeschaltet. Bitte jetzt auf „Einschalten“ tippen.';
+                    }
+                    return this.mailDayErr(e);
                 },
                 async pushPruefen() {
                     this.pushBusy = true; this.pushMsg = ''; this.pushStat = null;
                     try {
                         const r = await this.gCall({ action: 'pushstat' });
                         this.pushStat = r;
-                        if (!r.ausloeser) this.pushMsg = 'Es läuft kein Erinnerungsdienst. Bitte einmal aus- und wieder einschalten.';
+                        if (!r.thema) { this.cfg.pushOn = false; this.saveCfg();
+                            this.pushMsg = 'Das Script kennt noch kein Thema – die Erinnerungen waren nie wirklich eingeschaltet. Bitte jetzt auf „Einschalten“ tippen.'; }
+                        else if (!r.ausloeser) this.pushMsg = 'Es läuft kein Erinnerungsdienst. Bitte einmal aus- und wieder einschalten.';
                         else if (r.letzterFehler) this.pushMsg = 'Letzter Durchlauf mit Fehler: ' + r.letzterFehler;
                         else this.pushMsg = 'Läuft. Zuletzt geprüft: ' + this.mailDayZeit(r.letzterLauf) + '.';
-                    } catch (e) { this.pushMsg = this.mailDayErr(e); }
+                    } catch (e) { this.pushMsg = this.pushFehler(e); }
                     finally { this.pushBusy = false; }
                 },
                 mailDayErr(e) {
