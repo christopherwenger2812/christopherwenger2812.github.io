@@ -20,7 +20,9 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **To-Dos** – Listen im Stil von Microsoft To Do: Mein Tag, Wichtig, Geplant, eigene Listen, Fälligkeiten, wiederkehrende Aufgaben, Notizen je Aufgabe.
 
-**Notizen** – Raster mit Farben, Volltextsuche und „als Aufgabe übernehmen“. Angeheftetes steht als eigene Gruppe oben.
+**Notizen** – Raster mit Farben, Volltextsuche und „als Aufgabe übernehmen“. Angeheftetes steht als eigene Gruppe oben. Einzelne Notizen lassen sich verdecken (nur der Titel bleibt lesbar), ein Knopf in der Kopfzeile verdeckt alle auf einmal. Beim Kopieren können Namen, Adressen, Telefonnummern, Mailadressen, Kontonummern und Daten automatisch durch Platzhalter ersetzt werden – das Original bleibt unverändert. Wer mehr will, verschiebt die Notiz in den verschlüsselten Tresor.
+
+**Routinen** – feste Abläufe, die jeden Tag von vorn beginnen: Morgen- und Abendroutine sind vorbereitet, eigene lassen sich beliebig anlegen. Mit Tageszeit, Wochentagen, Fortschritt, Strähnenzähler, einer Übersicht der letzten sieben Tage und auf Wunsch einer Erinnerung aufs Handy. Die jeweils fällige Routine steht auf der Startseite.
 
 **Einkauf** – Im Stil von Bring!: 579 Produkte mit eigenem Symbol je Artikel, nach Kategorien gruppiert und einklappbar, mehrere Listen, Mengen und Varianten, Teilen als Text.
 

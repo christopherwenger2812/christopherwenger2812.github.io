@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.18-1">
+    <meta name="app-version" content="2026.11.19-2">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -131,6 +131,7 @@
         [data-area="shopping"] { --area: #15803d; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="mail"] { --area: #1e40af; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="passwords"] { --area: #475569; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
+        [data-area="routines"] { --area: #0d9488; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         [data-area="settings"] { --area: #57534e; --area-ink: color-mix(in srgb, var(--area) 82%, var(--text)); --area-tint: color-mix(in srgb, var(--area) 10%, var(--surface)); --area-soft: color-mix(in srgb, var(--area) 17%, var(--surface)); --area-line: color-mix(in srgb, var(--area) 26%, var(--border)); }
         /* In dunklen Designs müssen die Bereichsfarben aufhellen statt abdunkeln,
            sonst stehen Symbole und Chips zu dunkel auf dunklem Grund. */
@@ -324,6 +325,10 @@
         [data-wetter="nebel"]   { --wx-tint: color-mix(in srgb, #a8a29e 18%, transparent); }
         [data-wetter="gewitter"]{ --wx-tint: color-mix(in srgb, #7c3aed 16%, transparent); }
         [data-wetter="nacht"]   { --wx-tint: color-mix(in srgb, #4338ca 15%, transparent); }
+        /* Verdeckter Notiztext: unleserlich, aber die Form bleibt erkennbar,
+           damit die Karte nicht springt, wenn man ihn aufdeckt. */
+        .nx.verdeckt { filter: blur(5px); opacity: .55; cursor: pointer; -webkit-user-select: none; user-select: none; }
+        .nx.verdeckt:hover { opacity: .7; }
         .safe-bottom { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
         /* Beim Lesen soll die Leiste nicht im Weg stehen: Sie rutscht beim
            Herunterblättern weg und kommt beim Hochblättern sofort zurück. */
@@ -754,7 +759,7 @@
                                             <span class="block text-sm font-bold truncate" x-text="e.title"></span>
                                             <span class="block text-[11px] muted truncate" x-show="e.location" x-text="e.location"></span>
                                         </span>
-                                        <span class="chip shrink-0" :class="e.state" x-show="e.cd.toLowerCase() !== e.wann.toLowerCase()" x-text="e.cd"></span>
+                                        <span class="chip shrink-0" :class="e.state" x-text="e.cd"></span>
                                         <span class="w-1.5 h-8 rounded-full shrink-0" :style="'background:' + e.color"></span>
                                     </button>
                                 </template>
@@ -780,6 +785,27 @@
                                     </div>
                                 </div>
                             </template>
+                            </div>
+                        </template>
+                        <template x-if="tile === 'routine' && !startLeer(tile)">
+                            <div class="card p-5 sm:p-6 space-y-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <p class="label"><i class="fa-solid fa-repeat mr-2"></i><span x-text="routineJetzt.name"></span></p>
+                                    <button class="text-[11px] font-bold accent" @click="switchTab('routines')">Alle Routinen</button>
+                                </div>
+                                <div class="flex items-center gap-2 flex-wrap text-[11px] font-bold muted">
+                                    <span x-show="routineStraehne(routineJetzt) > 0" class="chip !py-1 !px-2"><i class="fa-solid fa-fire mr-1"></i><span class="num" x-text="routineStraehne(routineJetzt)"></span> Tage in Folge</span>
+                                    <span x-text="(routineJetzt.schritte.length - routineOffen(routineJetzt)) + ' von ' + routineJetzt.schritte.length"></span>
+                                </div>
+                                <div class="space-y-1">
+                                    <template x-for="x in routineJetzt.schritte" :key="x.id">
+                                        <button type="button" class="prow w-full text-left" @click="routineToggle(routineJetzt, x.id)">
+                                            <i class="fa-regular shrink-0" :class="routineAn(routineJetzt, x.id) ? 'fa-square-check accent' : 'fa-square muted'"></i>
+                                            <span class="text-[13px] font-semibold flex-1 min-w-0" :class="routineAn(routineJetzt, x.id) ? 'line-through muted' : ''" x-text="x.text"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                                <p x-show="routineFertig(routineJetzt)" class="text-[12px] font-bold accent"><i class="fa-solid fa-check mr-1.5"></i>Für heute erledigt.</p>
                             </div>
                         </template>
                         <template x-if="tile === 'meters' && !startLeer(tile)">
@@ -1073,6 +1099,67 @@
                 </div>
             </section>
 
+            <!-- ================= ROUTINEN ================= -->
+            <section x-show="activeTab === 'routines'" x-cloak class="space-y-5">
+                <div class="card hero p-5 sm:p-6 flex items-center gap-4 flex-wrap">
+                    <span class="hero-ico"><i class="fa-solid fa-repeat"></i></span>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="dsp text-2xl sm:text-3xl font-black">Routinen</h2>
+                        <p class="muted text-xs font-semibold" x-text="routinen.length ? routinenHeute.length + ' für heute · ' + routinen.length + ' insgesamt' : 'Feste Abläufe, die jeden Tag von vorn beginnen'"></p>
+                    </div>
+                    <button type="button" class="btn btn-primary" @click="routineOpen(null)"><i class="fa-solid fa-plus"></i>Routine</button>
+                </div>
+
+                <p x-show="!routinen.length" class="card p-6 text-center muted text-sm font-semibold">
+                    Noch keine Routine. Eine Routine ist eine kurze Liste, die jeden Tag wieder leer anfängt – zum Beispiel vier Dinge für den Morgen.
+                </p>
+
+                <template x-for="r in routinen" :key="r.id">
+                    <div class="card p-5 sm:p-6 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl leading-none shrink-0" x-text="r.icon"></span>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-black text-base" x-text="r.name"></p>
+                                <p class="text-[11px] muted font-semibold">
+                                    <span x-text="routineZeiten.find(z => z.id === r.zeit).label"></span> ·
+                                    <span x-text="routineTagText(r)"></span>
+                                    <span x-show="r.erinnern"> · Erinnerung <span class="num" x-text="r.erinnern"></span></span>
+                                </p>
+                            </div>
+                            <span x-show="routineStraehne(r) > 0" class="chip !py-1 !px-2 shrink-0"><i class="fa-solid fa-fire mr-1"></i><span class="num" x-text="routineStraehne(r)"></span></span>
+                            <button type="button" class="icon-btn shrink-0" @click="routineOpen(r)" aria-label="Bearbeiten"><i class="fa-solid fa-pen text-xs"></i></button>
+                        </div>
+
+                        <!-- die letzten sieben Tage -->
+                        <div class="flex items-center gap-1.5">
+                            <template x-for="t in routineWoche(r)" :key="t.ds">
+                                <div class="flex flex-col items-center gap-1 flex-1">
+                                    <span class="w-full h-1.5 rounded-full"
+                                          :style="t.fertig ? 'background: var(--area-ink)' : (t.teils ? 'background: var(--area-soft)' : 'background: var(--border)')"
+                                          :class="t.noetig ? '' : 'opacity-40'"></span>
+                                    <span class="text-[9px] font-bold muted" x-text="t.kurz"></span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div x-show="routineHeute(r)" class="space-y-1">
+                            <template x-for="x in r.schritte" :key="x.id">
+                                <button type="button" class="prow w-full text-left" @click="routineToggle(r, x.id)">
+                                    <i class="fa-regular shrink-0" :class="routineAn(r, x.id) ? 'fa-square-check accent' : 'fa-square muted'"></i>
+                                    <span class="text-[13px] font-semibold flex-1 min-w-0" :class="routineAn(r, x.id) ? 'line-through muted' : ''" x-text="x.text"></span>
+                                </button>
+                            </template>
+                            <div class="flex items-center gap-2 pt-1">
+                                <button type="button" class="btn btn-ghost !py-1.5 !px-2.5 !text-xs" @click="routineAlle(r, true)" x-show="!routineFertig(r)"><i class="fa-solid fa-check-double"></i>Alles erledigt</button>
+                                <button type="button" class="btn btn-ghost !py-1.5 !px-2.5 !text-xs" @click="routineAlle(r, false)" x-show="routineGetan(r).length"><i class="fa-solid fa-rotate-left"></i>Zurücksetzen</button>
+                                <span class="text-[11px] muted font-semibold ml-auto" x-text="(r.schritte.length - routineOffen(r)) + ' von ' + r.schritte.length"></span>
+                            </div>
+                        </div>
+                        <p x-show="!routineHeute(r)" class="text-[12px] muted font-semibold">Heute nicht dran – <span x-text="routineTagText(r)"></span>.</p>
+                    </div>
+                </template>
+            </section>
+
             <!-- ================= NOTIZEN ================= -->
             <section x-show="activeTab === 'notes'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -1083,6 +1170,10 @@
                     </div>
                     <div class="flex gap-2">
                         <input type="search" x-model="noteQuery" placeholder="Durchsuchen…" class="field sm:!w-56" aria-label="Notizen durchsuchen">
+                        <button @click="notesBlind = !notesBlind; notesOffen = {}" class="icon-btn shrink-0" :class="notesBlind ? 'accent' : ''"
+                                :aria-pressed="notesBlind" :title="notesBlind ? 'Texte wieder zeigen' : 'Alle Texte verdecken'" aria-label="Alle Texte verdecken">
+                            <i class="fa-solid text-sm" :class="notesBlind ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
                         <button @click="openNote()" class="btn btn-primary shrink-0"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline">Notiz</span></button>
                     </div>
                 </div>
@@ -1104,8 +1195,14 @@
                                 <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
                                 <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
                             </div>
-                            <p class="nx" x-show="n.text" x-text="n.text"></p>
-                            <p class="nd" x-text="noteDate(n.updated)"></p>
+                            <p class="nx" x-show="n.text && !noteVerdeckt(n)" x-text="n.text"></p>
+                            <button type="button" x-show="n.text && noteVerdeckt(n)" class="nx verdeckt text-left" @click.stop="noteZeigen(n)" aria-label="Text anzeigen">
+                                <span x-text="n.text"></span>
+                            </button>
+                            <p class="nd flex items-center gap-1.5">
+                                <i x-show="n.privat" class="fa-solid fa-eye-slash text-[9px]" title="Wird verdeckt"></i>
+                                <span x-text="noteDate(n.updated)"></span>
+                            </p>
                         </div>
                         </template>
                     </div>
@@ -1120,8 +1217,14 @@
                                 <p class="nt flex-1 min-w-0" x-show="n.title" x-text="n.title"></p>
                                 <button type="button" class="icon-btn !w-7 !h-7 -mt-1 -mr-1 shrink-0" :class="n.pin ? 'accent' : ''" @click.stop="toggleNotePin(n)" :aria-label="n.pin ? 'Nicht mehr anheften' : 'Anheften'" :title="n.pin ? 'Nicht mehr anheften' : 'Anheften'"><i class="fa-solid fa-thumbtack text-[11px]"></i></button>
                             </div>
-                            <p class="nx" x-show="n.text" x-text="n.text"></p>
-                            <p class="nd" x-text="noteDate(n.updated)"></p>
+                            <p class="nx" x-show="n.text && !noteVerdeckt(n)" x-text="n.text"></p>
+                            <button type="button" x-show="n.text && noteVerdeckt(n)" class="nx verdeckt text-left" @click.stop="noteZeigen(n)" aria-label="Text anzeigen">
+                                <span x-text="n.text"></span>
+                            </button>
+                            <p class="nd flex items-center gap-1.5">
+                                <i x-show="n.privat" class="fa-solid fa-eye-slash text-[9px]" title="Wird verdeckt"></i>
+                                <span x-text="noteDate(n.updated)"></span>
+                            </p>
                         </div>
                         </template>
                     </div>
@@ -2464,6 +2567,57 @@
         </main>
     </div>
 
+    <!-- Routine bearbeiten -->
+    <div x-show="showRoutine" x-transition.opacity x-cloak class="backdrop" @click.self="showRoutine = false">
+        <template x-if="routineDraft">
+        <form class="card w-full max-w-md p-5 sm:p-6 space-y-4" @submit.prevent="routineSave()">
+            <h3 class="font-black text-xl" x-text="routinen.some(r => r.id === routineDraft.id) ? 'Routine bearbeiten' : 'Neue Routine'"></h3>
+            <div class="flex gap-2">
+                <button type="button" class="field !w-16 text-center !text-xl" @click="showEmoji = !showEmoji" aria-label="Symbol wählen" x-text="routineDraft.icon"></button>
+                <input type="text" x-model="routineDraft.name" maxlength="60" class="field flex-1" placeholder="Name der Routine" aria-label="Name" required>
+            </div>
+            <div x-show="showEmoji" class="inner p-2 grid grid-cols-8 gap-1">
+                <template x-for="e in ['🌅','🌙','☀️','🏃','🧹','🛒','💼','📚','🧘','🚿','🐕','🌱','💊','💧','🍽️','✅']" :key="e">
+                    <button type="button" class="text-xl rounded-lg py-1 hover:brightness-110" @click="routineDraft.icon = e; showEmoji = false" x-text="e" :aria-label="'Symbol ' + e"></button>
+                </template>
+            </div>
+            <label class="block"><span class="label">Schritte – einer je Zeile</span>
+                <textarea x-model="routineText" rows="6" class="field mt-1" placeholder="Fenster auf, durchlüften&#10;Ein Glas Wasser&#10;Kalender ansehen" aria-label="Schritte"></textarea>
+            </label>
+            <div class="space-y-2">
+                <p class="label">Tageszeit</p>
+                <div class="seg w-full" role="group" aria-label="Tageszeit">
+                    <template x-for="z in routineZeiten" :key="z.id">
+                        <button type="button" @click="routineDraft.zeit = z.id" :class="routineDraft.zeit === z.id ? 'on' : ''" x-text="z.label"></button>
+                    </template>
+                </div>
+                <p class="text-[11px] muted">Danach richtet sich, welche Routine auf der Startseite steht.</p>
+            </div>
+            <div class="space-y-2">
+                <p class="label">An welchen Tagen</p>
+                <div class="flex gap-1 flex-wrap">
+                    <template x-for="(nm, i) in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="nm">
+                        <button type="button" class="chip !px-2.5 !py-1 !text-[11px]"
+                                :class="routineDraft.tage.includes((i + 1) % 7) ? 'on' : ''"
+                                @click="routineTagToggle((i + 1) % 7)" x-text="nm"></button>
+                    </template>
+                </div>
+                <p class="text-[11px] muted" x-text="routineDraft.tage.length ? 'Nur an diesen Tagen.' : 'Kein Tag gewählt heißt täglich.'"></p>
+            </div>
+            <label class="block"><span class="label">Erinnerung aufs Handy (optional)</span>
+                <input type="time" x-model="routineDraft.erinnern" class="field mt-1" aria-label="Uhrzeit der Erinnerung">
+                <span class="block text-[11px] muted mt-1">Braucht die Push-Erinnerungen unter Einstellungen → Benachrichtigungen.</span>
+            </label>
+            <div class="flex items-center justify-between gap-3 pt-3 border-t divider">
+                <button type="button" x-show="routinen.some(r => r.id === routineDraft.id)" @click="routineDelete()" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
+                <span class="flex-1"></span>
+                <button type="button" @click="showRoutine = false" class="btn btn-ghost">Abbrechen</button>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </div>
+        </form>
+        </template>
+    </div>
+
     <!-- ================= DIALOGE ================= -->
     <!-- Regel für eingehende Mails -->
     <div x-show="showRule" x-transition.opacity x-cloak class="backdrop" @click.self="showRule = false">
@@ -3132,10 +3286,21 @@
                     <button type="button" class="swatch" :class="currentNote.color === c ? 'on' : ''" :style="c ? 'background:' + c : 'background: var(--surface2); border-color: var(--border)'" @click="currentNote.color = c" :aria-label="c ? 'Farbe ' + c : 'Ohne Farbe'"></button>
                 </template>
             </div>
+            <div class="flex items-center gap-3 pt-1">
+                <button type="button" role="switch" aria-label="In der Übersicht verdecken" :aria-checked="currentNote.privat"
+                        class="switch shrink-0" :class="currentNote.privat ? 'on' : ''" @click="currentNote.privat = !currentNote.privat"></button>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-bold">In der Übersicht verdecken</span>
+                    <span class="block text-[11px] muted">Nur der Titel ist zu sehen, der Text wird unscharf. Sichtschutz gegen Mitlesen – keine Verschlüsselung.</span>
+                </span>
+            </div>
             <div class="flex flex-wrap justify-between gap-2 pt-1">
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <button type="button" x-show="currentNote.id" @click="deleteNote(currentNote.id)" class="btn btn-ghost !text-rose-400"><i class="fa-solid fa-trash"></i>Löschen</button>
                     <button type="button" x-show="currentNote.id" @click="noteToTodo(currentNote); showNoteModal = false" class="btn btn-ghost" title="Als Aufgabe übernehmen"><i class="fa-solid fa-list-check"></i><span class="hidden sm:inline">Als Aufgabe</span></button>
+                    <button type="button" @click="noteKopieren(currentNote, false)" class="btn btn-ghost" title="Notiz kopieren"><i class="fa-regular fa-copy"></i><span class="hidden lg:inline">Kopieren</span></button>
+                    <button type="button" @click="noteKopieren(currentNote, true)" class="btn btn-ghost" title="Kopieren und dabei Namen, Adressen und Nummern durch Platzhalter ersetzen"><i class="fa-solid fa-user-secret"></i><span class="hidden sm:inline">Ohne Namen</span></button>
+                    <button type="button" x-show="currentNote.id" @click="noteInTresor(currentNote)" class="btn btn-ghost" title="In den verschlüsselten Tresor verschieben"><i class="fa-solid fa-vault"></i><span class="hidden lg:inline">Tresor</span></button>
                 </div>
                 <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Fertig</button>
             </div>
@@ -3999,7 +4164,7 @@
         async function sha1Hex(str) { return [...new Uint8Array(await crypto.subtle.digest('SHA-1', te.encode(str)))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
         /* ============ Geräte-Abgleich: Kern ============ */
-        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan']];
+        const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan'], ['ro', 'routinen']];
         const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength']; // Design, Dichte, Start-Seite, Ansichten, Benachrichtigungen und Update-Prüfung gelten pro Gerät
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
@@ -4111,7 +4276,7 @@ function handle2_(p) {
 function agendaName_(room) { return 'space-agenda-' + room + '.json'; }
 
 function agendaPut_(room, p) {
-  var txt = JSON.stringify({ updated: new Date().toISOString(), days: p.days || [], todos: p.todos || [], meters: p.meters || [] });
+  var txt = JSON.stringify({ updated: new Date().toISOString(), days: p.days || [], todos: p.todos || [], meters: p.meters || [], routinen: p.routinen || [] });
   if (txt.length > 400000) return out_({ ok: false, error: 'Übersicht zu groß' });
   var name = agendaName_(room);
   var it = DriveApp.getFilesByName(name);
@@ -4320,6 +4485,12 @@ function erinnerungen() {
       faellig.push({ key: 't|' + todos[t].title + '|' + todos[t].rem, zeit: new Date(todos[t].rem).getTime(),
                      titel: 'Aufgabe', text: todos[t].title + (todos[t].due ? '\\nFällig: ' + todos[t].due : ''), tag: 'white_check_mark' });
     }
+    var rout = data.routinen || [];
+    for (var ro = 0; ro < rout.length; ro++) {
+      if (!rout[ro].rem) continue;
+      faellig.push({ key: 'r|' + rout[ro].title + '|' + rout[ro].rem, zeit: new Date(rout[ro].rem).getTime(),
+                     titel: 'Routine', text: rout[ro].title + (rout[ro].schritte ? '\\n' + rout[ro].schritte + ' Schritte' : ''), tag: 'repeat' });
+    }
 
     for (var f = 0; f < faellig.length; f++) {
       var x = faellig[f];
@@ -4484,6 +4655,49 @@ function listBackups_(room) {
 
         /* ---------- Rezepte ---------- */
         /* Kacheln der Startseite. Reihenfolge und Auswahl liegen in den Einstellungen. */
+        /* ---------- Routinen ----------
+           Eine Routine ist eine feste Liste von Punkten, die jeden Tag wieder
+           von vorn beginnt. Abgehakt wird je Tag, damit man rückblickend sieht,
+           wie oft sie geschafft wurde – daraus entsteht die Strähne. */
+        const ROUTINE_ZEITEN = [
+            { id: 'morgen', label: 'Morgen', von: 0, bis: 11, icon: 'fa-solid fa-mug-hot' },
+            { id: 'tag', label: 'Tagsüber', von: 11, bis: 17, icon: 'fa-solid fa-sun' },
+            { id: 'abend', label: 'Abend', von: 17, bis: 24, icon: 'fa-solid fa-moon' }
+        ];
+        const ROUTINE_TAGE = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+        function normRoutine(r) {
+            const o = {
+                id: String(r.id ?? uid()),
+                name: String(r.name || 'Routine').slice(0, 60),
+                icon: String(r.icon || '🌅').slice(0, 8),
+                zeit: ROUTINE_ZEITEN.some(z => z.id === r.zeit) ? r.zeit : 'morgen',
+                /* An welchen Wochentagen sie ansteht; leer heißt täglich */
+                tage: Array.isArray(r.tage) ? [...new Set(r.tage.map(Number).filter(d => d >= 0 && d <= 6))].sort() : [],
+                erinnern: /^\d{2}:\d{2}$/.test(r.erinnern || '') ? r.erinnern : '',
+                schritte: (Array.isArray(r.schritte) ? r.schritte : []).slice(0, 40).map(x => ({
+                    id: String(x.id ?? uid()),
+                    text: String(x.text || '').slice(0, 100)
+                })).filter(x => x.text),
+                /* Pro Tag die erledigten Schritte: { '2026-11-19': ['id1','id2'] } */
+                log: {},
+                created: Number(r.created) || Date.now()
+            };
+            const log = r.log && typeof r.log === 'object' ? r.log : {};
+            const tage = Object.keys(log).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().slice(-120);
+            for (const t of tage) o.log[t] = (Array.isArray(log[t]) ? log[t] : []).map(String).slice(0, 40);
+            return o;
+        }
+        const DEFAULT_ROUTINEN = [
+            { name: 'Morgenroutine', icon: '🌅', zeit: 'morgen', schritte: [
+                { text: 'Fenster auf, durchlüften' }, { text: 'Ein Glas Wasser' },
+                { text: 'Kalender für heute ansehen' }, { text: 'Betten machen' }
+            ] },
+            { name: 'Abendroutine', icon: '🌙', zeit: 'abend', schritte: [
+                { text: 'Küche aufräumen' }, { text: 'Spülmaschine anstellen' },
+                { text: 'Morgen kurz durchgehen' }, { text: 'Handy aus dem Schlafzimmer' }
+            ] }
+        ];
+
         const START_TILES = [
             { id: 'quick', label: 'Schnellaktionen', icon: 'fa-solid fa-bolt' },
             { id: 'weather', label: 'Wetter', icon: 'fa-solid fa-cloud-sun' },
@@ -4492,9 +4706,10 @@ function listBackups_(room) {
             { id: 'cook', label: 'Heute wird gekocht', icon: 'fa-solid fa-utensils' },
             { id: 'meters', label: 'Zähler', icon: 'fa-solid fa-gauge-high' },
             { id: 'shopping', label: 'Einkauf', icon: 'fa-solid fa-bag-shopping' },
-            { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' }
+            { id: 'mail', label: 'E-Mail', icon: 'fa-solid fa-envelope' },
+            { id: 'routine', label: 'Routine', icon: 'fa-solid fa-repeat' }
         ];
-        const DEFAULT_START_TILES = ['quick', 'weather', 'todos', 'next', 'cook', 'meters', 'shopping', 'mail'];
+        const DEFAULT_START_TILES = ['quick', 'routine', 'weather', 'todos', 'next', 'cook', 'meters', 'shopping', 'mail'];
 
         const UNITS = ['g', 'kg', 'ml', 'l', 'TL', 'EL', 'Stück', 'Prise', 'Bund', 'Dose', 'Pck', 'Zehe', 'Scheibe'];
         /* „200 g Mehl“ oder „2 Zehen Knoblauch“ in Menge, Einheit und Name zerlegen */
@@ -4637,6 +4852,72 @@ function listBackups_(room) {
         }
 
         /* Auswahl für das Rezeptsymbol – nach Art des Gerichts sortiert */
+        /* Passendes Symbol aus dem Namen raten, damit nicht jedes Gericht
+           gleich aussieht. Wer ein eigenes wählt, behält es – geraten wird nur,
+           solange der Standardteller drinsteht. Reihenfolge zählt: Das Erste,
+           was passt, gewinnt, deshalb stehen genaue Begriffe vor allgemeinen. */
+        const SYMBOL_WORTE = [
+            ['🍕', ['pizza', 'flammkuchen']],
+            ['🍝', ['pasta', 'spaghetti', 'nudel', 'lasagne', 'carbonara', 'bolognese', 'penne', 'tortellini', 'gnocchi', 'ravioli']],
+            ['🍜', ['ramen', 'pho', 'asia', 'wok', 'curry', 'thai']],
+            ['🍛', ['reis', 'risotto', 'paella', 'bowl']],
+            ['🌮', ['taco', 'burrito', 'enchilada', 'quesadilla', 'wrap', 'fajita']],
+            ['🍔', ['burger', 'frikadelle', 'bulette']],
+            ['🥗', ['salat', 'rohkost', 'bowl']],
+            ['🍲', ['eintopf', 'suppe', 'gulasch', 'ragout', 'chili', 'linsen', 'bohnen', 'erbsen', 'topf']],
+            ['🥘', ['pfanne', 'auflauf', 'gratin', 'casserole', 'schmortopf']],
+            ['🐟', ['fisch', 'lachs', 'forelle', 'kabeljau', 'dorsch', 'thunfisch', 'seelachs', 'zander']],
+            ['🍤', ['garnele', 'shrimp', 'scampi', 'krabben']],
+            ['🍣', ['sushi', 'maki', 'sashimi']],
+            ['🍗', ['hähnchen', 'haehnchen', 'huhn', 'hühner', 'poulet', 'pute', 'geflügel', 'chicken']],
+            ['🥩', ['steak', 'rind', 'schnitzel', 'braten', 'gulaschfleisch', 'filet', 'kotelett', 'lamm']],
+            ['🥓', ['speck', 'bacon', 'schinken']],
+            ['🍖', ['schwein', 'hack', 'wurst', 'bratwurst', 'rippchen']],
+            ['🍳', ['eier', 'omelett', 'rührei', 'ruehrei', 'frittata', 'shakshuka']],
+            ['🥞', ['pfannkuchen', 'pancake', 'crêpe', 'crepe', 'waffel']],
+            ['🥔', ['kartoffel', 'ofenkartoffel', 'pommes', 'rösti', 'roesti', 'knödel', 'kloß', 'klos', 'püree', 'puree']],
+            ['🥪', ['sandwich', 'toast', 'baguette', 'stulle', 'belegt']],
+            ['🍞', ['brot', 'brötchen', 'broetchen', 'focaccia', 'fladen']],
+            ['🧀', ['käse', 'kaese', 'quiche', 'raclette', 'fondue']],
+            ['🍰', ['kuchen', 'torte', 'tarte', 'muffin', 'keks', 'plätzchen', 'plaetzchen', 'dessert', 'nachtisch', 'creme', 'mousse', 'pudding', 'tiramisu']],
+            ['🥦', ['brokkoli', 'blumenkohl', 'gemüse', 'gemuese', 'spargel', 'zucchini', 'aubergine', 'spinat', 'kohl', 'vegetarisch', 'vegan']],
+            ['🍅', ['tomate', 'caprese', 'bruschetta']],
+            ['🍄', ['pilz', 'champignon', 'pfifferling', 'steinpilz']],
+            ['🥣', ['müsli', 'muesli', 'porridge', 'haferbrei', 'overnight']],
+            ['☕', ['kaffee', 'latte', 'cappuccino']],
+            ['🍵', ['tee', 'chai']],
+            ['🥤', ['smoothie', 'shake', 'saft', 'limonade']]
+        ];
+        function rezeptSymbol(titel, zutaten) {
+            const name = String(titel || '').toLowerCase();
+            const zutat = (Array.isArray(zutaten) ? zutaten.map(i => i && i.name).join(' ') : '').toLowerCase();
+            if (!name.trim() && !zutat.trim()) return '🍽️';
+            /* Kurze Wörter nur als ganzes Wort suchen – sonst steckt „Ei“ in
+               „Mein“ und jedes zweite Gericht wird zum Rührei. Lange Wörter
+               dürfen mitten im Wort stehen, wegen Wortzusammensetzungen
+               wie „Ofenkartoffeln“. */
+            const stelle = (heu, wort) => {
+                if (wort.length > 4) return heu.indexOf(wort);
+                /* Am Wortanfang genügt – „Tacos“ und „Käsespätzle“ sollen treffen,
+                   „Mein“ aber nicht zum Ei werden. */
+                const m = new RegExp('(^|[^a-zäöüß])' + wort).exec(heu);
+                return m ? m.index : -1;
+            };
+            /* Das Wort, das im Namen am weitesten vorn steht, gewinnt:
+               „Ofenkartoffeln mit Lachs“ ist ein Kartoffelgericht. */
+            const suche = heu => {
+                let beste = null, pos = Infinity;
+                for (const [sym, worte] of SYMBOL_WORTE) {
+                    for (const w of worte) {
+                        const i = stelle(heu, w);
+                        if (i >= 0 && i < pos) { pos = i; beste = sym; }
+                    }
+                }
+                return beste;
+            };
+            return suche(name) || suche(zutat) || '🍽️';
+        }
+
         const RECIPE_EMOJI = [
             '🍽️', '🍲', '🥘', '🍜', '🍝', '🍛', '🥗', '🥪', '🌮', '🌯', '🥙', '🍕',
             '🍔', '🌭', '🥨', '🥐', '🍞', '🥖', '🧀', '🥚', '🍳', '🥞', '🧇', '🥓',
@@ -4664,7 +4945,7 @@ function listBackups_(room) {
             return {
                 id: String(r.id ?? uid()),
                 title: String(r.title || '').slice(0, 80) || 'Rezept',
-                emoji: String(r.emoji || '🍽️').slice(0, 8),
+                emoji: String(r.emoji && r.emoji !== '🍽️' ? r.emoji : rezeptSymbol(r.title, r.ings)).slice(0, 8),
                 servings: Math.min(99, Math.max(1, Number(r.servings) || 2)),
                 minutes: Math.min(999, Math.max(0, Number(r.minutes) || 0)),
                 fav: !!r.fav,
@@ -4684,6 +4965,34 @@ function listBackups_(room) {
             const v = Math.round(n * 100) / 100;
             return (Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/0$/, '').replace(/\./, ',')).replace(/,$/, '');
         }
+        /* ---------- Namen und Nummern unkenntlich machen ----------
+           Für das Weitergeben einer Notiz: Personennamen, Adressen, Telefon- und
+           Kontonummern werden durch Platzhalter ersetzt. Das Original bleibt
+           unangetastet – ersetzt wird nur, was in die Zwischenablage geht. */
+        const ANON_MUSTER = [
+            [/\b[\w.%+-]+@[\w.-]+\.[a-z]{2,}\b/gi, '[E-Mail]'],
+            [/\b(?:IBAN[:\s]*)?[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){3,5}(?:[ ]?[A-Z0-9]{1,4})?\b/g, '[IBAN]'],
+            [/\b(?:\+\d{1,3}[ /-]?)?\(?0\d{2,4}\)?[ /-]?\d[\d ./-]{5,}\d\b/g, '[Telefon]'],
+            [/\bhttps?:\/\/\S+/gi, '[Link]'],
+            /* Straße mit Hausnummer */
+            [/\b[A-ZÄÖÜ][\wäöüß.-]*(?:straße|strasse|str\.|weg|allee|platz|gasse|ring|damm)\s+\d+[a-z]?\b/gi, '[Adresse]'],
+            /* Postleitzahl mit Ort */
+            [/\b\d{5}\s+[A-ZÄÖÜ][\wäöüß-]+\b/g, '[Ort]'],
+            /* Datum mit Jahr */
+            [/\b\d{1,2}\.\d{1,2}\.\d{2,4}\b/g, '[Datum]']
+        ];
+        /* Wörter, die wie Vor- und Nachname aussehen. Bewusst zurückhaltend:
+           nur zwei aufeinanderfolgende großgeschriebene Wörter, und keine, die
+           am Satzanfang stehen oder auf der Ausnahmeliste sind. */
+        const ANON_AUSNAHMEN = new Set(['Der', 'Die', 'Das', 'Ein', 'Eine', 'Wir', 'Sie', 'Ich', 'Am', 'Im', 'Für', 'Von', 'Bei', 'Mit', 'Nach', 'Neue', 'Neuer', 'Alte']);
+        function anonymisiere(text) {
+            let t = String(text || '');
+            for (const [re, ersatz] of ANON_MUSTER) t = t.replace(re, ersatz);
+            t = t.replace(/(^|[^.!?]\s|\n)([A-ZÄÖÜ][a-zäöüß]{2,})\s([A-ZÄÖÜ][a-zäöüß]{2,})\b/g,
+                (ganz, vor, a, b) => (ANON_AUSNAHMEN.has(a) ? ganz : vor + '[Name]'));
+            return t;
+        }
+
         function normNote(n) {
             return {
                 id: String(n.id ?? uid()),
@@ -4691,6 +5000,9 @@ function listBackups_(room) {
                 text: String(n.text || '').slice(0, 20000),
                 color: NOTE_COLORS.includes(n.color) ? n.color : '',
                 pin: !!n.pin,
+                /* Privat: in der Übersicht steht nur der Titel, der Text ist
+                   verdeckt und wird erst beim Öffnen sichtbar. */
+                privat: !!n.privat,
                 created: Number(n.created) || Date.now(),
                 updated: Number(n.updated) || Number(n.created) || Date.now()
             };
@@ -5111,6 +5423,7 @@ function reply_(p) {
                     { id: 'today', label: 'Start', icon: 'fa-solid fa-house' },
                     { id: 'calendar', label: 'Kalender', icon: 'fa-regular fa-calendar-days' },
                     { id: 'todos', label: 'To-Dos', icon: 'fa-solid fa-list-check' },
+                    { id: 'routines', label: 'Routinen', icon: 'fa-solid fa-repeat' },
                     { id: 'notes', label: 'Notizen', icon: 'fa-regular fa-note-sticky' },
                     { id: 'recipes', label: 'Rezepte', icon: 'fa-solid fa-utensils' },
                     { id: 'usage', label: 'Verbrauch', icon: 'fa-solid fa-gauge-high' },
@@ -5253,6 +5566,7 @@ function reply_(p) {
                 meters: [], readings: [], meterId: '', showMeter: false, meterDraft: normMeter({ id: null }), showReading: false, readingDraft: normReading({ id: null }),
                 recipes: [], recipeQuery: '', showRecipe: false, showRecipeEdit: false, recipeScale: 0, recipeDraft: normRecipe({ id: null, title: '' }), recipeIngText: '', recipeUnits: UNITS,
                 mealPlan: [], planAnchor: '', planPick: null,
+                routinen: [], routineDraft: null, showRoutine: false,
                 cookId: '', cookStep: 0, cookChecked: [], cookWake: null,
                 recipeEmojis: RECIPE_EMOJI, showEmoji: false,
                 showRecipeImport: false, importWay: 'url', importUrl: '', importText: '', importBusy: '', importErr: '',
@@ -5321,6 +5635,8 @@ function reply_(p) {
                     this.recipes = (readJSON('organizer_recipes', []) || []).filter(r => r && r.title).map(normRecipe);
                     this.meters = (readJSON('organizer_meters', []) || []).filter(m => m && m.id).map(normMeter);
                     this.mealPlan = (readJSON('organizer_plan', []) || []).filter(m => m && m.date && (m.recipe || m.title)).map(normPlan);
+                    const rt = readJSON('organizer_routinen', null);
+                    this.routinen = Array.isArray(rt) ? rt.map(normRoutine) : DEFAULT_ROUTINEN.map(normRoutine);
                     this.readings = (readJSON('organizer_readings', []) || []).filter(r => r && r.meter).map(normReading);
                     const wx = readJSON('organizer_wx', null); if (wx && wx.now) this.wx = { ...wx, busy: false };
                     this.applyWetter();
@@ -5689,6 +6005,7 @@ function reply_(p) {
                     if (p === 'mt') return normMeter({ ...v });
                     if (p === 'rd') return normReading({ ...v });
                     if (p === 'mp') return normPlan({ ...v });
+                    if (p === 'ro') return normRoutine({ ...v });
                     if (p === 'ml') return normOverlay({ ...v });
                     return normShop({ ...v });
                 },
@@ -5805,7 +6122,13 @@ function reply_(p) {
                             ? await fetch(`${url}?action=get&room=${room}`, { signal: ctl.signal, cache: 'no-store' })
                             : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, room }), signal: ctl.signal });
                         if (!res.ok) throw new Error('Das Script antwortet mit Fehler ' + res.status);
-                        try { return await res.json(); } catch (e) { throw new Error('Unerwartete Antwort – ist die Web-App für „Jeder“ freigegeben und neu bereitgestellt?'); }
+                        let daten;
+                        try { daten = await res.json(); } catch (e) { throw new Error('Unerwartete Antwort – ist die Web-App für „Jeder“ freigegeben und neu bereitgestellt?'); }
+                        /* Ein „ok: false“ ist ein Fehler und muss auch einer bleiben – sonst
+                           meldet die App Erfolg, obwohl das Script die Aktion gar nicht kennt.
+                           Ausnahme: Beim Abgleich ist ein Konflikt ein erwarteter Fall. */
+                        if (daten && daten.ok === false && !daten.conflict) throw new Error(daten.error || 'Das Script meldet einen Fehler');
+                        return daten;
                     } finally { clearTimeout(to); }
                 },
                 async syncGoogle(manual = false) {
@@ -6180,7 +6503,10 @@ function reply_(p) {
                     const diff = s - now;
                     if (ev.allDay) {
                         const days = Math.round((parseDate(ev.startDate) - parseDate(this.today)) / 864e5);
-                        return { when, state: '', cd: days === 1 ? 'morgen' : `in ${days} Tagen` };
+                        /* Bis morgen zählen wir die Stunden – „morgen“ allein steht
+                           schon links daneben und sagt nichts Neues. */
+                        if (days <= 1) return { when, state: diff < 3600000 ? 'soon' : '', cd: 'in ' + this.spanText(diff, true) };
+                        return { when, state: '', cd: `in ${days} Tagen` };
                     }
                     if (diff < 60000) return { when, state: 'soon', cd: 'jetzt gleich' };
                     return { when, state: diff < 3600000 ? 'soon' : '', cd: 'in ' + this.spanText(diff, true) };
@@ -6360,6 +6686,7 @@ function reply_(p) {
                     this.$nextTick(() => this.$refs.evTitle?.focus());
                 },
                 /* ---------- Bedienung der Wiederholungsregel ---------- */
+                syncCollections: SYNC_COLLECTIONS,      // für Tests und Diagnose
                 evScope: 'serie',
                 normRep, repText,                    // für die Vorschau im Dialog
                 repSetze(f) {
@@ -6709,6 +7036,46 @@ function reply_(p) {
                     const hit = n => !q || (n.title + ' ' + n.text).toLowerCase().includes(q);
                     return this.notes.filter(hit).sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || b.updated - a.updated);
                 },
+                /* ---------- Notizen schützen ----------
+                   notesBlind verdeckt auf Knopfdruck alle Texte, notiz.privat nur
+                   einzelne. Beides ist Sichtschutz gegen Mitlesen, keine
+                   Verschlüsselung – dafür ist der Tresor da. */
+                notesBlind: false,
+                notesOffen: {},
+                noteVerdeckt(n) {
+                    if (this.notesOffen[n.id]) return false;
+                    return this.notesBlind || n.privat;
+                },
+                noteZeigen(n) { this.notesOffen = { ...this.notesOffen, [n.id]: true }; },
+                notePrivat(n) {
+                    this.notes = this.notes.map(x => x.id === n.id ? normNote({ ...x, privat: !x.privat, updated: Date.now() }) : x);
+                    this.saveAllData();
+                    this.toast(n.privat ? 'Nicht mehr verdeckt' : 'Wird in der Übersicht verdeckt');
+                },
+                async noteKopieren(n, anon) {
+                    const text = [n.title, n.text].filter(Boolean).join('\n\n');
+                    await this.copy(anon ? anonymisiere(text) : text);
+                    this.toast(anon ? 'Ohne Namen kopiert' : 'Kopiert');
+                },
+                /* Notiz in den Tresor verschieben: Dort liegt sie verschlüsselt
+                   und ist erst nach dem Hauptpasswort lesbar. */
+                async noteInTresor(n) {
+                    if (this.vaultState !== 'unlocked') {
+                        this.toast(this.vaultState === 'none' ? 'Richte zuerst den Tresor ein' : 'Bitte zuerst den Tresor öffnen');
+                        this.showNoteModal = false; this.switchTab('passwords');
+                        return;
+                    }
+                    if (!await this.askBox('Die Notiz wird in den Tresor verschoben und hier gelöscht. Lesbar ist sie dann nur noch nach Eingabe des Hauptpassworts.', { title: 'In den Tresor?', ok: 'Verschieben' })) return;
+                    this.passwords.push(this.normPw({
+                        id: uid(), type: 'note', title: n.title || 'Notiz', note: n.text, folder: 'Privat'
+                    }));
+                    try { await this.persistVault(); }
+                    catch (e) { this.toast('Der Tresor ließ sich nicht speichern'); return; }
+                    this.notes = this.notes.filter(x => x.id !== n.id);
+                    this.showNoteModal = false;
+                    this.saveAllData();
+                    this.toast('In den Tresor verschoben');
+                },
                 openNote(n) {
                     this.currentNote = n ? { ...n } : normNote({ id: null, title: '', text: '' });
                     if (!n) this.currentNote.id = null;
@@ -6942,6 +7309,119 @@ function reply_(p) {
                     this.micFeld = ''; this.micText = '';
                 },
 
+                /* ---------- Routinen ---------- */
+                routineZeiten: ROUTINE_ZEITEN,
+                routineTage: ROUTINE_TAGE,
+                /* Welche Tageszeit gerade dran ist */
+                get routineZeitJetzt() {
+                    const h = new Date().getHours();
+                    return (ROUTINE_ZEITEN.find(z => h >= z.von && h < z.bis) || ROUTINE_ZEITEN[0]).id;
+                },
+                /* Steht die Routine heute an? */
+                routineHeute(r) {
+                    if (!r.tage.length) return true;
+                    return r.tage.includes(parseDate(this.today).getDay());
+                },
+                get routinenHeute() { return this.routinen.filter(r => this.routineHeute(r)); },
+                /* Die Routine, die gerade dran ist – sonst die nächste des Tages */
+                get routineJetzt() {
+                    const l = this.routinenHeute;
+                    if (!l.length) return null;
+                    const z = this.routineZeitJetzt;
+                    const offen = l.filter(r => !this.routineFertig(r));
+                    return offen.find(r => r.zeit === z) || offen[0] || l.find(r => r.zeit === z) || l[0];
+                },
+                routineGetan(r, tag) { return r.log[tag || this.today] || []; },
+                routineAn(r, schrittId) { return this.routineGetan(r).includes(schrittId); },
+                routineOffen(r) { return r.schritte.length - this.routineGetan(r).length; },
+                routineFertig(r) { return r.schritte.length > 0 && this.routineOffen(r) === 0; },
+                routineToggle(r, schrittId) {
+                    const getan = new Set(this.routineGetan(r));
+                    getan.has(schrittId) ? getan.delete(schrittId) : getan.add(schrittId);
+                    const war = this.routineFertig(r);
+                    this.routinen = this.routinen.map(x => x.id === r.id
+                        ? normRoutine({ ...x, log: { ...x.log, [this.today]: [...getan] } }) : x);
+                    const jetzt = this.routineFertig(this.routinen.find(x => x.id === r.id));
+                    this.saveAllData();
+                    if (jetzt && !war) this.toast(r.name + ' geschafft · ' + this.routineStraehne(this.routinen.find(x => x.id === r.id)) + ' Tage in Folge');
+                },
+                routineAlle(r, an) {
+                    const ids = an ? r.schritte.map(x => x.id) : [];
+                    this.routinen = this.routinen.map(x => x.id === r.id
+                        ? normRoutine({ ...x, log: { ...x.log, [this.today]: ids } }) : x);
+                    this.saveAllData();
+                },
+                /* Wie viele Tage in Folge wurde sie geschafft? Heute zählt nur mit,
+                   wenn sie schon fertig ist – sonst bricht die Strähne jeden Morgen. */
+                routineStraehne(r) {
+                    if (!r.schritte.length) return 0;
+                    let n = 0, ds = this.today;
+                    if (!this.routineFertig(r)) ds = this.addDaysStr(ds, -1);
+                    for (let i = 0; i < 400; i++) {
+                        const noetig = !r.tage.length || r.tage.includes(parseDate(ds).getDay());
+                        if (noetig) {
+                            const getan = r.log[ds] || [];
+                            if (!r.schritte.every(x => getan.includes(x.id))) break;
+                            n++;
+                        }
+                        ds = this.addDaysStr(ds, -1);
+                    }
+                    return n;
+                },
+                /* Die letzten sieben Tage als Punkte, für die Übersicht */
+                routineWoche(r) {
+                    return Array.from({ length: 7 }, (_, i) => {
+                        const ds = this.addDaysStr(this.today, i - 6);
+                        const noetig = !r.tage.length || r.tage.includes(parseDate(ds).getDay());
+                        const getan = r.log[ds] || [];
+                        return {
+                            ds, kurz: ROUTINE_TAGE[parseDate(ds).getDay()],
+                            noetig,
+                            fertig: noetig && r.schritte.length > 0 && r.schritte.every(x => getan.includes(x.id)),
+                            teils: noetig && getan.length > 0
+                        };
+                    });
+                },
+                routineTagText(r) {
+                    if (!r.tage.length) return 'täglich';
+                    if (r.tage.length === 5 && [1, 2, 3, 4, 5].every(d => r.tage.includes(d))) return 'werktags';
+                    if (r.tage.length === 2 && r.tage.includes(0) && r.tage.includes(6)) return 'am Wochenende';
+                    return r.tage.map(d => ROUTINE_TAGE[d]).join(', ');
+                },
+                /* Bearbeiten */
+                routineOpen(r) {
+                    this.routineDraft = r ? normRoutine({ ...r }) : normRoutine({ name: '', schritte: [{ text: '' }] });
+                    this.routineText = this.routineDraft.schritte.map(x => x.text).join('\n');
+                    this.showRoutine = true;
+                },
+                routineText: '',
+                routineSave() {
+                    const d = this.routineDraft;
+                    if (!d) return;
+                    const schritte = this.routineText.split('\n').map(t => t.trim()).filter(Boolean).slice(0, 40);
+                    if (!schritte.length) { this.toast('Mindestens ein Schritt'); return; }
+                    const alt = this.routinen.find(x => x.id === d.id);
+                    const neu = normRoutine({
+                        ...d, name: d.name.trim() || 'Routine',
+                        schritte: schritte.map((t, i) => ({ id: (alt && alt.schritte[i] && alt.schritte[i].text === t) ? alt.schritte[i].id : uid(), text: t })),
+                        log: alt ? alt.log : {}
+                    });
+                    this.routinen = alt ? this.routinen.map(x => x.id === neu.id ? neu : x) : [...this.routinen, neu];
+                    this.showRoutine = false; this.saveAllData();
+                    this.toast('Routine gespeichert');
+                },
+                async routineDelete() {
+                    const d = this.routineDraft;
+                    if (!d) return;
+                    if (this.cfg.confirmDelete && !await this.askBox('Die Routine und ihr Verlauf werden gelöscht.', { title: d.name + ' löschen?', ok: 'Löschen' })) return;
+                    this.routinen = this.routinen.filter(x => x.id !== d.id);
+                    this.showRoutine = false; this.saveAllData(); this.toast('Routine gelöscht');
+                },
+                routineTagToggle(d) {
+                    const l = this.routineDraft.tage;
+                    this.routineDraft.tage = l.includes(d) ? l.filter(x => x !== d) : [...l, d].sort();
+                },
+
                 /* ---------- Startseite: Kacheln ----------
                    Reihenfolge und Auswahl werden getrennt für breite Bildschirme und
                    das Handy gespeichert, weil man die Geräte unterschiedlich benutzt. */
@@ -6990,6 +7470,7 @@ function reply_(p) {
                     if (id === 'meters') return !this.meters.length;
                     if (id === 'shopping') return !this.shopOpen.length;
                     if (id === 'mail') return !this.mailUnread;
+                    if (id === 'routine') return !this.routineJetzt;
                     return false;
                 },
                 startLeerText(id) {
@@ -6998,11 +7479,12 @@ function reply_(p) {
                     if (id === 'meters') return 'Noch kein Zähler angelegt';
                     if (id === 'shopping') return 'Einkaufsliste ist leer';
                     if (id === 'mail') return 'Alles gelesen';
+                    if (id === 'routine') return 'Heute steht keine Routine an';
                     if (id === 'weather') return 'Wetter noch nicht geladen';
                     return '';
                 },
                 startLeerTab(id) {
-                    return { next: 'calendar', cook: 'recipes', meters: 'usage', shopping: 'shopping', mail: 'mail', weather: 'weather' }[id] || 'today';
+                    return { next: 'calendar', cook: 'recipes', meters: 'usage', shopping: 'shopping', mail: 'mail', weather: 'weather', routine: 'today' }[id] || 'today';
                 },
 
                 /* ---------- Inhalte der neuen Kacheln ---------- */
@@ -7136,6 +7618,15 @@ function reply_(p) {
                                 const r = this.remindTimeOf(t);
                                 return { title: String(t.title || '').slice(0, 120), due: t.due || '', rem: r ? r.toISOString() : '' };
                             }),
+                        /* Routinen mit Uhrzeit für die nächsten sieben Tage */
+                        routinen: this.routinen.filter(r => r.erinnern).slice(0, 20).flatMap(r =>
+                            Array.from({ length: 7 }, (_, i) => this.addDaysStr(this.today, i))
+                                .filter(ds => !r.tage.length || r.tage.includes(parseDate(ds).getDay()))
+                                .map(ds => ({
+                                    title: String(r.name).slice(0, 60),
+                                    schritte: r.schritte.length,
+                                    rem: dtOf(ds, r.erinnern).toISOString()
+                                }))),
                         meters: this.meters.map(m => {
                             const s = this.meterStats(m);
                             return { name: m.name, last: s.last ? s.last.date : 'noch nie' };
@@ -7187,6 +7678,9 @@ function reply_(p) {
                     this.mailDayBusy = true; this.mailDayMsg = ''; this.mailDayStat = null;
                     try {
                         const r = await this.gCall({ action: 'mailstat' });
+                        /* Antwortet das Script mit einem Fehler, dürfen wir keine leeren
+                           Felder als Diagnose hinstellen – das sah bisher so aus, als
+                           wäre der Auslöser weg, obwohl das Script schlicht veraltet war. */
                         this.mailDayStat = r;
                         if (!r.ausloeser) this.mailDayMsg = 'Es gibt keinen täglichen Auslöser. Bitte einmal abschalten und wieder einschalten.';
                         else if (r.letzterFehler) this.mailDayMsg = 'Der letzte Lauf ist gescheitert: ' + r.letzterFehler;
@@ -9036,6 +9530,7 @@ function reply_(p) {
                         localStorage.setItem('organizer_recipes', JSON.stringify(this.recipes));
                         localStorage.setItem('organizer_meters', JSON.stringify(this.meters));
                         localStorage.setItem('organizer_plan', JSON.stringify(this.mealPlan));
+                        localStorage.setItem('organizer_routinen', JSON.stringify(this.routinen));
                         localStorage.setItem('organizer_readings', JSON.stringify(this.readings));
                         localStorage.removeItem('organizer_todo_groups');
                     } catch (e) { this.toast('Speichern fehlgeschlagen (Speicher voll?)'); }
