@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.19-8">
+    <meta name="app-version" content="2026.11.19-10">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2241,31 +2241,36 @@
                             <p class="text-[11px] muted leading-relaxed">
                                 Benachrichtigungen im Browser erscheinen nur, solange die App offen ist. Damit eine Erinnerung
                                 auch bei geschlossener App ankommt, schaut dein Google-Script alle fünf Minuten nach, was fällig ist,
-                                und schickt es an <b>ntfy</b> – eine kostenlose Push-App ohne Konto.
+                                und schickt sie über die Wege, die du hier auswählst. Mehrere gleichzeitig sind möglich: Fällt einer
+                                aus, kommt die Erinnerung trotzdem an.
                             </p>
-                            <ol class="text-[11px] muted leading-relaxed list-decimal pl-5 space-y-0.5">
-                                <li>ntfy aus dem Play Store oder App Store installieren</li>
-                                <li>Hier einschalten – dabei entsteht ein zufälliger Themenname</li>
-                                <li>In ntfy auf „+" tippen und genau diesen Namen abonnieren</li>
-                            </ol>
-                            <div x-show="cfg.pushTopic" class="inner p-3 space-y-1.5">
-                                <p class="label">Dein Thema</p>
-                                <div class="flex items-center gap-2">
-                                    <code class="text-[12px] font-bold break-all flex-1" x-text="cfg.pushTopic"></code>
-                                    <button type="button" class="icon-btn !w-8 !h-8 shrink-0" @click="copy(cfg.pushTopic); toast('Kopiert')" aria-label="Thema kopieren"><i class="fa-regular fa-copy text-xs"></i></button>
+                            <div class="space-y-1.5">
+                                <p class="label">Wege</p>
+                                <label class="flex items-start gap-2 text-[12px] cursor-pointer">
+                                    <input type="checkbox" class="mt-0.5" :checked="pushWeg('mail')" @change="pushWegUm('mail')">
+                                    <span><b>E-Mail</b> <span class="muted">– an dieselbe Adresse wie die Morgenmail. Nichts einzurichten, kein fremder Dienst.</span></span>
+                                </label>
+                                <label class="flex items-start gap-2 text-[12px] cursor-pointer">
+                                    <input type="checkbox" class="mt-0.5" :checked="pushWeg('tg')" @change="pushWegUm('tg')">
+                                    <span><b>Telegram</b> <span class="muted">– echter Hinweis mit Ton, kostenlos. Einmalig einen eigenen Bot anlegen.</span></span>
+                                </label>
+                            </div>
+
+                            <div x-show="pushWeg('tg')" class="inner p-3 space-y-1.5">
+                                <p class="label">Telegram einrichten</p>
+                                <ol class="text-[11px] muted leading-relaxed list-decimal pl-5 space-y-0.5">
+                                    <li>In Telegram <b>@BotFather</b> suchen und <b>/newbot</b> schicken, Namen vergeben</li>
+                                    <li>Den Schlüssel, den BotFather nennt (sieht aus wie <code>12345:AAH…</code>), hier einsetzen</li>
+                                    <li>Deinen neuen Bot öffnen und ihm <b>/start</b> schicken</li>
+                                    <li>Unten auf „Chat suchen“ tippen – damit weiss der Bot, wohin er senden darf</li>
+                                </ol>
+                                <input type="text" class="inp" x-model="cfg.pushTgToken" @change="saveCfg()" placeholder="12345:AAH…" autocomplete="off" spellcheck="false" aria-label="Telegram-Bot-Schlüssel">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-soft" :disabled="pushBusy" @click="tgChatHolen()"><i class="fa-solid fa-magnifying-glass"></i>Chat suchen</button>
+                                    <span class="text-[11px] muted" x-text="cfg.pushTgChat ? 'Chat: ' + cfg.pushTgChat : 'noch kein Chat gefunden'"></span>
                                 </div>
-                                <p class="text-[11px] muted">Wer diesen Namen kennt, sieht deine Erinnerungen. Gib ihn nicht weiter.</p>
                             </div>
-                            <div class="inner p-3 space-y-1.5">
-                                <p class="label">Zugangsschlüssel (freiwillig)</p>
-                                <input type="text" class="inp" x-model="cfg.pushToken" @change="saveCfg()" placeholder="tk_…" autocomplete="off" spellcheck="false" aria-label="ntfy-Zugangsschlüssel">
-                                <p class="text-[11px] muted leading-relaxed">
-                                    Ohne Konto rechnet ntfy sein Kontingent pro IP-Adresse ab – und die teilt dein Google-Script mit
-                                    allen anderen Google-Scripten. Dann kommt die Antwort <b>429</b>, obwohl du selbst kaum etwas
-                                    verschickt hast. Ein kostenloses Konto auf ntfy.sh behebt das: dort unter „Account → Access tokens“
-                                    einen Schlüssel erzeugen und hier einsetzen. Nach dem Eintragen einmal aus- und wieder einschalten.
-                                </p>
-                            </div>
+
                             <div class="flex flex-wrap gap-2">
                                 <button type="button" class="btn btn-primary" x-show="!cfg.pushOn" :disabled="pushBusy || !mailDayReady" @click="pushAn()"><i class="fa-solid fa-play"></i>Einschalten</button>
                                 <button type="button" class="btn btn-soft" x-show="cfg.pushOn" :disabled="pushBusy" @click="pushAus()"><i class="fa-solid fa-stop"></i>Abschalten</button>
@@ -2277,6 +2282,7 @@
                             <p x-show="pushMsg" class="text-[12px] font-bold" x-text="pushMsg"></p>
                             <div x-show="pushStat" class="inner p-3 text-[11px] space-y-1 font-semibold">
                                 <p><span class="muted">Dienst:</span> <span x-text="pushStat?.ausloeser ? 'läuft, alle 5 Minuten' : 'läuft nicht'"></span></p>
+                                <p><span class="muted">Wege:</span> <span x-text="(pushStat?.wege || '').split(',').filter(w => w).map(w => w === 'tg' ? 'Telegram' : 'E-Mail').join(', ') || 'keiner'"></span></p>
                                 <p><span class="muted">Zuletzt geprüft:</span> <span x-text="mailDayZeit(pushStat?.letzterLauf)"></span></p>
                                 <p><span class="muted">Bisher verschickt:</span> <span class="num" x-text="pushStat?.verschickt"></span></p>
                                 <p x-show="pushStat?.letzterFehler" class="text-amber-400" x-text="'Fehler: ' + pushStat?.letzterFehler"></p>
@@ -3813,7 +3819,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushTopic: '', pushToken: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, pushWays: ['mail'], pushTgToken: '', pushTgChat: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -4176,7 +4182,7 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan'], ['ro', 'routinen']];
-        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushTopic', 'pushToken', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength',
+        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushWays', 'pushTgToken', 'pushTgChat', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength',
             /* Benachrichtigungen gelten überall gleich: Wann du Ruhe haben willst,
                hängt an dir und nicht am Gerät. „notifications“ wandert mit, die
                Erlaubnis des Browsers dagegen nicht – die muss jedes Gerät selbst
@@ -4244,6 +4250,7 @@ function handle2_(p) {
   if (p.action === 'mailstat') return out_(mailStat_(room));
   if (p.action === 'pushon') return pushOn_(room, p);
   if (p.action === 'pushoff') return pushOff_();
+  if (p.action === 'tgchat') return tgChat_(p);
   if (p.action === 'pushtest') return out_(pushSend_('Alltag', 'Test – so sieht eine Erinnerung aus.', 'bell'));
   if (p.action === 'pushstat') return out_(pushStat_());
   var lock = LockService.getScriptLock();
@@ -4342,7 +4349,7 @@ function freigabenPruefen() {
   catch (e) { zeilen.push('Mailversand: FEHLT (script.send_mail)'); }
   try { DriveApp.getRootFolder().getName(); zeilen.push('Drive: ok'); }
   catch (e) { zeilen.push('Drive: FEHLT (drive)'); }
-  try { UrlFetchApp.fetch('https://ntfy.sh/', { method: 'get', muteHttpExceptions: true }); zeilen.push('Internet: ok'); }
+  try { UrlFetchApp.fetch('https://api.telegram.org/', { method: 'get', muteHttpExceptions: true }); zeilen.push('Internet: ok'); }
   catch (e) { zeilen.push('Internet: FEHLT (script.external_request)'); }
   zeilen.push('Konto: ' + Session.getEffectiveUser().getEmail());
   Logger.log(zeilen.join('\\n'));
@@ -4471,19 +4478,27 @@ function mailSend_(test) {
 
 /* ---------- Erinnerungen bei geschlossener App ----------
    Alle fünf Minuten wird die Übersicht im Drive durchgesehen. Was in den
-   letzten Minuten fällig geworden ist, geht als Push an ntfy. Was schon
+   letzten Minuten fällig geworden ist, wird verschickt. Was schon
    verschickt wurde, wird vermerkt, damit nichts doppelt kommt. */
 function pushOn_(room, p) {
-  var topic = String(p.topic || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
-  if (topic.length < 12) return out_({ ok: false, error: 'Themenname zu kurz' });
   pushOff_();
   ScriptApp.newTrigger('erinnerungen').timeBased().everyMinutes(5).create();
   var props = PropertiesService.getScriptProperties();
-  props.setProperty('PUSH_TOPIC', topic);
-  props.setProperty('PUSH_TOKEN', String(p.token || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64));
+  /* Mehrere Wege gleichzeitig sind erlaubt: Fällt einer aus, kommt die
+     Erinnerung trotzdem an. Ohne Angabe bleibt es bei E-Mail. */
+  var wege = [];
+  var roh = p.ways ? String(p.ways).split(',') : ['mail'];
+  for (var w = 0; w < roh.length; w++) {
+    var x = roh[w].trim();
+    if ((x === 'mail' || x === 'tg') && wege.indexOf(x) < 0) wege.push(x);
+  }
+  if (!wege.length) wege = ['mail'];
+  props.setProperty('PUSH_WAYS', wege.join(','));
+  props.setProperty('PUSH_TG_TOKEN', String(p.tgToken || '').replace(/[^0-9A-Za-z:_-]/g, '').slice(0, 80));
+  props.setProperty('PUSH_TG_CHAT', String(p.tgChat || '').replace(/[^0-9-]/g, '').slice(0, 24));
   props.setProperty('AGENDA_ROOM', room);
   props.setProperty('PUSH_SENT', '[]');
-  return out_({ ok: true, topic: topic });
+  return out_({ ok: true, wege: wege.join(',') });
 }
 
 function pushOff_() {
@@ -4497,40 +4512,73 @@ function pushStat_() {
   var ts = ScriptApp.getProjectTriggers(), n = 0;
   for (var i = 0; i < ts.length; i++) if (ts[i].getHandlerFunction() === 'erinnerungen') n++;
   return {
-    ok: true, ausloeser: n, thema: props.getProperty('PUSH_TOPIC') || '',
+    ok: true, ausloeser: n, wege: props.getProperty('PUSH_WAYS') || '',
     letzterLauf: props.getProperty('PUSH_LAST') || '',
     letzterFehler: props.getProperty('PUSH_LASTERR') || '',
     verschickt: Number(props.getProperty('PUSH_COUNT') || 0)
   };
 }
 
+/* Verteilt eine Erinnerung auf alle eingestellten Wege. Erfolg heisst: Mindestens
+   einer hat sie angenommen – dann ist sie beim Empfänger. Gescheiterte Wege
+   werden trotzdem genannt, sonst merkt man nie, dass einer stillsteht. */
 function pushSend_(titel, text, tag) {
   var props = PropertiesService.getScriptProperties();
-  var topic = props.getProperty('PUSH_TOPIC');
-  if (!topic) return { ok: false, error: 'Kein Thema hinterlegt' };
-  var token = props.getProperty('PUSH_TOKEN') || '';
-  var opt = {
-    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-    payload: JSON.stringify({ topic: topic, title: titel, message: text, tags: [tag || 'calendar'], priority: 4 })
-  };
-  /* Ohne Konto rechnet ntfy das Kontingent pro IP-Adresse ab. Google-Scripte
-     teilen sich wenige Adressen mit allen anderen, deshalb kommt 429 auch
-     dann, wenn man selbst kaum etwas verschickt hat. Ein kostenloses Konto
-     bindet das Kontingent an den Zugangsschlüssel statt an die Adresse. */
-  if (token) opt.headers = { Authorization: 'Bearer ' + token };
-  var code = 0;
-  for (var v = 0; v < 2; v++) {
-    code = UrlFetchApp.fetch('https://ntfy.sh/', opt).getResponseCode();
-    if (code < 400 || code !== 429) break;
-    Utilities.sleep(3000);           // einmal kurz warten und erneut versuchen
+  var wege = (props.getProperty('PUSH_WAYS') || '').split(',').filter(function (x) { return x; });
+  var gut = [], schlecht = [];
+  for (var i = 0; i < wege.length; i++) {
+    var r;
+    r = wege[i] === 'tg' ? pushTg_(titel, text) : pushMail_(titel, text);
+    if (r.ok) gut.push(wege[i]); else schlecht.push(wegName_(wege[i]) + ': ' + r.error);
   }
-  if (code >= 200 && code < 300) return { ok: true };
-  if (code === 429) return { ok: false, error: token
-    ? 'ntfy hat das Kontingent erschöpft (429). Bitte in einer Stunde erneut versuchen.'
-    : 'ntfy lehnt mit 429 ab: Das Kontingent ohne Konto hängt an der IP-Adresse, die dein Google-Script mit vielen anderen teilt. Lege ein kostenloses Konto auf ntfy.sh an, erzeuge dort einen Zugangsschlüssel und trage ihn hier ein.' };
-  if (code === 401 || code === 403) return { ok: false, error: 'ntfy weist den Zugangsschlüssel ab (' + code + '). Bitte neu erzeugen und hier eintragen.' };
-  return { ok: false, error: 'ntfy antwortet ' + code };
+  if (gut.length) return { ok: true, wege: gut.join(','), hinweis: schlecht.join(' · ') };
+  return { ok: false, error: schlecht.join(' · ') || 'Es ist kein Weg eingestellt. Bitte in den Einstellungen aus- und wieder einschalten.' };
 }
+
+function wegName_(w) { return w === 'tg' ? 'Telegram' : 'E-Mail'; }
+
+/* E-Mail braucht keine fremden Dienste und kein Kontingent ausser dem von
+   Google selbst – deshalb der verlässlichste Weg, den wir hier haben. */
+function pushMail_(titel, text) {
+  var props = PropertiesService.getScriptProperties();
+  var an = props.getProperty('AGENDA_TO') || Session.getEffectiveUser().getEmail();
+  try {
+    MailApp.sendEmail({ to: an, subject: titel, body: text + '\\n\\n– Alltag' });
+    return { ok: true };
+  } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
+}
+
+function pushTg_(titel, text) {
+  var props = PropertiesService.getScriptProperties();
+  var tok = props.getProperty('PUSH_TG_TOKEN') || '', chat = props.getProperty('PUSH_TG_CHAT') || '';
+  if (!tok || !chat) return { ok: false, error: 'Bot-Schlüssel oder Chat fehlt' };
+  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + tok + '/sendMessage', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    payload: JSON.stringify({ chat_id: chat, text: titel + '\\n' + text })
+  });
+  if (res.getResponseCode() >= 200 && res.getResponseCode() < 300) return { ok: true };
+  var grund = '';
+  try { grund = JSON.parse(res.getContentText()).description || ''; } catch (e) { grund = ''; }
+  return { ok: false, error: 'Telegram ' + res.getResponseCode() + (grund ? ' (' + grund + ')' : '') };
+}
+
+/* Holt die Chat-Nummer aus den letzten Nachrichten an den Bot. Man muss dem Bot
+   also einmal selbst schreiben – anders erfährt er nicht, wohin er senden darf. */
+function tgChat_(p) {
+  var tok = String(p.tgToken || '').replace(/[^0-9A-Za-z:_-]/g, '').slice(0, 80);
+  if (!tok) return out_({ ok: false, error: 'Kein Bot-Schlüssel angegeben' });
+  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + tok + '/getUpdates', { muteHttpExceptions: true });
+  var d;
+  try { d = JSON.parse(res.getContentText()); } catch (e) { d = null; }
+  if (!d || !d.ok) return out_({ ok: false, error: 'Telegram antwortet ' + res.getResponseCode() + ' – stimmt der Bot-Schlüssel?' });
+  var u = d.result || [];
+  for (var i = u.length - 1; i >= 0; i--) {
+    var m = u[i].message || u[i].edited_message;
+    if (m && m.chat && m.chat.id) return out_({ ok: true, chat: String(m.chat.id), name: m.chat.first_name || m.chat.title || '' });
+  }
+  return out_({ ok: false, error: 'Der Bot hat noch keine Nachricht bekommen. Bitte ihm in Telegram einmal „/start“ schicken und es erneut versuchen.' });
+}
+
 
 /* Wird vom Auslöser gerufen. */
 function erinnerungen() {
@@ -7790,25 +7838,17 @@ function reply_(p) {
                     const d = new Date(iso);
                     return d.toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
                 },
-                /* ---------- Erinnerungen aufs Handy (ntfy) ---------- */
+                /* ---------- Erinnerungen bei geschlossener App ---------- */
                 pushBusy: false, pushMsg: '', pushStat: null,
-                get pushUrl() { return this.cfg.pushTopic ? 'https://ntfy.sh/' + this.cfg.pushTopic : ''; },
-                neuesThema() {
-                    /* Der Themenname ist das einzige Geheimnis – wer ihn kennt, sieht die
-                       Erinnerungen. Deshalb lang und zufällig. */
-                    const b = new Uint8Array(12);
-                    (window.crypto || crypto).getRandomValues(b);
-                    return 'alltag-' + [...b].map(x => x.toString(36)).join('').slice(0, 18);
-                },
                 async pushAn() {
                     this.pushBusy = true; this.pushMsg = '';
                     try {
-                        if (!this.cfg.pushTopic) { this.cfg.pushTopic = this.neuesThema(); this.saveCfg(); }
                         await this.gCall({ action: 'agenda', ...this.agendaDaten() });
-                        await this.gCall({ action: 'pushon', topic: this.cfg.pushTopic, token: this.cfg.pushToken || '' });
+                        await this.gCall({ action: 'pushon', ways: (this.cfg.pushWays || []).join(','),
+                            tgToken: this.cfg.pushTgToken || '', tgChat: this.cfg.pushTgChat || '' });
                         localStorage.setItem('organizer_agenda_at', String(Date.now()));
                         this.cfg.pushOn = true; this.saveCfg();
-                        this.pushMsg = 'Eingeschaltet. Jetzt in der ntfy-App das Thema abonnieren.';
+                        this.pushMsg = 'Eingeschaltet.';
                     } catch (e) { this.pushMsg = this.mailDayErr(e); this.cfg.pushOn = false; this.saveCfg(); }
                     finally { this.pushBusy = false; }
                 },
@@ -7818,6 +7858,28 @@ function reply_(p) {
                     catch (e) { this.pushMsg = this.mailDayErr(e); }
                     finally { this.cfg.pushOn = false; this.saveCfg(); this.pushBusy = false; }
                 },
+                pushWeg(w) { return (this.cfg.pushWays || []).includes(w); },
+                /* Mindestens ein Weg muss bleiben, sonst schaltet man die Erinnerungen
+                   versehentlich stumm, ohne dass der Schalter das verrät. */
+                pushWegUm(w) {
+                    const an = [...(this.cfg.pushWays || [])];
+                    const i = an.indexOf(w);
+                    if (i < 0) an.push(w);
+                    else if (an.length > 1) an.splice(i, 1);
+                    else return this.toast('Mindestens ein Weg muss eingeschaltet bleiben');
+                    this.cfg.pushWays = an; this.saveCfg();
+                    if (this.cfg.pushOn) this.pushMsg = 'Geändert – bitte einmal aus- und wieder einschalten.';
+                },
+                async tgChatHolen() {
+                    if (!this.cfg.pushTgToken) return this.toast('Zuerst den Bot-Schlüssel eintragen');
+                    this.pushBusy = true; this.pushMsg = '';
+                    try {
+                        const r = await this.gCall({ action: 'tgchat', tgToken: this.cfg.pushTgToken });
+                        this.cfg.pushTgChat = r.chat; this.saveCfg();
+                        this.pushMsg = 'Chat gefunden' + (r.name ? ' (' + r.name + ')' : '') + '. Jetzt aus- und wieder einschalten.';
+                    } catch (e) { this.pushMsg = this.pushFehler(e); }
+                    finally { this.pushBusy = false; }
+                },
                 async pushTest() {
                     this.pushBusy = true; this.pushMsg = '';
                     try {
@@ -7826,14 +7888,14 @@ function reply_(p) {
                     } catch (e) { this.pushMsg = this.pushFehler(e); }
                     finally { this.pushBusy = false; }
                 },
-                /* Das Script ist die Wahrheit. Weiss es nichts von einem Thema, dann
-                   ist hier nichts eingeschaltet – egal was gespeichert war. Sonst
-                   bleibt der Schalter auf „ein“ und der Weg zurück ist versteckt. */
+                /* Das Script ist die Wahrheit. Kennt es keinen Weg, dann ist hier
+                   nichts eingeschaltet – egal was gespeichert war. Sonst bleibt der
+                   Schalter auf „ein“ und der Weg zurück ist versteckt. */
                 pushFehler(e) {
                     const m = e.message || '';
-                    if (/Kein Thema/i.test(m)) {
+                    if (/kein Weg eingestellt/i.test(m)) {
                         this.cfg.pushOn = false; this.saveCfg();
-                        return 'Das Script kennt noch kein Thema – die Erinnerungen waren nie wirklich eingeschaltet. Bitte jetzt auf „Einschalten“ tippen.';
+                        return 'Das Script kennt noch keinen Versandweg – die Erinnerungen waren nie wirklich eingeschaltet. Bitte jetzt auf „Einschalten“ tippen.';
                     }
                     return this.mailDayErr(e);
                 },
@@ -7842,8 +7904,8 @@ function reply_(p) {
                     try {
                         const r = await this.gCall({ action: 'pushstat' });
                         this.pushStat = r;
-                        if (!r.thema) { this.cfg.pushOn = false; this.saveCfg();
-                            this.pushMsg = 'Das Script kennt noch kein Thema – die Erinnerungen waren nie wirklich eingeschaltet. Bitte jetzt auf „Einschalten“ tippen.'; }
+                        if (!r.wege) { this.cfg.pushOn = false; this.saveCfg();
+                            this.pushMsg = 'Das Script kennt noch keinen Versandweg – die Erinnerungen waren nie wirklich eingeschaltet. Bitte jetzt auf „Einschalten“ tippen.'; }
                         else if (!r.ausloeser) this.pushMsg = 'Es läuft kein Erinnerungsdienst. Bitte einmal aus- und wieder einschalten.';
                         else if (r.letzterFehler) this.pushMsg = 'Letzter Durchlauf mit Fehler: ' + r.letzterFehler;
                         else this.pushMsg = 'Läuft. Zuletzt geprüft: ' + this.mailDayZeit(r.letzterLauf) + '.';

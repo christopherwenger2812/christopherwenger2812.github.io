@@ -46,7 +46,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Morgenmail** – Einmal am Morgen eine Mail mit den Terminen des Tages, allem was offen oder überfällig ist und dem Stand der Zähler. Sie kommt auch, wenn die App geschlossen ist. Ein „Prüfen"-Knopf zeigt, ob der tägliche Auslöser steht, wann er zuletzt lief und woran es gehakt hat.
 
-**Erinnerungen aufs Handy** – Benachrichtigungen im Browser erscheinen nur bei offener App. Für alles andere schaut das Google-Script alle fünf Minuten nach, was fällig ist, und schickt es als Push an [ntfy](https://ntfy.sh) – kostenlos, ohne Konto.
+**Erinnerungen aufs Handy** – Benachrichtigungen im Browser erscheinen nur bei offener App. Für alles andere schaut das Google-Script alle fünf Minuten nach, was fällig ist, und schickt es per E-Mail, über Telegram oder beides. Mehrere Wege gleichzeitig sind möglich: Fällt einer aus, kommt die Erinnerung trotzdem an.
 
 **Dazu** – Diktieren per Mikrofon an den Eingabefeldern, aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
 
@@ -127,14 +127,20 @@ Damit die App ohne Adressleiste startet, muss diese Datei als `.well-known/asset
 
 ### 5. Erinnerungen aufs Handy (optional)
 
-Damit eine Erinnerung auch bei geschlossener App ankommt, braucht es einen Dienst, der von außen anklopft. Die App nutzt dafür [ntfy](https://ntfy.sh) – kostenlos, ohne Konto.
+Damit eine Erinnerung auch bei geschlossener App ankommt, braucht es einen Dienst, der von außen anklopft. Dafür gibt es zwei Wege, einzeln oder zusammen.
 
-1. ntfy aus dem Play Store oder App Store installieren
-2. In der App: Einstellungen → Benachrichtigungen → Erinnerungen aufs Handy → Einschalten
-3. Den angezeigten Themennamen in ntfy über „+" abonnieren
-4. „Testnachricht" drücken
+**E-Mail** – nichts einzurichten. Die Erinnerung geht an dieselbe Adresse wie die Morgenmail, dein Mail-Programm meldet sie.
 
-Das Script legt dafür einen Auslöser an, der alle fünf Minuten nachsieht. Der Themenname ist das einzige Geheimnis – wer ihn kennt, sieht die Erinnerungen, also nicht weitergeben.
+**Telegram** – ein Hinweis mit Ton, ebenfalls kostenlos:
+
+1. In Telegram **@BotFather** suchen und `/newbot` schicken, Namen vergeben
+2. Den Schlüssel (`12345:AAH…`) in der App einsetzen: Einstellungen → Benachrichtigungen → Erinnerungen aufs Handy
+3. Den eigenen Bot öffnen und ihm `/start` schicken
+4. „Chat suchen" drücken, dann „Einschalten" und „Testnachricht"
+
+Das Script legt dafür einen Auslöser an, der alle fünf Minuten nachsieht. Bot-Schlüssel und Chat-Nummer liegen in den Script-Eigenschaften – wer den Schlüssel kennt, kann in deinem Namen schreiben, also nicht weitergeben.
+
+Nicht mehr enthalten: ntfy. Der Dienst rechnet sein Kontingent ohne Konto pro IP-Adresse ab, und die teilt sich ein Google-Script mit vielen anderen – in der Praxis kam dauerhaft „429" zurück.
 
 ### 6. Morgenmail (optional)
 
@@ -175,7 +181,7 @@ Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die u
 
 ## Grenzen
 
-- Erinnerungen im Browser erscheinen nur, solange die App geöffnet ist – für alles andere die Push-Erinnerungen über ntfy einschalten.
+- Erinnerungen im Browser erscheinen nur, solange die App geöffnet ist – für alles andere die Erinnerungen per E-Mail oder Telegram einschalten.
 - Diktieren funktioniert nur in Browsern mit Spracherkennung (Chrome, Edge) und schickt die Aufnahme an den Browser-Hersteller.
 - Für die Morgenmail liegt eine unverschlüsselte Kurzfassung des Kalenders in deinem Drive (siehe „Einrichten“, Punkt 6).
 - Passwörter lassen sich nicht automatisch in andere Apps oder Webseiten einfüllen.
