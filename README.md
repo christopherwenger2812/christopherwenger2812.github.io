@@ -142,6 +142,12 @@ Das Script legt dafür einen Auslöser an, der alle fünf Minuten nachsieht. Bot
 
 Nicht mehr enthalten: ntfy. Der Dienst rechnet sein Kontingent ohne Konto pro IP-Adresse ab, und die teilt sich ein Google-Script mit vielen anderen – in der Praxis kam dauerhaft „429" zurück.
 
+### Sicherheit des Google-Scripts
+
+Eine Apps-Script-Web-App muss auf „Jeder" stehen, sonst kann die App sie nicht aufrufen. Damit ist die Adresse das erste Geheimnis – gib sie nicht weiter. Zusätzlich schickt die App bei jeder Anfrage einen **Zugangsschlüssel** mit, der aus Raumname **und** Sync-Passwort gerechnet wird. Den ersten, den es sieht, merkt sich das Script pro Raum; danach kommt nur noch durch, wer denselben kennt.
+
+Nach einem **neuen Sync-Passwort** passt der gemerkte Schlüssel nicht mehr. Dann im Script-Editor einmal die Funktion `zugangZuruecksetzen` ausführen – das nächste Gerät setzt den neuen.
+
 ### 6. Morgenmail (optional)
 
 Einstellungen → Benachrichtigungen → Morgenmail → Einschalten. Das Script legt sich dabei selbst einen täglichen Auslöser an und schickt die Mail an die Adresse deines Google-Kontos.

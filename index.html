@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.19-10">
+    <meta name="app-version" content="2026.11.23-1">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3023,7 +3023,7 @@
                     <p class="text-[11px] muted font-semibold mt-1"><span x-show="recipeDraft?.minutes" x-text="recipeDraft?.minutes + ' Minuten · '"></span><span x-text="recipeDraft?.ings.length + ' Zutaten'"></span></p>
                     <p x-show="recipeDraft?.source" class="text-[11px] muted mt-1 truncate">
                         <i class="fa-solid fa-link text-[9px] mr-1"></i>
-                        <template x-if="/^https?:/.test(recipeDraft?.source || '')"><a :href="recipeDraft.source" target="_blank" rel="noopener noreferrer" class="accent font-semibold hover:underline" x-text="recipeDraft.source"></a></template>
+                        <template x-if="/^https?:/.test(recipeDraft?.source || '')"><a :href="sicherLink(recipeDraft.source)" target="_blank" rel="noopener noreferrer" class="accent font-semibold hover:underline" x-text="recipeDraft.source"></a></template>
                         <template x-if="!/^https?:/.test(recipeDraft?.source || '')"><span x-text="recipeDraft?.source"></span></template>
                     </p>
                 </div>
@@ -3779,6 +3779,10 @@
         const dtOf = (ds, t) => { const d = parseDate(ds); d.setMinutes(toMin(t)); return d; };
         const addMin = (ds, t, min) => { const x = new Date(dtOf(ds, t).getTime() + min * 60000); return { date: fmt(x), time: `${pad(x.getHours())}:${pad(x.getMinutes())}` }; };
         function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+        /* Farben landen über :style direkt im Stylesheet. Alles ausser einem
+           Farbwert kann dort eigene Regeln einschleusen (etwa ein Hintergrundbild,
+           das eine fremde Adresse anfragt), deshalb nur echte Hex-Werte zulassen. */
+        const farbe_ = (v, standard) => /^#[0-9a-fA-F]{3,8}$/.test(String(v || '')) ? String(v) : standard;
         const readJSON = (key, fallback) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } };
 
         const STATES = [['BW','Baden-Württemberg'],['BY','Bayern'],['BE','Berlin'],['BB','Brandenburg'],['HB','Bremen'],['HH','Hamburg'],['HE','Hessen'],['MV','Mecklenburg-Vorpommern'],['NI','Niedersachsen'],['NW','Nordrhein-Westfalen'],['RP','Rheinland-Pfalz'],['SL','Saarland'],['SN','Sachsen'],['ST','Sachsen-Anhalt'],['SH','Schleswig-Holstein'],['TH','Thüringen']];
@@ -3832,7 +3836,7 @@
             if (!o.startDate) { o.startDate = o.date; o.startTime = o.time || ''; o.allDay = !o.time; } // Altformat
             delete o.date; delete o.time;
             o.id = String(o.id ?? uid());
-            o.color = o.color || '#6366f1';
+            o.color = farbe_(o.color, '#6366f1');
             o.allDay = !!o.allDay;
             o.endDate = o.endDate && o.endDate >= o.startDate ? o.endDate : o.startDate;
             o.reminder = o.reminder == null ? '' : String(o.reminder);
@@ -4239,9 +4243,40 @@ function out_(obj) {
 
 function handle_(p) { return sicher_(function () { return handle2_(p); }); }
 
+/* Vergleicht zwei Zeichenketten ohne Abkürzung: Ein Vergleich, der beim ersten
+   Unterschied abbricht, verrät über die Dauer, wie viel schon stimmte. */
+function gleich_(a, b) {
+  if (a.length !== b.length) return false;
+  var d = 0;
+  for (var i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+
+/* Der Raumname allein ist kein Geheimnis – er ist kurz und zu erraten. Deshalb
+   muss jede Anfrage zusätzlich einen Schlüssel mitbringen, der aus Raum UND
+   Sync-Passwort gerechnet wird. Den ersten, der sich meldet, merkt sich das
+   Script; danach kommt nur noch durch, wer denselben kennt. Zum Zurücksetzen
+   (etwa nach einem neuen Sync-Passwort) im Editor zugangZuruecksetzen ausführen. */
+function sigOk_(room, p) {
+  var props = PropertiesService.getScriptProperties();
+  var ist = String(p.sig || '');
+  if (!/^[a-f0-9]{32}$/.test(ist)) return false;
+  var soll = props.getProperty('SIG_' + room) || '';
+  if (!soll) { props.setProperty('SIG_' + room, ist); return true; }
+  return gleich_(soll, ist);
+}
+
+/* Im Editor ausführen, wenn das Sync-Passwort gewechselt hat. */
+function zugangZuruecksetzen() {
+  var props = PropertiesService.getScriptProperties(), alle = props.getProperties(), n = 0;
+  for (var k in alle) if (k.indexOf('SIG_') === 0) { props.deleteProperty(k); n++; }
+  return n + ' gemerkte Zugangsschlüssel gelöscht. Das nächste Gerät, das sich meldet, setzt den neuen.';
+}
+
 function handle2_(p) {
   var room = String(p.room || '');
   if (!/^[a-f0-9]{32}$/.test(room)) return out_({ ok: false, error: 'Ungültiger Raum' });
+  if (!sigOk_(room, p)) return out_({ ok: false, error: 'Falscher Zugangsschlüssel. Stimmt das Sync-Passwort? Nach einem neuen Passwort im Script-Editor einmal die Funktion zugangZuruecksetzen ausführen.' });
   if (p.action === 'fetchurl') return fetchUrl_(String(p.url || ''));
   if (p.action === 'agenda') return agendaPut_(room, p);
   if (p.action === 'mailon') return mailOn_(room, p);
@@ -6141,7 +6176,7 @@ function reply_(p) {
                 normIncoming(p, v) {
                     if (p === 'ev') return normEvent({ ...v });
                     if (p === 'td') return normTodo({ ...v }, {});
-                    if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋' };
+                    if (p === 'ls') return { id: String(v.id), name: String(v.name || 'Liste'), emoji: v.emoji || '📋', ...(v.color ? { color: farbe_(v.color, '#6366f1') } : {}), ...(v.icon ? { icon: String(v.icon).slice(0, 40) } : {}) };
                     if (p === 'sl') return { id: String(v.id), name: String(v.name || 'Liste').slice(0, 40), emoji: String(v.emoji || '🛒').slice(0, 8) };
                     if (p === 'nt') return normNote({ ...v });
                     if (p === 'rc') return normRecipe({ ...v });
@@ -6259,17 +6294,24 @@ function reply_(p) {
                 async gCall(payload) {
                     const url = (this.syncCfg.url || '').trim();
                     if (!/^https:\/\/script\.google\.com\//.test(url)) throw new Error('Die Script-URL ist ungültig (sie beginnt mit https://script.google.com/).');
-                    const room = await this.roomHash('google'), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 25000);
+                    /* „sig“ beweist dem Script, dass hier auch das Sync-Passwort bekannt ist.
+                       Ohne ihn genügte der Raumname, und der ist kurz und zu erraten. */
+                    const room = await this.roomHash('google'), sig = await this.roomHash('sig');
+                    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 25000);
                     try {
                         const res = payload.action === 'get'
-                            ? await fetch(`${url}?action=get&room=${room}`, { signal: ctl.signal, cache: 'no-store' })
-                            : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, room }), signal: ctl.signal });
+                            ? await fetch(`${url}?action=get&room=${room}&sig=${sig}`, { signal: ctl.signal, cache: 'no-store' })
+                            : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, room, sig }), signal: ctl.signal });
                         if (!res.ok) throw new Error('Das Script antwortet mit Fehler ' + res.status);
                         let daten;
                         try { daten = await res.json(); } catch (e) { throw new Error('Unerwartete Antwort – ist die Web-App für „Jeder“ freigegeben und neu bereitgestellt?'); }
                         /* Ein „ok: false“ ist ein Fehler und muss auch einer bleiben – sonst
                            meldet die App Erfolg, obwohl das Script die Aktion gar nicht kennt.
                            Ausnahme: Beim Abgleich ist ein Konflikt ein erwarteter Fall. */
+                        /* Der Zugangsschlüssel kommt aus dem Sync-Passwort. Lehnt das Script
+                           ihn ab, ist genau das die Ursache – also auch so benennen. */
+                        if (daten && /Falscher Zugangsschlüssel/.test(daten.error || ''))
+                            throw new Error('Falsches Sync-Passwort – oder das Passwort wurde geändert. Dann im Script-Editor einmal die Funktion zugangZuruecksetzen ausführen.');
                         if (daten && daten.ok === false && !daten.conflict) throw new Error(daten.error || 'Das Script meldet einen Fehler');
                         return daten;
                     } finally { clearTimeout(to); }
@@ -9655,6 +9697,13 @@ function reply_(p) {
                 get pwFilterTitle() {
                     if (this.pwFolderFilter !== 'all') return this.pwFolderFilter === '__none' ? 'Ohne Ordner' : this.pwFolderFilter;
                     return (this.vaultFilters.find(f => f.id === this.pwType) || {}).label || 'Alle Einträge';
+                },
+                /* Nur http(s) darf als Link erscheinen. Ein „javascript:“ in einem
+                   abgeglichenen oder eingelesenen Feld liefe sonst beim Klick im
+                   eigenen Fenster – mit Zugriff auf alles, was hier gespeichert ist. */
+                sicherLink(u) {
+                    u = String(u || '').trim(); if (!u) return '';
+                    try { const x = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(u) ? u : 'https://' + u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch (e) { return ''; }
                 },
                 siteUrl(pw) {
                     const u = (pw.url || '').trim(); if (!u) return '';
