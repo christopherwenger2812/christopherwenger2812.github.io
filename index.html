@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.23-7">
+    <meta name="app-version" content="2026.11.23-8">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3566,17 +3566,29 @@
             </div>
 
             <!-- Mehrere gefunden: erst zeigen, dann übernehmen -->
-            <div x-show="importMehrere.length" class="inner p-3 space-y-2 max-h-56 overflow-y-auto">
+            <div x-show="importMehrere.length" class="space-y-2">
+                <div x-show="importMehrere.some(r => r.tag) || importZettel().length" class="inner p-3 space-y-1.5">
+                    <label x-show="importMehrere.some(r => r.tag)" class="flex items-start gap-2 text-[12px] cursor-pointer">
+                        <input type="checkbox" class="mt-0.5" x-model="importPlan">
+                        <span>In den <b>Wochenplan</b> dieser Woche eintragen <span class="muted" x-text="'(' + importMehrere.filter(r => r.tag).map(r => r.tag.slice(0, 2)).join(', ') + ')'"></span></span>
+                    </label>
+                    <label x-show="importZettel().length" class="flex items-start gap-2 text-[12px] cursor-pointer">
+                        <input type="checkbox" class="mt-0.5" x-model="importEinkauf">
+                        <span>Mitgelieferte <b>Einkaufsliste</b> übernehmen <span class="muted" x-text="'(' + importZettel().length + ' Artikel)'"></span></span>
+                    </label>
+                </div>
+                <div class="inner p-3 space-y-2 max-h-56 overflow-y-auto">
                 <p class="label !text-[10px]" x-text="importMehrere.length + ' Rezepte gefunden'"></p>
                 <template x-for="(r, ix) in importMehrere" :key="'im' + ix">
                     <label class="flex items-start gap-2 text-[12px] cursor-pointer">
                         <input type="checkbox" class="mt-0.5" :checked="!importAus.includes(ix)" @change="importAus.includes(ix) ? importAus = importAus.filter(x => x !== ix) : importAus.push(ix)">
                         <span class="min-w-0">
                             <span class="block font-bold truncate" x-text="r.title"></span>
-                            <span class="block muted" x-text="r.ings.length + ' Zutaten · ' + r.steps.length + ' Schritte' + (r.servings ? ' · ' + r.servings + ' Portionen' : '')"></span>
+                            <span class="block muted" x-text="[r.tag, r.ings.length + ' Zutaten', r.steps.length + ' Schritte', r.servings ? r.servings + ' Portionen' : '', r.minutes ? r.minutes + ' Min.' : ''].filter(Boolean).join(' · ')"></span>
                         </span>
                     </label>
                 </template>
+                </div>
             </div>
 
             <p x-show="importErr" class="text-[12px] font-bold text-rose-400 leading-relaxed" x-text="importErr"></p>
@@ -3905,6 +3917,9 @@
                 <button :disabled="!mailSel" @click="mailMenu = false; laterOpen('snooze')"><i class="fa-solid fa-clock-rotate-left fa-fw text-xs"></i>Später wieder vorlegen</button>
                 <button :disabled="!mailSel" @click="mailMenu = false; mailToTodo()"><i class="fa-solid fa-list-check fa-fw text-xs"></i>Als Aufgabe merken</button>
                 <button :disabled="!mailSel" @click="mailMenu = false; mailToEvent()"><i class="fa-regular fa-calendar-plus fa-fw text-xs"></i>Als Termin eintragen</button>
+                <hr>
+                <!-- Notausgang, falls eine Mail trotz allem zu kurz dargestellt wird -->
+                <button @click="mailMenu = false; mailRefit(); toast('Anzeige neu berechnet')"><i class="fa-solid fa-arrows-up-down fa-fw text-xs"></i>Anzeige neu berechnen</button>
                 <p x-show="!mailSel && !mailPicked.length" class="text-[11px] muted px-3 py-2 leading-relaxed">Die meisten Befehle brauchen eine ausgewählte Nachricht.</p>
             </div>
         </div>
@@ -5931,19 +5946,30 @@ function listBackups_(room) {
             const gefunden = [];
 
             const alsEigenes = r => ({
-                title: String(r.title || r.name || '').replace(/\s+/g, ' ').trim(),
+                title: String(r.title || r.titel || r.name || '').replace(/\s+/g, ' ').trim(),
                 servings: firstNum(r.servings ?? r.portionen ?? r.recipeYield),
-                minutes: firstNum(r.minutes ?? r.time ?? r.dauer) || isoMinutes(r.totalTime),
+                /* „zeit“ darf eine Zahl sein oder ein Objekt mit gesamt/kochen */
+                minutes: firstNum(r.minutes ?? r.time ?? r.dauer
+                    ?? (r.zeit && typeof r.zeit === 'object' ? (r.zeit.gesamt ?? r.zeit.kochen) : r.zeit)) || isoMinutes(r.totalTime),
                 /* Zutaten dürfen Text sein ("250 g Linsen") oder schon zerlegt */
                 ings: (Array.isArray(r.ings) ? r.ings : Array.isArray(r.ingredients) ? r.ingredients : Array.isArray(r.zutaten) ? r.zutaten : [])
                     .map(z => typeof z === 'string' ? z
-                        : [z.qty || z.amount || z.menge || '', z.unit || z.einheit || '', z.name || z.zutat || ''].filter(x => x !== '' && x !== 0).join(' '))
+                        : [z.qty ?? z.amount ?? z.menge ?? '', z.unit || z.einheit || '', z.name || z.zutat || '']
+                            .filter(x => x !== '' && x !== 0 && x !== null && x !== undefined).join(' '))
                     .map(z => String(z).replace(/\s+/g, ' ').trim()).filter(Boolean),
                 steps: typeof r.steps === 'string' ? String(r.steps).split(/\n+/).map(x => x.trim()).filter(Boolean)
-                    : (Array.isArray(r.steps) ? r.steps : Array.isArray(r.instructions) ? r.instructions : Array.isArray(r.zubereitung) ? r.zubereitung : [])
+                    : (Array.isArray(r.steps) ? r.steps : Array.isArray(r.schritte) ? r.schritte
+                        : Array.isArray(r.instructions) ? r.instructions : Array.isArray(r.zubereitung) ? r.zubereitung : [])
                         .map(x => String(typeof x === 'string' ? x : (x.text || x.name || '')).replace(/\s+/g, ' ').trim()).filter(Boolean),
-                note: String(r.note || r.notiz || r.description || '').replace(/\s+/g, ' ').trim().slice(0, 2000),
-                source: String(r.source || r.url || '').slice(0, 300)
+                /* Tipps gehören nicht in die Schrittfolge, aber sie sind zu schade
+                   zum Wegwerfen – sie landen in der Notiz. */
+                note: [String(r.note || r.notiz || r.description || '').replace(/\s+/g, ' ').trim(),
+                       (Array.isArray(r.tipps) ? r.tipps : Array.isArray(r.tips) ? r.tips : [])
+                           .map(x => '• ' + String(x).replace(/\s+/g, ' ').trim()).join('\n')]
+                    .filter(Boolean).join('\n\n').slice(0, 2000),
+                source: String(r.source || r.url || '').slice(0, 300),
+                /* Ein Wochentag im Rezept heisst: Das gehört in den Wochenplan */
+                tag: String(r.tag || r.wochentag || r.day || '').trim()
             });
 
             const sammeln = v => {
@@ -5959,6 +5985,7 @@ function listBackups_(room) {
                 if (v.items && v.items.rc) return sammeln(v.items.rc);
                 if (Array.isArray(v.recipes)) return sammeln(v.recipes);
                 if (Array.isArray(v.rezepte)) return sammeln(v.rezepte);
+                if (Array.isArray(v.gerichte)) return sammeln(v.gerichte);
                 /* Sonst: sieht es wie ein Rezept aus? Ein Titel allein genügt nicht,
                    sonst wird jedes beliebige Objekt zum Rezept. */
                 const eigen = alsEigenes(v);
@@ -6227,7 +6254,13 @@ function listBackups_(room) {
             const remote = /(src|background)\s*=\s*["']?\s*https?:|url\(\s*["']?\s*https?:/i.test(inner);
             const csp = "default-src 'none'; img-src " + (allowImg ? 'data: https:' : 'data:') + "; style-src 'unsafe-inline'; font-src data:; form-action 'none'";
             const base = 'html{color-scheme:light}body{margin:0;padding:14px 16px;background:#fff;color:#1b1b1f;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-wrap:anywhere}img{max-width:100%;height:auto}a{color:#2563eb}table{max-width:100%}';
-            return { remote, html: '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="' + csp + '"><meta name="referrer" content="no-referrer"><style>' + base + '</style>' + inner + '</body></html>' };
+            /* Nach dem Inhalt eingefügt und mit !important: Newsletter setzen gern
+               html/body auf height:100% oder overflow:hidden. Im Rahmen heisst das,
+               die gemessene Höhe ist genau die, die der Rahmen gerade hat – er
+               wächst dann nie mit und schneidet mittendrin ab. */
+            const zwang = '<style>html,body{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}'
+                        + 'body>*{max-height:none!important}</style>';
+            return { remote, html: '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="' + csp + '"><meta name="referrer" content="no-referrer"><style>' + base + '</style>' + inner + zwang + '</body></html>' };
         }
         const MAIL_SCRIPT = `/**
  * Christophers Space - E-Mail-Script (Gmail)
@@ -6738,7 +6771,7 @@ function reply_(p) {
                 cookId: '', cookStep: 0, cookChecked: [], cookWake: null,
                 recipeEmojis: RECIPE_EMOJI, showEmoji: false,
                 showRecipeImport: false, importWay: 'url', importUrl: '', importText: '', importBusy: '', importErr: '',
-                importJson: '', importMehrere: [], importAus: [],
+                importJson: '', importMehrere: [], importAus: [], importRoh: null, importPlan: true, importEinkauf: true,
                 showShare: false, shareText: '', shareUrl: '', shareTitle: '',
                 shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, catalogOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
@@ -10007,10 +10040,15 @@ function reply_(p) {
                    Mehrere werden erst aufgelistet – wer eine Sammlung einliest,
                    will nicht fünfzig Formulare nacheinander bestätigen. */
                 importJsonVerarbeiten(roh, quelle) {
-                    this.importErr = ''; this.importMehrere = []; this.importAus = [];
+                    this.importErr = ''; this.importMehrere = []; this.importAus = []; this.importRoh = null;
                     let liste;
-                    try { liste = recipesFromJson(roh); }
+                    try {
+                        this.importRoh = typeof roh === 'string' ? JSON.parse(roh) : roh;
+                        liste = recipesFromJson(this.importRoh);
+                    }
                     catch (e) { this.importErr = 'Das ist keine gültige JSON-Datei (' + e.message + ').'; return; }
+                    this.importPlan = liste.some(r => r.tag);
+                    this.importEinkauf = this.importZettel().length > 0;
                     if (!liste.length) { this.importErr = 'Darin war kein Rezept zu finden. Nötig sind mindestens ein Titel und dazu Zutaten oder Schritte.'; return; }
                     if (liste.length === 1) { this.useParsedRecipe(liste[0], liste[0].source || quelle || ''); return; }
                     this.importMehrere = liste;
@@ -10026,10 +10064,28 @@ function reply_(p) {
                     if (!this.importJson.trim()) return this.toast('Erst JSON einfügen');
                     this.importJsonVerarbeiten(this.importJson.trim(), '');
                 },
+                /* Eine mitgelieferte Einkaufsliste, auf das Format der App gebracht */
+                importZettel() {
+                    const q = this.importRoh;
+                    const liste = q && (q.einkaufsliste || q.shoppingList || q.einkauf);
+                    if (!Array.isArray(liste)) return [];
+                    return liste.map(x => typeof x === 'string' ? { name: x, menge: '' }
+                        : { name: String(x.name || x.titel || '').trim(), menge: String(x.menge || x.amount || x.qty || '').trim() })
+                        .filter(x => x.name).slice(0, 80);
+                },
+                /* „Montag“ auf das Datum dieser Woche bringen */
+                importTagDatum(tag) {
+                    const t = String(tag || '').toLowerCase().slice(0, 2);
+                    const i = ['mo', 'di', 'mi', 'do', 'fr', 'sa', 'so'].indexOf(t);
+                    if (i < 0) return '';
+                    const heute = parseDate(this.today);
+                    const montag = this.addDaysStr(this.today, -((heute.getDay() + 6) % 7));
+                    return this.addDaysStr(montag, i);
+                },
                 importAlleUebernehmen() {
                     const nehmen = this.importMehrere.filter((_, ix) => !this.importAus.includes(ix));
                     if (!nehmen.length) return this.toast('Nichts ausgewählt');
-                    let neu = 0, ersetzt = 0;
+                    let neu = 0, ersetzt = 0, geplant = 0, artikel = 0;
                     for (const r of nehmen) {
                         const fertig = normRecipe({
                             id: uid(), title: r.title, servings: r.servings || 2, minutes: r.minutes || 0,
@@ -10039,14 +10095,36 @@ function reply_(p) {
                         /* Ein gleichnamiges Rezept wird überschrieben statt verdoppelt –
                            sonst sammeln sich beim zweiten Einlesen Dubletten an. */
                         const alt = this.recipes.find(x => x.title.toLowerCase() === fertig.title.toLowerCase());
-                        if (alt) { this.recipes = this.recipes.map(x => x.id === alt.id ? { ...fertig, id: alt.id, created: alt.created } : x); ersetzt++; }
+                        let id = fertig.id;
+                        if (alt) { id = alt.id; this.recipes = this.recipes.map(x => x.id === alt.id ? { ...fertig, id: alt.id, created: alt.created } : x); ersetzt++; }
                         else { this.recipes.push(fertig); neu++; }
+
+                        /* Wochenplan: Ein vorhandener Eintrag am selben Tag wird ersetzt,
+                           sonst steht das Gericht zweimal da. */
+                        if (this.importPlan && r.tag) {
+                            const datum = this.importTagDatum(r.tag);
+                            if (datum) {
+                                this.mealPlan = this.mealPlan.filter(m => !(m.date === datum && (m.recipe === id || m.title === fertig.title)));
+                                this.mealPlan.push(this.normIncoming('mp', { id: uid(), date: datum, recipe: id, servings: fertig.servings }));
+                                geplant++;
+                            }
+                        }
                     }
+
+                    if (this.importEinkauf) {
+                        for (const z of this.importZettel()) {
+                            if (this.shopOpen.some(i => i.name.toLowerCase() === z.name.toLowerCase())) continue;
+                            const treffer = matchProduct(z.name);
+                            const it = normShop({ ...(treffer || { name: z.name }), id: uid(), list: this.shopListId, note: z.menge });
+                            this.shoppingItems.push(it); this.noteRecent(it); artikel++;
+                        }
+                    }
+
                     this.saveAllData();
-                    this.importMehrere = []; this.importAus = []; this.importJson = '';
+                    this.importMehrere = []; this.importAus = []; this.importJson = ''; this.importRoh = null;
                     this.showRecipeImport = false;
                     this.switchTab('recipes');
-                    this.toast(neu + ' neu' + (ersetzt ? ', ' + ersetzt + ' aktualisiert' : ''));
+                    this.toast([neu + ' neu', ersetzt ? ersetzt + ' aktualisiert' : '', geplant ? geplant + ' im Wochenplan' : '', artikel ? artikel + ' auf dem Zettel' : ''].filter(Boolean).join(', '));
                 },
                 importFromText() {
                     this.importErr = '';
@@ -11020,14 +11098,25 @@ function reply_(p) {
                             d.body.style.width = need + 'px';
                             d.body.style.transform = 'scale(' + scale + ')';
                         }
-                        /* Auch die Kinder messen: Ein Element mit absoluter Position
-                           oder negativem Rand zählt nicht in scrollHeight hinein. */
+                        /* Höhe IMMER unskaliert messen und erst danach mit dem
+                           Verkleinerungsfaktor multiplizieren. getBoundingClientRect
+                           liefert bereits verkleinerte Werte – beides zu mischen und
+                           dann nochmal zu multiplizieren macht den Rahmen zu kurz,
+                           und genau das schnitt Newsletter mittendrin ab. */
                         let hgt = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight, d.body.offsetHeight);
+                        /* Elemente mit absoluter Position zählen nicht in scrollHeight
+                           hinein; offsetTop/offsetHeight sind Layoutwerte und damit
+                           unabhängig von der Verkleinerung. */
                         for (const kind of d.body.children) {
-                            const r = kind.getBoundingClientRect();
-                            if (r.bottom > hgt) hgt = r.bottom;
+                            const unten = (kind.offsetTop || 0) + (kind.offsetHeight || 0);
+                            if (unten > hgt) hgt = unten;
                         }
-                        el.style.height = Math.min(Math.ceil(hgt * scale) + 10, 30000) + 'px';
+                        const neu = Math.min(Math.ceil(hgt * scale) + 10, 30000);
+                        /* Nur wachsen lassen: Zwischen zwei Messungen kann ein Bild noch
+                           fehlen; ein kurzzeitig kleinerer Wert würde sonst abschneiden.
+                           Beim ersten Messen eines Rahmens wird neu angefangen. */
+                        const alt = erstesMal ? 0 : parseFloat(el.style.height) || 0;
+                        el.style.height = Math.max(neu, alt) + 'px';
                     } catch (e) {}
                 },
                 /* Nach Größenänderung des Fensters neu einpassen */
