@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.23-8">
+    <meta name="app-version" content="2026.11.23-9">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -177,6 +177,14 @@
         .tdc .tdprog { display: none; }
         .muted  { color: var(--muted); }
         .divider { border-color: var(--border); }
+        /* Die Leseansicht hatte eine feste Höchsthöhe UND overflow:hidden. Am
+           breiten Bildschirm ist das richtig, dort scrollt die Spalte für sich.
+           Am Handy gibt es keine zweite Spalte: Dort wurde jede Mail, die höher
+           war als der Bildschirm, einfach abgeschnitten – ohne Scrollbalken, ohne
+           Hinweis. Deshalb gilt die Begrenzung erst ab 1024 Pixeln. */
+        @media (min-width: 1024px) {
+            .mailpane { max-height: min(100vh, calc(100dvh - 8.5rem)); overflow-y: auto; }
+        }
         /* ---------- Drucken ----------
            Gedruckt wird nur der Druckbogen, und der schwarz auf weiß – ein
            dunkles Design würde eine halbe Patrone kosten. */
@@ -2021,7 +2029,7 @@
                     </div>
 
                     <!-- Lesebereich -->
-                    <div :class="mailSel ? '' : 'hidden lg:block'" class="card overflow-hidden min-h-[50vh] lg:overflow-y-auto" style="max-height: min(100vh, calc(100dvh - 8.5rem))">
+                    <div :class="mailSel ? '' : 'hidden lg:block'" class="card overflow-hidden min-h-[50vh] mailpane">
                         <div x-show="!mailSel" class="p-10 text-center muted text-sm"><i class="fa-regular fa-envelope-open text-3xl mb-3 block opacity-70"></i>Wähle links eine E-Mail aus.</div>
                         <div x-show="mailSel">
                             <div class="px-4 pt-4 pb-3 border-b divider">
@@ -3920,6 +3928,7 @@
                 <hr>
                 <!-- Notausgang, falls eine Mail trotz allem zu kurz dargestellt wird -->
                 <button @click="mailMenu = false; mailRefit(); toast('Anzeige neu berechnet')"><i class="fa-solid fa-arrows-up-down fa-fw text-xs"></i>Anzeige neu berechnen</button>
+                <button @click="mailMenu = false; mailMessung()"><i class="fa-solid fa-ruler fa-fw text-xs"></i>Messwerte kopieren</button>
                 <p x-show="!mailSel && !mailPicked.length" class="text-[11px] muted px-3 py-2 leading-relaxed">Die meisten Befehle brauchen eine ausgewählte Nachricht.</p>
             </div>
         </div>
@@ -11118,6 +11127,35 @@ function reply_(p) {
                         const alt = erstesMal ? 0 : parseFloat(el.style.height) || 0;
                         el.style.height = Math.max(neu, alt) + 'px';
                     } catch (e) {}
+                },
+                /* Liefert die Zahlen, mit denen die Höhe gerechnet wurde. Wenn eine
+                   Mail trotz allem abgeschnitten ist, sagen diese Werte, woran es
+                   liegt – raten hilft hier nicht weiter. */
+                mailMessung() {
+                    const zeilen = ['Version ' + APP_VERSION, 'Fenster ' + innerWidth + '×' + innerHeight];
+                    const rahmen = [...document.querySelectorAll('iframe.mframe')].filter(f => f.getClientRects().length);
+                    if (!rahmen.length) zeilen.push('Kein Mail-Rahmen offen');
+                    rahmen.forEach((f, i) => {
+                        try {
+                            const d = f.contentDocument, b = d && d.body;
+                            const sichtbar = Math.round(f.getBoundingClientRect().height);
+                            const stil = b ? (b.style.transform || 'keine') : '?';
+                            zeilen.push('Rahmen ' + (i + 1) + ': sichtbar ' + sichtbar + ' px, gesetzt ' + (f.style.height || '–')
+                                + ', breit ' + Math.round(f.clientWidth)
+                                + ' | body scrollH ' + (b ? b.scrollHeight : '?') + ' offsetH ' + (b ? b.offsetHeight : '?')
+                                + ' scrollW ' + (b ? b.scrollWidth : '?')
+                                + ' | html scrollH ' + (d ? d.documentElement.scrollHeight : '?')
+                                + ' | Verkleinerung ' + stil
+                                + ' | Bilder ' + (d ? d.images.length : '?') + ', davon fertig ' + (d ? [...d.images].filter(x => x.complete).length : '?'));
+                            /* Was steht ganz unten im Dokument, und endet es im Rahmen? */
+                            if (b) {
+                                let tief = 0;
+                                for (const el of b.querySelectorAll('*')) { const u = (el.offsetTop || 0) + (el.offsetHeight || 0); if (u > tief) tief = u; }
+                                zeilen.push('   tiefstes Element bei ' + Math.round(tief) + ' px (unverkleinert)');
+                            }
+                        } catch (e) { zeilen.push('Rahmen ' + (i + 1) + ': nicht lesbar (' + e.message + ')'); }
+                    });
+                    this.copy(zeilen.join('\n'), 'Messwerte kopiert – bitte einfügen');
                 },
                 /* Nach Größenänderung des Fensters neu einpassen */
                 mailRefit() { try { document.querySelectorAll('iframe.mframe').forEach(f => this.mailFit(f)); } catch (e) {} },

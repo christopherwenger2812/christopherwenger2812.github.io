@@ -525,7 +525,6 @@ img,video{max-width:100%;height:auto}
  .lg\:inline{display:inline}
  .lg\:max-w-\[14rem\]{max-width:14rem}
  .lg\:overflow-visible{overflow:visible}
- .lg\:overflow-y-auto{overflow-y:auto}
  .lg\:sticky{position:sticky}
  .lg\:border-l{border-left-width:1px}
  .lg\:px-8{padding-left:2rem;padding-right:2rem}
