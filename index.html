@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.23-5">
+    <meta name="app-version" content="2026.11.23-6">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1834,7 +1834,7 @@
                 <!-- Befehlsleiste: Was man ständig braucht, steht sichtbar. Alles
                      Weitere liegt unter „Mehr“ – vorher war die Leiste so lang, dass
                      am Handy die Hälfte hinter dem Rand verschwand. -->
-                <div class="card p-2 sm:p-2.5 space-y-2">
+                <div class="card p-2 sm:p-2.5 space-y-2 relative">
                     <div class="cmd">
                         <button x-show="mailCfg.accounts.length" @click="mailNew()" class="btn btn-primary shrink-0"><i class="fa-solid fa-pen-to-square"></i>Neu</button>
                         <span x-show="mailCfg.accounts.length" class="sep"></span>
@@ -1844,31 +1844,32 @@
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" :disabled="!mailSel" @click="mailSet([mailCurRow], { r: mailCurRow.unread ? 1 : 0 })" :title="mailCurRow.unread ? 'Als gelesen markieren' : 'Als ungelesen markieren'"><i class="fa-solid" :class="mailCurRow.unread ? 'fa-envelope-open' : 'fa-envelope'"></i></button>
                         <button x-show="mailCfg.accounts.length" class="btn btn-ghost mstar shrink-0" :class="mailCurRow.star ? 'on' : ''" :disabled="!mailSel" @click="mailSet([mailCurRow], { s: mailCurRow.star ? 0 : 1 })" title="Markieren" aria-label="Markieren"><i :class="mailCurRow.star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></button>
 
-                        <!-- Alles Seltenere -->
-                        <div x-show="mailCfg.accounts.length" class="relative shrink-0" @click.outside="mailMenu = false">
-                            <button class="btn btn-ghost" @click="mailMenu = !mailMenu" :aria-expanded="mailMenu" title="Weitere Aktionen"><i class="fa-solid fa-ellipsis"></i><span class="hidden sm:inline">Mehr</span></button>
-                            <div x-show="mailMenu" x-transition x-cloak class="menu !w-60">
-                                <template x-for="a in mailQuick" :key="'q' + a.id">
-                                    <button x-show="quickOk(a, mailPicked.length ? mailPicked : (mailCurRow.id ? [mailCurRow] : []))" :disabled="!mailSel && !mailPicked.length" @click="mailMenu = false; runQuick(a, mailPicked)"><i :class="a.icon" class="fa-fw text-xs"></i><span x-text="a.label"></span></button>
-                                </template>
-                                <hr x-show="mailQuick.length">
-                                <button :disabled="!mailSel" @click="mailMenu = false; mailReplyTo(mailThread.msgs.length - 1, true)"><i class="fa-solid fa-reply-all fa-fw text-xs"></i>Allen antworten</button>
-                                <button :disabled="!mailSel" @click="mailMenu = false; mailForward(mailThread.msgs.length - 1)"><i class="fa-solid fa-share fa-fw text-xs"></i>Weiterleiten</button>
-                                <hr>
-                                <button x-show="mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive'" :disabled="!mailSel" @click="mailMenu = false; mailMove('i')"><i class="fa-solid fa-inbox fa-fw text-xs"></i>In den Posteingang</button>
-                                <button x-show="mailFolder !== 'spam' && mailFolder !== 'trash'" :disabled="!mailSel" @click="mailMenu = false; mailMove('sp')"><i class="fa-solid fa-ban fa-fw text-xs"></i>Als Spam melden</button>
-                                <button :disabled="!mailSel" @click="mailMenu = false; blockSender(mailCurRow)"><i class="fa-solid fa-user-slash fa-fw text-xs"></i>Absender künftig in den Spam</button>
-                                <button x-show="abbestellLink" @click="mailMenu = false; window.open(abbestellLink, '_blank', 'noopener')"><i class="fa-solid fa-envelope-circle-check fa-fw text-xs"></i>Newsletter abbestellen</button>
-                                <hr>
-                                <button :disabled="!mailSel" @click="mailMenu = false; laterOpen('snooze')"><i class="fa-solid fa-clock-rotate-left fa-fw text-xs"></i>Später wieder vorlegen</button>
-                                <button :disabled="!mailSel" @click="mailMenu = false; mailToTodo()"><i class="fa-solid fa-list-check fa-fw text-xs"></i>Als Aufgabe merken</button>
-                                <button :disabled="!mailSel" @click="mailMenu = false; mailToEvent()"><i class="fa-regular fa-calendar-plus fa-fw text-xs"></i>Als Termin eintragen</button>
-                            </div>
-                        </div>
+                        <!-- Der Knopf steht in der Leiste, das Menü darunter ausserhalb:
+                             Die Leiste scrollt waagerecht, ein Menü darin wäre auf ihre
+                             35 Pixel Höhe abgeschnitten und damit unsichtbar. -->
+                        <button x-show="mailCfg.accounts.length" class="btn btn-ghost shrink-0" @click="mailMenu = !mailMenu" :aria-expanded="mailMenu" title="Weitere Aktionen"><i class="fa-solid fa-ellipsis"></i><span class="hidden sm:inline">Mehr</span></button>
 
                         <span class="flex-1 min-w-[.5rem]"></span>
                         <button x-show="mailCfg.accounts.length" @click="mailRefresh({ manual: true })" class="btn btn-ghost shrink-0" title="Aktualisieren" aria-label="Aktualisieren"><i class="fa-solid fa-rotate" :class="mailLoading ? 'spin' : ''"></i></button>
                         <button @click="openMailSetup()" class="btn btn-ghost shrink-0" title="Postfächer verwalten"><i class="fa-solid fa-gear"></i><span class="hidden sm:inline" x-text="mailCfg.accounts.length ? '' : 'Postfach verbinden'"></span></button>
+                    </div>
+
+                    <div x-show="mailMenu" x-transition x-cloak @click.outside="mailMenu = false" class="menu !w-64 !left-auto !right-2 !top-14">
+                        <template x-for="a in mailQuick" :key="'q' + a.id">
+                            <button x-show="quickOk(a, mailPicked.length ? mailPicked : (mailCurRow.id ? [mailCurRow] : []))" :disabled="!mailSel && !mailPicked.length" @click="mailMenu = false; runQuick(a, mailPicked)"><i :class="a.icon" class="fa-fw text-xs"></i><span x-text="a.label"></span></button>
+                        </template>
+                        <hr x-show="mailQuick.length">
+                        <button :disabled="!mailSel" @click="mailMenu = false; mailReplyTo(mailThread.msgs.length - 1, true)"><i class="fa-solid fa-reply-all fa-fw text-xs"></i>Allen antworten</button>
+                        <button :disabled="!mailSel" @click="mailMenu = false; mailForward(mailThread.msgs.length - 1)"><i class="fa-solid fa-share fa-fw text-xs"></i>Weiterleiten</button>
+                        <hr>
+                        <button x-show="mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive'" :disabled="!mailSel" @click="mailMenu = false; mailMove('i')"><i class="fa-solid fa-inbox fa-fw text-xs"></i>In den Posteingang</button>
+                        <button x-show="mailFolder !== 'spam' && mailFolder !== 'trash'" :disabled="!mailSel" @click="mailMenu = false; mailMove('sp')"><i class="fa-solid fa-ban fa-fw text-xs"></i>Als Spam melden</button>
+                        <button :disabled="!mailSel" @click="mailMenu = false; blockSender(mailCurRow)"><i class="fa-solid fa-user-slash fa-fw text-xs"></i>Absender künftig in den Spam</button>
+                        <button x-show="abbestellLink" @click="mailMenu = false; window.open(abbestellLink, '_blank', 'noopener')"><i class="fa-solid fa-envelope-circle-check fa-fw text-xs"></i>Newsletter abbestellen</button>
+                        <hr>
+                        <button :disabled="!mailSel" @click="mailMenu = false; laterOpen('snooze')"><i class="fa-solid fa-clock-rotate-left fa-fw text-xs"></i>Später wieder vorlegen</button>
+                        <button :disabled="!mailSel" @click="mailMenu = false; mailToTodo()"><i class="fa-solid fa-list-check fa-fw text-xs"></i>Als Aufgabe merken</button>
+                        <button :disabled="!mailSel" @click="mailMenu = false; mailToEvent()"><i class="fa-regular fa-calendar-plus fa-fw text-xs"></i>Als Termin eintragen</button>
                     </div>
 
                     <!-- Aktion für den geöffneten Ordner. Hängt nur am Ordner, nicht an
@@ -2449,6 +2450,29 @@
                                     <input type="checkbox" class="mt-0.5" :checked="pushWeg('tg')" @change="pushWegUm('tg')">
                                     <span><b>Telegram</b> <span class="muted">– echter Hinweis mit Ton, kostenlos. Einmalig einen eigenen Bot anlegen.</span></span>
                                 </label>
+                            </div>
+
+                            <!-- Neue Post melden – nur über Telegram sinnvoll -->
+                            <div x-show="pushWeg('tg')" class="inner p-3 space-y-2">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-bold">Neue E-Mails melden</p>
+                                        <p class="text-[11px] muted">Das Script sieht alle fünf Minuten in deinen Postfächern nach und schickt eine Telegram-Nachricht, wenn etwas Neues da ist.</p>
+                                    </div>
+                                    <button type="button" role="switch" :aria-checked="cfg.mailPush" class="switch shrink-0" :class="cfg.mailPush ? 'on' : ''" @click="cfg.mailPush = !cfg.mailPush; saveCfg(); if (cfg.pushOn) pushMsg = 'Geändert – bitte einmal aus- und wieder einschalten.'" aria-label="Neue E-Mails melden"></button>
+                                </div>
+                                <div x-show="cfg.mailPush" class="space-y-2 pt-1 border-t divider">
+                                    <div class="flex items-center justify-between gap-3 pt-2">
+                                        <div class="min-w-0">
+                                            <p class="text-[13px] font-bold">Mit Absender und Betreff</p>
+                                            <p class="text-[11px] muted">Aus: Es kommt nur die Anzahl. An: Du siehst gleich, worum es geht – dafür steht der Betreff in deinem Telegram-Verlauf.</p>
+                                        </div>
+                                        <button type="button" role="switch" :aria-checked="cfg.mailPushDetail" class="switch shrink-0" :class="cfg.mailPushDetail ? 'on' : ''" @click="cfg.mailPushDetail = !cfg.mailPushDetail; saveCfg(); if (cfg.pushOn) pushMsg = 'Geändert – bitte einmal aus- und wieder einschalten.'" aria-label="Mit Absender und Betreff"></button>
+                                    </div>
+                                    <p x-show="!mailCfg.accounts.length" class="text-[11px] muted">Dafür muss zuerst ein Postfach verbunden sein.</p>
+                                    <p x-show="mailCfg.accounts.length" class="text-[11px] muted" x-text="'Beobachtet: ' + mailCfg.accounts.map(a => a.name).join(', ')"></p>
+                                    <p class="text-[11px] muted leading-relaxed">Dafür bekommt das Abgleich-Script Adresse und Schlüssel deiner Postfächer – beides liegt dann in den Script-Eigenschaften deines eigenen Google-Kontos.</p>
+                                </div>
                             </div>
 
                             <div x-show="pushWeg('tg')" class="inner p-3 space-y-1.5">
@@ -4280,7 +4304,7 @@
             shopGroup: true,
             showUpcoming: true, upcomingCount: 5,
             vaultLockMin: 5, clipboardClear: 30, showLogos: true, genLength: 20,
-            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, weekMail: false, pushWays: ['mail'], pushTgToken: '', pushTgChat: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
+            appName: 'Alltag', recipeView: 'grid', startOrder: null, startOrderPhone: null, morningMail: false, morningHour: 7, pushOn: false, weekMail: false, mailPush: false, mailPushDetail: true, pushWays: ['mail'], pushTgToken: '', pushTgChat: '', wxMood: true, weather: false, weatherPlace: null, weatherPlaces: [], weatherAuto: true, weatherUnit: 'c', fontSize: 'normal', reduceMotion: false, radius: 'soft', cardStyle: 'solid', font: 'default', bgStyle: 'plain',
             defaultEventColor: '#6366f1', todoSortDefault: 'created', hideDoneDays: 0,
             todayEvents: true, todayTodos: true, todayMail: true, todayShop: true,
             autoBackup: false, backupEvery: 7, showRecent: true, lockOnHide: false, quietOn: false, quietFrom: '22:00', quietTo: '07:00',
@@ -5091,8 +5115,104 @@ function mailSend_(test) {
   var an = props.getProperty('AGENDA_TO') || Session.getEffectiveUser().getEmail();
   var betreff = (test ? '[Test] ' : '') + 'Dein Tag: ' + (heutigeTermine.length ? heutigeTermine.length + ' Termin' + (heutigeTermine.length > 1 ? 'e' : '') : 'keine Termine')
               + (offen.length ? ', ' + offen.length + ' offen' : '');
-  MailApp.sendEmail(an, betreff, zeilen.join('\\n'));
+
+  /* Dieselben Angaben nochmal als HTML – die Textfassung bleibt als Rückfall
+     für Programme, die kein HTML anzeigen. */
+  var h = '';
+  h += hUeber_('Heute');
+  if (heutigeTermine.length) {
+    for (var hi = 0; hi < heutigeTermine.length; hi++) {
+      var he = heutigeTermine[hi];
+      h += hZeile_(he.time || 'ganztägig', he.title, he.place || '');
+    }
+  } else h += hText_('Keine Termine.');
+
+  if (offen.length) {
+    h += hUeber_('Offen');
+    for (var hj = 0; hj < Math.min(12, offen.length); hj++) {
+      var ht = offen[hj];
+      var spaet = ht.due && ht.due < heute;
+      h += hZeile_(spaet ? 'fällig' : '', ht.title, spaet ? 'überfällig seit ' + dFmt_(ht.due) : (ht.due ? 'fällig ' + dFmt_(ht.due) : ''), spaet ? '#c2410c' : null);
+    }
+    if (offen.length > 12) h += hText_('… und ' + (offen.length - 12) + ' weitere');
+  }
+
+  if (morgen && (morgen.items || []).length) {
+    h += hUeber_('Morgen, ' + dFmt_(morgen.date));
+    for (var hk = 0; hk < morgen.items.length; hk++) h += hZeile_(morgen.items[hk].time || 'ganztägig', morgen.items[hk].title, '');
+  }
+
+  if (zaehler.length) {
+    h += hUeber_('Zähler');
+    for (var hz = 0; hz < zaehler.length; hz++) h += hZeile_('', zaehler[hz].name, 'zuletzt abgelesen ' + dFmt_(zaehler[hz].last));
+  }
+
+  var tz2 = Session.getScriptTimeZone();
+  var kopfDatum = Utilities.formatDate(new Date(), tz2, 'EEEE, d. MMMM yyyy');
+  var fuss = 'Gesendet von deiner App.' + (alter > 2 ? ' Die Übersicht ist ' + Math.round(alter) + ' Tage alt – die App war länger nicht offen.' : '');
+  MailApp.sendEmail({ to: an, subject: betreff, body: zeilen.join('\\n'),
+                      htmlBody: hRahmen_('Guten Morgen', kopfDatum, h, fuss) });
   return { ok: true, to: an, betreff: betreff };
+}
+
+/* ---------- Gestaltung der Mails ----------
+   Gmail erlaubt nur einen kleinen Teil von HTML und kein eigenes Stylesheet,
+   deshalb Tabellen und Stile direkt am Element. Keine Bilder von aussen: Die
+   blockiert jeder Mailclient erst einmal, und ein Logo ist den Hinweis
+   "Bilder anzeigen?" nicht wert. */
+var SCHRIFT = '-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
+
+function esc_(v) {
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function hUeber_(text) {
+  return '<tr><td style="padding:22px 0 8px"><div style="font:700 11px/1.2 ' + SCHRIFT
+       + ';letter-spacing:.12em;text-transform:uppercase;color:#8a8f98">' + esc_(text) + '</div></td></tr>';
+}
+
+/* Eine Zeile: links schmal (Uhrzeit), rechts der Text */
+function hZeile_(links, titel, unten, farbe) {
+  var l = links ? '<td width="74" valign="top" style="padding:7px 10px 7px 0;font:700 14px/1.35 ' + SCHRIFT + ';color:'
+        + (farbe || '#111418') + ';white-space:nowrap">' + esc_(links) + '</td>' : '';
+  return '<tr><td style="border-top:1px solid #eceef1"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' + l
+       + '<td valign="top" style="padding:7px 0">'
+       + '<div style="font:600 14px/1.4 ' + SCHRIFT + ';color:#111418">' + esc_(titel) + '</div>'
+       + (unten ? '<div style="font:400 12px/1.45 ' + SCHRIFT + ';color:#6b7280;padding-top:2px">' + esc_(unten) + '</div>' : '')
+       + '</td></tr></table></td></tr>';
+}
+
+function hZahl_(wert, text) {
+  return '<td width="50%" style="padding:4px"><div style="background:#f4f6f8;border-radius:10px;padding:12px 14px">'
+       + '<div style="font:800 22px/1 ' + SCHRIFT + ';color:#111418">' + esc_(wert) + '</div>'
+       + '<div style="font:600 11px/1.3 ' + SCHRIFT + ';color:#6b7280;padding-top:3px">' + esc_(text) + '</div>'
+       + '</div></td>';
+}
+
+/* "2026-11-20" liest sich als "Fr., 20.11." leichter */
+function dFmt_(iso) {
+  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(iso || ''))) return String(iso || '');
+  var t = String(iso).split('-');
+  var d = new Date(Number(t[0]), Number(t[1]) - 1, Number(t[2]));
+  var wt = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][d.getDay()];
+  return wt + '., ' + Number(t[2]) + '.' + Number(t[1]) + '.';
+}
+
+function hText_(text) {
+  return '<tr><td style="padding:4px 0;font:400 13px/1.5 ' + SCHRIFT + ';color:#4b5563">' + esc_(text) + '</td></tr>';
+}
+
+function hRahmen_(kopf, unterKopf, inhalt, fuss) {
+  return '<!doctype html><html><body style="margin:0;padding:0;background:#eef0f3">'
+    + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef0f3;padding:18px 10px">'
+    + '<tr><td align="center">'
+    + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;padding:24px 22px">'
+    + '<tr><td style="font:800 22px/1.25 ' + SCHRIFT + ';color:#111418">' + esc_(kopf) + '</td></tr>'
+    + (unterKopf ? '<tr><td style="padding-top:4px;font:600 13px/1.4 ' + SCHRIFT + ';color:#6b7280">' + esc_(unterKopf) + '</td></tr>' : '')
+    + '<tr><td style="padding-top:14px"><div style="height:3px;width:46px;background:#111418;border-radius:3px"></div></td></tr>'
+    + '<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0">' + inhalt + '</table></td></tr>'
+    + (fuss ? '<tr><td style="padding-top:20px;border-top:1px solid #eceef1;font:400 11px/1.5 ' + SCHRIFT + ';color:#9aa0a6">' + esc_(fuss) + '</td></tr>' : '')
+    + '</table></td></tr></table></body></html>';
 }
 
 /* ---------- Wochenrückblick ----------
@@ -5151,7 +5271,37 @@ function wochenSend_(test) {
 
   var an = props.getProperty('AGENDA_TO') || Session.getEffectiveUser().getEmail();
   var betreff = (test ? '[Test] ' : '') + 'Deine Woche: ' + w.erledigt + ' erledigt, ' + w.termine + ' kommen';
-  MailApp.sendEmail(an, betreff, z.join('\\n'));
+
+  var h = '';
+  h += '<tr><td style="padding:16px 0 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+     + hZahl_(w.erledigt, 'erledigt') + hZahl_(w.termine, 'Termine nächste Woche') + '</tr><tr>'
+     + hZahl_(w.offen, 'noch offen') + hZahl_(w.ueberfaellig || 0, 'davon überfällig') + '</tr></table></td></tr>';
+
+  if ((w.beispiele || []).length) {
+    h += hUeber_('Zum Beispiel erledigt');
+    for (var bi = 0; bi < w.beispiele.length; bi++) h += hZeile_('', w.beispiele[bi], '');
+  }
+  if (w.einkauf || (w.vorratKnapp || []).length) {
+    h += hUeber_('Einkauf');
+    if (w.einkauf) h += hZeile_('', w.einkauf + ' Artikel auf dem Zettel', '');
+    if ((w.vorratKnapp || []).length) h += hZeile_('', 'Vorrat wird knapp', w.vorratKnapp.join(', '));
+  }
+  if ((w.routinen || []).length) {
+    h += hUeber_('Routinen');
+    for (var ri = 0; ri < w.routinen.length; ri++) {
+      var r2 = w.routinen[ri];
+      h += hZeile_(r2.woche + '/7', r2.name, r2.straehne > 1 ? r2.straehne + ' Tage in Folge' : '');
+    }
+  }
+  if ((w.zaehler || []).length) {
+    h += hUeber_('Verbrauch der Woche');
+    for (var zi = 0; zi < w.zaehler.length; zi++) h += hZeile_('', w.zaehler[zi].name, w.zaehler[zi].menge + ' ' + w.zaehler[zi].einheit);
+  }
+
+  var tz3 = Session.getScriptTimeZone();
+  MailApp.sendEmail({ to: an, subject: betreff, body: z.join('\\n'),
+                      htmlBody: hRahmen_('Deine Woche', 'Stand ' + Utilities.formatDate(new Date(), tz3, 'd. MMMM yyyy'), h,
+                                         'Gesendet von deiner App. Zahlen aus den letzten sieben Tagen.') });
   return { ok: true, to: an, betreff: betreff };
 }
 
@@ -5199,6 +5349,10 @@ function pushOn_(room, p) {
   props.setProperty('PUSH_WAYS', wege.join(','));
   props.setProperty('PUSH_TG_TOKEN', String(p.tgToken || '').replace(/[^0-9A-Za-z:_-]/g, '').slice(0, 80));
   props.setProperty('PUSH_TG_CHAT', String(p.tgChat || '').replace(/[^0-9-]/g, '').slice(0, 24));
+  /* Postfächer, die auf neue Post hin beobachtet werden sollen. Ohne Angabe
+     bleibt es dabei, dass gar nicht nachgesehen wird. */
+  props.setProperty('PUSH_MAILW', JSON.stringify(Array.isArray(p.mailWatch) ? p.mailWatch.slice(0, 4) : []));
+  props.setProperty('PUSH_MAILDETAIL', p.mailDetail ? '1' : '');
   props.setProperty('AGENDA_ROOM', room);
   props.setProperty('PUSH_SENT', '[]');
   return out_({ ok: true, wege: wege.join(',') });
@@ -5240,13 +5394,66 @@ function pushSend_(titel, text, tag) {
 
 function wegName_(w) { return w === 'tg' ? 'Telegram' : 'E-Mail'; }
 
+/* ---------- Neue Post melden ----------
+   Läuft im Takt der Erinnerungen mit. Gemeldet wird nur, was seit dem letzten
+   Blick dazugekommen ist – und nur über Telegram: Eine E-Mail über eine
+   E-Mail zu schicken wäre albern. */
+function neuePost_() {
+  var props = PropertiesService.getScriptProperties();
+  var wege = (props.getProperty('PUSH_WAYS') || '').split(',');
+  if (wege.indexOf('tg') < 0) return 0;
+  var konten;
+  try { konten = JSON.parse(props.getProperty('PUSH_MAILW') || '[]'); } catch (e) { konten = []; }
+  if (!konten.length) return 0;
+  var mitDetail = props.getProperty('PUSH_MAILDETAIL') === '1';
+  var gemeldet = 0;
+
+  for (var i = 0; i < konten.length; i++) {
+    var k = konten[i];
+    if (!k || !k.url || !k.token) continue;
+    var schluessel = 'PUSH_MAILSEEN_' + i;
+    try {
+      var res = UrlFetchApp.fetch(k.url, { method: 'post', contentType: 'text/plain;charset=utf-8',
+        muteHttpExceptions: true, payload: JSON.stringify({ action: 'counts', token: k.token }) });
+      if (res.getResponseCode() !== 200) continue;
+      var d = JSON.parse(res.getContentText());
+      if (!d || !d.ok || !d.unread) continue;
+      var jetzt = Number(d.unread.inbox) || 0;
+      var roh = props.getProperty(schluessel);
+      props.setProperty(schluessel, String(jetzt));
+      /* Beim allerersten Lauf nichts melden – sonst käme sofort eine Meldung
+         über jede Mail, die ohnehin schon ungelesen im Postfach liegt. */
+      if (roh === null || roh === '') continue;
+      var vorher = Number(roh);
+      if (!isFinite(vorher) || jetzt <= vorher) continue;
+
+      var titel = 'Neue E-Mail' + (konten.length > 1 && k.name ? ' · ' + k.name : '');
+      var text = (jetzt - vorher) + (jetzt - vorher === 1 ? ' neue Nachricht' : ' neue Nachrichten') + ', ' + jetzt + ' ungelesen';
+      if (mitDetail) {
+        try {
+          var l = UrlFetchApp.fetch(k.url, { method: 'post', contentType: 'text/plain;charset=utf-8',
+            muteHttpExceptions: true, payload: JSON.stringify({ action: 'list', token: k.token, folder: 'inbox', unreadOnly: true, limit: 1 }) });
+          var ld = JSON.parse(l.getContentText());
+          var it = ld && ld.items && ld.items[0];
+          if (it) text = (it.from || '') + '\\n' + (it.subj || '(kein Betreff)') + '\\n' + text;
+        } catch (e) {}
+      }
+      if (pushTg_(titel, text).ok) gemeldet++;
+    } catch (e) { /* ein Postfach kaputt heisst nicht, dass die anderen warten müssen */ }
+  }
+  return gemeldet;
+}
+
 /* E-Mail braucht keine fremden Dienste und kein Kontingent ausser dem von
    Google selbst – deshalb der verlässlichste Weg, den wir hier haben. */
 function pushMail_(titel, text) {
   var props = PropertiesService.getScriptProperties();
   var an = props.getProperty('AGENDA_TO') || Session.getEffectiveUser().getEmail();
   try {
-    MailApp.sendEmail({ to: an, subject: titel, body: text + '\\n\\n– Alltag' });
+    var h = hZeile_('', text.split('\\n')[0], text.split('\\n').slice(1).join(' · '));
+    MailApp.sendEmail({ to: an, subject: titel, body: text + '\\n\\n– Alltag',
+                        htmlBody: hRahmen_(titel, Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'EEEE, d. MMMM · HH:mm'), h,
+                                           'Erinnerung aus deiner App.') });
     return { ok: true };
   } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
 }
@@ -5298,6 +5505,10 @@ function erinnerungen() {
     var gesendet;
     try { gesendet = JSON.parse(props.getProperty('PUSH_SENT') || '[]'); } catch (e) { gesendet = []; }
     var neu = 0;
+
+    /* Neue Post zuerst: Die Prüfung ist unabhängig von der Übersicht im Drive
+       und soll auch dann laufen, wenn dort nichts Fälliges steht. */
+    try { neuePost_(); } catch (e) {}
 
     var faellig = [];
     var tage = data.days || [];
@@ -8958,7 +9169,11 @@ function reply_(p) {
                     try {
                         await this.gCall({ action: 'agenda', ...this.agendaDaten() });
                         await this.gCall({ action: 'pushon', ways: (this.cfg.pushWays || []).join(','),
-                            tgToken: this.cfg.pushTgToken || '', tgChat: this.cfg.pushTgChat || '' });
+                            tgToken: this.cfg.pushTgToken || '', tgChat: this.cfg.pushTgChat || '',
+                            /* Nur wenn ausdrücklich gewünscht: Dafür muss das Script
+                               Adresse und Schlüssel der Postfächer kennen. */
+                            mailWatch: this.cfg.mailPush ? this.mailCfg.accounts.slice(0, 4).map(a => ({ name: a.name, url: a.url, token: a.token })) : [],
+                            mailDetail: !!this.cfg.mailPushDetail });
                         localStorage.setItem('organizer_agenda_at', String(Date.now()));
                         this.cfg.pushOn = true; this.saveCfg();
                         this.pushMsg = 'Eingeschaltet.';
@@ -10604,9 +10819,27 @@ function reply_(p) {
                 },
                 mailHasRemote(m) { return sanitizeMailHtml(m.html, false).remote; },
                 /* Höhe anpassen und zu breite Newsletter so verkleinern, dass sie ohne seitliches Scrollen passen */
-                mailFit(el) {
+                /* Einmal messen genügt nicht: Bilder und Schriften kommen später
+                   nach, dann wächst der Inhalt – und der Rahmen bliebe zu kurz.
+                   Deshalb wird nach dem Laden mehrfach nachgemessen und auf
+                   Größenänderungen im Dokument gehört. */
+                mailFit(el, erstesMal = true) {
                     try {
                         const d = el.contentDocument; if (!d || !d.body) return;
+                        if (erstesMal && !el._fitAn) {
+                            el._fitAn = true;
+                            for (const img of d.images || []) {
+                                if (img.complete) continue;
+                                img.addEventListener('load', () => this.mailFit(el, false), { once: true });
+                                img.addEventListener('error', () => this.mailFit(el, false), { once: true });
+                            }
+                            try {
+                                const ro = new (el.contentWindow.ResizeObserver || window.ResizeObserver)(() => this.mailFit(el, false));
+                                ro.observe(d.documentElement); ro.observe(d.body);
+                                el._fitRo = ro;
+                            } catch (e) {}
+                            for (const ms of [250, 800, 2000]) setTimeout(() => this.mailFit(el, false), ms);
+                        }
                         let avail = el.clientWidth || el.parentElement?.clientWidth || 0;
                         if (avail < 100) { // Breite noch nicht bekannt (Bereich war ausgeblendet) – gleich noch einmal versuchen
                             requestAnimationFrame(() => setTimeout(() => { if ((el.clientWidth || 0) > 100) this.mailFit(el); }, 60));
@@ -10620,8 +10853,14 @@ function reply_(p) {
                             d.body.style.width = need + 'px';
                             d.body.style.transform = 'scale(' + scale + ')';
                         }
-                        const hgt = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
-                        el.style.height = Math.min(Math.ceil(hgt * scale) + 6, 30000) + 'px';
+                        /* Auch die Kinder messen: Ein Element mit absoluter Position
+                           oder negativem Rand zählt nicht in scrollHeight hinein. */
+                        let hgt = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight, d.body.offsetHeight);
+                        for (const kind of d.body.children) {
+                            const r = kind.getBoundingClientRect();
+                            if (r.bottom > hgt) hgt = r.bottom;
+                        }
+                        el.style.height = Math.min(Math.ceil(hgt * scale) + 10, 30000) + 'px';
                     } catch (e) {}
                 },
                 /* Nach Größenänderung des Fensters neu einpassen */
