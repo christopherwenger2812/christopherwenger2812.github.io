@@ -56,6 +56,7 @@ img,video{max-width:100%;height:auto}
 .\!rounded-none{border-radius:0 !important}
 .\!rounded-xl{border-radius:.75rem !important}
 .\!shadow-none{box-shadow:none !important}
+.\!static{position:static !important}
 .\!text-\[10px\]{font-size:10px !important}
 .\!text-\[11px\]{font-size:11px !important}
 .\!text-\[13px\]{font-size:13px !important}
@@ -73,7 +74,6 @@ img,video{max-width:100%;height:auto}
 .\!w-24{width:6rem !important}
 .\!w-4{width:1rem !important}
 .\!w-44{width:11rem !important}
-.\!w-64{width:16rem !important}
 .\!w-7{width:1.75rem !important}
 .\!w-8{width:2rem !important}
 .\!w-9{width:2.25rem !important}
@@ -324,7 +324,6 @@ img,video{max-width:100%;height:auto}
 .z-\[75\]{z-index:75}
 .z-\[80\]{z-index:80}
 .z-\[95\]{z-index:95}
-.\!left-auto{left:auto !important}
 .\!px-2{padding-left:.5rem !important;padding-right:.5rem !important}
 .\!px-2\.5{padding-left:.625rem !important;padding-right:.625rem !important}
 .\!px-3{padding-left:.75rem !important;padding-right:.75rem !important}
@@ -335,8 +334,6 @@ img,video{max-width:100%;height:auto}
 .\!py-2\.5{padding-top:.625rem !important;padding-bottom:.625rem !important}
 .\!py-3{padding-top:.75rem !important;padding-bottom:.75rem !important}
 .\!py-3\.5{padding-top:.875rem !important;padding-bottom:.875rem !important}
-.\!right-2{right:.5rem !important}
-.\!top-14{top:3.5rem !important}
 .border-b{border-bottom-width:1px}
 .border-l{border-left-width:1px}
 .border-rose-500\/30{border-color:rgb(244 63 94 / 0.3)}
@@ -429,6 +426,7 @@ img,video{max-width:100%;height:auto}
 .pb-3{padding-bottom:.75rem}
 .pb-32{padding-bottom:8rem}
 .pb-5{padding-bottom:1.25rem}
+.pl-2{padding-left:.5rem}
 .pl-5{padding-left:1.25rem}
 .pl-6{padding-left:1.5rem}
 .pr-1{padding-right:.25rem}
@@ -465,6 +463,7 @@ img,video{max-width:100%;height:auto}
  .sm\:justify-between{justify-content:space-between}
  .sm\:max-w-\[16rem\]{max-width:16rem}
  .sm\:max-w-none{max-width:none}
+ .sm\:max-w-sm{max-width:24rem}
  .sm\:min-h-\[120px\]{min-height:120px}
  .sm\:p-10{padding:2.5rem}
  .sm\:p-2\.5{padding:.625rem}

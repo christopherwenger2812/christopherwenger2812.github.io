@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.23-6">
+    <meta name="app-version" content="2026.11.23-7">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1834,7 +1834,7 @@
                 <!-- Befehlsleiste: Was man ständig braucht, steht sichtbar. Alles
                      Weitere liegt unter „Mehr“ – vorher war die Leiste so lang, dass
                      am Handy die Hälfte hinter dem Rand verschwand. -->
-                <div class="card p-2 sm:p-2.5 space-y-2 relative">
+                <div class="card p-2 sm:p-2.5 space-y-2">
                     <div class="cmd">
                         <button x-show="mailCfg.accounts.length" @click="mailNew()" class="btn btn-primary shrink-0"><i class="fa-solid fa-pen-to-square"></i>Neu</button>
                         <span x-show="mailCfg.accounts.length" class="sep"></span>
@@ -1852,24 +1852,6 @@
                         <span class="flex-1 min-w-[.5rem]"></span>
                         <button x-show="mailCfg.accounts.length" @click="mailRefresh({ manual: true })" class="btn btn-ghost shrink-0" title="Aktualisieren" aria-label="Aktualisieren"><i class="fa-solid fa-rotate" :class="mailLoading ? 'spin' : ''"></i></button>
                         <button @click="openMailSetup()" class="btn btn-ghost shrink-0" title="Postfächer verwalten"><i class="fa-solid fa-gear"></i><span class="hidden sm:inline" x-text="mailCfg.accounts.length ? '' : 'Postfach verbinden'"></span></button>
-                    </div>
-
-                    <div x-show="mailMenu" x-transition x-cloak @click.outside="mailMenu = false" class="menu !w-64 !left-auto !right-2 !top-14">
-                        <template x-for="a in mailQuick" :key="'q' + a.id">
-                            <button x-show="quickOk(a, mailPicked.length ? mailPicked : (mailCurRow.id ? [mailCurRow] : []))" :disabled="!mailSel && !mailPicked.length" @click="mailMenu = false; runQuick(a, mailPicked)"><i :class="a.icon" class="fa-fw text-xs"></i><span x-text="a.label"></span></button>
-                        </template>
-                        <hr x-show="mailQuick.length">
-                        <button :disabled="!mailSel" @click="mailMenu = false; mailReplyTo(mailThread.msgs.length - 1, true)"><i class="fa-solid fa-reply-all fa-fw text-xs"></i>Allen antworten</button>
-                        <button :disabled="!mailSel" @click="mailMenu = false; mailForward(mailThread.msgs.length - 1)"><i class="fa-solid fa-share fa-fw text-xs"></i>Weiterleiten</button>
-                        <hr>
-                        <button x-show="mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive'" :disabled="!mailSel" @click="mailMenu = false; mailMove('i')"><i class="fa-solid fa-inbox fa-fw text-xs"></i>In den Posteingang</button>
-                        <button x-show="mailFolder !== 'spam' && mailFolder !== 'trash'" :disabled="!mailSel" @click="mailMenu = false; mailMove('sp')"><i class="fa-solid fa-ban fa-fw text-xs"></i>Als Spam melden</button>
-                        <button :disabled="!mailSel" @click="mailMenu = false; blockSender(mailCurRow)"><i class="fa-solid fa-user-slash fa-fw text-xs"></i>Absender künftig in den Spam</button>
-                        <button x-show="abbestellLink" @click="mailMenu = false; window.open(abbestellLink, '_blank', 'noopener')"><i class="fa-solid fa-envelope-circle-check fa-fw text-xs"></i>Newsletter abbestellen</button>
-                        <hr>
-                        <button :disabled="!mailSel" @click="mailMenu = false; laterOpen('snooze')"><i class="fa-solid fa-clock-rotate-left fa-fw text-xs"></i>Später wieder vorlegen</button>
-                        <button :disabled="!mailSel" @click="mailMenu = false; mailToTodo()"><i class="fa-solid fa-list-check fa-fw text-xs"></i>Als Aufgabe merken</button>
-                        <button :disabled="!mailSel" @click="mailMenu = false; mailToEvent()"><i class="fa-regular fa-calendar-plus fa-fw text-xs"></i>Als Termin eintragen</button>
                     </div>
 
                     <!-- Aktion für den geöffneten Ordner. Hängt nur am Ordner, nicht an
@@ -2459,7 +2441,7 @@
                                         <p class="text-sm font-bold">Neue E-Mails melden</p>
                                         <p class="text-[11px] muted">Das Script sieht alle fünf Minuten in deinen Postfächern nach und schickt eine Telegram-Nachricht, wenn etwas Neues da ist.</p>
                                     </div>
-                                    <button type="button" role="switch" :aria-checked="cfg.mailPush" class="switch shrink-0" :class="cfg.mailPush ? 'on' : ''" @click="cfg.mailPush = !cfg.mailPush; saveCfg(); if (cfg.pushOn) pushMsg = 'Geändert – bitte einmal aus- und wieder einschalten.'" aria-label="Neue E-Mails melden"></button>
+                                    <button type="button" role="switch" :aria-checked="cfg.mailPush" class="switch shrink-0" :class="cfg.mailPush ? 'on' : ''" @click="cfg.mailPush = !cfg.mailPush; saveCfg(); pushUebernehmen()" aria-label="Neue E-Mails melden"></button>
                                 </div>
                                 <div x-show="cfg.mailPush" class="space-y-2 pt-1 border-t divider">
                                     <div class="flex items-center justify-between gap-3 pt-2">
@@ -2467,7 +2449,7 @@
                                             <p class="text-[13px] font-bold">Mit Absender und Betreff</p>
                                             <p class="text-[11px] muted">Aus: Es kommt nur die Anzahl. An: Du siehst gleich, worum es geht – dafür steht der Betreff in deinem Telegram-Verlauf.</p>
                                         </div>
-                                        <button type="button" role="switch" :aria-checked="cfg.mailPushDetail" class="switch shrink-0" :class="cfg.mailPushDetail ? 'on' : ''" @click="cfg.mailPushDetail = !cfg.mailPushDetail; saveCfg(); if (cfg.pushOn) pushMsg = 'Geändert – bitte einmal aus- und wieder einschalten.'" aria-label="Mit Absender und Betreff"></button>
+                                        <button type="button" role="switch" :aria-checked="cfg.mailPushDetail" class="switch shrink-0" :class="cfg.mailPushDetail ? 'on' : ''" @click="cfg.mailPushDetail = !cfg.mailPushDetail; saveCfg(); pushUebernehmen()" aria-label="Mit Absender und Betreff"></button>
                                     </div>
                                     <p x-show="!mailCfg.accounts.length" class="text-[11px] muted">Dafür muss zuerst ein Postfach verbunden sein.</p>
                                     <p x-show="mailCfg.accounts.length" class="text-[11px] muted" x-text="'Beobachtet: ' + mailCfg.accounts.map(a => a.name).join(', ')"></p>
@@ -2483,7 +2465,7 @@
                                     <li>Deinen neuen Bot öffnen und ihm <b>/start</b> schicken</li>
                                     <li>Unten auf „Chat suchen“ tippen – damit weiss der Bot, wohin er senden darf</li>
                                 </ol>
-                                <input type="text" class="inp" x-model="cfg.pushTgToken" @change="saveCfg()" placeholder="12345:AAH…" autocomplete="off" spellcheck="false" aria-label="Telegram-Bot-Schlüssel">
+                                <input type="text" class="inp" x-model="cfg.pushTgToken" @change="saveCfg(); pushUebernehmen()" placeholder="12345:AAH…" autocomplete="off" spellcheck="false" aria-label="Telegram-Bot-Schlüssel">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <button type="button" class="btn btn-soft" :disabled="pushBusy" @click="tgChatHolen()"><i class="fa-solid fa-magnifying-glass"></i>Chat suchen</button>
                                     <span class="text-[11px] muted" x-text="cfg.pushTgChat ? 'Chat: ' + cfg.pushTgChat : 'noch kein Chat gefunden'"></span>
@@ -3544,6 +3526,7 @@
                 <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'url' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'url'; importErr = ''"><i class="fa-solid fa-link"></i>Link</button>
                 <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'pdf' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'pdf'; importErr = ''"><i class="fa-regular fa-file-pdf"></i>PDF</button>
                 <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'text' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'text'; importErr = ''"><i class="fa-regular fa-clipboard"></i>Text</button>
+                <button type="button" class="btn flex-1 !rounded-xl" :class="importWay === 'json' ? 'btn-primary' : 'btn-ghost'" @click="importWay = 'json'; importErr = ''"><i class="fa-solid fa-code"></i>JSON</button>
             </div>
 
             <div x-show="importWay === 'url'" class="space-y-2">
@@ -3570,12 +3553,40 @@
                 <p class="muted text-[11px]">Überschriften wie „Zutaten“ und „Zubereitung“ helfen beim Einsortieren, sind aber nicht nötig.</p>
             </div>
 
+            <div x-show="importWay === 'json'" class="space-y-2">
+                <label class="inner p-6 grid place-items-center text-center cursor-pointer" style="border: 2px dashed var(--border)">
+                    <i class="fa-solid fa-file-code text-2xl accent"></i>
+                    <span class="text-sm font-bold mt-2">JSON-Datei auswählen</span>
+                    <span class="muted text-[11px] mt-0.5">Mehrere Rezepte in einer Datei werden alle übernommen</span>
+                    <input type="file" accept="application/json,.json,.txt" class="hidden" @change="importFromJsonFile($event)">
+                </label>
+                <label class="label" for="imJson">… oder JSON einfügen</label>
+                <textarea id="imJson" x-model="importJson" rows="5" class="field !text-xs" placeholder='[{"title":"Linsensuppe","servings":4,"ings":["250 g Linsen","2 Karotten"],"steps":["Gemüse schneiden","30 Minuten köcheln"]}]'></textarea>
+                <p class="muted text-[11px] leading-relaxed">Erkannt werden: ein einzelnes Rezept, eine Liste, ein Objekt mit <code>recipes</code>, die Auszeichnung von Rezeptseiten (schema.org) und die Sicherungsdatei dieser App. Zutaten dürfen als Text („250 g Linsen“) oder zerlegt stehen.</p>
+            </div>
+
+            <!-- Mehrere gefunden: erst zeigen, dann übernehmen -->
+            <div x-show="importMehrere.length" class="inner p-3 space-y-2 max-h-56 overflow-y-auto">
+                <p class="label !text-[10px]" x-text="importMehrere.length + ' Rezepte gefunden'"></p>
+                <template x-for="(r, ix) in importMehrere" :key="'im' + ix">
+                    <label class="flex items-start gap-2 text-[12px] cursor-pointer">
+                        <input type="checkbox" class="mt-0.5" :checked="!importAus.includes(ix)" @change="importAus.includes(ix) ? importAus = importAus.filter(x => x !== ix) : importAus.push(ix)">
+                        <span class="min-w-0">
+                            <span class="block font-bold truncate" x-text="r.title"></span>
+                            <span class="block muted" x-text="r.ings.length + ' Zutaten · ' + r.steps.length + ' Schritte' + (r.servings ? ' · ' + r.servings + ' Portionen' : '')"></span>
+                        </span>
+                    </label>
+                </template>
+            </div>
+
             <p x-show="importErr" class="text-[12px] font-bold text-rose-400 leading-relaxed" x-text="importErr"></p>
             <p x-show="importBusy" class="text-[12px] font-bold accent"><i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i><span x-text="importBusy"></span></p>
 
             <div class="flex flex-wrap gap-2 pt-1">
                 <button type="button" x-show="importWay === 'url'" @click="importFromUrl()" :disabled="!!importBusy" class="btn btn-primary"><i class="fa-solid fa-download"></i>Laden</button>
                 <button type="button" x-show="importWay === 'text'" @click="importFromText()" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i>Auslesen</button>
+                <button type="button" x-show="importWay === 'json' && !importMehrere.length" @click="importFromJsonText()" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i>Auslesen</button>
+                <button type="button" x-show="importMehrere.length" @click="importAlleUebernehmen()" class="btn btn-primary"><i class="fa-solid fa-check"></i><span x-text="'Übernehmen (' + (importMehrere.length - importAus.length) + ')'"></span></button>
                 <span class="flex-1"></span>
                 <button type="button" @click="showRecipeImport = false" class="btn btn-ghost">Abbrechen</button>
             </div>
@@ -3867,6 +3878,38 @@
     </div>
 
     <!-- Globale Suche -->
+    <!-- Die weiteren Mail-Befehle als eigenes Fenster. Als Aufklappmenü in der
+         Leiste lag es mal dahinter, mal darunter: Ein eingebetteter Rahmen für
+         den Mail-Inhalt bekommt vom Browser eine eigene Ebene, und je nach Gerät
+         gewinnt die. Ein Fenster auf der Ebene der übrigen Dialoge kann das
+         nicht passieren. -->
+    <div x-show="mailMenu" x-transition.opacity x-cloak class="backdrop" @click.self="mailMenu = false">
+        <div class="card w-full sm:max-w-sm overflow-hidden !p-0 flex flex-col" style="max-height: calc(100vh - 2rem)">
+            <div class="p-3 border-b divider flex items-center gap-2">
+                <p class="label mr-auto pl-2">Weitere Befehle</p>
+                <button type="button" class="icon-btn" @click="mailMenu = false" aria-label="Schließen"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="menu !static !w-auto !border-0 !shadow-none !rounded-none overflow-y-auto p-2 pb-5">
+                <template x-for="a in mailQuick" :key="'q' + a.id">
+                    <button x-show="quickOk(a, mailPicked.length ? mailPicked : (mailCurRow.id ? [mailCurRow] : []))" :disabled="!mailSel && !mailPicked.length" @click="mailMenu = false; runQuick(a, mailPicked)"><i :class="a.icon" class="fa-fw text-xs"></i><span x-text="a.label"></span></button>
+                </template>
+                <hr x-show="mailQuick.length">
+                <button :disabled="!mailSel" @click="mailMenu = false; mailReplyTo(mailThread.msgs.length - 1, true)"><i class="fa-solid fa-reply-all fa-fw text-xs"></i>Allen antworten</button>
+                <button :disabled="!mailSel" @click="mailMenu = false; mailForward(mailThread.msgs.length - 1)"><i class="fa-solid fa-share fa-fw text-xs"></i>Weiterleiten</button>
+                <hr>
+                <button x-show="mailFolder === 'trash' || mailFolder === 'spam' || mailFolder === 'archive'" :disabled="!mailSel" @click="mailMenu = false; mailMove('i')"><i class="fa-solid fa-inbox fa-fw text-xs"></i>In den Posteingang</button>
+                <button x-show="mailFolder !== 'spam' && mailFolder !== 'trash'" :disabled="!mailSel" @click="mailMenu = false; mailMove('sp')"><i class="fa-solid fa-ban fa-fw text-xs"></i>Als Spam melden</button>
+                <button :disabled="!mailSel" @click="mailMenu = false; blockSender(mailCurRow)"><i class="fa-solid fa-user-slash fa-fw text-xs"></i>Absender künftig in den Spam</button>
+                <button x-show="abbestellLink" @click="mailMenu = false; window.open(abbestellLink, '_blank', 'noopener')"><i class="fa-solid fa-envelope-circle-check fa-fw text-xs"></i>Newsletter abbestellen</button>
+                <hr>
+                <button :disabled="!mailSel" @click="mailMenu = false; laterOpen('snooze')"><i class="fa-solid fa-clock-rotate-left fa-fw text-xs"></i>Später wieder vorlegen</button>
+                <button :disabled="!mailSel" @click="mailMenu = false; mailToTodo()"><i class="fa-solid fa-list-check fa-fw text-xs"></i>Als Aufgabe merken</button>
+                <button :disabled="!mailSel" @click="mailMenu = false; mailToEvent()"><i class="fa-regular fa-calendar-plus fa-fw text-xs"></i>Als Termin eintragen</button>
+                <p x-show="!mailSel && !mailPicked.length" class="text-[11px] muted px-3 py-2 leading-relaxed">Die meisten Befehle brauchen eine ausgewählte Nachricht.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Druckbogen: am Bildschirm unsichtbar, beim Drucken das Einzige.
          Was gedruckt wird, entscheidet „druckWas“. -->
     <div class="druck" aria-hidden="true">
@@ -5877,6 +5920,61 @@ function listBackups_(room) {
             return true;
         }
 
+        /* ---------- Rezepte aus JSON ----------
+           Vier Formen kommen in freier Wildbahn vor, und alle vier sollen gehen:
+           ein einzelnes Rezept, eine Liste von Rezepten, ein Objekt mit einem
+           Feld "recipes", und die Auszeichnung von Rezeptseiten (schema.org,
+           auch als @graph). Dazu die eigene Sicherungsdatei dieser App. */
+        function recipesFromJson(roh) {
+            var daten = roh;
+            if (typeof roh === 'string') daten = JSON.parse(roh);
+            const gefunden = [];
+
+            const alsEigenes = r => ({
+                title: String(r.title || r.name || '').replace(/\s+/g, ' ').trim(),
+                servings: firstNum(r.servings ?? r.portionen ?? r.recipeYield),
+                minutes: firstNum(r.minutes ?? r.time ?? r.dauer) || isoMinutes(r.totalTime),
+                /* Zutaten dürfen Text sein ("250 g Linsen") oder schon zerlegt */
+                ings: (Array.isArray(r.ings) ? r.ings : Array.isArray(r.ingredients) ? r.ingredients : Array.isArray(r.zutaten) ? r.zutaten : [])
+                    .map(z => typeof z === 'string' ? z
+                        : [z.qty || z.amount || z.menge || '', z.unit || z.einheit || '', z.name || z.zutat || ''].filter(x => x !== '' && x !== 0).join(' '))
+                    .map(z => String(z).replace(/\s+/g, ' ').trim()).filter(Boolean),
+                steps: typeof r.steps === 'string' ? String(r.steps).split(/\n+/).map(x => x.trim()).filter(Boolean)
+                    : (Array.isArray(r.steps) ? r.steps : Array.isArray(r.instructions) ? r.instructions : Array.isArray(r.zubereitung) ? r.zubereitung : [])
+                        .map(x => String(typeof x === 'string' ? x : (x.text || x.name || '')).replace(/\s+/g, ' ').trim()).filter(Boolean),
+                note: String(r.note || r.notiz || r.description || '').replace(/\s+/g, ' ').trim().slice(0, 2000),
+                source: String(r.source || r.url || '').slice(0, 300)
+            });
+
+            const sammeln = v => {
+                if (!v || typeof v !== 'object') return;
+                if (Array.isArray(v)) return v.forEach(sammeln);
+                /* Erst in Sammlungen hineingehen: recipeFromJsonLd steigt selbst in
+                   @graph ab, hört dort aber beim ersten Rezept auf – so ginge das
+                   zweite in derselben Datei verloren. */
+                if (v['@graph']) return sammeln(v['@graph']);
+                const ld = { title: '', servings: 0, minutes: 0, ings: [], steps: [] };
+                if (recipeFromJsonLd(v, ld)) { if (ld.title || ld.ings.length) gefunden.push(ld); return; }
+                /* Die eigene Sicherungsdatei */
+                if (v.items && v.items.rc) return sammeln(v.items.rc);
+                if (Array.isArray(v.recipes)) return sammeln(v.recipes);
+                if (Array.isArray(v.rezepte)) return sammeln(v.rezepte);
+                /* Sonst: sieht es wie ein Rezept aus? Ein Titel allein genügt nicht,
+                   sonst wird jedes beliebige Objekt zum Rezept. */
+                const eigen = alsEigenes(v);
+                if (eigen.title && (eigen.ings.length || eigen.steps.length)) gefunden.push(eigen);
+            };
+            sammeln(daten);
+
+            /* Gleiche Titel nur einmal */
+            const gesehen = new Set();
+            return gefunden.filter(r => {
+                const k = r.title.toLowerCase();
+                if (!k || gesehen.has(k)) return false;
+                gesehen.add(k); return true;
+            });
+        }
+
         function recipeFromHtml(html) {
             const out = { title: '', servings: 0, minutes: 0, ings: [], steps: [] };
             const src = String(html || '');
@@ -6640,6 +6738,7 @@ function reply_(p) {
                 cookId: '', cookStep: 0, cookChecked: [], cookWake: null,
                 recipeEmojis: RECIPE_EMOJI, showEmoji: false,
                 showRecipeImport: false, importWay: 'url', importUrl: '', importText: '', importBusy: '', importErr: '',
+                importJson: '', importMehrere: [], importAus: [],
                 showShare: false, shareText: '', shareUrl: '', shareTitle: '',
                 shoppingItems: [], shopLists: [], shopListId: '', showShopList: false, shopListDraft: { id: null, name: '', emoji: '🛒' }, shopQuery: '', shopCat: 'all', shopCartOpen: true, catalogOpen: true, shopFold: {}, catFold: {},
                 showShopModal: false, currentShop: {},
@@ -6940,7 +7039,7 @@ function reply_(p) {
                     if (this.showRecipeEdit) { this.showRecipeEdit = false; return; }
                     if (this.showRecipe) { this.showRecipe = false; return; }
                     this.showEventModal = this.showTodoModalState = this.showListModal = this.showShopModal = this.showPasswordModalState = false;
-                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = this.showSearch = this.showSchnell = this.showTagesblatt = this.showShopList = this.showVaultHealth = false;
+                    this.showChangeMaster = this.showResetModal = this.showFolders = this.showGenerator = this.showVaultIO = this.showMailSetup = this.showSearch = this.showSchnell = this.mailMenu = this.showTagesblatt = this.showShopList = this.showVaultHealth = false;
                     if (this.showMailCompose) this.mailCloseCompose();
                     this.newMenu = false; this.pwMenu = null;
                 },
@@ -9189,14 +9288,35 @@ function reply_(p) {
                 pushWeg(w) { return (this.cfg.pushWays || []).includes(w); },
                 /* Mindestens ein Weg muss bleiben, sonst schaltet man die Erinnerungen
                    versehentlich stumm, ohne dass der Schalter das verrät. */
-                pushWegUm(w) {
+                async pushWegUm(w) {
                     const an = [...(this.cfg.pushWays || [])];
                     const i = an.indexOf(w);
                     if (i < 0) an.push(w);
                     else if (an.length > 1) an.splice(i, 1);
                     else return this.toast('Mindestens ein Weg muss eingeschaltet bleiben');
                     this.cfg.pushWays = an; this.saveCfg();
-                    if (this.cfg.pushOn) this.pushMsg = 'Geändert – bitte einmal aus- und wieder einschalten.';
+                    await this.pushUebernehmen();
+                },
+                /* Das Script kennt die Einstellung erst, wenn sie ihm gesagt wurde.
+                   Vorher stand hier nur ein Hinweis, man möge aus- und wieder
+                   einschalten – wer das überlas, bekam weiter Nachrichten über
+                   einen Weg, der in der App längst abgehakt war. */
+                async pushUebernehmen() {
+                    if (!this.cfg.pushOn) return;
+                    this.pushBusy = true; this.pushMsg = '';
+                    try {
+                        await this.gCall({ action: 'pushon', ways: (this.cfg.pushWays || []).join(','),
+                            tgToken: this.cfg.pushTgToken || '', tgChat: this.cfg.pushTgChat || '',
+                            mailWatch: this.cfg.mailPush ? this.mailCfg.accounts.slice(0, 4).map(a => ({ name: a.name, url: a.url, token: a.token })) : [],
+                            mailDetail: !!this.cfg.mailPushDetail });
+                        this.pushMsg = 'Übernommen: ' + (this.cfg.pushWays || []).map(w => w === 'tg' ? 'Telegram' : 'E-Mail').join(' und ')
+                            + (this.cfg.mailPush && this.cfg.pushWays.includes('tg') ? ', neue E-Mails werden gemeldet' : '');
+                    } catch (e) {
+                        /* Hier ist Ehrlichkeit wichtiger als Bequemlichkeit: Wenn das
+                           Script es nicht erfahren hat, schickt es weiter wie bisher. */
+                        this.pushMsg = 'Konnte dem Script nicht mitgeteilt werden (' + e.message + '). Es verschickt bis dahin weiter wie bisher – bitte erneut versuchen oder abschalten.';
+                        this.merkeFehler('Erinnerungen', e.message);
+                    } finally { this.pushBusy = false; }
                 },
                 async tgChatHolen() {
                     if (!this.cfg.pushTgToken) return this.toast('Zuerst den Bot-Schlüssel eintragen');
@@ -9204,7 +9324,8 @@ function reply_(p) {
                     try {
                         const r = await this.gCall({ action: 'tgchat', tgToken: this.cfg.pushTgToken });
                         this.cfg.pushTgChat = r.chat; this.saveCfg();
-                        this.pushMsg = 'Chat gefunden' + (r.name ? ' (' + r.name + ')' : '') + '. Jetzt aus- und wieder einschalten.';
+                        this.pushMsg = 'Chat gefunden' + (r.name ? ' (' + r.name + ')' : '') + '.';
+                        this.pushBusy = false; await this.pushUebernehmen();
                     } catch (e) { this.pushMsg = this.pushFehler(e); }
                     finally { this.pushBusy = false; }
                 },
@@ -9880,6 +10001,52 @@ function reply_(p) {
                     this.showRecipeEdit = true;
                     this.toast('Gefunden – bitte kurz prüfen und speichern');
                     return true;
+                },
+                /* ---------- Rezepte aus JSON ----------
+                   Ein einzelnes Rezept geht wie bisher ins Formular zum Prüfen.
+                   Mehrere werden erst aufgelistet – wer eine Sammlung einliest,
+                   will nicht fünfzig Formulare nacheinander bestätigen. */
+                importJsonVerarbeiten(roh, quelle) {
+                    this.importErr = ''; this.importMehrere = []; this.importAus = [];
+                    let liste;
+                    try { liste = recipesFromJson(roh); }
+                    catch (e) { this.importErr = 'Das ist keine gültige JSON-Datei (' + e.message + ').'; return; }
+                    if (!liste.length) { this.importErr = 'Darin war kein Rezept zu finden. Nötig sind mindestens ein Titel und dazu Zutaten oder Schritte.'; return; }
+                    if (liste.length === 1) { this.useParsedRecipe(liste[0], liste[0].source || quelle || ''); return; }
+                    this.importMehrere = liste;
+                },
+                async importFromJsonFile(ev) {
+                    const f = ev.target.files && ev.target.files[0]; if (!f) return;
+                    this.importBusy = 'Datei wird gelesen …';
+                    try { this.importJsonVerarbeiten(await f.text(), f.name); }
+                    catch (e) { this.importErr = 'Die Datei konnte nicht gelesen werden.'; }
+                    finally { this.importBusy = ''; ev.target.value = ''; }
+                },
+                importFromJsonText() {
+                    if (!this.importJson.trim()) return this.toast('Erst JSON einfügen');
+                    this.importJsonVerarbeiten(this.importJson.trim(), '');
+                },
+                importAlleUebernehmen() {
+                    const nehmen = this.importMehrere.filter((_, ix) => !this.importAus.includes(ix));
+                    if (!nehmen.length) return this.toast('Nichts ausgewählt');
+                    let neu = 0, ersetzt = 0;
+                    for (const r of nehmen) {
+                        const fertig = normRecipe({
+                            id: uid(), title: r.title, servings: r.servings || 2, minutes: r.minutes || 0,
+                            ings: r.ings.map(z => parseIngredient(z)).filter(Boolean),
+                            steps: r.steps.join('\n'), note: r.note || '', source: r.source || '', created: Date.now()
+                        });
+                        /* Ein gleichnamiges Rezept wird überschrieben statt verdoppelt –
+                           sonst sammeln sich beim zweiten Einlesen Dubletten an. */
+                        const alt = this.recipes.find(x => x.title.toLowerCase() === fertig.title.toLowerCase());
+                        if (alt) { this.recipes = this.recipes.map(x => x.id === alt.id ? { ...fertig, id: alt.id, created: alt.created } : x); ersetzt++; }
+                        else { this.recipes.push(fertig); neu++; }
+                    }
+                    this.saveAllData();
+                    this.importMehrere = []; this.importAus = []; this.importJson = '';
+                    this.showRecipeImport = false;
+                    this.switchTab('recipes');
+                    this.toast(neu + ' neu' + (ersetzt ? ', ' + ersetzt + ' aktualisiert' : ''));
                 },
                 importFromText() {
                     this.importErr = '';
