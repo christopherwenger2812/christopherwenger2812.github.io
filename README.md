@@ -48,7 +48,7 @@ Keine Installation, kein Konto, kein Server: Die App läuft im Browser, speicher
 
 **Erinnerungen aufs Handy** – Benachrichtigungen im Browser erscheinen nur bei offener App. Für alles andere schaut das Google-Script alle fünf Minuten nach, was fällig ist, und schickt es per E-Mail, über Telegram oder beides. Mehrere Wege gleichzeitig sind möglich: Fällt einer aus, kommt die Erinnerung trotzdem an.
 
-**Dazu** – Diktieren per Mikrofon an den Eingabefeldern, aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
+**Dazu** – Selbsttest, der Abgleich, Morgenmail, Erinnerungen, Postfächer, Offline-Betrieb und Speicherplatz in einem Durchgang prüft, Diktieren per Mikrofon an den Eingabefeldern, aktuelle Uhrzeit im Kopf, eigener App-Name, globale Suche über alles (Strg + K), 13 Designs mit Schrift-, Ecken- und Hintergrundoptionen, Geräte-Abgleich, automatische Sicherung in Google Drive, Offline-Betrieb, automatische Update-Prüfung.
 
 ---
 
@@ -96,7 +96,9 @@ Danach die Seite einmal mit Internet öffnen. Von da an startet sie auch ohne Ve
 
 Der Abgleich läuft über ein eigenes Google-Apps-Script im eigenen Google-Drive, zusätzlich direkt zwischen Geräten im selben Netz über PeerJS. Dasselbe Script lädt auch Rezeptseiten, weil der Browser fremde Seiten nicht selbst lesen darf.
 
-Abgeglichen werden Termine, Aufgaben und Listen, Einkauf, Notizen, Rezepte samt Wochenplan, Zähler und Ablesungen – dazu die gemeinsamen Einstellungen. Was am Gerät hängt, bleibt am Gerät: Design, Kachelreihenfolge und die Rezeptansicht.
+Abgeglichen werden Termine, Aufgaben und Listen, Einkauf, Notizen, Rezepte samt Wochenplan, Routinen, Zähler und Ablesungen – und **alle Einstellungen**, einschließlich Design, Aussehen, Schriftgröße, Kachelreihenfolge und Rezeptansicht. Am Gerät bleibt nur die automatische Update-Prüfung; sie betrifft nur diesen einen Browser.
+
+Die Liste im Code ist deshalb umgedreht: `NUR_GERAET` zählt auf, was **nicht** mitwandert. Eine neue Einstellung ist damit automatisch dabei.
 
 1. In der App: Einstellungen → Verbundene Geräte
 2. Raumname und Sync-Passwort festlegen (beides auf allen Geräten gleich)
@@ -179,7 +181,7 @@ Beim Löschen der Browserdaten ist alles weg, was nicht abgeglichen oder gesiche
 
 ## Technisch
 
-Eine einzige HTML-Datei, rund 730 KB, ohne Build-Schritt. Mit dem Ordner `lib/` kommt nichts Wesentliches mehr aus dem Netz. Ohne ihn werden geladen: [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
+Eine einzige HTML-Datei, rund 820 KB, ohne Build-Schritt. Mit dem Ordner `lib/` kommt nichts Wesentliches mehr aus dem Netz. Ohne ihn werden geladen: [Tailwind CSS](https://tailwindcss.com) 3.4, [Alpine.js](https://alpinejs.dev) 3.14, [Font Awesome](https://fontawesome.com) 6.4, Manrope und Bricolage Grotesque und – nur bei Bedarf – [PeerJS](https://peerjs.com) 1.5 für den Abgleich im selben Netz sowie [pdf.js](https://mozilla.github.io/pdf.js/) 3.11 zum Einlesen von Rezept-PDFs. Mit `sw.js` liegen auch diese nach dem ersten Start lokal vor.
 
 Das Layout richtet sich nach Fensterbreite und Eingabeart: unter 768 Pixel die untere Navigationsleiste, unter 640 Pixel Dialoge als Blatt von unten, bei Touchbedienung größere Tippflächen.
 

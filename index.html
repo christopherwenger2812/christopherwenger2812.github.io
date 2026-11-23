@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.23-1">
+    <meta name="app-version" content="2026.11.23-2">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -177,6 +177,11 @@
         .tdc .tdprog { display: none; }
         .muted  { color: var(--muted); }
         .divider { border-color: var(--border); }
+        /* Kategorienamen im Raster dürfen umbrechen statt abzuschneiden */
+        .kat { text-align: left; line-height: 1.2; }
+        /* Lange Erklärungen zeigen zwei Zeilen; ein Tipp klappt sie auf */
+        .kurz2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        @media (min-width: 640px) { .kurz2 { display: block; overflow: visible; } }
         .accent { color: var(--accent); }
         .field  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: .7rem; padding: .7rem 1rem; font-size: .8rem; font-weight: 600; width: 100%; outline: none; font-family: inherit; line-height: 1.5; transition: border-color .15s, box-shadow .15s; }
         .field::placeholder { color: var(--muted); opacity: .75; font-weight: 500; }
@@ -2125,10 +2130,10 @@
             <!-- ================= SETTINGS ================= -->
             <section x-show="activeTab === 'settings'" x-cloak class="space-y-5">
                 <div class="card hero p-5 sm:p-6 flex flex-wrap items-center gap-4">
-                    <svg class="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoSet"/></svg>
+                    <svg class="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg" role="img" aria-hidden="true"><use href="#logoSet"/></svg>
                     <div class="mr-auto">
-                        <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Einstellungen</h2>
-                        <p class="muted text-xs mt-1 font-medium">Alles wird automatisch gespeichert.</p>
+                        <h2 class="text-xl sm:text-3xl font-black tracking-tight">Einstellungen</h2>
+                        <p class="muted text-xs mt-1 font-medium hidden sm:block">Alles wird automatisch gespeichert.</p>
                     </div>
                     <div class="relative w-full sm:w-72">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs muted"></i>
@@ -2137,18 +2142,20 @@
                 </div>
 
                 <div class="grid lg:grid-cols-[14.5rem_minmax(0,1fr)] gap-5 items-start">
-                    <nav class="card p-2 sm:p-3 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:sticky lg:top-24" aria-label="Einstellungs-Kategorien">
-                        <!-- Am Handy ist die Liste eine waagerechte Leiste: dort macht sich die
-                             Hülle mit "contents" unsichtbar und die Gruppenüberschrift entfällt. -->
+                    <!-- Am Handy steht die Kategorienliste vor dem Inhalt: erst wählen,
+                         dann sieht man nur diesen einen Bereich. Das spart das Wischen
+                         durch eine Leiste, von der nur zwei Einträge sichtbar waren. -->
+                    <nav x-show="!schmal || !setOffen || setQuery.trim()" class="card p-2 sm:p-3 grid grid-cols-2 gap-1.5 lg:flex lg:flex-col lg:gap-1 lg:sticky lg:top-24" aria-label="Einstellungs-Kategorien">
                         <template x-for="(c, ci) in settingsCats" :key="c.id">
                             <div class="contents lg:block">
                                 <p x-show="ci === 0 || settingsCats[ci - 1].grp !== c.grp" class="hidden lg:block text-[10px] font-black uppercase muted px-3 pt-3 pb-1" style="letter-spacing: .09em" x-text="c.grp"></p>
-                                <button type="button" class="mfold shrink-0 lg:w-full" :class="!setQuery.trim() && setCat === c.id ? 'on' : ''" @click="setQuery = ''; setCat = c.id; if (c.id === 'sync') loadBackups()"><i :class="c.icon" class="w-4 text-center"></i><span x-text="c.label"></span></button>
+                                <button type="button" class="mfold !justify-start w-full" :class="!setQuery.trim() && setCat === c.id && (!schmal || setOffen) ? 'on' : ''" @click="setQuery = ''; setCat = c.id; setOffen = true; if (c.id === 'sync') loadBackups(); if (schmal) $nextTick(() => window.scrollTo({ top: 0 }))"><i :class="c.icon" class="w-4 text-center shrink-0"></i><span class="kat" x-text="c.label"></span></button>
                             </div>
                         </template>
                     </nav>
 
-                    <div class="space-y-5 min-w-0">
+                    <div x-show="!schmal || setOffen || setQuery.trim()" class="space-y-5 min-w-0">
+                        <button type="button" x-show="schmal && !setQuery.trim()" class="btn btn-soft" @click="setOffen = false; window.scrollTo({ top: 0 })"><i class="fa-solid fa-chevron-left"></i>Alle Einstellungen</button>
                         <!-- Treffer der Suche -->
                         <div x-show="setQuery.trim()" class="card p-5 sm:p-6 space-y-1">
                             <p class="label mb-3"><i class="fa-solid fa-magnifying-glass mr-2"></i>Suchergebnisse</p>
@@ -2159,18 +2166,18 @@
                         <div x-show="settingsShown.length" class="card p-5 sm:p-6 space-y-1" :class="setQuery.trim() ? '!mt-0' : ''">
                             <p x-show="!setQuery.trim()" class="label mb-3"><i :class="(settingsCats.find(c => c.id === setCat) || {}).icon" class="mr-2"></i><span x-text="(settingsCats.find(c => c.id === setCat) || {}).label"></span></p>
                             <template x-for="it in settingsShown" :key="it.cat + it.k">
-                                <div class="flex items-center justify-between gap-4 py-3 border-t divider first:border-t-0" x-show="showSetting(it)" :class="it.type === 'info' ? 'items-start' : ''">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 py-3 border-t divider first:border-t-0" x-show="showSetting(it)" :class="it.type === 'info' ? 'sm:items-start' : ''">
                                     <div class="min-w-0">
                                         <p class="text-sm font-bold" x-text="it.label"></p>
-                                        <p class="text-[11px] muted mt-0.5" x-show="it.desc" x-text="it.desc"></p>
+                                        <p class="text-[11px] muted mt-0.5" :class="setInfo === it.cat + it.k ? '' : 'kurz2'" x-show="it.desc" x-text="it.desc" @click="setInfo = setInfo === it.cat + it.k ? '' : it.cat + it.k"></p>
                                         <button type="button" x-show="setQuery.trim()" class="text-[10px] font-bold accent mt-0.5" @click="setQuery = ''; setCat = it.cat" x-text="'in ' + (settingsCats.find(c => c.id === it.cat) || {}).label"></button>
                                     </div>
-                                    <button x-show="it.type === 'toggle'" type="button" role="switch" :aria-checked="!!settingVal(it)" class="switch" :class="settingVal(it) ? 'on' : ''" @click="toggleSetting(it)" :aria-label="it.label"></button>
-                                    <select x-show="it.type === 'select'" class="field !w-auto max-w-[11rem] sm:max-w-none" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
+                                    <button x-show="it.type === 'toggle'" type="button" role="switch" :aria-checked="!!settingVal(it)" class="switch shrink-0 self-start sm:self-auto" :class="settingVal(it) ? 'on' : ''" @click="toggleSetting(it)" :aria-label="it.label"></button>
+                                    <select x-show="it.type === 'select'" class="field sm:!w-auto sm:max-w-none" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
                                         <template x-for="o in it.o" :key="o[0]"><option :value="o[0]" :selected="String(o[0]) === String(settingVal(it))" x-text="o[1]"></option></template>
                                     </select>
-                                    <input x-show="it.type === 'text'" type="text" maxlength="40" class="field !w-auto max-w-[12rem] sm:max-w-[16rem]" :value="settingVal(it)" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
-                                    <button x-show="it.type === 'time'" type="button" class="field pickbtn !w-auto" @click="pickTime(cfg, it.k, { cb: 'saveCfg', title: it.label })"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="cfg[it.k]"></span></button>
+                                    <input x-show="it.type === 'text'" type="text" maxlength="40" class="field sm:!w-auto sm:max-w-[16rem]" :value="settingVal(it)" @change="selectSetting(it, $event.target.value)" :aria-label="it.label">
+                                    <button x-show="it.type === 'time'" type="button" class="field pickbtn sm:!w-auto" @click="pickTime(cfg, it.k, { cb: 'saveCfg', title: it.label })"><i class="fa-regular fa-clock text-xs muted"></i><span x-text="cfg[it.k]"></span></button>
                                     <i x-show="it.type === 'info'" class="fa-solid fa-circle-info shrink-0" style="color: var(--area-ink)"></i>
                                 </div>
                             </template>
@@ -2541,6 +2548,24 @@
                             </div>
                         </div>
                         <div x-show="!setQuery.trim() && setCat === 'about'" class="space-y-5" x-init="checkOffline()">
+                            <!-- Ein Knopf, der alles Wichtige der Reihe nach durchprobiert.
+                                 Spart das Suchen in fünf Bereichen, wenn etwas klemmt. -->
+                            <div class="card p-5 sm:p-6 space-y-3">
+                                <p class="label"><i class="fa-solid fa-stethoscope mr-2"></i>Selbsttest</p>
+                                <p class="text-[11px] muted leading-relaxed">Prüft der Reihe nach, was von aussen abhängt: Abgleich, Morgenmail, Erinnerungen, Postfächer, Offline-Betrieb und Speicherplatz. Es wird nichts geändert und nichts verschickt.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-primary" :disabled="pruefLauft" @click="selbsttest()"><i class="fa-solid fa-play"></i>Prüfen</button>
+                                    <span x-show="pruefLauft" class="text-[12px] font-bold accent self-center"><i class="fa-solid fa-circle-notch spin mr-1.5"></i><span x-text="pruefSchritt"></span></span>
+                                </div>
+                                <div x-show="pruefErg.length" class="inner p-3 space-y-1.5">
+                                    <template x-for="z in pruefErg" :key="z.was">
+                                        <div class="flex items-start gap-2 text-[12px]">
+                                            <i class="fa-solid fa-fw mt-0.5 shrink-0" :class="z.stufe === 'ok' ? 'fa-circle-check' : z.stufe === 'aus' ? 'fa-circle-minus' : 'fa-circle-exclamation'" :style="'color:' + (z.stufe === 'ok' ? 'var(--area-ink)' : z.stufe === 'aus' ? 'var(--muted)' : '#e0a500')"></i>
+                                            <span><b x-text="z.was"></b><span class="muted" x-text="' – ' + z.text"></span></span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
                                                         <div class="card p-5 sm:p-6 space-y-3">
                                 <p class="label"><i class="fa-solid fa-wifi mr-2"></i>Offline-Betrieb</p>
                                 <p class="text-sm font-bold">
@@ -4186,13 +4211,12 @@
 
         /* ============ Geräte-Abgleich: Kern ============ */
         const SYNC_COLLECTIONS = [['ev', 'events', e => !e.isGoogle], ['td', 'todos'], ['ls', 'todoLists'], ['sh', 'shoppingItems'], ['sl', 'shopLists'], ['ml', 'mailStatus'], ['nt', 'notes'], ['rc', 'recipes'], ['mt', 'meters'], ['rd', 'readings'], ['mp', 'mealPlan'], ['ro', 'routinen']];
-        const SYNC_CFG_KEYS = ['appName', 'startOrder', 'startOrderPhone', 'morningMail', 'morningHour', 'pushOn', 'pushWays', 'pushTgToken', 'pushTgChat', 'wxMood', 'calView', 'weekStart', 'hourAuto', 'hourFrom', 'hourTo', 'defaultDuration', 'defaultReminder', 'state', 'showHolidays', 'showTasksInCal', 'showUpcoming', 'upcomingCount', 'remindTime', 'newOnTop', 'showDone', 'shopGroup', 'confirmDelete', 'vaultLockMin', 'clipboardClear', 'showLogos', 'genLength',
-            /* Benachrichtigungen gelten überall gleich: Wann du Ruhe haben willst,
-               hängt an dir und nicht am Gerät. „notifications“ wandert mit, die
-               Erlaubnis des Browsers dagegen nicht – die muss jedes Gerät selbst
-               erteilen, deshalb wird sie beim Einschalten dort nachgefragt. */
-            'notifications', 'quietOn', 'quietFrom', 'quietTo'];
-        // Design, Dichte, Start-Seite, Ansichten und Update-Prüfung gelten pro Gerät
+        /* Umgekehrte Liste: Alles wird abgeglichen, bis auf das, was wirklich am
+           Gerät hängt. So wird eine neue Einstellung nicht aus Versehen vergessen. */
+        const NUR_GERAET = ['autoUpdate'];
+        const SYNC_CFG_KEYS = Object.keys(DEFAULT_CFG).filter(k => !NUR_GERAET.includes(k));
+        /* Das Aussehen (hell/dunkel) liegt ausserhalb von cfg und wandert als
+           zusätzliches Feld „theme“ im selben Paket mit. */
         const SYNC_META_KEY = 'organizer_sync_meta', SYNC_CFG_KEY = 'organizer_sync', TOMBSTONE_MS = 60 * 864e5;
         const hashStr = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + s.length.toString(36); };
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -5689,7 +5713,8 @@ function reply_(p) {
 
                 activeTab: 'today',
                 cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)),
-                themeSettings: 'midnight',
+                themeSettings: 'midnight', themeStart: '',
+                schmal: false, setOffen: false, setInfo: '',
                 syncStatus: 'Nur auf diesem Gerät', syncOk: false,
                 googleScriptUrl: '', googleScriptUrlInput: '',
                 syncCfg: { room: '', pass: '', google: false, p2p: false, url: '' },
@@ -5771,6 +5796,9 @@ function reply_(p) {
 
                     const th = localStorage.getItem('organizer_theme');
                     this.themeSettings = this.themes.some(t => t.id === th) ? th : 'daylight';
+                    /* Womit dieses Gerät gestartet ist. Ein frisch eingerichtetes Gerät
+                       soll den Server nicht mit seinen Startwerten überschreiben. */
+                    this.themeStart = this.themeSettings;
                     this.ladeEntwuerfe();
                     this.beobachteScrollen();
                     const last = localStorage.getItem('organizer_start_tab');
@@ -5842,6 +5870,11 @@ function reply_(p) {
                         const mq = window.matchMedia('(max-width: 767px)');
                         this.isPhone = mq.matches;
                         mq.addEventListener('change', e => { this.isPhone = e.matches; });
+                        /* Unter 1024px steht die Kategorienliste nicht neben dem Inhalt,
+                           sondern davor – wie in den Einstellungen eines Telefons. */
+                        const mq2 = window.matchMedia('(max-width: 1023px)');
+                        this.schmal = mq2.matches;
+                        mq2.addEventListener('change', e => { this.schmal = e.matches; });
                     } catch (e) {}
                     setTimeout(() => this.pushAgenda(), 4000);
                     window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
@@ -5956,11 +5989,17 @@ function reply_(p) {
                 /* ---------- Einstellungen ---------- */
                 persistCfg() { try { localStorage.setItem('organizer_cfg', JSON.stringify(this.cfg)); } catch (e) {} },
                 saveCfg() { this.persistCfg(); this.touchSync(); },
-                cfgPicked() { const o = {}; for (const k of SYNC_CFG_KEYS) o[k] = this.cfg[k]; return o; },
+                cfgPicked() {
+                    const o = {};
+                    for (const k of SYNC_CFG_KEYS) o[k] = this.cfg[k];
+                    o.theme = this.themeSettings || '';          // das Aussehen liegt ausserhalb von cfg
+                    return o;
+                },
                 cfgHashOf(o) { return hashStr(JSON.stringify(o)); },
                 applyRemoteCfg(v) {
                     const before = this.cfg.calView;
                     for (const k of SYNC_CFG_KEYS) if (k in v && typeof v[k] === typeof DEFAULT_CFG[k]) this.cfg[k] = v[k];
+                    if (typeof v.theme === 'string' && v.theme && v.theme !== this.themeSettings && this.themes.some(t => t.id === v.theme)) this.setTheme(v.theme);
                     this.persistCfg(); this.applyCfg();
                     if (this.cfg.calView !== before) this.calendarView = this.cfg.calView;
                     this.hinweisErlaubnis();
@@ -6137,7 +6176,7 @@ function reply_(p) {
                         }
                     }
                     const ch = this.cfgHashOf(this.cfgPicked()), cm = syncMeta.cfg;
-                    if (cm ? cm.h !== ch : ch !== this.cfgHashOf(Object.fromEntries(SYNC_CFG_KEYS.map(k => [k, DEFAULT_CFG[k]])))) { syncMeta.cfg = { u: now, h: ch }; changed = true; } // erst stempeln, wenn jemand etwas geändert hat (ein neues Gerät mit Standardwerten überschreibt nichts)
+                    if (cm ? cm.h !== ch : ch !== this.cfgHashOf({ ...Object.fromEntries(SYNC_CFG_KEYS.map(k => [k, DEFAULT_CFG[k]])), theme: this.themeStart || '' })) { syncMeta.cfg = { u: now, h: ch }; changed = true; } // erst stempeln, wenn jemand etwas geändert hat (ein neues Gerät mit Standardwerten überschreibt nichts)
                     const vids = new Set(['main', ...this.vaults.map(v => v.id), ...Object.keys(syncMeta).filter(isVaultKey).map(vaultIdOfSync)]);
                     for (const vid of vids) {
                         const sk = vaultSyncKey(vid), vraw = localStorage.getItem(vaultStoreKey(vid)), vm = syncMeta[sk];
@@ -7921,6 +7960,65 @@ function reply_(p) {
                         this.pushMsg = 'Chat gefunden' + (r.name ? ' (' + r.name + ')' : '') + '. Jetzt aus- und wieder einschalten.';
                     } catch (e) { this.pushMsg = this.pushFehler(e); }
                     finally { this.pushBusy = false; }
+                },
+                /* Selbsttest: jede Prüfung einzeln, damit ein Ausfall die anderen
+                   nicht verdeckt. „aus“ heisst abgeschaltet, nicht kaputt. */
+                pruefLauft: false, pruefSchritt: '', pruefErg: [],
+                async selbsttest() {
+                    this.pruefLauft = true; this.pruefErg = [];
+                    const sag = (was, stufe, text) => this.pruefErg.push({ was, stufe, text });
+                    try {
+                        this.pruefSchritt = 'Abgleich …';
+                        if (!this.syncCfg.room) sag('Abgleich', 'aus', 'nicht eingerichtet');
+                        else if (!this.syncCfg.google) sag('Abgleich', 'aus', 'Google-Script nicht eingeschaltet');
+                        else {
+                            try { const r = await this.gCall({ action: 'get' }); sag('Abgleich', 'ok', 'erreichbar, Stand ' + (r.rev || 0)); }
+                            catch (e) { sag('Abgleich', 'fehler', e.message); }
+                        }
+
+                        this.pruefSchritt = 'Morgenmail …';
+                        if (!this.cfg.morningMail) sag('Morgenmail', 'aus', 'abgeschaltet');
+                        else {
+                            try {
+                                const r = await this.gCall({ action: 'mailstat' });
+                                if (r.fehlendeFreigabe) sag('Morgenmail', 'fehler', 'Freigabe „' + r.fehlendeFreigabe + '“ fehlt');
+                                else if (!r.ausloeser) sag('Morgenmail', 'fehler', 'kein täglicher Auslöser');
+                                else if (r.letzterLauf && !r.letzterOk) sag('Morgenmail', 'fehler', 'letzter Lauf gescheitert: ' + (r.letzterFehler || '').slice(0, 80));
+                                else sag('Morgenmail', 'ok', 'Auslöser steht, Empfänger ' + (r.an || '?'));
+                            } catch (e) { sag('Morgenmail', 'fehler', e.message); }
+                        }
+
+                        this.pruefSchritt = 'Erinnerungen …';
+                        if (!this.cfg.pushOn) sag('Erinnerungen', 'aus', 'abgeschaltet');
+                        else {
+                            try {
+                                const r = await this.gCall({ action: 'pushstat' });
+                                if (!r.wege) sag('Erinnerungen', 'fehler', 'das Script kennt keinen Versandweg');
+                                else if (!r.ausloeser) sag('Erinnerungen', 'fehler', 'kein Auslöser');
+                                else if (r.letzterFehler) sag('Erinnerungen', 'fehler', String(r.letzterFehler).slice(0, 80));
+                                else sag('Erinnerungen', 'ok', r.wege.split(',').map(w => w === 'tg' ? 'Telegram' : 'E-Mail').join(' und ') + ', bisher ' + (r.verschickt || 0));
+                            } catch (e) { sag('Erinnerungen', 'fehler', e.message); }
+                        }
+
+                        this.pruefSchritt = 'Postfächer …';
+                        if (!this.mailCfg.accounts.length) sag('Postfächer', 'aus', 'keines eingerichtet');
+                        else for (const a of this.mailCfg.accounts) {
+                            try { const j = await this.mailCall(a, { action: 'counts' }, 20000); sag('Postfach ' + a.name, 'ok', (j.unread?.inbox ?? 0) + ' ungelesen'); }
+                            catch (e) { sag('Postfach ' + a.name, 'fehler', e.message); }
+                        }
+
+                        this.pruefSchritt = 'Offline-Betrieb …';
+                        await this.checkOffline();
+                        sag('Offline-Betrieb', this.swState === 'bereit' ? 'ok' : this.swState === 'teilweise' ? 'fehler' : 'aus', this.swState);
+
+                        this.pruefSchritt = 'Speicher …';
+                        let belegt = 0;
+                        try { for (const k in localStorage) if (Object.prototype.hasOwnProperty.call(localStorage, k)) belegt += (localStorage[k] || '').length + k.length; } catch (e) {}
+                        /* Browser geben für localStorage meist rund 5 MB frei. Wird es eng,
+                           merkt man es sonst erst, wenn das Speichern fehlschlägt. */
+                        const mb = belegt / 1048576;
+                        sag('Speicher', mb > 4 ? 'fehler' : 'ok', mb.toFixed(2).replace('.', ',') + ' MB belegt' + (mb > 4 ? ' – es wird eng, bitte Sicherung anlegen und Altes löschen' : ''));
+                    } finally { this.pruefLauft = false; this.pruefSchritt = ''; }
                 },
                 async pushTest() {
                     this.pushBusy = true; this.pushMsg = '';
