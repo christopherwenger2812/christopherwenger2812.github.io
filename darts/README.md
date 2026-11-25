@@ -74,8 +74,10 @@ Darts-Karrierespiel im FIFA-Stil, optimiert für das Handy. Das Spiel ist eine e
 
 ## Auf dem Handy als App nutzen
 
+Darts Karriere ist eine eigene Web-App mit Manifest und Icon (Bereich `/darts/`).
+
 1. https://christopherwenger2812.github.io/darts/ in **Chrome** öffnen.
-2. Oben rechts auf **⋮** tippen, dann auf **„Zum Startbildschirm hinzufügen“**.
+2. Oben rechts auf **⋮** tippen, dann auf **„App installieren“** bzw. **„Zum Startbildschirm hinzufügen“**.
 
 ## Spielstand
 
@@ -84,9 +86,20 @@ Darts-Karrierespiel im FIFA-Stil, optimiert für das Handy. Das Spiel ist eine e
 - **Gerät wechseln:** In den Einstellungen „Spielstand exportieren“ wählen, den Code kopieren und auf dem neuen Gerät über „Spielstand importieren“ einfügen.
 - Browserdaten löschen entfernt den Spielstand. Exportiere deshalb ab und zu den Code.
 
+## Dateien
+
+```
+darts/
+├── index.html             das Spiel
+├── manifest.webmanifest   App-Manifest (Name, Icon, Bereich /darts/)
+├── icon-192.png
+├── icon-512.png
+└── README.md
+```
+
 ## Update einspielen
 
-1. Neue Version herunterladen und in **`index.html`** umbenennen.
+1. Neue Version herunterladen und in **`index.html`** umbenennen. In der Datei müssen oben die Zeile `<link rel="manifest" href="manifest.webmanifest">` und die Icon-Links stehen. Die Versionen, die ich dir für GitHub schicke, haben sie schon drin.
 2. Auf GitHub in den Ordner `darts/` wechseln.
 3. **Add file → Upload files**, Datei hochladen, dann **Commit changes**.
 4. Nach ein bis zwei Minuten ist die neue Version online.

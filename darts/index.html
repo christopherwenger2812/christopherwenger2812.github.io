@@ -2,6 +2,10 @@
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Darts Karriere</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0d12">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -1063,4 +1067,5 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
 window.addEventListener('resize',()=>{if(MATCH&&cv)sizeBoard()});try{document.fonts.ready.then(()=>{if(MATCH&&cv)sizeBoard()})}catch(e){}
 load();if(S&&(S.v!==4||!S.player))S=null;ensure();home();
 }
-</script></body></html>
+</script><script>try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>{if(r.scope===location.origin+"/")r.unregister()}))}catch(e){}</script>
+</body></html>
