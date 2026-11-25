@@ -109,3 +109,14 @@ darts/
 - Alle Spieler- und Turniernamen sind **erfunden**. Echte Namen lassen sich in der Rangliste per Antippen selbst eintragen.
 - Die Musik bei den Walk-ons ist ein im Browser erzeugter Beat. Der Song-Titel wird nur angezeigt.
 - Ohne Internet läuft das Spiel mit einer Ersatzschrift.
+
+## Neu in Version 9
+
+- Komplett neues Design mit unterer Navigation (Start, Kalender, Training, Tabellen, Mehr)
+- Charakter-Editor: Hautton, Frisur, Haarfarbe, Bart, Brille und Shirt erscheinen auf deiner Karte
+- Jeder Gegner hat eine eigene Karte mit Portrait und allen 6 Werten. Die Werte bestimmen auch, wie er spielt
+- Ausbullen vor jedem Match: Wer näher am Bull ist, beginnt
+- Ausführliche Leg-Statistik nach jedem Leg (8 Sekunden oder per Tipp weiter)
+- Nachwuchs wie im echten System: Junior-Tour (10 bis 17), Junior Super 16, Junior World Masters, Junior-WM mit Finale auf der WM-Bühne, Nachwuchs-Akademie
+- Development Tour: Top 2 bekommen die Tour Card, Platz 3 bis 16 einen Freiplatz für die Q-School
+- Challenge Tour nur nach Teilnahme an der Q-School

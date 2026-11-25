@@ -3,11 +3,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Darts Karriere</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0d12">
+<meta name="theme-color" content="#07090e">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: TV-Darts-Gala am Samstagabend, laut, golden, Bühnenlicht
    IDEA: Ultimate-Spielerkarte trifft TV-Scoreboard einer Darts-WM
@@ -125,6 +125,93 @@ label{display:block;font-weight:600;margin:0 0 6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}.chips .btn{width:auto;flex:1 1 auto;min-height:44px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media(max-width:380px){h1{font-size:36px}.pl .rm{font-size:28px}.pl{grid-template-columns:8px minmax(0,1fr) 30px 60px}}
+/* ===== Redesign v9: "Matchday" — TV-Studio, Oche-Rot, Kartengold ===== */
+:root{--bg:#07090e;--pan:#0f131d;--pan2:#171c29;--line:#262d3e;--gold:#f2c94c;--gold2:#c9932b;--acc:#ff3d57;--acc2:#c8102e;--red:#ff3d57;--green:#22c55e;--ink:#f5f7fb;--mut:#8f99ad;--cy:#38d6ff}
+html,body{background:radial-gradient(80% 45% at 10% -5%,rgba(255,61,87,.20),transparent 60%),radial-gradient(70% 40% at 100% 0%,rgba(56,214,255,.14),transparent 60%),repeating-linear-gradient(135deg,rgba(255,255,255,.012) 0 2px,transparent 2px 9px),var(--bg) fixed;font-family:Inter,system-ui,sans-serif}
+h1,h2,h3,.os{font-family:'Barlow Condensed',Oswald,Impact,sans-serif;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+h1{font-size:46px}h2{font-size:28px}h3{font-size:21px}
+#app{padding:12px 14px 40px}
+body.hasnav #app{padding-bottom:96px}
+.btn{border-radius:14px;background:linear-gradient(180deg,#1b2131,#141926);border:1px solid var(--line);font-weight:700;transition:transform .08s,filter .15s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:linear-gradient(180deg,#ff5a6f,var(--acc2));color:#fff;box-shadow:0 6px 18px rgba(255,61,87,.28),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn.red{background:#3a121a;border:1px solid #7a2232;color:#ffb3bd}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--cy)}
+.panel{background:linear-gradient(180deg,rgba(26,32,48,.85),rgba(14,18,28,.92));border:1px solid var(--line);border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 30px rgba(0,0,0,.25)}
+.it{background:linear-gradient(180deg,#141a27,#0f131d);border-radius:14px}
+.badge{background:#1a2030;border-color:#2c3448}.badge.g{background:var(--gold);color:#1b1405}.badge.gr{background:#14532d;color:#bbf7d0;border:0}.badge.r{background:var(--acc)}
+.bar{height:7px;background:#1a2030}.bar i{background:linear-gradient(90deg,var(--acc),#ff9a5a)}
+input,select{background:#121725;border-radius:12px}
+.top{position:sticky;top:0;z-index:4;margin:-12px -14px 12px;padding:10px 14px;background:rgba(7,9,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.05)}
+.top h2{font-size:24px}
+.kv div{background:linear-gradient(180deg,#151b29,#0f131d);border-radius:14px}
+.kv b{font:800 24px 'Barlow Condensed',Oswald,sans-serif}
+.sec{font:800 15px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);margin:18px 2px 8px;display:flex;align-items:center;gap:8px}
+.sec::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--acc)}
+/* Kopfzeile Start */
+.hh{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,rgba(255,61,87,.16),rgba(15,19,29,.6));border:1px solid var(--line);border-radius:18px;padding:8px 12px}
+.hh .g{flex:1}.hh b{font:800 20px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase}
+.hav{width:48px;height:48px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#2a3349,#111522);border:2px solid var(--acc);flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center}
+.coins{background:#1a1608;border:1px solid #5a4613;padding:5px 10px;border-radius:99px;font-size:14px}
+/* Karte: Portrait rechts, Werte unten */
+.card{width:250px;aspect-ratio:3/4.35;padding:0;margin:8px auto 4px}
+.card .cl{position:absolute;left:20px;top:28px;display:flex;flex-direction:column;align-items:center;z-index:2;width:56px}
+.card .ovr{font:800 54px/.9 'Barlow Condensed',Oswald,sans-serif}
+.card .pos{font:800 17px 'Barlow Condensed',Oswald,sans-serif;margin-top:2px}
+.card .nat{margin-top:6px;font:800 13px 'Barlow Condensed',Oswald,sans-serif}
+.card .fm{font-size:11px;margin-top:6px;letter-spacing:-1px}
+.card .av{position:absolute;right:14px;top:16px;width:150px;height:150px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;
+ -webkit-mask-image:linear-gradient(180deg,#000 75%,transparent);mask-image:linear-gradient(180deg,#000 75%,transparent)}
+.card .av svg{width:140px;height:154px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.card .nm{position:absolute;left:16px;right:16px;top:166px;margin:0;font:800 24px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase;text-align:center;border-bottom:1px solid currentColor;border-color:rgba(42,29,4,.35);padding-bottom:3px}
+.card .nick{position:absolute;left:16px;right:16px;top:200px;margin:0;text-align:center;font-size:11.5px;font-weight:700;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .st{position:absolute;left:28px;right:28px;top:222px;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:1px 18px;font:800 17px 'Barlow Condensed',Oswald,sans-serif}
+.card .st span{white-space:nowrap}.card .st span b{display:inline-block;width:28px}
+.card .cf{position:absolute;left:30px;right:30px;bottom:30px;text-align:center;font:700 10.5px Inter,sans-serif;opacity:.75;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card.hero .nm,.card.totw .nm{border-color:rgba(255,255,255,.3)}
+.cmini{zoom:.58;flex:0 0 auto}
+.vs{display:flex;align-items:center;justify-content:center;gap:4px;margin:8px 0}
+.vs .vt{font:800 26px 'Barlow Condensed',Oswald,sans-serif;color:var(--acc);text-shadow:0 0 18px rgba(255,61,87,.6)}
+.kvl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}.kvl b{text-align:right}
+/* Aussehen-Editor */
+.lch{display:flex;flex-wrap:wrap;gap:6px}
+.lc{min-height:38px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:#151a27;color:var(--ink);font:600 13px Inter,sans-serif;cursor:pointer}
+.lc.on{border-color:var(--acc);background:#3a121a}
+.lc.sw{width:38px;padding:0;border:2px solid rgba(255,255,255,.15)}.lc.sw.on{border:3px solid #fff;box-shadow:0 0 0 2px var(--acc)}
+/* Kacheln */
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:84px;padding:12px 14px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(150deg,#1c2334,#0f131d);color:var(--ink);text-align:left;cursor:pointer;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;right:-18px;top:-18px;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle,rgba(255,61,87,.35),transparent 70%)}
+.tile b{max-width:100%;overflow-wrap:anywhere;font:800 18px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase}.tile span{font-size:12px;color:var(--mut)}
+/* Untere Navigation */
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:8;display:none;justify-content:center;gap:2px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:rgba(9,11,17,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+body.hasnav #nav{display:flex}
+#nav button{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;background:none;border:0;color:var(--mut);font:600 11px Inter,sans-serif;cursor:pointer;border-radius:12px;min-height:52px}
+#nav button.on{color:#fff;background:rgba(255,61,87,.14)}#nav button.on svg{color:var(--acc)}
+/* Startseite */
+.hero{padding:26px 0 10px}
+.logo{display:flex;flex-direction:column;align-items:center;line-height:.85}
+.logo span{font:800 26px 'Barlow Condensed',Oswald,sans-serif;letter-spacing:.5em;color:var(--acc);margin-right:-.5em}
+.logo b{font:800 58px 'Barlow Condensed',Oswald,sans-serif;letter-spacing:.04em;background:linear-gradient(180deg,#fff,#ffd37a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-av{width:170px;height:170px;border-radius:50%;margin:10px auto;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 30%,#3a1420,#0c0f18 70%);border:3px solid var(--acc);box-shadow:0 0 50px rgba(255,61,87,.35)}
+/* Match */
+.pl{border-radius:14px;background:linear-gradient(90deg,#141a27,#0f131d)}
+.pl.on{border-color:var(--acc);box-shadow:0 0 0 1px rgba(255,61,87,.35),0 0 24px rgba(255,61,87,.15)}.pl.on .tag{background:var(--acc)}.pl.on .rm{color:#fff}
+.pl .n,.pl .rm,.pl .lg{font-family:'Barlow Condensed',Oswald,sans-serif;font-weight:800}
+.cmt{font-family:'Barlow Condensed',Oswald,sans-serif;font-weight:800;color:#ffd37a;text-transform:uppercase}
+.drts div{border-radius:12px;font-family:'Barlow Condensed',Oswald,sans-serif;font-weight:800}
+.lstat{background:rgba(8,10,16,.96);border:1px solid rgba(255,61,87,.6);border-radius:18px;min-width:min(300px,88%);padding:14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.ls-h{font:800 22px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase;color:var(--gold)}
+table.ls{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px}
+table.ls th{font:800 14px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase;color:var(--mut);padding:2px 4px;text-align:right}
+table.ls td{padding:4px;border-top:1px solid rgba(255,255,255,.06);text-align:right;font-variant-numeric:tabular-nums}
+table.ls td:first-child{text-align:left;color:var(--mut)}
+table.ls td.bt{color:var(--green);font-weight:800}
+.lsbar{height:3px;border-radius:3px;background:#1a2030;margin-top:8px;overflow:hidden}.lsbar i{display:block;height:100%;width:0;background:var(--acc)}
+.modal{background:rgba(4,5,9,.86);backdrop-filter:blur(4px)}
+.modal .box.panel{border-color:rgba(255,61,87,.35)}
+.mt{border-radius:12px}
+@media(max-width:380px){.cmini{zoom:.52}.card{width:236px}}
 </style></head><body>
 <main id="app"></main>
 <div id="modal"></div>
@@ -175,42 +262,44 @@ const DV=(id,w,city)=>({id,w,n:'Development Tour '+id.slice(1),d:'Nachwuchs-Tour
 const PC=(id,w,city)=>({id,w,n:'Floor-Event '+id.slice(1),d:'Players-Championship-Stil: alle 128 Tour-Card-Spieler, Punkte für Welt- und ProTour-Rangliste',city,v:'sport',q:'pc',size:128,bo:[15,11],prize:4000,fee:120,t:2,rk:'pro',pt:1});
 const ET=(id,w,n,city,hn)=>({id,w,n,d:'Euro Tour, 48 Spieler: Die Top 16 der Welt steigen in Runde 2 ein, dazu 16 von der ProTour-Rangliste und 16 Qualifikanten (Tour Card, Gastland, Nordic & Baltic, Osteuropa)',city,hn,v:'stadt',q:'et',size:48,stages:[32,16],bo:[15,13,11],prize:9000,fee:200,t:3,rk:'pro',pt:1,eu:1});
 const LO=(id,w,i,size)=>({id,w,lc:i,loc:i,v:i<2?'fest':'buerger',q:'loc',size,lo:18+i*4,hi:44+i*4,bo:[7,5],prize:300+i*200,fee:10+i*5,t:1,rk:'none'});
+const JT=(id,w,city)=>({id,w,n:'Junior Tour '+id.slice(2),d:'Junior-Tour für 10- bis 17-Jährige: Punkte für die Junior-Rangliste, sie entscheidet über Super 16 und Junior-WM',city,v:'verein',q:'jt',minAge:10,maxAge:17,size:32,bo:[7,5],prize:600,fee:15,t:1,rk:'jt'});
 const YT=(id,w,n,max,size,city,lc)=>({id,w,n,d:`Nachwuchsturnier für Spieler bis ${max} Jahre`,city,lc,v:size>16?'stadt':'verein',q:'yth',maxAge:max,size,bo:[7,5],prize:size>16?1500:300,fee:0,t:size>16?2:1,rk:'none'});
 const WS=(id,w,n,city,host)=>({id,w,n,d:'World Series: Einladungsturnier für die Top 8 der Welt plus 8 Spieler aus der Gastregion',city,host,v:'pav',q:'ws',size:16,bo:[15,13,11],prize:6000,fee:0,t:3,rk:'none',ws:1});
 const EV=[
  {id:'QS',w:1,n:'Q-School',d:'Final Stage mit 64 Spielern: Die vier Halbfinalisten bekommen sofort die Tour Card für 2 Saisons',city:'Kalkar',v:'messe',q:'qs',minAge:16,size:64,bo:[11],prize:2000,fee:400,t:2,rk:'none'},
  YT('Y1',1,'Jugend-Cup U16',15,16,null,0),LO('L1',1,0,16),
  {id:'MA',w:2,n:'Masters',d:'Die Top 24 sind gesetzt, Platz 25 bis 120 der Tour-Card-Spieler kämpft in Vorrunden um 8 Plätze. Gespielt wird in Sätzen mit Best of 3 Legs',city:'Milton Keynes',v:'stadt',q:'ma',size:120,stages:[64,32,0,0,24],sets:[6,5,4,4,3,3,3],lps:2,prize:30000,fee:0,t:5,rk:'pro'},
- CT('C1',2,'Hildesheim'),WS('W1',2,'World Series: Golf Masters','Manama',['JPN','PHI','HKG','IND','CHN','SGP','THA','KOR']),
+ CT('C1',2,'Hildesheim'),JT('JT1',2,'Milton Keynes'),WS('W1',2,'World Series: Golf Masters','Manama',['JPN','PHI','HKG','IND','CHN','SGP','THA','KOR']),
  PC('F1',3,'Barnsley'),CT('C2',3,'Milton Keynes'),DV('D1',3,'Wigan'),LO('L2',3,1,16),
- ET('E1',4,'Kraków Open','Kraków','POL'),YT('Y2',4,'Jugend-Liga U18',17,16,null,1),
+ ET('E1',4,'Kraków Open','Kraków','POL'),JT('JT2',4,'Wigan'),
  {id:'UK',w:5,n:'Kingdom Open',d:'UK-Open-Stil, 160 Spieler: Tour-Card-Spieler steigen je nach Rang in Runde 2 bis 4 ein, Amateure in Runde 1',city:'Minehead',v:'pav',q:'uk',minAge:16,size:160,stages:[64,32,32,32],bo:[21,21,19,19,19,11],prize:16000,fee:0,t:4,rk:'pro'},
  DV('D2',5,'Milton Keynes'),
- PC('F2',6,'Hildesheim'),CT('C3',6,'Wigan'),LO('L3',6,2,32),
+ PC('F2',6,'Hildesheim'),CT('C3',6,'Wigan'),JT('JT3',6,'Hildesheim'),LO('L3',6,2,32),
  ET('E2',7,'Riesa Trophy','Riesa','GER'),YT('Y3',7,'Jugend-Cup II U16',15,16,null,2),
  ET('E3',8,'Graz Open','Graz','AUT'),DV('D3',8,'Hildesheim'),LO('L4',8,3,32),
- PC('F3',9,'Wigan'),CT('C4',9,'Leicester'),
+ PC('F3',9,'Wigan'),CT('C4',9,'Leicester'),JT('JT4',9,'Leicester'),
  ET('E4',10,'Hildesheim Masters','Hildesheim','GER'),YT('YE',10,'Jugend-EM U18',17,32,'Budapest'),
  {id:'NC',w:11,n:'Nationen-Cup',d:'40 Nationen im Doppel: Die 4 Topnationen sind gesetzt, 36 spielen in 12 Dreiergruppen, die Gruppensieger erreichen das Achtelfinale',city:'Frankfurt am Main',v:'eis',q:'nc',teams:1,size:40,groups:{n:12,per:3,adv:1,seeds:4,bo:7},bo:[19,15,15,11],prize:12000,fee:0,t:4,rk:'none'},
  CT('C5',11,'Barnsley'),
  {id:'MP',w:12,n:'Summer Matchplay',d:'32 Spieler: Top 16 der Welt und 16 von der ProTour-Rangliste. Die lange Distanz',city:'Blackpool',v:'winter',q:'mp',size:32,bo:[35,33,31,21,19],prize:24000,fee:0,t:5,rk:'pro'},
- DV('D4',12,'Wigan'),
+ DV('D4',12,'Wigan'),JT('JT5',12,'Barnsley'),
  WS('W2',13,'World Series: Dutch Masters','Den Haag',['NED','BEL']),PC('F4',13,'Leicester'),
- ET('E5',14,'Prag Open','Prag','CZE'),{id:'JW',w:14,n:'Junioren-WM U24',d:'Weltmeisterschaft für 16- bis 23-Jährige mit 64 Spielern',city:'Minehead',v:'kongress',q:'dv',minAge:16,maxAge:23,size:64,bo:[13,11,9],prize:3000,fee:0,t:3,rk:'dev'},
- ET('E6',15,'Leverkusen Grand Prix','Leverkusen','GER'),CT('C6',15,'Hildesheim'),
+ ET('E5',14,'Prag Open','Prag','CZE'),{id:'JW',w:14,n:'Junioren-WM U24',d:'Weltmeisterschaft für 16- bis 23-Jährige: Tour-Card-Spieler im passenden Alter und die Besten der Development-Rangliste',city:'Minehead',v:'kongress',q:'dv',minAge:16,maxAge:23,size:64,bo:[13,11,9],prize:3000,fee:0,t:3,rk:'dev'},
+ ET('E6',15,'Leverkusen Grand Prix','Leverkusen','GER'),CT('C6',15,'Hildesheim'),{id:'JS',w:15,n:'Junior Super 16',d:'Die Top 16 der Junior-Rangliste spielen um den Titel',city:'Wigan',v:'messe',q:'js',minAge:10,maxAge:17,size:16,bo:[11,9,7,7],prize:1500,fee:0,t:2,rk:'jt'},
  {id:'PLO',w:15,n:'Liga der Besten: Playoffs',d:'Die Top 4 der Liga-Tabelle spielen um den Titel',city:'London',v:'arena',q:'plo',size:4,bo:[21,19],prize:25000,fee:0,t:5,rk:'none'},
  WS('W3',16,'World Series: Big Apple Masters','New York',['USA','CAN']),PC('F5',16,'Barnsley'),DV('D5',16,'Milton Keynes'),
  {id:'GP',w:17,n:'Grand Prix',d:'32 Spieler (Top 16 der Welt + 16 ProTour), Double-In und Sätze',city:'Leicester',v:'ball',q:'mp',size:32,sets:[5,4,3,3,2],din:1,prize:20000,fee:0,t:5,rk:'pro'},
- YT('Y4',17,'Jugend-WM U18',17,32,'Amsterdam'),
+ JT('JT6',17,'Milton Keynes'),
  ET('E7',18,'Rotterdam Championship','Rotterdam','NED'),CT('C7',18,'Milton Keynes'),
  {id:'WSF',w:19,n:'World Series Finals',d:'24 Spieler: Die Top 8 sind gesetzt und steigen in Runde 2 ein, dazu Platz 9 bis 24 der Welt',city:'Amsterdam',v:'pav',q:'wsf',size:24,stages:[16,8],bo:[21,19,11],prize:12000,fee:0,t:4,rk:'none'},
- DV('D6',19,'Wigan'),
+ DV('D6',19,'Wigan'),{id:'JM',w:19,n:'Junior World Masters',d:'Großes Junioren-Turnier mit 64 Spielern aus aller Welt, offen für alle 10- bis 17-Jährigen',city:'Hull',v:'stadt',q:'jt',minAge:10,maxAge:17,size:64,bo:[11,9,9,7,7,7],prize:2500,fee:30,t:2,rk:'jt'},
  {id:'EC',w:20,n:'Euro Championship',d:'Die Top 32 der Euro-Tour-Rangliste',city:'Dortmund',v:'stadt',q:'ec',size:32,bo:[21,21,19,19,11],prize:20000,fee:0,t:5,rk:'pro'},
  PC('F6',20,'Wigan'),CT('C8',20,'Leicester'),
  {id:'GS',w:21,n:'Grand Slam',d:'32 Spieler: alle Turniersieger der Saison, aufgefüllt über die Weltrangliste. 8 Vierergruppen, die Top 2 erreichen das Achtelfinale',city:'Wolverhampton',v:'stadt',q:'gs',size:32,groups:{n:8,per:4,adv:2,seeds:0,bo:9},bo:[31,33,31,19],prize:24000,fee:0,t:5,rk:'pro'},
  {id:'TF',w:22,n:'Tour Finals',d:'Die Top 64 der ProTour-Rangliste',city:'Minehead',v:'kongress',q:'pcf',size:64,bo:[21,21,19,19,11],prize:24000,fee:0,t:5,rk:'pro'},
  {id:'WQ',w:23,n:'WM-Qualifikation',d:'Für alle ab 16, die noch nicht für die WM qualifiziert sind. Die vier Halbfinalisten fahren zur WM',city:'Milton Keynes',v:'messe',q:'wq',minAge:16,size:32,bo:[11],prize:3000,fee:100,t:3,rk:'none'},
  {id:'WM',w:24,n:'Weltmeisterschaft',d:'128 Spieler: Top 40 der Welt, Top 40 der ProTour-Rangliste und 48 Qualifikanten. Sätze mit Best of 5 Legs',city:'London',v:'palast',q:'wm',size:128,sets:[7,6,5,4,4,3,3],prize:80000,fee:0,t:6,rk:'pro'},
+ {id:'JWC',w:24,n:'Junior-WM U18',d:'Die Top 32 der Junior-Rangliste. Das Finale läuft auf der großen WM-Bühne in London',city:'London',v:'palast',q:'jw',minAge:10,maxAge:17,size:32,bo:[13,11,9,9,9],prize:4000,fee:0,t:3,rk:'none'},
  {id:'PLN',w:0,n:'Liga der Besten',d:'Liga-Abend: Viertelfinale, Halbfinale und Finale an einem Abend. Sieg 5, Finale 3, Halbfinale 2 Punkte',city:'London',v:'arena',q:'pln',size:8,bo:[11],prize:3000,fee:0,t:4,rk:'none'}];
 const EVM={};EV.forEach(e=>EVM[e.id]=e);const WEEKS=24;
 const PLC=['Berlin','Glasgow','Belfast','Dublin','Antwerpen','Cardiff','Exeter','Brighton','Nottingham','Manchester','Newcastle','Liverpool'];
@@ -255,13 +344,13 @@ const NICKS=['Kalle','Der Lange','Thekenkönig','Schnitzel','Mr. Doppel','Pfeil'
 const NATW=['ENG','ENG','ENG','ENG','NED','NED','NED','GER','GER','WAL','SCO','SCO','BEL','NIR','IRL','AUT','POL','AUS','SWE','ESP','JPN','PHI','CZE','HUN'];
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 function gname(nat){const g=NP[grp(nat)]||NP.EN;return pick(g[0])+' '+pick(g[1])}
-function genP(nat,age,ovr,card){return{n:gname(nat),nick:pick(NICKS),nat,age,ovr,card,pts:card?rnd(200,1500):0,ct:0,dv:0}}
+function genP(nat,age,ovr,card){return{n:gname(nat),nick:pick(NICKS),nat,age,ovr,card,pts:card?rnd(200,1500):0,ct:0,dv:0,jt:0,sty:pick(['schnell','gruebler','doppel','nerven','scorer','allround']),fd:pick([20,16,8,10,12,18,4]),form:0}}
 function genWorld(nat){const pl=[],ord=shuffle(NAMES.map((_,i)=>i)),nn=()=>Math.random()<.55?nat:pick(NATW);
  NAMES.forEach((x,i)=>{const k=ord.indexOf(i);pl.push({n:x[0],nick:x[1],nat:x[2],age:rnd(21,47),ovr:Math.round(95-k*0.5-Math.random()*2),card:true,pts:Math.round((100-k)**2*9*(0.5+Math.random())+300),ct:0,dv:0})});
  for(let i=0;i<28;i++)pl.push(genP(pick(NATW),rnd(20,44),rnd(48,64),true));
- for(let i=0;i<40;i++){const a=rnd(12,17);pl.push(genP(nn(),a,Math.min(55,14+(a-12)*4+rnd(0,12)),false))}
+ for(let i=0;i<60;i++){const a=rnd(10,17);pl.push(genP(nn(),a,Math.max(12,Math.min(55,14+(a-12)*4+rnd(0,12))),false))}
  for(let i=0;i<40;i++)pl.push(genP(nn(),rnd(18,23),rnd(28,62),false));
- for(let i=0;i<92;i++)pl.push(genP(nn(),rnd(24,58),rnd(20,63),false));
+ for(let i=0;i<72;i++)pl.push(genP(nn(),rnd(24,58),rnd(20,63),false));
  NATS.forEach(n=>{let c=pl.filter(x=>x.nat===n).length;while(c<2){const ci=pl.findIndex(x=>!x.card&&x.age>=24&&x.nat!==nat&&pl.filter(y=>y.nat===x.nat).length>6);if(ci<0)break;pl[ci]=genP(n,rnd(22,48),rnd(40,62),false);c++}});
  return pl.map((p,i)=>({...p,id:i}))}
 
@@ -288,7 +377,7 @@ function ageMul(){const a=S.player.age;return a<=17?1.5:a<=21?1.35:a<=27?1.15:a<
 function news(t){S.news=S.news||[];S.news.unshift(`S${S.season} · W${Math.min(S.wk,WEEKS)}: ${t}`);S.news=S.news.slice(0,60)}
 function formTxt(){const f=S.player.form||0;return f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}
 function myCol(){return S&&S.player.fl||'#e9c46a'}
-function reqTxt(e){const a=e.minAge&&e.maxAge?`${e.minAge}–${e.maxAge} J.`:e.maxAge?`bis ${e.maxAge} J.`:e.minAge?`ab ${e.minAge} J.`:'';const r={loc:'Amateure',ct:'ohne Tour Card',qs:'ohne Tour Card',pc:'Tour Card',et:'Tour Card / Quali',uk:'Tour Card / Quali',ma:'Tour Card',ws:'Top 8 / Gastregion',wsf:'Top 24',mp:'Top 16 + ProTour',pcf:'Top 64 ProTour',ec:'Top 32 Euro',gs:'Sieger + Rangliste',nc:'2 Beste je Nation',plo:'Liga Top 4',wq:'nicht qualifiziert',wm:'128 Qualifizierte',pln:'Liga der Besten',yth:'',dv:''}[e.q]||'';return[r,a].filter(Boolean).join(' · ')}
+function reqTxt(e){const a=e.minAge&&e.maxAge?`${e.minAge}–${e.maxAge} J.`:e.maxAge?`bis ${e.maxAge} J.`:e.minAge?`ab ${e.minAge} J.`:'';const r={loc:'Amateure',ct:'ohne Tour Card',qs:'ohne Tour Card',pc:'Tour Card',et:'Tour Card / Quali',uk:'Tour Card / Quali',ma:'Tour Card',ws:'Top 8 / Gastregion',wsf:'Top 24',mp:'Top 16 + ProTour',pcf:'Top 64 ProTour',ec:'Top 32 Euro',gs:'Sieger + Rangliste',nc:'2 Beste je Nation',plo:'Liga Top 4',wq:'nicht qualifiziert',wm:'128 Qualifizierte',pln:'Liga der Besten',yth:'',dv:'',jt:'',js:'Top 16 Junior',jw:'Top 32 Junior'}[e.q]||'';return[r,a].filter(Boolean).join(' · ')}
 function wList(){return ranking().map(r=>r.me?'ME':r.id)}
 function ordBy(key,f,meOk){const l=S.pl.filter(f).map(x=>({id:x.id,v:x[key]||0,o:x.ovr}));if(meOk)l.push({id:'ME',v:S.player[key]||0,o:ovr()});return l.sort((a,b)=>b.v-a.v||b.o-a.o).map(x=>x.id)}
 function ptList(){return ordBy('pt',x=>x.card||x.pt>0,!!S.player.card||S.player.pt>0)}
@@ -312,9 +401,13 @@ function mePath(e){const p=S.player,W=wList(),r=W.indexOf('ME')+1;
  const cardW=()=>W.filter(id=>id==='ME'||S.pl[id].card),top16=W.slice(0,16);
  switch(e.q){
  case 'loc':return p.card?no('Als Profi spielst du keine Lokalturniere mehr.'):yes(0,'Offen für alle Amateure');
- case 'yth':case 'dv':return yes(0,'Startplatz über dein Alter');
- case 'ct':return p.card?no('Nur für Spieler ohne Tour Card.'):yes(0,'Offen für alle ohne Tour Card');
- case 'qs':return(!p.card||(p.card===1&&r>64))?yes(0,'Anmeldung mit Startgeld'):no('Deine Tour Card ist gültig.');
+ case 'yth':return yes(0,'Startplatz über dein Alter');
+ case 'jt':return yes(0,'Offen für alle von 10 bis 17');
+ case 'js':return jtIds().slice(0,16).includes('ME')?yes(0,'Top 16 der Junior-Rangliste'):no(`Nur die Top 16 der Junior-Rangliste (du: Platz ${jtRank()}).`);
+ case 'jw':return jtIds().slice(0,32).includes('ME')?yes(0,'Top 32 der Junior-Rangliste'):no(`Nur die Top 32 der Junior-Rangliste (du: Platz ${jtRank()}).`);
+ case 'dv':return p.card&&r<=64?no('Tour-Card-Spieler aus den Top 64 der Welt sind nicht startberechtigt.'):yes(0,p.card?'Tour-Card-Spieler außerhalb der Top 64':'Startplatz über dein Alter (16 bis 23)');
+ case 'ct':return p.card?no('Nur für Spieler ohne Tour Card.'):p.qsS!==S.season?no('Nur für Spieler, die in dieser Saison an der Q-School teilgenommen haben (Woche 1).'):yes(0,'Q-School-Teilnehmer ohne Tour Card');
+ case 'qs':return(!p.card||(p.card===1&&r>64))?yes(0,p.qsFree===S.season?'Freiplatz über die Challenge- oder Development-Rangliste':'Anmeldung mit Startgeld'):no('Deine Tour Card ist gültig.');
  case 'pc':return p.card?yes(0,'Alle Tour-Card-Spieler sind dabei'):no('Nur mit Tour Card.');
  case 'et':{if(top16.includes('ME'))return yes(1,'Gesetzt als Top 16 der Welt, Einstieg in Runde 2');if(ptList().filter(id=>!top16.includes(id)).slice(0,16).includes('ME'))return yes(0,'Direkt dabei über die ProTour-Rangliste');
   if(p.card)return quali(0,'Tour-Card-Qualifier',2);if(e.hn===p.nat)return quali(0,'Gastland-Qualifier',2);if(NB.includes(p.nat))return quali(0,'Nordic & Baltic Qualifier',3);if(EE.includes(p.nat))return quali(0,'East Europe Qualifier',3);
@@ -348,69 +441,25 @@ function boardSVG(sz){let s=`<svg viewBox="-200 -200 400 400" width="${sz||300}"
 /* ---------- Screens ---------- */
 const app=document.getElementById('app'),modal=document.getElementById('modal');
 let MATCH=null,raf=0;
-function show(html){cancelAnimationFrame(raf);app.innerHTML=html;window.scrollTo(0,0)}
+function show(html){cancelAnimationFrame(raf);app.innerHTML=html;window.scrollTo(0,0);navUpd()}
 const topBar=(t,back,right)=>`<div class="top"><button class="btn back" data-a="${back||'hub'}">Zurück</button><h2>${t}</h2>${right||'<span></span>'}</div>`;
-
-function cardHTML(){const st=eff(),o=ovr(st),p=S.player;
- const fx=S.totw&&S.totw.s===S.season&&S.wk<=S.totw.w+1?'totw':(p.titles.some(t=>t.startsWith('Weltmeisterschaft'))||p.bestRank<=1)?'icon':p.titles.length>=5?'hero':'';
- return `<div class="card ${fx||cardTier(o)}"><div class="ovr">${o}</div><div class="pos">${p.card?'#'+myRank():p.age<16?'U16':'AM'}</div><div class="nat">${esc(p.nat)}</div><div class="pos" style="font-size:12px;margin-top:6px" title="Form">${formTxt()}</div><div class="tag2">${fx==='totw'?'TEAM DER WOCHE':fx==='icon'?'ICON':fx==='hero'?'HERO':p.card?'PROFI':'AMATEUR'}<br>${esc(STYLES.find(s=>s.id===p.style).n)}<br>Lv ${p.lvl}</div>
- <div class="nm">${esc(p.name)}</div><div class="nick">„${esc(p.nick||STYLES.find(s=>s.id===p.style).n)}“ · ${p.age} J.</div>
- <div class="st">${STATS.map(([k,a])=>`<span><b>${st[k]}</b>${a}</span>`).join('')}</div></div>`}
-
-function home(){show(`<div class="hero">${boardSVG(300)}<h1>Darts Karriere</h1><p class="mut" style="margin:0 0 8px">Vom Jugend-Cup über die Tour Card bis zum WM-Titel.</p></div>
- <div class="stack">${S?`<button class="btn pri" data-a="hub">Karriere fortsetzen</button>`:''}
- <button class="btn ${S?'':'pri'}" data-a="create">${S?'Neue Karriere':'Karriere starten'}</button>
- <button class="btn" data-a="quick">Schnelles Spiel und 2 Spieler</button>
- <button class="btn" data-a="hof">Hall of Fame</button>
- <div class="row"><button class="btn" data-a="settings">Einstellungen</button><button class="btn" data-a="help">Anleitung</button></div></div>`)}
 
 function help(){show(`${topBar('Anleitung',S?'hub':'home')}
  <div class="panel stack"><p><b>Zielen:</b> Leg den Finger aufs Board. Das Fadenkreuz erscheint etwas über deinem Finger, die Lupe zeigt das Zielfeld vergrößert.</p>
  <p><b>Werfen:</b> Der Ring um das Fadenkreuz zieht sich zusammen und geht wieder auf. Lass los, wenn er grün und eng ist („Perfekt!“). Hältst du länger als 3 Sekunden, wird die Hand zittrig.</p>
  <p><b>501, Double-Out:</b> Runter auf genau 0, der letzte Dart muss ein Doppel oder das Bull sein. Überwirfst du, zählt die Aufnahme nicht (Bust).</p>
- <p><b>Saison:</b> 16 Wochen. Jede Woche wählst du eines der Turniere, für die du spielberechtigt bist. Die anderen laufen ohne dich.</p>
- <p><b>Karriere:</b> Unter 16 spielst du Jugend- und Lokalturniere. Ab 16 geht es auf die Challenge Tour und die Development Tour (bis 23). Die Tour Card gibt es für die Top 2 der Challenge-Rangliste, für Platz 1 der Development-Rangliste oder für das Q-School-Finale.</p>
+ <p><b>Saison:</b> 24 Wochen. Jede Woche wählst du eines der Turniere, für die du spielberechtigt bist. Die anderen laufen ohne dich.</p>
+ <p><b>Karriere:</b> Unter 16 spielst du Junior-Tour, Jugend- und Lokalturniere. Die Tour Card gibt es über die Q-School (Halbfinale), die Top 2 der Challenge-Rangliste oder die Top 2 der Development-Rangliste.</p>
+ <p><b>Nachwuchs:</b> Von 10 bis 17 spielst du die Junior-Tour mit eigener Rangliste. Die Top 16 spielen die Super 16, die Top 32 die Junior-WM, deren Finale auf der WM-Bühne läuft. Die Akademie gibt dir ein Extra-Training pro Woche. Ab 16 kommen Development Tour (bis 23) und Q-School dazu. Die Challenge Tour ist nur für Q-School-Teilnehmer.</p>
+ <p><b>Ausbullen:</b> Vor jedem Match wirft jeder einen Dart aufs Bull. Wer näher dran ist, beginnt das erste Leg, danach wird abgewechselt.</p>
  <p><b>Münzen:</b> Für Startgeld und Reisekosten, für Coach, Physio und Trainingslager, für Dart-Sets, Flights und Packs.</p>
  <p><b>Werte:</b> ${STATS.map(s=>`${s[2]}: ${s[3]}`).join('. ')}.</p></div>`)}
 
-let draft={name:'',nat:'GER',style:'sco',age:18};
-function create(){show(`${topBar('Neuer Spieler','home')}
- <form id="cf" class="stack"><div><label for="nm">Name</label><input id="nm" maxlength="22" value="${esc(draft.name)}" placeholder="z. B. Christopher Schmidt" required></div>
- <div class="row"><div><label for="nk">Spitzname</label><input id="nk" maxlength="18" placeholder="z. B. The Rocket"></div><div style="flex:.6"><label for="ag">Alter</label><input id="ag" type="number" inputmode="numeric" min="12" max="60" value="${draft.age}"></div></div>
- <div><label for="na">Nation</label><select id="na">${NATS.map(n=>`<option ${n===draft.nat?'selected':''}>${n}</option>`).join('')}</select></div>
- <div><label>Spielstil</label><div class="list">${STYLES.map(s=>`<button type="button" class="it" data-a="style" data-v="${s.id}" style="text-align:left;color:inherit;font:inherit;${draft.style===s.id?'border-color:var(--gold)':''}"><div class="g"><b>${s.n}</b><div class="small mut">${s.d}</div></div>${draft.style===s.id?'<span class="badge g">Gewählt</span>':''}</button>`).join('')}</div></div>
- <p class="small mut" style="margin:0">Alter 12 bis 60. Unter 16 startest du bei Jugend- und Lokalturnieren, ab 16 sind Challenge Tour und Q-School offen. Junge Spieler entwickeln sich schneller, ab 35 lassen die Werte langsam nach. Die lokalen Turniere richten sich nach deiner Nation.</p>
- <button class="btn pri">Karriere starten</button></form>`);
- document.getElementById('cf').onsubmit=e=>{e.preventDefault();const name=document.getElementById('nm').value.trim()||'Spieler';const age=Math.max(12,Math.min(60,parseInt(document.getElementById('ag').value)||18));const st={};const base=age<16?28+(age-12)*2:35;STATS.forEach(([k])=>st[k]=base);const sb=STYLES.find(s=>s.id===draft.style).b;for(const k in sb)st[k]+=sb[k];const nat=document.getElementById('na').value;
-  S={v:4,player:{name,nick:document.getElementById('nk').value.trim(),nat,style:draft.style,age,st,boost:{},tp:{},sp:0,xp:0,lvl:1,coins:60,pts:0,ct:0,dv:0,card:0,fans:0,form:0,h2h:{},rival:null,tb:{},trainLeft:2,set:'b18',sets:['b18'],fl:'#e9c46a',fls:['#e9c46a'],titles:[],wins:0,losses:0,best:0,t180:0,hiCo:0},pl:genWorld(nat),season:1,wk:1,done:[],res:{},T:null,news:[]};
-  news(age<16?'Karriere gestartet. Erst mal Jugendturniere, mit 16 wartet die Challenge Tour.':'Karriere gestartet. Erstes Ziel: die Tour Card.');S.no1=ranking()[0].n;ensure();plInit();save();hub()}}
-
-function evRow(e,btn){const ok=elig(e),fee=e.fee||0,p=S.player;return `<div class="panel stack" style="margin-top:8px;padding:12px"><div class="small mut">${esc(evCity(e))} · ${esc(VEN[e.v].n)} · ${reqTxt(e)||'für alle'}</div><h3>${esc(evName(e))}</h3><div class="small mut">${esc(evDesc(e))}</div>
- <div class="chips small"><span class="badge">${e.teams?e.size+' Nationen':e.size+' Spieler'}</span><span class="badge">${fmtTxt(e)}</span><span class="badge g">${fmt(e.prize*sm())} Preisgeld</span><span class="badge">${e.rk==='pro'?'Weltrangliste':e.rk==='ct'?'Challenge-Rangliste':e.rk==='dev'?'Development-Rangliste':'ohne Rangliste'}${e.pt?' + ProTour':''}${e.eu?' + Euro':''}</span>${fee?`<span class="badge">${e.q==='pc'||e.q==='et'?'Reisekosten':'Startgeld'} ${fee}</span>`:''}</div>
+let draft={name:'',nick:'',nat:'GER',style:'sco',age:18,look:null};
+function evRow(e,btn){const ok=elig(e),fee=feeOf(e),p=S.player;return `<div class="panel stack" style="margin-top:8px;padding:12px"><div class="small mut">${esc(evCity(e))} · ${esc(VEN[e.v].n)} · ${reqTxt(e)||'für alle'}</div><h3>${esc(evName(e))}</h3><div class="small mut">${esc(evDesc(e))}</div>
+ <div class="chips small"><span class="badge">${e.teams?e.size+' Nationen':e.size+' Spieler'}</span><span class="badge">${fmtTxt(e)}</span><span class="badge g">${fmt(e.prize*sm())} Preisgeld</span><span class="badge">${e.rk==='pro'?'Weltrangliste':e.rk==='ct'?'Challenge-Rangliste':e.rk==='dev'?'Development-Rangliste':e.rk==='jt'?'Junior-Rangliste':'ohne Rangliste'}${e.pt?' + ProTour':''}${e.eu?' + Euro':''}</span>${fee?`<span class="badge">${e.q==='pc'||e.q==='et'?'Reisekosten':'Startgeld'} ${fee}</span>`:''}</div>
  ${ok.ok?`<div class="small" style="color:var(--gold)">Dein Weg: ${esc(ok.why)}</div>`:''}
  ${btn&&ok.ok?(p.coins>=fee?`<button class="btn pri" data-a="enter" data-v="${e.id}">Antreten${fee?' (−'+fee+')':''}</button>`:`<button class="btn" disabled>Dir fehlen ${fee-p.coins} Münzen</button>`):''}</div>`}
-function hub(){const p=S.player,need=p.lvl*100,rv=p.rival!=null?p.h2h[String(p.rival)]||{w:0,l:0}:null,mine=S.T?[CE()]:myWeek(S.wk);
- const nxt=[];for(let w=S.wk+1;w<=WEEKS&&nxt.length<4;w++)myWeek(w).forEach(e=>nxt.length<4&&nxt.push(e));
- show(`<div class="top"><button class="btn back" data-a="home">Menü</button><span class="os" style="font-size:18px">Saison ${S.season} · W${S.wk}</span><span class="coins">${fmt(p.coins)} Münzen</span></div>
- <div class="chips small" style="margin-bottom:4px"><span class="badge ${p.card?'g':''}">${p.card?'Profi · Tour Card noch '+p.card+(p.card===1?' Saison':' Saisons'):p.age<16?'Nachwuchs · unter 16':'Amateur · ohne Tour Card'}</span><span class="badge">${fmt(p.fans)} Fans</span>${p.sponsor?`<span class="badge">Sponsor: ${esc(p.sponsor.n)}</span>`:''}${p.coach?'<span class="badge gr">Coach</span>':''}${p.physio?`<span class="badge gr">Physio ${p.physio}</span>`:''}</div>
- ${cardHTML()}
- <div class="panel" style="margin:10px 0 0"><div class="row" style="align-items:center"><div><b>Frische ${p.fresh} %</b><div class="small mut">${p.inj?'<b style="color:#ff8a8a">Verletzt: noch '+p.inj+' W.</b>':p.fresh<30?'Müde: dein Ring wird größer. Eine Woche Pause hilft.':'Turniere kosten Kraft, Pausen erholen.'}</div></div><div style="flex:1.2"><div class="bar"><i style="width:${p.fresh}%;background:${p.fresh<30?'var(--red)':'var(--green)'}"></i></div></div></div></div>
- <div class="panel" style="margin:10px 0"><div class="row" style="align-items:center"><div><b>Level ${p.lvl}</b><div class="small mut">${p.xp} / ${need} XP · ×${(ageMul()*(p.coach?1.25:1)).toFixed(2)}</div></div><div style="flex:1.2"><div class="bar"><i style="width:${Math.min(100,p.xp/need*100)}%"></i></div></div></div></div>
- <div class="panel"><div class="row" style="align-items:center"><div><b>${S.T?'Läuft gerade':'Woche '+S.wk+' von '+WEEKS}</b><div class="small mut">${S.T?'':mine.length?'Wähle ein Turnier. Die anderen laufen ohne dich.':'Diese Woche ist kein Turnier für dich dabei.'}</div></div>${S.T?'':`<button class="btn" style="flex:0 0 auto;width:auto" data-a="week">${mine.length?'Woche auslassen':'Weiter'}</button>`}</div>
- ${S.T?`${evRow(CE(),false)}<button class="btn pri" style="margin-top:8px" data-a="bracket">${S.T.q?'Zur Qualifikation':'Zum Turnierbaum'}</button>`:mine.map(e=>evRow(e,true)).join('')}</div>
- ${!S.T&&S.PL&&S.PL.ids.includes('ME')&&plWeek(S.wk)&&!S.PL.done[S.wk]?`<div class="panel stack" style="margin-top:10px;border-color:var(--gold)"><div class="small" style="color:var(--gold)">Liga der Besten · Abend ${S.wk-2} von 12</div><h3>Liga-Abend in ${PLC[S.wk-3]}</h3><div class="small mut">Läuft zusätzlich zum Turnier der Woche. Viertelfinale, Halbfinale, Finale (Sieg 5, Finale 3, Halbfinale 2 Punkte). Du bist Platz ${plRankMe()} der Tabelle.</div><div class="row"><button class="btn pri" data-a="plnGo">Antreten</button><button class="btn" data-a="plnSim">Simulieren</button></div></div>`:''}
- ${nxt.length?`<div class="panel" style="margin-top:10px"><b>Deine nächsten Turniere</b>${nxt.map(e=>`<div class="row small" style="margin-top:6px;align-items:center"><span class="badge" style="flex:0 0 auto">W${e.w}</span><span>${esc(evName(e))} <span class="mut">· ${esc(evCity(e))}</span></span></div>`).join('')}<button class="btn" style="margin-top:10px" data-a="cal">Kalender</button></div>`:`<button class="btn" style="margin-top:10px" data-a="cal">Kalender</button>`}
- <div class="panel" style="margin-top:10px"><b>Ranglisten</b><div class="small mut" style="margin-top:4px">Welt: Platz ${myRank()} (${fmt(p.pts)})${!p.card&&p.age>=16?` · Challenge: Platz ${ctRank()} (${fmt(p.ct)}), Top 2 = Tour Card`:''}${p.age>=16&&p.age<=23?` · Development: Platz ${dvRank()} (${fmt(p.dv)}), Platz 1 = Tour Card`:''}</div></div>
- ${p.goals?`<div class="panel" style="margin-top:10px"><b>Saisonziele${p.manager?' vom Manager':''}</b>${p.goals.map(g=>{const ok=goalOk(g);return `<div class="small" style="margin-top:5px;${ok?'color:var(--green)':''}">${ok?'✓':'○'} ${esc(g.t)}</div>`}).join('')}<div class="small mut" style="margin-top:5px">Bewertung am Saisonende: je erfülltes Ziel ${p.manager?1000:500} Münzen und 1 Skillpunkt.</div></div>`:''}
- ${rv?`<div class="panel" style="margin-top:10px;border-color:#7a2a33"><div class="small" style="color:#ff8a8a">Erzrivale${p.rivalHype?' · extra motiviert':''}</div><b>${esc(sname(p.rival))}</b><div class="small mut">Head-to-Head: ${rv.w} Siege · ${rv.l} Niederlagen</div></div>`:''}
- ${S.news.length?`<div class="panel" style="margin-top:10px"><b>News</b>${S.news.slice(0,4).map(n=>`<div class="small mut" style="margin-top:4px">${esc(n)}</div>`).join('')}<button class="btn" style="margin-top:10px" data-a="newsS">Alle News</button></div>`:''}
- <div class="row" style="margin-top:10px"><button class="btn" data-a="upgrade">Skillpunkte${p.sp?` (${p.sp})`:''}</button><button class="btn" data-a="trainMenu">Training (${p.trainLeft})</button></div>
- <div class="row" style="margin-top:10px"><button class="btn" data-a="shop">Shop</button><button class="btn" data-a="job" ${p.trainLeft<1?'disabled':''}>${p.age<16?'Taschengeld':'Nebenjob'} (+${p.age<16?40:120})</button></div>
- <div class="row" style="margin-top:10px"><button class="btn" data-a="sponsors">Sponsoren</button><button class="btn" data-a="rank">Ranglisten</button></div>
- <div class="row" style="margin-top:10px"><button class="btn" data-a="career">Erfolge</button><button class="btn" data-a="walked">Walk-on</button></div>
- <div class="row" style="margin-top:10px"><button class="btn" data-a="club">Verein${S.club.my!=null?'':' (vereinslos)'}</button><button class="btn" data-a="coachS">Trainer${p.trainer?'':' (keiner)'}</button></div>
- <div class="row" style="margin-top:10px"><button class="btn" data-a="social">Social</button><button class="btn" data-a="jersey">Trikot</button></div>
- <div class="row" style="margin-top:10px"><button class="btn" data-a="album">Fotoalbum</button><button class="btn" data-a="settings">Einstellungen</button></div>`);if(S.story!=null&&!S.T)storyShow()}
 function fmtRound(e,n){const idx=Math.max(0,Math.round(Math.log2(n))-1),pick2=a=>Array.isArray(a)?a[Math.min(idx,a.length-1)]:a,kurz=SETG.len!=='orig';
  if(e.sets){let s=pick2(e.sets);if(kurz&&s>2)s=Math.ceil(s/2)+(s>=6?1:0);return{sets:s,lps:e.lps||3,bo:0}}
  let bo=pick2(e.bo);if(kurz&&bo>7){bo=Math.ceil(bo*.45);if(bo%2===0)bo++;bo=Math.max(7,bo)}return{bo,sets:0,lps:3}}
@@ -441,18 +490,19 @@ function sponsors(){const p=S.player,c=p.sponsor,offers=SPONS.map((s,i)=>({...s,
  ${next?`<p class="small mut" style="margin-top:12px">Nächstes Angebot ab ${fmt(next.f)} Fans: ${esc(next.n)}</p>`:''}`)}
 
 let rtab='pro';
-function rank(){const tabs=[['pro','Welt'],['pt','ProTour'],['eu','Euro'],['ct','Challenge'],['dv','Development'],['pl','Liga']],t=rtab,me=S.player;let r,info;
+function rank(){const tabs=[['pro','Welt'],['pt','ProTour'],['eu','Euro'],['ct','Challenge'],['dv','Development'],['jt','Junior'],['pl','Liga']],t=rtab,me=S.player;let r,info;
  const mk=(ids,key)=>ids.map(id=>id==='ME'?{me:true,n:me.name,nat:me.nat,ovr:ovr(),v:me[key]||0}:{id,n:S.pl[id].n,nat:S.pl[id].nat,ovr:S.pl[id].ovr,card:S.pl[id].card,v:S.pl[id][key]||0});
- if(t==='pro'){r=ranking().map(x=>({...x,v:x.pts}));info='Weltrangliste: Top 64 behalten die Tour Card, Top 40 fahren direkt zur WM, die Top 16 sind bei Matchplay und Grand Prix dabei. Tippe auf einen Spieler, um ihn umzubenennen.'}
+ if(t==='pro'){r=ranking().map(x=>({...x,v:x.pts}));info='Weltrangliste: Top 64 behalten die Tour Card, Top 40 fahren direkt zur WM, die Top 16 sind bei Matchplay und Grand Prix dabei. Tippe auf einen Spieler für seine Karte mit allen Werten.'}
  else if(t==='pt'){r=mk(ptList(),'pt');info='ProTour-Rangliste (Floor-Events und Euro Tour, nur diese Saison): Sie entscheidet über Plätze bei Euro Tour, Matchplay, Grand Prix, Tour Finals (Top 64) und WM (Top 40 Nicht-Qualifizierte).'}
  else if(t==='eu'){r=mk(euList(),'eu');info='Euro-Tour-Rangliste: Die Top 32 spielen die Euro Championship.'}
- else if(t==='ct'){r=ctList();info='Spieler ohne Tour Card ab 16: Die Top 2 bekommen die Tour Card, die Top 2 fahren zur WM, die Top 8 sind bei den Kingdom Open direkt dabei.'}
- else if(t==='dv'){r=dvList();info='Spieler von 16 bis 23: Platz 1 bekommt die Tour Card, die Top 2 fahren zur WM.'}
+ else if(t==='ct'){r=ctList();info='Q-School-Teilnehmer ohne Tour Card: Die Top 2 bekommen die Tour Card, Platz 3 bis 16 einen Freiplatz für die Q-School, die Top 2 fahren zur WM, die Top 8 sind bei den Kingdom Open direkt dabei.'}
+ else if(t==='dv'){r=dvList();info='Spieler von 16 bis 23: Die Top 2 bekommen die Tour Card und fahren zur WM, Platz 3 bis 16 bekommen einen Freiplatz für die Q-School.'}
+ else if(t==='jt'){r=jtList();info='Junior-Rangliste (10 bis 17 Jahre): Die Top 16 spielen die Super 16, die Top 32 die Junior-WM.'}
  else{r=S.PL?Object.keys(S.PL.tab).sort((a,b)=>S.PL.tab[b]-S.PL.tab[a]).map(k=>k==='ME'?{me:true,n:me.name,nat:me.nat,ovr:ovr(),v:S.PL.tab[k]}:{id:+k,n:S.pl[+k].n,nat:S.pl[+k].nat,ovr:S.pl[+k].ovr,v:S.PL.tab[k]}):[];info='Liga der Besten: 8 Spieler, 12 Liga-Abende (Sieg 5, Finale 3, Halbfinale 2 Punkte). Die Top 4 spielen die Playoffs.'}
  const mi=r.findIndex(x=>x.me),shown=r.slice(0,80);
  show(`${topBar('Ranglisten')}<div class="chips" style="margin-bottom:10px">${tabs.map(([k,n])=>`<button class="btn ${t===k?'pri':''}" data-a="rtab" data-v="${k}">${n}</button>`).join('')}</div>
  <p class="mut small" style="margin-top:0">${info} ${S.pl.length} Spieler in der Datenbank.</p>
- <div class="list">${shown.map((x,i)=>`<div class="it" ${x.me?'':`data-a="ren" data-v="${x.id}" role="button" tabindex="0"`} style="cursor:pointer;${x.me?'border-color:var(--gold)':''}"><div class="num">${i+1}</div><div class="g"><b style="${x.me?'color:var(--gold)':''}">${esc(x.n)}</b><div class="small mut">${esc(x.nat)} · OVR ${x.ovr}${x.me?'':' · '+S.pl[x.id].age+' J.'}${t==='pro'&&!x.card&&!x.me?' · ohne Karte':''}</div></div><span class="small" style="white-space:nowrap">${fmt(x.v)}</span></div>`).join('')}
+ <div class="list">${shown.map((x,i)=>`<div class="it" ${x.me?'data-a="meCard" role="button"':`data-a="pcard" data-v="${x.id}" role="button" tabindex="0"`} style="cursor:pointer;${x.me?'border-color:var(--gold)':''}"><div class="num">${i+1}</div><div class="g"><b style="${x.me?'color:var(--gold)':''}">${esc(x.n)}</b><div class="small mut">${esc(x.nat)} · OVR ${x.ovr}${x.me?'':' · '+S.pl[x.id].age+' J.'}${t==='pro'&&!x.card&&!x.me?' · ohne Karte':''}</div></div><span class="small" style="white-space:nowrap">${fmt(x.v)}</span></div>`).join('')}
  ${mi>=80?`<div class="it" style="border-color:var(--gold)"><div class="num">${mi+1}</div><div class="g"><b style="color:var(--gold)">${esc(S.player.name)}</b></div><span class="small">${fmt(r[mi].v)}</span></div>`:''}</div>`)}
 function career(){const p=S.player,h=Object.entries(p.h2h).map(([k,v])=>({k,...v})).filter(x=>S.pl[+x.k]).sort((a,b)=>(b.w+b.l)-(a.w+a.l)).slice(0,6);show(`${topBar('Erfolge')}
  <div class="kv"><div><b>${p.wins}</b><span>Siege</span></div><div><b>${p.losses}</b><span>Niederlagen</span></div><div><b>${p.t180}</b><span>180er</span></div><div><b>${p.best.toFixed(1)}</b><span>Bester Schnitt</span></div><div><b>${p.hiCo||'–'}</b><span>Höchstes Finish</span></div><div><b>${p.card?'#'+myRank():'AM'}</b><span>Status</span></div></div>
@@ -476,7 +526,8 @@ function fieldBuild(e,me){const p=S.player,W=wList(),aiW=W.filter(id=>id!=='ME')
  const cardW=aiW.filter(id=>S.pl[id].card);
  switch(e.q){
   case 'loc':{let c=S.pl.filter(x=>!x.card&&x.nat===p.nat);if(c.length<cap(0)*1.5)c=S.pl.filter(x=>!x.card);take(band(c,e.lo,e.hi,cap(0)),1e9,0);break}
-  case 'yth':case 'dv':take(shuffle(S.pl.filter(A).map(x=>x.id)),1e9,0);break;
+  case 'js':case 'jw':take(jtIds().filter(id=>id!=='ME'),1e9,0);break;
+  case 'yth':case 'dv':case 'jt':take(shuffle(S.pl.filter(A).map(x=>x.id)),1e9,0);break;
   case 'ct':take(band(S.pl.filter(x=>!x.card&&A(x)),e.lo,e.hi,cap(0)),1e9,0);break;
   case 'qs':take(byOvr(x=>!x.card&&x.age>=16),1e9,0);break;
   case 'pc':take(shuffle(S.pl.filter(x=>x.card).map(x=>x.id)),1e9,0);break;
@@ -494,7 +545,9 @@ function fieldBuild(e,me){const p=S.player,W=wList(),aiW=W.filter(id=>id!=='ME')
   case 'pln':take(S.PL.ids.filter(id=>id!=='ME'),1e9,0);break;
   case 'wq':{const q=new Set(wmA());take(byOvr(x=>x.age>=16&&!q.has(x.id)),1e9,0);break}
   case 'wm':take(wmField().filter(id=>id!=='ME'),1e9,0);break}
- st.forEach((a,k)=>take(byOvr(x=>A(x)&&x.age>=12),1e9,k));if(me)st[ms].push('ME');return st}
+ st.forEach((a,k)=>take(byOvr(x=>A(x)&&x.age>=10),1e9,k));
+ if(e.maxAge&&e.maxAge<=17)for(let k=0;k<st.length;k++)while(st[k].length<cap(k)){const a=rnd(Math.max(10,e.minAge||10),e.maxAge),np=genP(pick(NATW),a,Math.max(12,Math.min(55,14+(a-12)*4+rnd(0,12))),false);np.id=S.pl.length;np.sty=pick(AIST)[0];np.fd=pick([20,16,8,10]);np.form=0;np.jt=0;S.pl.push(np);used.add(np.id);st[k].push(np.id)}
+ if(me)st[ms].push('ME');return st}
 function koDone(){const T=S.T;if(!T.rounds)return false;const l=T.rounds[T.cur];return l.length===1&&l[0].w!=null&&!(T.stages&&T.stages[T.cur+1]&&T.stages[T.cur+1].length)}
 function rlab(i){const T=S.T;return T.stages&&T.stages[i+1]&&T.stages[i+1].length?(EVM[T.eid].q==='ma'?'Vorrunde '+(i+1):'Runde '+(i+1)):rnameN(T.rounds[i].length*2)}
 function rnameN(n){return n===2?'Finale':n===4?'Halbfinale':n===8?'Viertelfinale':n===16?'Achtelfinale':n===32?'Letzte 32':n===64?'Letzte 64':n===128?'Letzte 128':'Vorrunde'}
@@ -538,12 +591,12 @@ function bracket(){const T=S.T,e=CE();if(T.q)return qualiView();if(T.kind==='gro
  const nextIn=T.stages&&T.stages[T.cur+1]&&T.stages[T.cur+1].length;
  show(`<div class="top"><button class="btn back" data-a="hub">Zurück</button><h2 style="font-size:22px">${esc(evName(e))}</h2><span class="badge">${e.teams?e.size+' Nationen':e.size+' Spieler'}</span></div><p class="small mut" style="margin:-6px 0 10px">${esc(evCity(e))} · ${esc(VEN[e.v].n)} · ${rlab(T.cur)}: ${f.sets?`zuerst ${f.sets} Sätze`:`Best of ${f.bo} Legs`}${nextIn?` · In der nächsten Runde steigen ${nextIn} gesetzte Spieler ein`:''}</p>
  ${champ!=null?`<div class="panel" style="text-align:center;margin-bottom:12px"><div class="small mut">Turniersieger</div><h2 style="color:var(--gold)">${esc(pname(champ))}</h2></div>`:''}
- <div class="stack" style="margin-bottom:14px">${champ!=null?`<button class="btn pri" data-a="finishT">Turnier abschließen</button>`:mine?`<div class="panel"><div class="small mut">${rlab(T.cur)}</div><h3>${esc(pname('ME'))} gegen ${esc(pname(op))}</h3><div class="small mut" style="margin-top:4px">Gegner-OVR ${povr(op)} · ${esc(T.teams?'Team '+T.teams[op].nat:pnick(op)+' · '+who(op).age+' J.')}${!T.teams&&isRival(op)?' · <b style="color:#ff8a8a">ERZRIVALE</b>':''}</div>${T.teams?'':scout(op)}<div class="small mut" style="margin-top:6px">${esc(COND[getCond(e)])}${isHome(e)?' · Heimspiel':''}</div></div><button class="btn pri" data-a="playT">Auf die Bühne</button>`:`<button class="btn pri" data-a="simT">${T.out?'Restliches Turnier simulieren':'Nächste Runde'}</button>`}</div>
+ <div class="stack" style="margin-bottom:14px">${champ!=null?`<button class="btn pri" data-a="finishT">Turnier abschließen</button>`:mine?`<div class="panel"><div class="small mut">${rlab(T.cur)}</div><h3>${esc(pname('ME'))} gegen ${esc(pname(op))}</h3><div class="small mut" style="margin-top:4px">Gegner-OVR ${povr(op)} · ${esc(T.teams?'Team '+T.teams[op].nat:pnick(op)+' · '+who(op).age+' J.')}${!T.teams&&isRival(op)?' · <b style="color:#ff8a8a">ERZRIVALE</b>':''}</div>${T.teams?'':`<div class="vs"><div class="cmini" data-a="meCard" role="button">${cardHTML()}</div><div class="vt">VS</div><div class="cmini" data-a="pcard" data-v="${op}" role="button">${oppCard(op)}</div></div><div class="small mut" style="text-align:center">Tippe auf eine Karte für alle Details</div>`+scout(op)}<div class="small mut" style="margin-top:6px">${esc(COND[getCond(e)])}${isHome(e)?' · Heimspiel':''}</div></div><button class="btn pri" data-a="playT">Auf die Bühne</button>`:`<button class="btn pri" data-a="simT">${T.out?'Restliches Turnier simulieren':'Nächste Runde'}</button>`}</div>
  ${T.rounds.map((rd,i)=>{const meM=rd.filter(m=>m.a==='ME'||m.b==='ME');return `<div class="rd"><h3>${rlab(i)}</h3>${rd.length<=16?rd.map(line).join(''):meM.map(line).join('')+`<div class="small mut" style="margin-top:6px">… und ${rd.length-meM.length} weitere Partien</div>`}</div>`}).reverse().join('')}`)}
 function qualiView(){const T=S.T,e=CE(),q=T.q,o=q.opp;show(`<div class="top"><button class="btn back" data-a="hub">Zurück</button><h2 style="font-size:22px">${esc(evName(e))}</h2><span class="badge">Quali</span></div><p class="small mut" style="margin:-6px 0 10px">${esc(evCity(e))} · ${esc(q.label)} · Best of ${qBo()} Legs</p>
  <div class="panel stack"><div class="small mut">Qualifikation, Sieg ${q.w+1} von ${q.n}</div><h3>${esc(S.player.name)} gegen ${esc(sname(o))}</h3><div class="small mut">Gegner-OVR ${povr(o)} · ${esc(who(o).nat)}</div>${scout(o)}<div class="small">Gewinnst du ${q.n} Spiele, stehst du im Hauptfeld.</div><button class="btn pri" data-a="playT">Auf die Bühne</button></div>`)}
 function qBo(){return SETG.len!=='orig'?7:11}
-function enter(id,noMe){const e=EVM[id],me=!noMe?mePath(e):null;if(me&&!me.ok)return;if(me){if(S.player.coins<(e.fee||0))return;S.player.coins-=e.fee||0}
+function enter(id,noMe){const e=EVM[id],me=!noMe?mePath(e):null;if(me&&!me.ok)return;if(me){const fe=feeOf(e);if(S.player.coins<fe)return;S.player.coins-=fe;if(e.q==='qs')S.player.qsS=S.season}
  if(me&&me.q){S.T={eid:id,q:{...me.q,w:0,stage:me.stage,opp:qOpp(e)}};save();bracket();return}
  buildMain(e,me);save();if(noMe){runAll();return finishT(true)}bracket()}
 function runAll(){let g=0;while(S.T.kind==='groups'&&g++<20)grpAdvance();g=0;while(!koDone()&&g++<20)advance()}
@@ -555,7 +608,7 @@ function simT(){const T=S.T;if(T.kind==='groups'){if(T.out){runAll()}else grpAdv
 let PRESS=null;
 function finishT(silent){const T=S.T,e=CE(),tot=T.rounds.length,P=e.prize*sm(),share=[1,.5,.25,.125,.06,.03,.015,.008],p=S.player,nm=evName(e);
  const place={};T.rounds.forEach((rd,i)=>rd.forEach(m=>{const l=m.w===m.a?m.b:m.a;place[l]=tot-i}));(T.gids||[]).forEach(id=>{if(place[id]===undefined)place[id]=tot+1});const fin=T.rounds[tot-1][0],champ=fin.w,runner=fin.w===fin.a?fin.b:fin.a;place[champ]=0;
- const award=(id,mo)=>{const tg=o=>{if(e.rk==='pro')o.pts=(o.pts||0)+mo;if(e.rk==='ct')o.ct=(o.ct||0)+mo;if(e.rk==='dev')o.dv=(o.dv||0)+mo;if(e.pt)o.pt=(o.pt||0)+mo;if(e.eu)o.eu=(o.eu||0)+mo;if(e.ws)o.ws=(o.ws||0)+mo};if(id==='ME'){tg(p);p.coins+=Math.round(mo*(e.rk==='pro'?.35:.6)*(p.manager?.9:1));return}const w=who(id);if(w)tg(w)};
+ const award=(id,mo)=>{const tg=o=>{if(e.rk==='pro')o.pts=(o.pts||0)+mo;if(e.rk==='ct')o.ct=(o.ct||0)+mo;if(e.rk==='dev')o.dv=(o.dv||0)+mo;if(e.rk==='jt')o.jt=(o.jt||0)+mo;if(e.pt)o.pt=(o.pt||0)+mo;if(e.eu)o.eu=(o.eu||0)+mo;if(e.ws)o.ws=(o.ws||0)+mo};if(id==='ME'){tg(p);p.coins+=Math.round(mo*(e.rk==='pro'?.35:.6)*(p.manager?.9:1));return}const w=who(id);if(w)tg(w)};
  for(const id in place){const money=Math.round(P*(share[place[id]]||.004));if(T.teams)T.teams[id].ids.forEach(i=>award(i,Math.round(money/2)));else award(id,money)}
  const key=k=>k==='ME'||String(k).startsWith('N:')?k:+k;
  // Spezial: Liga-Abend
@@ -586,7 +639,7 @@ function finishT(silent){const T=S.T,e=CE(),tot=T.rounds.length,P=e.prize*sm(),s
    if(pl<=2&&!won)news(`${p.name} erreicht beim ${nm} das ${pl===1?'Finale':'Halbfinale'}`);if(pl===1)p.finalS=1;p.played=p.played||[];p.played.push(e.id);if(pl>=4&&e.t>=3&&Math.random()<.5)feed(pick([`Früh raus heute, @${handle(p.name)}. Kopf hoch!`,`Das war nichts, @${handle(p.name)} …`]));if(p.rival!=null&&Math.random()<.25)feed(pick(['Manche können halt nur Kirmes.','Wir sehen uns auf der Bühne. 😉'.replace(' 😉',''),'Zu viel Gerede, zu wenig Doppel.']),handle(sname(p.rival)));
    const lostIn=pl>tot?'Aus in der Gruppenphase':'Aus im '+rnameN(2**pl);
    html=`<div class="os" style="font-size:16px;color:var(--mut)">${esc(nm)}</div><h1 style="color:${won?'var(--gold)':'var(--ink)'}">${won?'Turniersieg!':pl===1?'Finalist':lostIn}</h1>
-   <p>${e.rk==='pro'?`+${fmt(money)} Ranglistenpunkte · `:e.rk==='ct'?`+${fmt(money)} Challenge-Punkte · `:e.rk==='dev'?`+${fmt(money)} Development-Punkte · `:''}+${fmt(money*(e.rk==='pro'?.35:.6))} Münzen · +${xg} XP</p>${extra}`;
+   <p>${e.rk==='pro'?`+${fmt(money)} Ranglistenpunkte · `:e.rk==='ct'?`+${fmt(money)} Challenge-Punkte · `:e.rk==='dev'?`+${fmt(money)} Development-Punkte · `:e.rk==='jt'?`+${fmt(money)} Junior-Punkte · `:''}+${fmt(money*(e.rk==='pro'?.35:.6))} Münzen · +${xg} XP</p>${extra}`;
    if(pl<=2&&e.t>=2&&!T.teams){press=true;let opp=null;for(const rd of T.rounds)for(const m of rd)if(m.a==='ME'||m.b==='ME')opp=m.a==='ME'?m.b:m.a;PRESS={pl,n:nm,opp}}}}
  S.T=null;save();if(silent)return;
  const msgs=endWeek();
@@ -596,44 +649,45 @@ function plSim(){const e=EVM.PLN;buildMain(e,S.PL.ids.includes('ME')?{stage:0}:n
 function enterPLN(){buildMain(EVM.PLN,{stage:0});save();bracket()}
 function qualiResult(won){const T=S.T,e=CE(),q=T.q;if(won){q.w++;if(q.w>=q.n){delete S.T.q;buildMain(e,{stage:q.stage});news(`${S.player.name} qualifiziert sich über den ${q.label} für ${evName(e)}`);toast('Qualifiziert! Du stehst im Hauptfeld');save();return}q.opp=qOpp(e);save();return}
  buildMain(e,null);S.T.qlost=true;runAll();save()}
-function endWeek(){if(plWeek(S.wk)&&S.PL&&!S.PL.done[S.wk])plSim();for(const e of weekEv(S.wk))if(!S.done.includes(e.id))enter(e.id,true);const p=S.player;p.trainLeft=(p.board?3:2)+(p.academy?1:0);
+function endWeek(){if(plWeek(S.wk)&&S.PL&&!S.PL.done[S.wk])plSim();for(const e of weekEv(S.wk))if(!S.done.includes(e.id))enter(e.id,true);const p=S.player;p.trainLeft=(p.board?3:2)+(p.academy?1:0)+(p.jacad&&p.age<=17?1:0);
  p.fresh=Math.min(100,p.fresh+(S.playedWk?8:25));S.playedWk=false;if(p.inj){p.inj--;if(!p.inj){news(`${p.name} ist wieder fit`);toast('Wieder fit!')}}
  if(p.pub){p.coins+=150;p.fans+=20}if(p.trainer){const c=COACHES.find(x=>x.id===p.trainer);if(p.coins>=c.fee)p.coins-=c.fee;else{p.trainer=null;news(`${c.n} kündigt, weil kein Gehalt mehr kam`)}if(p.trainer==='fc')p.fresh=Math.min(100,p.fresh+10)}if(p.trainer==='mc'&&(p.form||0)<-1)p.form=-1;if(p.academy)p.coins+=300;if(S.club.my!=null)p.coins+=S.club.sal;if(S.wk<=14)clubRound(S.wk);
  S.pl.forEach(x=>{if(x.form&&Math.random()<.3)x.form-=Math.sign(x.form)});S.wk++;let msgs=null;if(S.wk>WEEKS)msgs=processSeason();else if(S.story==null&&Math.random()<.22&&S.wk>1)S.story=storyPick();if(S.wk>2&&Math.random()<.35){const t=ranking().filter(r=>!r.me)[rnd(0,15)];if(t)feed(pick(['Training heute: 3 Stunden Doppel. Weiter geht’s.','Danke für die Unterstützung letzte Woche!','Neue Woche, neue Chance.','Wer kommt nächste Woche in die Halle?']),handle(t.n))}save();return msgs}
 function week(){const m=endWeek();if(m)popup(`<h2>Saison ${S.season-1} beendet</h2>${m.map(x=>`<p class="small">${esc(x)}</p>`).join('')}`,'hub');else{toast('Woche '+(S.wk-1)+' ist gespielt');hub()}}
 function aiSeason(){const ret=[];S.pl.forEach((x,i)=>{x.age++;const d=x.age<=23?rnd(0,3):x.age<=32?rnd(-1,1):x.age<=40?rnd(-2,1):rnd(-3,0);x.ovr=Math.max(12,Math.min(97,x.ovr+d));
-  if((x.age>=44&&Math.random()<.25)||(x.age>=30&&x.ovr<26&&Math.random()<.3)){ret.push(x.n);const np=genP(Math.random()<.55?S.player.nat:pick(NATW),rnd(12,16),rnd(14,30),false);for(const k in x)delete x[k];Object.assign(x,np,{id:i});if(String(S.player.rival)===String(i)){S.player.rival=null;S.player.rivalHype=false}delete S.player.h2h[String(i)]}});
+  if((x.age>=44&&Math.random()<.25)||(x.age>=30&&x.ovr<26&&Math.random()<.3)){ret.push(x.n);const np=genP(Math.random()<.55?S.player.nat:pick(NATW),rnd(10,15),rnd(12,30),false);for(const k in x)delete x[k];Object.assign(x,np,{id:i});if(String(S.player.rival)===String(i)){S.player.rival=null;S.player.rivalHype=false}delete S.player.h2h[String(i)]}});
  if(ret.length)news(`Karriereende: ${ret.slice(0,3).join(', ')}${ret.length>3?' und '+(ret.length-3)+' weitere. Neue Talente rücken nach':''}`);
- const ctTop=S.pl.filter(x=>!x.card&&x.age>=16).sort((a,b)=>b.ct-a.ct).slice(0,2),dvTop=S.pl.filter(x=>x.age>=16&&x.age<=23&&!x.card).sort((a,b)=>b.dv-a.dv).slice(0,1);
+ const ctTop=S.pl.filter(x=>!x.card&&x.age>=16).sort((a,b)=>b.ct-a.ct).slice(0,2),dvTop=S.pl.filter(x=>x.age>=16&&x.age<=23&&!x.card).sort((a,b)=>b.dv-a.dv).slice(0,2);
  const rk=S.pl.filter(x=>x.card||x.pts>0).sort((a,b)=>b.pts-a.pts),keep=new Set(rk.slice(0,118).map(x=>x.id)),lost=[];
  S.pl.forEach(x=>{if(x.card&&!keep.has(x.id)){x.card=false;lost.push(x.n)}});
  const neu=[...new Set([...ctTop,...dvTop,...S.pl.filter(x=>!x.card&&x.age>=16&&!ctTop.includes(x)&&!dvTop.includes(x)).sort((a,b)=>b.ovr-a.ovr).slice(0,6)])];neu.forEach(x=>x.card=true);
  if(neu.length)news(`Neu auf der Tour mit Tour Card: ${neu.slice(0,4).map(x=>x.n).join(', ')}${neu.length>4?' und weitere':''}`);if(lost.length)news(`${lost.length} Spieler verlieren ihre Tour Card, darunter ${lost.slice(0,2).join(' und ')}`);
- S.pl.forEach(x=>{x.ct=0;x.dv=0;x.pts=Math.round(x.pts*.6)})}
-function processSeason(){const p=S.player,msgs=[];goalsEval(msgs);p.hist.push({s:S.season,rank:myRank(),ovr:ovr(),titles:p.titles.filter(t=>t.endsWith(' '+S.season)).length,avg:p.ssD?Math.round(p.ssP/p.ssD*30)/10:0});p.ssP=0;p.ssD=0;p.bestRank=Math.min(p.bestRank,myRank());clubSeason(msgs);S.cond={};const ctr=p.age>=16&&!p.card?ctRank():99,dvr=p.age>=16&&p.age<=23?dvRank():99,top=ranking()[0];
+ S.pl.forEach(x=>{x.ct=0;x.dv=0;x.jt=0;x.pts=Math.round(x.pts*.6)})}
+function processSeason(){const p=S.player,msgs=[];goalsEval(msgs);p.hist.push({s:S.season,rank:myRank(),ovr:ovr(),titles:p.titles.filter(t=>t.endsWith(' '+S.season)).length,avg:p.ssD?Math.round(p.ssP/p.ssD*30)/10:0});p.ssP=0;p.ssD=0;p.bestRank=Math.min(p.bestRank,myRank());clubSeason(msgs);S.cond={};const ctr=p.age>=16&&!p.card?ctRank():99,dvr=p.age>=16&&p.age<=23?dvRank():99,jtr=p.age<=17?jtRank():99,top=ranking()[0];
  msgs.push(`Saisonbester der Weltrangliste: ${top.n}.`);S.season++;S.wk=1;S.done=[];S.res={};p.age++;msgs.push(`Du bist jetzt ${p.age} Jahre alt.`);
  if(p.age>=35){const k=STATS[rnd(0,5)],d=p.age>=40?2:1;p.st[k[0]]=Math.max(20,p.st[k[0]]-d);msgs.push(`Alter: ${k[2]} −${d}`)}
  if(p.cardNew){p.card=2;p.cardNew=0;msgs.push('Tour Card für 2 Saisons. Willkommen bei den Profis!')}
  else if(p.card>0){p.card--;if(p.card===0){if(myRank()<=64){p.card=2;msgs.push(`Platz ${myRank()} der Weltrangliste: Tour Card um 2 Saisons verlängert.`)}else msgs.push('Tour Card verloren (nicht in den Top 64). Zurück auf die Challenge Tour.')}}
- if(!p.card){if(ctr<=2&&p.ct>0){p.card=2;msgs.push(`Platz ${ctr} der Challenge-Rangliste: Tour Card für 2 Saisons!`)}else if(dvr===1&&p.dv>0){p.card=2;msgs.push('Platz 1 der Development-Rangliste: Tour Card für 2 Saisons!')}else if(p.age>=16)msgs.push(`Challenge-Rangliste: Platz ${ctr}. Neue Saison, neue Chance.`);else msgs.push('Weiter geht es im Nachwuchs. Mit 16 öffnen sich Challenge Tour und Q-School.')}
+ if(jtr<99&&p.jt>0)msgs.push(`Junior-Rangliste: Platz ${jtr}.`);
+ if(!p.card){if(ctr<=2&&p.ct>0){p.card=2;msgs.push(`Platz ${ctr} der Challenge-Rangliste: Tour Card für 2 Saisons!`)}else if(dvr<=2&&p.dv>0){p.card=2;msgs.push(`Platz ${dvr} der Development-Rangliste: Tour Card für 2 Saisons!`)}else{if((ctr<=16&&p.ct>0)||(dvr<=16&&p.dv>0)){p.qsFree=S.season;msgs.push(`Platz ${ctr<=16&&p.ct>0?ctr+' der Challenge':dvr+' der Development'}-Rangliste: Freiplatz für die Q-School.`)}if(p.age>=16)msgs.push(ctr<99&&p.ct>0?`Challenge-Rangliste: Platz ${ctr}. Neue Saison, neue Chance.`:'Neue Saison. Die Q-School in Woche 1 ist dein Weg zur Tour Card.');else msgs.push('Weiter geht es im Nachwuchs. Mit 16 öffnen sich Development Tour und Q-School.')}}
  if(p.card&&!msgs.some(m=>m.includes('Tour Card für')))0;if(p.card)news(`${p.name} startet als Profi in die Saison ${S.season}`);
  const sp=p.sponsor;if(sp){if(spDone(sp)){p.coins+=sp.bonus;msgs.push(`Sponsor ${sp.n}: Saisonziel erreicht, +${fmt(sp.bonus)} Münzen.`)}else msgs.push(`Sponsor ${sp.n}: Ziel verfehlt, der Vertrag endet.`);p.sponsor=null}
  if(p.coach){p.coach=false;msgs.push('Der Coach-Vertrag ist ausgelaufen.')}
- p.wmq=false;p.ct=0;p.dv=0;p.pt=0;p.eu=0;p.ws=0;S.wq=[];S.titleS=[];S.pl.forEach(x=>{x.pt=0;x.eu=0;x.ws=0});p.pts=Math.round(p.pts*.6);aiSeason();plInit();genGoals();
+ p.wmq=false;p.ct=0;p.dv=0;p.jt=0;p.pt=0;p.eu=0;p.ws=0;S.wq=[];S.titleS=[];S.pl.forEach(x=>{x.pt=0;x.eu=0;x.ws=0});p.pts=Math.round(p.pts*.6);aiSeason();plInit();genGoals();
  news(`Saison ${S.season} beginnt.`);return msgs}
 function press(){const P=PRESS;if(!P)return hub();const q=P.pl===0?`Glückwunsch zum Sieg beim ${P.n}! Was bedeutet dir der Titel?`:P.pl===1?'Knapp verloren im Finale. Was nimmst du mit?':`Halbfinale beim ${P.n}. Wie zufrieden bist du?`;
  modal.innerHTML=`<div class="modal"><div class="box panel" style="text-align:left"><div class="small mut">Pressekonferenz</div><h2 style="margin:4px 0 12px;font-size:24px">„${esc(q)}“</h2><div class="stack">${PRESS_A.map((a,i)=>`<button class="btn" style="justify-content:flex-start;text-align:left;padding:10px 14px" data-a="pressA" data-v="${i}"><span><b>${a[0]}:</b> „${a[1]}“<br><span class="small mut">${a[2]}</span></span></button>`).join('')}</div></div></div>`}
 function pressA(i){const p=S.player;i=+i;let msg;if(i===0){p.form=Math.min(3,(p.form||0)+1);p.fans+=100;msg='Form +1 · +100 Fans'}else if(i===1){p.fans+=400;msg='+400 Fans'}else{p.fans+=900;if(p.rival==null&&PRESS.opp!=null&&PRESS.opp!=='ME')p.rival=PRESS.opp;if(p.rival!=null){p.rivalHype=true;msg=`+900 Fans · ${sname(p.rival)} ist jetzt extra motiviert`;news(`${p.name} stichelt gegen ${sname(p.rival)}: „Die anderen sollten sich warm anziehen.“`)}else msg='+900 Fans'}
  PRESS=null;save();modal.innerHTML='';toast(msg);hub()}
-function giveXP(x){const p=S.player;x=Math.round(x*ageMul()*(p.coach?1.25:1));p.xp+=x;let up=0;while(p.xp>=p.lvl*100){p.xp-=p.lvl*100;p.lvl++;p.sp+=3;up++}if(up)toast(`Level ${p.lvl}! +${3*up} Skillpunkte`);return x}
+function giveXP(x){const p=S.player;x=Math.round(x*ageMul()*(p.coach?1.25:1)*(p.jacad&&p.age<=17?1.15:1));p.xp+=x;let up=0;while(p.xp>=p.lvl*100){p.xp-=p.lvl*100;p.lvl++;p.sp+=3;up++}if(up)toast(`Level ${p.lvl}! +${3*up} Skillpunkte`);return x}
 function playT(){const T=S.T,e=CE();
- const opObj=opp=>{const x=who(opp);return{n:sname(opp),nick:pnick(opp),ovr:povr(opp),rival:isRival(opp),sty:x.sty,fd:x.fd,fav:wList().indexOf(opp)<10}};
+ const opObj=opp=>{const x=who(opp);return{id:opp,n:sname(opp),nick:pnick(opp),ovr:povr(opp),rival:isRival(opp),sty:x.sty,fd:x.fd,st:statsFor(x),fav:wList().indexOf(opp)<10}};
  if(T.q)return startMatch(opObj(T.q.opp),{bo:qBo()},{type:'t',quali:1,opp:T.q.opp,ev:evName(e),stage:T.q.label});
  let m,stage,F;
  if(T.kind==='groups'){m=grpMine();stage='Gruppenphase';F={bo:e.groups.bo}}
  else{m=T.rounds[T.cur].find(m=>(m.a==='ME'||m.b==='ME')&&!m.w);const f=curFmt();stage=rlab(T.cur);F={bo:f.bo||1,sets:f.sets,lps:f.lps,din:!!e.din}}
  const opp=m.a==='ME'?m.b:m.a;let o;
- if(T.teams){const tm=T.teams[opp];o={n:'Team '+tm.nat,ovr:povr(opp),thr:tm.ids.map(i=>({n:sname(i),human:false,ovr:S.pl[i].ovr,sty:S.pl[i].sty,fd:S.pl[i].fd}))};const pid=T.teams.ME.ids.find(i=>i!=='ME');F.partner={n:sname(pid),ovr:S.pl[pid].ovr,sty:S.pl[pid].sty,fd:S.pl[pid].fd};F.team='Team '+T.teams.ME.nat}
+ if(T.teams){const tm=T.teams[opp];o={n:'Team '+tm.nat,ovr:povr(opp),thr:tm.ids.map(i=>({n:sname(i),human:false,ovr:S.pl[i].ovr,sty:S.pl[i].sty,fd:S.pl[i].fd,st:statsFor(S.pl[i])}))};const pid=T.teams.ME.ids.find(i=>i!=='ME');F.partner={n:sname(pid),ovr:S.pl[pid].ovr,sty:S.pl[pid].sty,fd:S.pl[pid].fd};F.team='Team '+T.teams.ME.nat}
  else o=opObj(opp);
  startMatch(o,F,{type:'t',m,opp,team:!!T.teams,grp:T.kind==='groups',ev:evName(e),stage})}
 /* ---------- Training ---------- */
@@ -681,9 +735,9 @@ function quick(){const ros=S?S.pl.filter(x=>x.card):genWorld('GER').filter(x=>x.
 let cv,cx,boardImg,DPR=1,SZ=0;
 function startMatch(opp,F,ctx){const bo=F.bo;
  const pvp=ctx.type==='pvp',DEF={pra:65,kon:65,sco:65,dop:65,ner:65,aus:65},meSt=pvp||!S?DEF:eff();
- const myN=pvp?F.p1:S?S.player.name:'Du';const me={n:F.team||myN,human:true,st:meSt,ti:0,thr:[{n:myN,human:true}].concat(F.partner?[{n:F.partner.n,human:false,ovr:F.partner.ovr,sty:F.partner.sty,fd:F.partner.fd}]:[])};const adj=ctx.type==='ghost'?0:DIFF[SETG.diff][0],ai=pvp?{n:F.p2,human:true,st:DEF,ti:0,thr:[{n:F.p2,human:true}]}:{n:opp.n,human:false,ovr:opp.ovr+adj,ti:0,thr:(opp.thr||[{n:opp.n,human:false,ovr:opp.ovr,sty:opp.sty,fd:opp.fd,replay:opp.replay}]).map(t=>({...t,ovr:t.ovr+adj,ri:0}))};
+ const myN=pvp?F.p1:S?S.player.name:'Du';const me={n:F.team||myN,human:true,st:meSt,ti:0,thr:[{n:myN,human:true}].concat(F.partner?[{n:F.partner.n,human:false,ovr:F.partner.ovr,sty:F.partner.sty,fd:F.partner.fd}]:[])};const adj=ctx.type==='ghost'?0:DIFF[SETG.diff][0],ai=pvp?{n:F.p2,human:true,st:DEF,ti:0,thr:[{n:F.p2,human:true}]}:{n:opp.n,human:false,ovr:opp.ovr+adj,ti:0,thr:(opp.thr||[{n:opp.n,human:false,ovr:opp.ovr,sty:opp.sty,fd:opp.fd,st:opp.st,replay:opp.replay}]).map(t=>({...t,ovr:t.ovr+adj,adj,ri:0}))};
  const cond=ctx.type==='t'?getCond(CE()):'normal',home=ctx.type==='t'&&isHome(CE()),V=ctx.type==='t'?{...VEN[CE().v],n:VEN[CE().v].n+', '+evCity(CE())+(cond!=='normal'?' · '+cond:'')}:ctx.type==='ghost'?{...TRAIN_V,n:'Geister-Duell',l:'#9fd6ff'}:ctx.type==='pvp'?{...TRAIN_V,n:'Wohnzimmer',l:'#ffb86b'}:TRAIN_V;
- MATCH={live:true,V,fly:null,shake:0,fx:[],p:[me,ai],ltw:F.sets?(F.lps||3):Math.ceil(bo/2),lps:F.lps||3,bo,stw:F.sets||0,sets:[0,0],din:!!F.din,inn:[false,false],legs:[0,0],rem:[501,501],first:0,cur:0,st:[mk(),mk()],turn:null,busy:false,aim:null,ctx,cmt:'Game on!',marks:[],legDarts:[0,0],start:F.start||501,mode:F.mode||'x01',ld:[0,0],lb:[0,0],legXY:[],md:[0,0],nineOn:null,cond,home,fanOpp:!!opp.fav&&!home};MATCH.rem=[MATCH.start,MATCH.start];if(MATCH.mode!=='x01')modeInit(MATCH);
+ MATCH={live:true,V,fly:null,shake:0,fx:[],p:[me,ai],ltw:F.sets?(F.lps||3):Math.ceil(bo/2),lps:F.lps||3,bo,stw:F.sets||0,sets:[0,0],din:!!F.din,inn:[false,false],legs:[0,0],rem:[501,501],first:0,cur:0,st:[mk(),mk()],turn:null,busy:false,aim:null,ctx,cmt:'Game on!',marks:[],legDarts:[0,0],start:F.start||501,mode:F.mode||'x01',ld:[0,0],lb:[0,0],legXY:[],md:[0,0],nineOn:null,cond,home,fanOpp:!!opp.fav&&!home,l180:[0,0]};if(MATCH.mode==='x01'&&ctx.type!=='train'&&ctx.type!=='ghost')MATCH.bull={d:[null,null]};MATCH.rem=[MATCH.start,MATCH.start];if(MATCH.mode!=='x01')modeInit(MATCH);
  if(ctx.type==='train'){MATCH.p=[me];MATCH.train={k:ctx.k,i:0,darts:0,sc:ctx.k==='bob'?27:ctx.k==='half'?40:0,h:0,tg:121,r:0,d:0,ok:0,m:{},pts:0,v:0,sh:0};MATCH.rem=[ctx.k==='121'?121:999,0];MATCH.train.daily=!!ctx.daily}
  show(`<div class="sb" id="sb"></div><div class="cmt" id="cmt"></div><div class="ctxt" id="ctxt"></div>
  <div class="stage" id="stage" style="--v1:${V.c1};--v2:${V.c2};--vl:${V.l};--vc:${V.c};--vb:${V.b}"><div class="beams"></div><div class="crowd">${crowdSVG(S?S.wk*13+5:3)}</div><div class="vname">${esc(V.n)}</div><div class="fig" id="fig"><canvas id="cv"></canvas></div><div class="lstat" id="lstat"></div></div>
@@ -723,32 +777,33 @@ function pu(e){if(!MATCH||!MATCH.aim)return;e.preventDefault();const[x,y]=aimPt(
 function throwDart(x,y){const M=MATCH;M.fly={x,y,sx:x*.35+((M.cur===0&&SETG.lefty)||(M.cur===1&&!SETG.lefty)?60:-60),sy:260,t0:performance.now(),dur:360};sfx(2);
  setTimeout(()=>{if(MATCH!==M)return;M.fly=null;M.shake=performance.now();M.fx.push({k:'ring',x,y,t:performance.now()});dart(x,y);M.tReady=performance.now();if(M.nerv)M.nerv[M.cur]=0},360)}
 function thrower(){const s=MATCH.p[MATCH.cur];return s.thr[s.ti%s.thr.length]}
-function startTurn(){const M=MATCH;M.turn={d:[],start:M.rem[M.cur]};M.marks=[];M.ri=0;M.tReady=performance.now()+600;hud();if(thrower().human&&M.rem[M.cur]<=170&&checkout(M.rem[M.cur],3)&&!(M.din&&!M.inn[M.cur]))setTimeout(()=>call(`${thrower().n}, you require ${M.rem[M.cur]}`),400);if(!thrower().human){const tw=thrower();if(M.mode==='x01'&&tw.fd&&M.rem[M.cur]===2*tw.fd)ctx2(`${tw.n} braucht D${tw.fd}, sein Lieblingsdoppel!`);M.busy=true;later(aiDart,900)}else if(M.fanOpp&&M.mode==='x01'&&Math.random()<.2){ctx2('Pfiffe aus dem Publikum …');crowdSnd('boo')}}
+function startTurn(){const M=MATCH;if(M.bull)return bullTurn();M.turn={d:[],start:M.rem[M.cur]};M.marks=[];M.ri=0;M.tReady=performance.now()+600;hud();if(thrower().human&&M.rem[M.cur]<=170&&checkout(M.rem[M.cur],3)&&!(M.din&&!M.inn[M.cur]))setTimeout(()=>call(`${thrower().n}, you require ${M.rem[M.cur]}`),400);if(!thrower().human){const tw=thrower();if(M.mode==='x01'&&tw.fd&&M.rem[M.cur]===2*tw.fd)ctx2(`${tw.n} braucht D${tw.fd}, sein Lieblingsdoppel!`);M.busy=true;later(aiDart,900)}else if(M.fanOpp&&M.mode==='x01'&&Math.random()<.2){ctx2('Pfiffe aus dem Publikum …');crowdSnd('boo')}}
 function later(fn,ms){const M=MATCH;setTimeout(()=>{if(MATCH===M&&M)fn()},ms)}
 function aiDelay(){const t=thrower();return t.sty==='schnell'?480:t.sty==='gruebler'?1150:750}
 function aiDart(){const M=MATCH;if(!M||!M.live||thrower().human)return;const c=M.cur,tw=thrower();
  if(tw.replay){const q=tw.replay[tw.ri++]||bedPos('T20');throwDart(q[0],q[1]);return}
  let sh;if(M.mode!=='x01')sh=modeTarget(c);else if(M.din&&!M.inn[c])sh='D'+(tw.fd||20);else sh=aiTarget(M.rem[c],3-M.turn.d.length);
  const decider=M.legs[0]===M.ltw-1&&M.legs[1]===M.ltw-1,T=sh[0]==='T',D=sh[0]==='D'||sh==='BULL';let m=1;
- if(tw.sty==='scorer'){if(T)m*=.88;if(D)m*=1.12}if(tw.sty==='doppel'){if(D)m*=.85;if(T)m*=1.05}if(tw.sty==='nerven'&&D&&(decider||M.rem[1-c]<=100))m*=1.18;if(tw.sty==='gruebler')m*=.97;if(tw.sty==='schnell')m*=1.02;
+ if(!tw.st){if(tw.sty==='scorer'){if(T)m*=.88;if(D)m*=1.12}if(tw.sty==='doppel'){if(D)m*=.85;if(T)m*=1.05}if(tw.sty==='nerven'&&D&&(decider||M.rem[1-c]<=100))m*=1.18;if(tw.sty==='gruebler')m*=.97;if(tw.sty==='schnell')m*=1.02}
+ else if(D&&(decider||M.rem[1-c]<=100))m*=1+(60-tw.st.ner)/400;
  if(D&&tw.fd&&sh==='D'+tw.fd)m*=.85;if(D&&decider)m*=1.07;
- const[x,y]=bedPos(sh),sg=aiSigma(tw.ovr)*m;throwDart(x+gauss()*sg,y+gauss()*sg)}
-function dart(x,y){const M=MATCH,c=M.cur,z=hitX(M,x,y),st=M.st[c],rem=M.rem[c];sfx(z.v?1:0);if(M.train)return trainDart(x,y,z);if(M.mode!=='x01')return modeDart(x,y,z,c);M.ld[c]++;if(c===0)M.legXY.push([Math.round(x*10)/10,Math.round(y*10)/10]);const mp=M.stw?(M.sets[c]===M.stw-1&&M.legs[c]===2):M.legs[c]===M.ltw-1;
+ const[x,y]=bedPos(sh),bs=tw.st?(D?tw.st.dop:T?tw.st.sco:(tw.st.pra+tw.st.kon)/2)+(tw.adj||0):tw.ovr,sg=aiSigma(bs)*m;throwDart(x+gauss()*sg,y+gauss()*sg)}
+function dart(x,y){const M=MATCH,c=M.cur,z=hitX(M,x,y),st=M.st[c],rem=M.rem[c];sfx(z.v?1:0);if(M.bull)return bullDart(x,y,z);if(M.train)return trainDart(x,y,z);if(M.mode!=='x01')return modeDart(x,y,z,c);M.ld[c]++;if(c===0)M.legXY.push([Math.round(x*10)/10,Math.round(y*10)/10]);const mp=M.stw?(M.sets[c]===M.stw-1&&M.legs[c]===2):M.legs[c]===M.ltw-1;
  if(rem===50||(rem<=40&&rem%2===0)){st.coA++;if(mp)M.md[c]++}
  st.darts++;M.turn.d.push(z);M.marks.push(z.sp==='bounce'?[x,192,c]:[x,y,c]);M.ri=0;let v=z.v;if(M.din&&!M.inn[c]){if(z.d){M.inn[c]=true;say('Drin!')}else v=0}const nr=rem-v;
  if(nr===0&&z.d){M.rem[c]=0;st.coH++;if(M.turn.start>=100||M.ld[c]===9)hlAdd(M.ld[c]===9?`Neun-Darter von ${thrower().n}`:`${M.turn.start} Checkout von ${thrower().n}`,c);M.lastMD=[x,y,c];M.lb[c]=Math.max(M.lb[c],M.turn.start);st.pts+=M.turn.start;st.hiCo=Math.max(st.hiCo,M.turn.start);hud();endLeg(c);return}
  if(nr<2){M.rem[c]=M.turn.start;say('Bust!');call('No score');if(M.md[c]){ctx2(pick(CM.md));M.md[c]=0}if(M.nineOn===c){nineEnd();ctx2('Kein Neun-Darter diesmal.')}M.busy=true;hud();later(nextTurn,1300);return}
  M.rem[c]=nr;hud();
- if(M.turn.d.length===3){const sc=M.turn.start-M.rem[c];st.pts+=sc;M.lb[c]=Math.max(M.lb[c],sc);if(sc===180)ctx2(pick(CM.max));else if(sc>=140&&Math.random()<.6)ctx2(pick(CM.ton));else if(sc===26)ctx2(CM.low26[0]);else if(sc<26&&Math.random()<.5)ctx2(pick(CM.low));if(M.md[c]){ctx2(pick(CM.md));M.md[c]=0}if(M.nineOn===c){nineEnd();ctx2('Knapp vorbei am Neun-Darter!')}else if(M.ld[c]===6&&M.rem[c]===141&&M.start===501&&!M.din)nineTry(c);call(sc===180?'One hundred and eighty!':sc?String(sc):'No score');if(sc===180){hlAdd(`180 von ${thrower().n}`,c);st.t180++;say('ONE HUNDRED AND EIGHTY!',1);roar()}else if(sc>=140){st.t140++;say(sc+'!')}else if(sc>=100){st.t100++;say('Ton '+(sc-100?sc:'')+'!')}else say(sc?String(sc):'Keine Punkte');
+ if(M.turn.d.length===3){const sc=M.turn.start-M.rem[c];st.pts+=sc;M.lb[c]=Math.max(M.lb[c],sc);if(sc===180)ctx2(pick(CM.max));else if(sc>=140&&Math.random()<.6)ctx2(pick(CM.ton));else if(sc===26)ctx2(CM.low26[0]);else if(sc<26&&Math.random()<.5)ctx2(pick(CM.low));if(M.md[c]){ctx2(pick(CM.md));M.md[c]=0}if(M.nineOn===c){nineEnd();ctx2('Knapp vorbei am Neun-Darter!')}else if(M.ld[c]===6&&M.rem[c]===141&&M.start===501&&!M.din)nineTry(c);call(sc===180?'One hundred and eighty!':sc?String(sc):'No score');if(sc===180){hlAdd(`180 von ${thrower().n}`,c);st.t180++;M.l180[c]++;say('ONE HUNDRED AND EIGHTY!',1);roar()}else if(sc>=140){st.t140++;say(sc+'!')}else if(sc>=100){st.t100++;say('Ton '+(sc-100?sc:'')+'!')}else say(sc?String(sc):'Keine Punkte');
   M.busy=true;later(nextTurn,thrower().human?1100:1500)}
  else if(!thrower().human)later(aiDart,aiDelay())}
 function nextTurn(){const M=MATCH;if(!M||!M.live)return;M.busy=false;M.p[M.cur].ti++;M.cur=1-M.cur;startTurn()}
 function endLeg(w){const M=MATCH;M.legs[w]++;M.busy=true;M.inn=[false,false];const co=M.turn.start;if(M.ld[w]===9)nineDone(w);else if(co===170)ctx2(CM.fish[0]);else if(co>=100)ctx2(pick(CM.bigco));else if(w!==M.first)ctx2(pick(CM.brk));nineEnd();legStat(w);M.lastLd=[...M.ld];
  if(w===0&&S&&M.start===501&&!M.din&&M.ctx.type!=='pvp'&&M.ctx.type!=='train'&&!M.spLeg&&(!S.player.ghost||M.ld[0]<S.player.ghost.n)){S.player.ghost={n:M.ld[0],xy:M.legXY.slice()};save();setTimeout(()=>toast(`Neuer Geist gespeichert: ${M.ld[0]} Darts`),600)}
  say(M.turn.start>=100?`${M.turn.start} Checkout! Game shot!`:'Game shot!',1);roar();call(M.legs[w]>=(M.stw?M.lps:M.ltw)?'Game shot, and the '+((M.stw&&M.sets[w]+1<M.stw)?'set!':'match!'):'Game shot, and the leg!');
- if(M.stw){if(M.legs[w]>=M.lps){M.sets[w]++;M.legs=[0,0];if(M.sets[w]>=M.stw){later(()=>endMatch(w),2600);return}setTimeout(()=>say(`Satz an ${M.p[w].n}!`,1),900)}}
- else if(M.legs[w]>=M.ltw){later(()=>endMatch(w),2600);return}
- later(()=>{M.spLeg=false;M.first=1-M.first;M.cur=M.first;M.rem=[M.start,M.start];M.ld=[0,0];M.lb=[0,0];M.legXY=[];M.md=[0,0];M.busy=false;say(`Leg ${M.legs[0]+M.legs[1]+1} · ${M.p[M.cur].n} beginnt`);startTurn()},2700)}
+ if(M.stw){if(M.legs[w]>=M.lps){M.sets[w]++;M.legs=[0,0];if(M.sets[w]>=M.stw){legWait(()=>endMatch(w));return}setTimeout(()=>say(`Satz an ${M.p[w].n}!`,1),900)}}
+ else if(M.legs[w]>=M.ltw){legWait(()=>endMatch(w));return}
+ legWait(()=>{M.spLeg=false;M.first=1-M.first;M.cur=M.first;M.rem=[M.start,M.start];M.ld=[0,0];M.lb=[0,0];M.l180=[0,0];M.legXY=[];M.md=[0,0];M.busy=false;say(`Leg ${M.legs[0]+M.legs[1]+1} · ${M.p[M.cur].n} beginnt`);startTurn()})}
 function avg(s){return s.darts?s.pts/s.darts*3:0}
 function roar(){crowdSnd('cheer');const el=document.getElementById('stage');if(!el)return;el.classList.remove('roar');void el.offsetWidth;el.classList.add('roar');setTimeout(()=>el.classList.remove('roar'),1600)}
 let CALLER=true;try{CALLER=localStorage.getItem('darts_caller')!=='0'}catch(e){}
@@ -759,6 +814,7 @@ function hud(){const M=MATCH,sb=document.getElementById('sb');if(!sb)return;if(M
  const d=M.turn?M.turn.d:[];document.getElementById('drts').innerHTML=[0,1,2].map(i=>`<div>${d[i]?d[i].l:'–'}</div>`).join('')+`<div class="tot">${M.turn?M.turn.start-M.rem[M.cur]:0}</div>`;
  const rem=M.rem[M.cur],co=checkout(rem,3-d.length);
  document.getElementById('hint').innerHTML=thrower().human?(M.ctx.type==='pvp'?`<b style="color:${M.cur?'#5fd3f3':'var(--gold)'}">${esc(thrower().n)}</b> ist dran · `:'')+(M.din&&!M.inn[M.cur]&&d.length<3?'Double-In: Triff zuerst ein <b>Doppel</b>':co&&d.length<3?routeHint(rem,3-d.length):d.length<3?'Finger aufs Board, loslassen zum Werfen':''):`${esc(thrower().n)} ist am Oche…`;
+ if(M.bull)document.getElementById('hint').innerHTML=thrower().human?`<b>Ausbullen${M.ctx.type==='pvp'?' · '+esc(thrower().n):''}:</b> Ein Dart, so nah wie möglich ans Bull. Wer näher dran ist, beginnt das erste Leg.`:`${esc(thrower().n)} bullt aus …`;
  const el=document.getElementById('cmt');if(el&&!el.textContent)el.textContent=M.cmt}
 function routeHint(rem,dl){const M=MATCH,R=coRoutes(rem,dl);if(!R.length)return '';const i=Math.min(M.ri||0,R.length-1);return `Checkout${i===0?' (Caller-Tipp)':''}: <b>${R[i].route.join(' · ')}</b>${R.length>1?'<br>'+R.map((r,k)=>`<span class="rchip ${k===i?'on':''}" data-a="route" data-v="${k}">${r.route.join(' ')}</span>`).join(''):''}`}
 function ovrOf(st){return Math.round(STATS.reduce((a,[k])=>a+st[k],0)/6)}
@@ -856,7 +912,7 @@ function walkOn(opp,cb,preview){const p=S.player,w=p.walk||{song:'',style:'rock'
   g.globalCompositeOperation='source-over';if(!done)raf2=requestAnimationFrame(draw)}
  function end(){if(done)return;done=true;timers.forEach(clearTimeout);cancelAnimationFrame(raf2);if(out)try{out.gain.setTargetAtTime(0,AC.currentTime,.1)}catch(e){}try{speechSynthesis.cancel()}catch(e){}el.remove();cb&&cb()}
  el.querySelector('.skip').onclick=end;
- wc.innerHTML=`<div class="ann in">Ladies and Gentlemen …</div><div class="big in" style="--wc:#5fd3f3">${esc(opp.n)}</div><div class="ann in">${opp.nick?'„'+esc(opp.nick)+'“':''}</div>${opp.rival?'<div class="big in" style="font-size:26px;color:#ff5c5c;--wc:#ff2a2a">ERZRIVALE</div>':''}`;call(opp.rival?`Your arch rival! ${opp.n}!`:opp.n);
+ wc.innerHTML=`<div class="ann in">Ladies and Gentlemen …</div>${opp.id!=null&&who(opp.id)?oppCard(opp.id):""}<div class="big in" style="--wc:#5fd3f3">${esc(opp.n)}</div><div class="ann in">${opp.nick?'„'+esc(opp.nick)+'“':''}</div>${opp.rival?'<div class="big in" style="font-size:26px;color:#ff5c5c;--wc:#ff2a2a">ERZRIVALE</div>':''}`;call(opp.rival?`Your arch rival! ${opp.n}!`:opp.n);
  timers.push(setTimeout(()=>{mode='me';out=beat(w.style,6);call(`And his opponent! ${p.nick||p.name}! ${p.name}!`);
   wc.innerHTML=`<div class="row" style="align-items:center;justify-content:center;gap:10px"><div style="flex:0 0 auto">${cardHTML()}</div><div style="flex:0 0 auto" class="in">${jerseySVG(p.jersey||{c1:'#c8102e',c2:'#111',pat:'uni',back:p.name},1,null,90)}</div></div><div class="song">Walk-on: ${w.song?'„'+esc(w.song)+'“':WSTY.find(x=>x[0]===w.style)[1]}</div><div class="chant">${esc(w.chant||p.name.split(' ')[0]+'! '+p.name.split(' ')[0]+'!')}</div>`},2200));
  timers.push(setTimeout(()=>{wc.innerHTML+='<div class="big in" style="margin-top:6px">Game on!</div>'},7300));
@@ -889,9 +945,9 @@ function estAvg(o){return Math.round(o*1.02+4)}
 function getCond(e){S.cond=S.cond||{};if(!S.cond[e.id])S.cond[e.id]=Math.random()<.5?'normal':pick(['laut','warm','grell','kalt']);return S.cond[e.id]}
 function isHome(e){return e.lc!=null||CITYNAT[e.city]===S.player.nat||(['ENG'].includes(S.player.nat)&&!CITYNAT[e.city]&&e.lc==null)}
 function ensure(){if(!S)return;const p=S.player;S.pl.forEach(x=>{if(!x.sty){x.sty=pick(AIST)[0];x.fd=pick([20,16,8,10,12,18,4]);x.form=0}});
- const d={fresh:100,inj:0,hist:[],ssP:0,ssD:0,tw:0,bestRank:999,nine:0};for(const k in d)if(p[k]==null)p[k]=d[k];if(!S.club)initClubs();const pp=S.player;if(!pp.jersey)pp.jersey={c1:'#c8102e',c2:'#111111',pat:'uni',back:(pp.nick||pp.name.split(' ').slice(-1)[0]).slice(0,12),num:180};if(!pp.goals&&S.pl)genGoals();S.feed=S.feed||[];if(!S.PL)plInit();S.wq=S.wq||[];S.titleS=S.titleS||[]}
+ const d={fresh:100,inj:0,hist:[],ssP:0,ssD:0,tw:0,bestRank:999,nine:0};for(const k in d)if(p[k]==null)p[k]=d[k];if(!S.club)initClubs();const pp=S.player;if(!pp.jersey)pp.jersey={c1:'#c8102e',c2:'#111111',pat:'uni',back:(pp.nick||pp.name.split(' ').slice(-1)[0]).slice(0,12),num:180};if(!pp.goals&&S.pl)genGoals();S.feed=S.feed||[];if(!S.PL)plInit();S.wq=S.wq||[];S.titleS=S.titleS||[];pp.look=pp.look||defLook();if(pp.jt==null)pp.jt=0;if(pp.qsS==null&&S.wk>1)pp.qsS=S.season}
 function scout(id){const x=who(id);if(!x)return'';const h=S.player.h2h[String(id)];const f=x.form||0;return `<div class="small" style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px">
- <span class="mut">Spielstil</span><b>${AIST.find(a=>a[0]===x.sty)[1]}</b><span class="mut">Lieblingsdoppel</span><b>D${x.fd}</b><span class="mut">Form</span><b>${f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}</b><span class="mut">Erwarteter Schnitt</span><b>ca. ${estAvg(povr(id))}</b><span class="mut">Head-to-Head</span><b>${h?h.w+' : '+h.l:'erstes Duell'}</b></div>`}
+ <span class="mut">Spielstil</span><b>${(AIST.find(a=>a[0]===x.sty)||['','Allrounder'])[1]}</b><span class="mut">Lieblingsdoppel</span><b>D${x.fd}</b><span class="mut">Form</span><b>${f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}</b><span class="mut">Erwarteter Schnitt</span><b>ca. ${estAvg(povr(id))}</b><span class="mut">Head-to-Head</span><b>${h?h.w+' : '+h.l:'erstes Duell'}</b></div>`}
 /* Spielmodi Cricket und Killer */
 function modeInit(M){if(M.mode==='cricket'){M.ck=[{},{}];CKN.forEach(n=>{M.ck[0][n]=0;M.ck[1][n]=0});M.cs=[0,0]}
  if(M.mode==='killer'){const a=rnd(1,20);let b=rnd(1,20);while(b===a)b=rnd(1,20);M.kn=[a,b];M.kk=[false,false];M.kv=[3,3]}M.rem=[999,999];M.ltw=1}
@@ -912,8 +968,6 @@ function nineTry(c){const M=MATCH;M.nineOn=c;const el=document.getElementById('s
 function nineEnd(){const el=document.getElementById('stage');if(el)el.classList.remove('hush');if(MATCH)MATCH.nineOn=null}
 function nineDone(w){const M=MATCH,nm=w===0&&S&&M.ctx.type!=='pvp'?S.player.name:M.p[w].n;say('NEUN-DARTER!!!',1);ctx2('Perfektion! Ein Neun-Darter!');call('Nine darter! Unbelievable!');crowdSnd('cheer');
  if(S&&M.ctx.type!=='pvp'&&M.ctx.type!=='ghost'){if(w===0){const p=S.player;p.coins+=2500;p.fans+=1500;p.nine++;photo('nine','Neun-Darter'+(M.ctx.ev?' beim '+M.ctx.ev:''),'#ffd166');feed(`NEUN-DARTER von @${handle(p.name)}!!! Ich zittere noch.`);toast('9-Darter-Bonus: +2.500 Münzen, +1.500 Fans')}news(`NEUN-DARTER! ${nm} wirft das perfekte Leg${M.ctx.ev?' beim '+M.ctx.ev:''}`)}}
-function legStat(w){const M=MATCH,el=document.getElementById('lstat');if(!el)return;const r=i=>{const pts=M.start-M.rem[i],d=M.ld[i]||0;return `<div class="row small" style="justify-content:space-between"><b style="text-align:left">${esc(M.p[i].n)}</b><span>${d} Darts</span><span>Ø ${d?(pts/d*3).toFixed(1):'0.0'}</span><span>Top ${M.lb[i]}</span></div>`};
- el.innerHTML=`<div class="os" style="color:var(--gold);font-size:18px">Leg an ${esc(M.p[w].n)}</div><div class="small mut" style="margin-bottom:6px">Checkout ${M.turn.start}${w!==M.first?' · Break of Throw':''}</div>${r(0)}${r(1)}`;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2500)}
 /* Verein / Team-Liga */
 function initClubs(){const g=grp(S.player.nat),names=CLUBN[g]||(CITY[S.player.nat]||CITY.GER).flatMap(c=>[c+' Darts Club',c+' Arrows']);S.club={t:names.slice(0,8).map((n,i)=>({n,str:72-i*5+rnd(-3,3),p:0,w:0,l:0})),my:null,sal:0}}
 function clubRound(w){const C=S.club,arr=[0,1,2,3,4,5,6,7],r=(w-1)%7;for(let k=0;k<r;k++)arr.splice(1,0,arr.pop());
@@ -1042,6 +1096,165 @@ function storyApply(i){const s=STORY[S.story],a=s.a[+i],e=a[1],p=S.player;let ms
  if(e.fans>=200)feed(`Starke Aktion von @${handle(p.name)}! ${s.t.split(' ').slice(0,4).join(' ')} …`);S.story=null;save();modal.innerHTML='';if(msg)toast(msg);hub()}
 
 /* ---------- Aktionen ---------- */
+/* ===== v9: Aussehen, Karten, Ausbullen, Leg-Statistik, Junior-Tour, Redesign ===== */
+function srand(seed){let s=(Math.abs(Math.round(seed))*7919+13)%233280;return()=>(s=(s*9301+49297)%233280)/233280}
+function rp(r,a){return a[Math.floor(r()*a.length)]}
+const SKIN=['#f6dac6','#edc4a2','#d9a47c','#b97f55','#8f5b3b','#5f3b25'];
+const HAIRC=['#1d1a17','#4a3121','#7a4b2a','#b88a4a','#e5c47c','#a63d1f','#8e8e8e','#e6e6e6','#2f5fd0','#d0307a'];
+const HAIRS=[['kurz','Kurz'],['buzz','Raspel'],['seite','Scheitel'],['lang','Lang'],['locken','Locken'],['dutt','Dutt'],['iro','Iro'],['glatze','Glatze']];
+const BEARD=[['kein','Kein Bart'],['stoppel','Stoppeln'],['voll','Vollbart'],['ziege','Ziegenbart'],['schnauz','Schnauzer']];
+const GLASS=[['kein','Keine'],['rund','Rund'],['eckig','Eckig'],['sonne','Sonnenbrille']];
+const SHIRT=['#c8102e','#12a150','#1f5fd6','#16181f','#f2f2f2','#e9c46a','#7b3fe4','#ff7a1a','#14b8c4','#e83e8c'];
+const LOOKK=[['skin','Hautton',SKIN.map((c,i)=>[i,c])],['hair','Frisur',HAIRS],['hc','Haarfarbe',HAIRC.map((c,i)=>[i,c])],['beard','Bart',BEARD],['glass','Brille',GLASS],['shirt','Shirt',SHIRT.map(c=>[c,c])]];
+function defLook(){return{skin:1,hair:'kurz',hc:1,beard:'kein',glass:'kein',shirt:'#c8102e'}}
+function lookFor(x){if(!x)return defLook();if(x.look)return x.look;const r=srand(x.id*31+7),a=x.age||30;
+ const hair=a>=42&&r()<.35?'glatze':rp(r,['kurz','buzz','seite','kurz','lang','locken','buzz','seite','iro','dutt']);
+ const hc=a>=52&&r()<.6?6+Math.floor(r()*2):Math.floor(r()*6);
+ return{skin:Math.floor(r()*r()*6),hair,hc,beard:a<17?'kein':rp(r,['kein','kein','stoppel','voll','ziege','schnauz','stoppel']),glass:r()<.18?rp(r,['rund','eckig']):'kein',shirt:rp(r,SHIRT)}}
+function shade(h,f){const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);return'#'+((1<<24)|(Math.min(255,r)<<16)|(Math.min(255,g)<<8)|Math.min(255,b)).toString(16).slice(1)}
+function avatarSVG(L,w){L=L||defLook();const sk=SKIN[L.skin]||SKIN[1],hc=HAIRC[L.hc]||HAIRC[1],sh=L.shirt||'#c8102e',sd=shade(sk,.82);let back='',top='',bd='',gl='';
+ if(L.hair==='lang')back=`<path d="M24 48 C20 16 80 16 76 48 L79 78 C70 74 67 64 67 54 L33 54 C33 64 30 74 21 78 Z" fill="${hc}"/>`;
+ if(L.hair==='dutt')back=`<circle cx="50" cy="16" r="9" fill="${hc}"/>`;
+ const H={kurz:`<path d="M26 46 C24 18 76 18 74 46 C71 34 62 27 50 27 C38 27 29 34 26 46 Z" fill="${hc}"/>`,
+  buzz:`<path d="M27 43 C27 22 73 22 73 43 C67 32 33 32 27 43 Z" fill="${hc}" opacity=".75"/>`,
+  seite:`<path d="M26 48 C22 16 78 14 74 44 C70 30 57 26 41 34 C34 37 30 42 26 48 Z" fill="${hc}"/>`,
+  lang:`<path d="M26 48 C24 18 76 18 74 48 C70 33 60 28 50 30 C40 28 30 33 26 48 Z" fill="${hc}"/>`,
+  locken:[[30,36],[36,28],[44,24],[52,23],[60,25],[67,30],[71,38],[28,44],[72,46]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="7.5" fill="${hc}"/>`).join(''),
+  dutt:`<path d="M27 44 C26 22 74 22 73 44 C68 32 32 32 27 44 Z" fill="${hc}"/>`,
+  iro:`<path d="M27 42 C27 26 73 26 73 42 C66 34 34 34 27 42 Z" fill="${hc}" opacity=".35"/><path d="M44 36 C41 8 59 8 56 36 Z" fill="${hc}"/>`,
+  glatze:`<ellipse cx="42" cy="30" rx="8" ry="4" fill="#fff" opacity=".18"/>`};top=H[L.hair]||H.kurz;
+ if(L.beard==='stoppel')bd=`<path d="M29 54 C31 75 41 81 50 81 C59 81 69 75 71 54 C67 67 60 72 50 72 C40 72 33 67 29 54 Z" fill="${hc}" opacity=".32"/>`;
+ if(L.beard==='voll')bd=`<path d="M28 52 C29 78 41 85 50 85 C59 85 71 78 72 52 C68 66 61 70 50 70 C39 70 32 66 28 52 Z" fill="${hc}"/><path d="M41 64 Q50 59 59 64 Q50 63 41 64 Z" fill="${hc}"/>`;
+ if(L.beard==='ziege')bd=`<path d="M43 69 Q50 84 57 69 Q50 73 43 69 Z" fill="${hc}"/><path d="M42 64 Q50 60 58 64 Q50 62.5 42 64 Z" fill="${hc}"/>`;
+ if(L.beard==='schnauz')bd=`<path d="M40 64.5 Q50 57 60 64.5 Q50 61.5 40 64.5 Z" fill="${hc}"/>`;
+ if(L.glass==='rund')gl=`<g fill="none" stroke="#1a1a1a" stroke-width="1.8"><circle cx="40.5" cy="50" r="6"/><circle cx="59.5" cy="50" r="6"/><path d="M46.5 50 H53.5"/></g>`;
+ if(L.glass==='eckig')gl=`<g fill="none" stroke="#1a1a1a" stroke-width="1.9"><rect x="33.5" y="45" width="13" height="9" rx="2"/><rect x="53.5" y="45" width="13" height="9" rx="2"/><path d="M46.5 49 H53.5"/></g>`;
+ if(L.glass==='sonne')gl=`<g fill="#111" stroke="#111" stroke-width="1.5"><rect x="33" y="45" width="14" height="9" rx="3"/><rect x="53" y="45" width="14" height="9" rx="3"/><path d="M47 49 H53" fill="none"/></g>`;
+ return `<svg viewBox="0 0 100 110" width="${w||100}" height="${(w||100)*1.1}" aria-hidden="true">${back}
+ <path d="M6 110 C9 86 25 77 50 77 C75 77 91 86 94 110 Z" fill="${sh}"/><path d="M38 78 L50 92 L62 78 Z" fill="${shade(sh,.7)}"/><path d="M6 110 C9 86 25 77 50 77" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+ <rect x="42" y="62" width="16" height="20" rx="7" fill="${sd}"/><ellipse cx="27" cy="51" rx="5" ry="7" fill="${sd}"/><ellipse cx="73" cy="51" rx="5" ry="7" fill="${sd}"/>
+ <ellipse cx="50" cy="49" rx="23" ry="27" fill="${sk}"/>${top}
+ <path d="M35 43 Q40.5 40 46 43" stroke="${shade(hc,1)}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M54 43 Q59.5 40 65 43" stroke="${shade(hc,1)}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+ <circle cx="40.5" cy="50" r="2.4" fill="#1b1b1b"/><circle cx="59.5" cy="50" r="2.4" fill="#1b1b1b"/><path d="M50 52 Q46.5 60 51 61" stroke="${shade(sk,.7)}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+ ${bd}<path d="M43 66 Q50 71 57 66" stroke="#7a3b2e" stroke-width="2" fill="none" stroke-linecap="round"/>${gl}</svg>`}
+
+/* Werte der KI-Spieler, passend zu Stil und OVR */
+const SOFF={scorer:{sco:7,pra:3,dop:-5,ner:-2,aus:-2},doppel:{dop:8,ner:2,sco:-4,pra:-2,aus:-2},nerven:{ner:-9,sco:3,pra:2,kon:2,dop:1},schnell:{kon:-3,aus:5,sco:2,pra:-2,dop:-1},gruebler:{ner:5,kon:4,aus:-6,sco:-1,dop:-1},allround:{}};
+function statsFor(x){const r=srand(x.id*17+3),o={},off=SOFF[x.sty]||{};for(const[k]of STATS)o[k]=x.ovr+(off[k]||0)+Math.round((r()-.5)*8);
+ const m=STATS.reduce((a,[k])=>a+o[k],0)/6,d=Math.round(x.ovr-m);for(const[k]of STATS)o[k]=Math.max(5,Math.min(99,o[k]+d));return o}
+
+/* Karte (für dich und alle Gegner) */
+function pcard(o){return `<div class="card ${o.cls||''}"><div class="cl"><div class="ovr">${o.ovr}</div><div class="pos">${esc(o.pos)}</div><div class="nat">${esc(o.nat)}</div>${o.form!=null?`<div class="fm">${o.form}</div>`:''}</div>
+ <div class="av">${avatarSVG(o.look,128)}</div><div class="nm" style="font-size:${o.n.length>19?16:o.n.length>15?19:o.n.length>12?21:24}px">${esc(o.n)}</div><div class="nick">${esc(o.sub)}</div>
+ <div class="st">${STATS.map(([k,a])=>`<span><b>${o.st[k]}</b>${a}</span>`).join('')}</div><div class="cf">${esc(o.foot)}</div></div>`}
+function fTxt(f){f=f||0;return f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}
+function cardHTML(){const st=eff(),o=ovr(st),p=S.player;
+ const fx=S.totw&&S.totw.s===S.season&&S.wk<=S.totw.w+1?'totw':(p.titles.some(t=>t.startsWith('Weltmeisterschaft'))||p.bestRank<=1)?'icon':p.titles.length>=5?'hero':'';
+ return pcard({cls:fx||cardTier(o),ovr:o,pos:p.card?'#'+myRank():p.age<18?'JR':'AM',nat:p.nat,form:fTxt(p.form),look:p.look,n:p.name,sub:`„${p.nick||STYLES.find(s=>s.id===p.style).n}“ · ${p.age} J.`,st,
+  foot:(fx==='totw'?'Team der Woche':fx==='icon'?'Icon':fx==='hero'?'Hero':p.card?'Profi':'Amateur')+' · '+STYLES.find(s=>s.id===p.style).n+' · Lv '+p.lvl})}
+function oppCard(id){if(id==='ME')return cardHTML();const x=who(id);if(!x)return'';const w=wList().indexOf(x.id)+1;
+ return pcard({cls:cardTier(x.ovr),ovr:x.ovr,pos:x.card?'#'+w:x.age<18?'JR':'AM',nat:x.nat,form:fTxt(x.form),look:lookFor(x),n:x.n,sub:`„${x.nick}“ · ${x.age} J.`,st:statsFor(x),
+  foot:(x.card?'Profi':'Amateur')+' · '+(AIST.find(a=>a[0]===x.sty)||['','Allrounder'])[1]+' · D'+x.fd})}
+function pcardModal(id){if(id==='ME'){modal.innerHTML=`<div class="modal"><div class="box"><div class="flip">${cardHTML()}</div><div class="row" style="margin-top:12px"><button class="btn" data-a="closeM" data-v="">Schließen</button><button class="btn pri" data-a="closeM" data-v="lookEd">Aussehen ändern</button></div></div></div>`;return}
+ const x=who(id);if(!x)return;const h=S.player.h2h[String(id)],w=wList().indexOf(x.id)+1,jr=x.age<=17?jtList().findIndex(r=>r.id===x.id)+1:0,dr=x.age>=16&&x.age<=23?dvList().findIndex(r=>r.id===x.id)+1:0;
+ const rows=[['Weltrangliste',w?'Platz '+w:'ohne Platz'],['Tour Card',x.card?'Ja':'Nein'],['Alter',x.age+' Jahre'],['Spielstil',(AIST.find(a=>a[0]===x.sty)||['','–'])[1]],['Lieblingsdoppel','D'+x.fd],['Form',fTxt(x.form)],['Erwarteter Schnitt','ca. '+estAvg(x.ovr)],['Head-to-Head',h?h.w+' : '+h.l:'noch kein Duell']];
+ if(jr)rows.push(['Junior-Rangliste','Platz '+jr]);if(dr)rows.push(['Development','Platz '+dr]);if(isRival(id))rows.unshift(['Status','ERZRIVALE']);
+ modal.innerHTML=`<div class="modal"><div class="box" style="max-height:92vh;overflow:auto"><div class="flip">${oppCard(id)}</div><div class="panel" style="margin-top:10px;text-align:left"><div class="kvl">${rows.map(([a,b])=>`<span class="mut">${a}</span><b>${esc(b)}</b>`).join('')}</div></div>
+ <div class="row" style="margin-top:10px"><button class="btn" data-a="ren" data-v="${id}">Umbenennen</button><button class="btn pri" data-a="closeM" data-v="">Schließen</button></div></div></div>`}
+
+/* Aussehen bearbeiten */
+let LOOKT=null;
+function lookChips(L){return LOOKK.map(([k,n,opts])=>`<div style="margin-top:10px"><label>${n}</label><div class="lch">${opts.map(([v,t])=>{const on=String(L[k])===String(v),col=k==='skin'||k==='hc'||k==='shirt';return `<button type="button" class="lc ${on?'on':''} ${col?'sw':''}" data-a="look" data-v="${k}|${v}" ${col?`style="background:${t}" aria-label="${n} ${v}"`:''}>${col?'':esc(t)}</button>`}).join('')}</div></div>`).join('')}
+function lookSet(v){const[k,x]=v.split('|'),L=LOOKT==='draft'?draft.look:S.player.look;L[k]=(k==='skin'||k==='hc')?+x:x;const a=document.getElementById('lk'),pv=document.getElementById('pv');if(a)a.innerHTML=lookChips(L);if(pv)pv.innerHTML=LOOKT==='draft'?draftCard():cardHTML();if(LOOKT!=='draft')save()}
+function lookEd(){LOOKT='me';S.player.look=S.player.look||defLook();show(`${topBar('Aussehen')}<p class="small mut" style="margin-top:0">So erscheinst du auf deiner Karte, beim Walk-on und auf der Bühne.</p><div id="pv">${cardHTML()}</div><div class="panel" id="lk">${lookChips(S.player.look)}</div><button class="btn pri" style="margin-top:12px" data-a="hub">Fertig</button>`)}
+function draftCard(){const age=Math.max(10,Math.min(60,+((document.getElementById('ag')||{}).value)||draft.age)),base=age<16?Math.max(22,28+(age-12)*2):35,st={};STATS.forEach(([k])=>st[k]=base);const sb=STYLES.find(s=>s.id===draft.style).b;for(const k in sb)st[k]+=sb[k];
+ const nm=((document.getElementById('nm')||{}).value||draft.name||'Dein Name').trim()||'Dein Name',nk=((document.getElementById('nk')||{}).value||draft.nick||'').trim(),na=(document.getElementById('na')||{}).value||draft.nat;
+ return pcard({cls:'bronze',ovr:ovrOf(st),pos:age<18?'JR':'AM',nat:na,form:'●',look:draft.look,n:nm,sub:`„${nk||STYLES.find(s=>s.id===draft.style).n}“ · ${age} J.`,st,foot:'Amateur · '+STYLES.find(s=>s.id===draft.style).n+' · Lv 1'})}
+function draftSave(){const g=id=>document.getElementById(id);if(g('nm'))draft.name=g('nm').value;if(g('nk'))draft.nick=g('nk').value;if(g('ag'))draft.age=+g('ag').value||18;if(g('na'))draft.nat=g('na').value}
+function create(){LOOKT='draft';draft.look=draft.look||defLook();show(`${topBar('Neuer Spieler','home')}
+ <form id="cf" class="stack"><div id="pv">${draftCard()}</div>
+ <div class="panel stack"><h3>Spieler</h3><div><label for="nm">Name</label><input id="nm" maxlength="22" value="${esc(draft.name)}" placeholder="z. B. Christopher Schmidt" required></div>
+ <div class="row"><div><label for="nk">Spitzname</label><input id="nk" maxlength="18" value="${esc(draft.nick||'')}" placeholder="z. B. The Rocket"></div><div style="flex:.6"><label for="ag">Alter</label><input id="ag" type="number" inputmode="numeric" min="10" max="60" value="${draft.age}"></div></div>
+ <div><label for="na">Nation</label><select id="na">${NATS.map(n=>`<option ${n===draft.nat?'selected':''}>${n}</option>`).join('')}</select></div></div>
+ <div class="panel"><h3>Aussehen</h3><div id="lk">${lookChips(draft.look)}</div></div>
+ <div class="panel"><h3 style="margin-bottom:8px">Spielstil</h3><div class="list">${STYLES.map(s=>`<button type="button" class="it" data-a="style" data-v="${s.id}" style="text-align:left;color:inherit;font:inherit;${draft.style===s.id?'border-color:var(--acc)':''}"><div class="g"><b>${s.n}</b><div class="small mut">${s.d}</div></div>${draft.style===s.id?'<span class="badge g">Gewählt</span>':''}</button>`).join('')}</div></div>
+ <p class="small mut" style="margin:0">Alter 10 bis 60. Unter 18 spielst du die Junior-Tour, ab 16 öffnen sich Development Tour und Q-School. Junge Spieler entwickeln sich schneller, ab 35 lassen die Werte langsam nach.</p>
+ <button class="btn pri">Karriere starten</button></form>`);
+ const f=document.getElementById('cf');f.addEventListener('input',()=>{draftSave();document.getElementById('pv').innerHTML=draftCard()});
+ f.onsubmit=e=>{e.preventDefault();draftSave();const name=document.getElementById('nm').value.trim()||'Spieler';const age=Math.max(10,Math.min(60,parseInt(document.getElementById('ag').value)||18));const st={};const base=age<16?Math.max(22,28+(age-12)*2):35;STATS.forEach(([k])=>st[k]=base);const sb=STYLES.find(s=>s.id===draft.style).b;for(const k in sb)st[k]+=sb[k];const nat=document.getElementById('na').value;
+  S={v:4,player:{look:{...draft.look},name,nick:document.getElementById('nk').value.trim(),nat,style:draft.style,age,st,boost:{},tp:{},sp:0,xp:0,lvl:1,coins:60,pts:0,ct:0,dv:0,jt:0,card:0,fans:0,form:0,h2h:{},rival:null,tb:{},trainLeft:2,set:'b18',sets:['b18'],fl:'#e9c46a',fls:['#e9c46a'],titles:[],wins:0,losses:0,best:0,t180:0,hiCo:0},pl:genWorld(nat),season:1,wk:1,done:[],res:{},T:null,news:[]};
+  news(age<16?'Karriere gestartet. Junior-Tour, Akademie und Jugend-Cups warten. Mit 16 öffnen sich Development Tour und Q-School.':'Karriere gestartet. Erstes Ziel: die Tour Card. Die Q-School ist in Woche 1.');S.no1=ranking()[0].n;ensure();plInit();save();hub()}}
+
+/* Junior-Tour */
+function jtList(){return subList('jt',x=>x.age>=10&&x.age<=17,S.player.age<=17)}
+function jtIds(){return jtList().map(x=>x.me?'ME':x.id)}
+function jtRank(){return jtList().findIndex(r=>r.me)+1}
+function feeOf(e){const p=S.player;return e.q==='qs'&&p.qsFree===S.season?0:(e.fee||0)}
+function acad(){const p=S.player,on=p.jacad&&p.age<=17;show(`${topBar('Nachwuchs-Akademie')}
+ <div class="panel stack"><h3>${on?'Du bist Akademie-Schüler':'Werde Akademie-Schüler'}</h3><div class="small mut">In der Akademie trainieren 8- bis 17-Jährige mit festen Trainern. Wie im echten Nachwuchs-System führt der Weg über die Junior-Tour (10 bis 17 Jahre) zu Super 16, Junior World Masters und zur Junior-WM, deren Finale auf der WM-Bühne läuft. Ab 16 kommen Development Tour und Q-School dazu.</div>
+ <div class="kv"><div><b>+1</b><span>Training pro Woche</span></div><div><b>+15 %</b><span>XP</span></div><div><b>${p.age<=17?jtRank():'–'}</b><span>Junior-Platz</span></div></div>
+ ${p.age>17?'<div class="small" style="color:#ff8a8a">Die Akademie ist nur bis 17 Jahre.</div>':on?'<div class="small" style="color:var(--green)">Mitglied bis zu deinem 18. Geburtstag.</div>':`<button class="btn pri" data-a="acadJoin" ${p.coins<200?'disabled':''}>Beitreten (200 Münzen, einmalig)</button>`}</div>
+ <div class="panel" style="margin-top:10px"><b>Dein Weg nach oben</b>${[['10–17','Junior-Tour: 6 Events, Punkte für die Junior-Rangliste'],['Top 16','Junior Super 16 in Woche 15'],['10–17','Junior World Masters in Woche 19, offen für alle'],['Top 32','Junior-WM U18 in Woche 24, Finale auf der WM-Bühne'],['ab 16','Development Tour: Top 2 = Tour Card, Platz 3–16 = Freiplatz Q-School'],['ab 16','Q-School in Woche 1: die vier Halbfinalisten bekommen die Tour Card'],['nach Q-School','Challenge Tour: Top 2 = Tour Card']].map(([a,b])=>`<div class="row small" style="margin-top:8px;align-items:center"><span class="badge" style="flex:0 0 76px;text-align:center">${a}</span><span>${b}</span></div>`).join('')}</div>`)}
+
+/* Ausbullen */
+function bullTurn(){const M=MATCH;M.turn={d:[],start:M.rem[M.cur]};M.tReady=performance.now()+600;hud();
+ if(!thrower().human){M.busy=true;later(()=>{const tw=thrower(),s=aiSigma(tw.st?tw.st.pra+(tw.adj||0):tw.ovr)*1.1;throwDart(gauss()*s,gauss()*s)},1200)}}
+function bullDart(x,y,z){const M=MATCH,c=M.cur,d=Math.hypot(x,y);M.bull.d[c]=d;M.turn.d.push({l:d<=6.35?'BULL':d<=15.9?'25':Math.round(d)+' mm'});M.marks.push([x,y,c]);M.busy=true;
+ say(d<=6.35?'Bullseye!':d<=15.9?'Single Bull!':`${Math.round(d)} mm vom Bull`);hud();
+ if(M.bull.d[1-c]==null){later(()=>{M.busy=false;M.cur=1-c;bullTurn()},1400);return}
+ const[a,b]=M.bull.d;later(()=>{if((a<=6.35&&b<=6.35)||Math.abs(a-b)<1){say('Gleich nah! Nochmal ausbullen',1);M.bull={d:[null,null]};M.marks=[];M.busy=false;M.cur=c;bullTurn();return}
+  const w=a<b?0:1,el=document.getElementById('lstat'),mm=v=>v<=6.35?'Bullseye':v<=15.9?'Single Bull ('+v.toFixed(1)+' mm)':v.toFixed(1)+' mm';
+  if(el){el.innerHTML=`<div class="ls-h">Ausbullen</div><table class="ls"><tbody><tr><td>${esc(M.p[0].n)}</td><td class="${w===0?'bt':''}">${mm(a)}</td></tr><tr><td>${esc(M.p[1].n)}</td><td class="${w===1?'bt':''}">${mm(b)}</td></tr></tbody></table><div class="os" style="color:var(--gold);font-size:20px;margin-top:6px">${esc(M.p[w].n)} beginnt</div>`;el.classList.add('on')}
+  say(`${M.p[w].n} gewinnt das Ausbullen`,1);call(`${M.p[w].n} to throw first. Game on!`);
+  later(()=>{if(el)el.classList.remove('on');M.bull=null;M.first=w;M.cur=w;M.marks=[];M.busy=false;startTurn()},2800)},1200)}
+
+/* Leg-Statistik, länger und ausführlicher */
+function shortN(n){return String(n).split(' ').slice(-1)[0]}
+function legStat(w){const M=MATCH,el=document.getElementById('lstat');if(!el)return;const over=M.stw?(M.legs[w]>=M.lps&&M.sets[w]+1>=M.stw):M.legs[w]>=M.ltw;
+ const v=i=>{const pts=M.start-M.rem[i],d=M.ld[i]||0,s=M.st[i];return[d||'–',d?(pts/d*3).toFixed(1):'–',M.lb[i]||0,(M.l180||[0,0])[i],avg(s).toFixed(1),s.coA?Math.round(s.coH/s.coA*100)+' %':'–',s.t180,s.hiCo||'–']};
+ const A=v(0),B=v(1),L=['Darts im Leg','Ø im Leg','Höchste Aufnahme','180er im Leg','Ø im Match','Checkout-Quote','180er im Match','Höchstes Finish'],lo=[];
+ const cl=(i,me,ot)=>{if(i===0)return'';const x=parseFloat(me),y=parseFloat(ot);if(isNaN(x)||isNaN(y)||x===y)return'';return(lo.includes(i)?x<y:x>y)?'bt':''};
+ const sc=M.stw?`Sätze ${M.sets[0]} : ${M.sets[1]} · Legs ${M.legs[0]} : ${M.legs[1]}`:`Legs ${M.legs[0]} : ${M.legs[1]}`;
+ el.innerHTML=`<div class="ls-h">Leg an ${esc(shortN(M.p[w].n))}</div><div class="small mut">Checkout ${M.turn.start}${w!==M.first?' · Break of Throw':''} · <b style="color:var(--ink)">${sc}</b></div>
+ <table class="ls"><thead><tr><th></th><th>${esc(shortN(M.p[0].n))}</th><th>${esc(shortN(M.p[1].n))}</th></tr></thead><tbody>${L.map((l,i)=>`<tr><td>${l}</td><td class="${cl(i,A[i],B[i])}">${A[i]}</td><td class="${cl(i,B[i],A[i])}">${B[i]}</td></tr>`).join('')}</tbody></table>
+ <button class="btn pri" data-a="legGo" style="min-height:44px;margin-top:8px">${over?'Zum Ergebnis':'Nächstes Leg'}</button><div class="lsbar"><i></i></div>`;el.classList.add('on')}
+function legWait(fn){const M=MATCH;M.legNext=fn;const i=document.querySelector('#lstat .lsbar i');if(i){i.style.transition='none';i.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{i.style.transition='width 8s linear';i.style.width='100%'}))}later(legGo,8000)}
+function legGo(){const M=MATCH;if(!M||!M.legNext)return;const f=M.legNext;M.legNext=null;const el=document.getElementById('lstat');if(el)el.classList.remove('on');f()}
+
+/* Navigation und Startseite */
+const ICO={hub:'M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',cal:'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4',trainMenu:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2z',rank:'M4 20V10h4v10zM10 20V4h4v16zM16 20v-7h4v7z',more:'M5 12h.01M12 12h.01M19 12h.01'};
+function ico(k,s){return `<svg viewBox="0 0 24 24" width="${s||22}" height="${s||22}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICO[k]}"/></svg>`}
+let NAVA='hub';
+function navUpd(){let n=document.getElementById('nav');if(!n){n=document.createElement('nav');n.id='nav';document.body.appendChild(n)}
+ const on=!!S&&!app.querySelector('#cv')&&!app.querySelector('#cf')&&!app.querySelector('.hero');document.body.classList.toggle('hasnav',on);if(!on){n.innerHTML='';return}
+ n.innerHTML=[['hub','Start'],['cal','Kalender'],['trainMenu','Training'],['rank','Tabellen'],['more','Mehr']].map(([k,t])=>`<button data-a="${k}" class="${NAVA===k?'on':''}">${ico(k)}<span>${t}</span></button>`).join('')}
+function more(){const p=S.player;const T=[['upgrade','Skillpunkte',p.sp?p.sp+' frei':''],['shop','Shop',fmt(p.coins)+' M.'],['lookEd','Aussehen',''],['jersey','Trikot',''],['walked','Walk-on',''],['sponsors','Sponsoren',p.sponsor?p.sponsor.n:''],['club','Verein',S.club.my!=null?'':'vereinslos'],['coachS','Trainer',p.trainer?'':'keiner'],...(p.age<=17?[['acad','Akademie',p.jacad?'Mitglied':'']]:[]),['career','Erfolge',''],['social','Social',''],['album','Fotoalbum',''],['newsS','News',''],['settings','Einstellungen',''],['help','Anleitung',''],['home','Hauptmenü','']];
+ show(`<div class="top"><h2>Mehr</h2><span class="coins">${fmt(p.coins)} Münzen</span></div><div class="tiles">${T.map(([a,n,s])=>`<button class="tile" data-a="${a}"><b>${n}</b>${s?`<span>${esc(s)}</span>`:''}</button>`).join('')}</div>`)}
+function home(){show(`<div class="hero"><div class="logo"><span>DARTS</span><b>KARRIERE</b></div><p class="mut" style="margin:0 0 6px">Von der Junior-Tour über die Tour Card bis zum WM-Titel.</p>${S?cardHTML():`<div class="hero-av">${avatarSVG(defLook(),150)}</div>`}</div>
+ <div class="stack">${S?`<button class="btn pri" data-a="hub">Karriere fortsetzen</button>`:''}
+ <button class="btn ${S?'':'pri'}" data-a="create">${S?'Neue Karriere':'Karriere starten'}</button>
+ <button class="btn" data-a="quick">Schnelles Spiel und 2 Spieler</button>
+ <button class="btn" data-a="hof">Hall of Fame</button>
+ <div class="row"><button class="btn" data-a="settings">Einstellungen</button><button class="btn" data-a="help">Anleitung</button></div></div>`)}
+function hub(){const p=S.player,need=p.lvl*100,rv=p.rival!=null?p.h2h[String(p.rival)]||{w:0,l:0}:null,mine=S.T?[CE()]:myWeek(S.wk);NAVA='hub';
+ const nxt=[];for(let w=S.wk+1;w<=WEEKS&&nxt.length<4;w++)myWeek(w).forEach(e=>nxt.length<4&&nxt.push(e));
+ const rk=[[`#${myRank()}`,'Welt']];if(p.age<=17)rk.push([`#${jtRank()}`,'Junior']);if(!p.card&&p.age>=16)rk.push([`#${ctRank()}`,'Challenge']);if(p.age>=16&&p.age<=23)rk.push([`#${dvRank()}`,'Development']);
+ show(`<div class="hh"><div class="hav">${avatarSVG(p.look,46)}</div><div class="g"><b>${esc(p.name)}</b><div class="small mut">Saison ${S.season} · Woche ${S.wk} von ${WEEKS}</div></div><span class="coins">${fmt(p.coins)}</span></div>
+ <div class="chips small" style="margin:10px 0 2px;justify-content:center"><span class="badge ${p.card?'g':''}">${p.card?'Profi · Tour Card noch '+p.card+(p.card===1?' Saison':' Saisons'):p.age<16?'Nachwuchs · unter 16':p.age<=17?'Junior':'Amateur · ohne Tour Card'}</span><span class="badge">${fmt(p.fans)} Fans</span>${p.sponsor?`<span class="badge">${esc(p.sponsor.n)}</span>`:''}${p.jacad&&p.age<=17?'<span class="badge gr">Akademie</span>':''}${p.qsFree===S.season?'<span class="badge gr">Q-School frei</span>':''}</div>
+ <div data-a="meCard" role="button" tabindex="0" style="cursor:pointer">${cardHTML()}</div>
+ <div class="kv" style="grid-template-columns:repeat(${Math.min(4,rk.length+1)},minmax(0,1fr));margin-top:6px">${rk.slice(0,3).map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join('')}<div><b>${p.fresh}%</b><span>Frische</span></div></div>
+ <div class="panel" style="margin-top:10px"><div class="row" style="align-items:center"><div><b>Level ${p.lvl}</b><div class="small mut">${p.xp} / ${need} XP</div></div><div style="flex:1.4"><div class="bar"><i style="width:${Math.min(100,p.xp/need*100)}%"></i></div><div class="bar" style="margin-top:6px"><i style="width:${p.fresh}%;background:${p.fresh<30?'var(--red)':'var(--green)'}"></i></div></div></div>${p.inj?'<div class="small" style="color:#ff8a8a;margin-top:6px"><b>Verletzt: noch '+p.inj+' W.</b></div>':p.fresh<30?'<div class="small mut" style="margin-top:6px">Müde: dein Ring wird größer. Eine Woche Pause hilft.</div>':''}</div>
+ <div class="sec">${S.T?'Läuft gerade':'Diese Woche'}</div>
+ <div>${S.T?`${evRow(CE(),false)}<button class="btn pri" style="margin-top:8px" data-a="bracket">${S.T.q?'Zur Qualifikation':'Zum Turnierbaum'}</button>`:mine.length?mine.map(e=>evRow(e,true)).join(''):'<div class="panel small mut">Diese Woche ist kein Turnier für dich dabei. Zeit für Training.</div>'}
+ ${S.T?'':`<button class="btn" style="margin-top:8px" data-a="week">${mine.length?'Woche auslassen':'Nächste Woche'}</button>`}</div>
+ ${!S.T&&S.PL&&S.PL.ids.includes('ME')&&plWeek(S.wk)&&!S.PL.done[S.wk]?`<div class="panel stack" style="margin-top:10px;border-color:var(--gold)"><div class="small" style="color:var(--gold)">Liga der Besten · Abend ${S.wk-2} von 12</div><h3>Liga-Abend in ${PLC[S.wk-3]}</h3><div class="small mut">Läuft zusätzlich zum Turnier der Woche. Du bist Platz ${plRankMe()} der Tabelle.</div><div class="row"><button class="btn pri" data-a="plnGo">Antreten</button><button class="btn" data-a="plnSim">Simulieren</button></div></div>`:''}
+ ${p.age>=16&&!p.card&&S.wk===1&&p.qsS!==S.season?`<div class="panel small" style="margin-top:10px;border-color:var(--acc)"><b>Tipp:</b> Nur wer an der Q-School teilnimmt, darf diese Saison auf die Challenge Tour.</div>`:''}
+ <div class="row" style="margin-top:10px"><button class="btn" data-a="trainMenu">Training (${p.trainLeft})</button><button class="btn" data-a="job" ${p.trainLeft<1?'disabled':''}>${p.age<16?'Taschengeld':'Nebenjob'} +${p.age<16?40:120}</button></div>
+ ${nxt.length?`<div class="sec">Als Nächstes</div><div class="panel">${nxt.map(e=>`<div class="row small" style="margin-top:4px;align-items:center"><span class="badge" style="flex:0 0 auto">W${e.w}</span><span>${esc(evName(e))} <span class="mut">· ${esc(evCity(e))}</span></span></div>`).join('')}</div>`:''}
+ ${p.goals?`<div class="sec">Saisonziele${p.manager?' vom Manager':''}</div><div class="panel">${p.goals.map(g=>{const ok=goalOk(g);return `<div class="small" style="margin-top:4px;${ok?'color:var(--green)':''}">${ok?'✓':'○'} ${esc(g.t)}</div>`}).join('')}</div>`:''}
+ ${rv?`<div class="panel" style="margin-top:10px;border-color:#7a2a33" data-a="pcard" data-v="${p.rival}" role="button"><div class="small" style="color:#ff8a8a">Erzrivale${p.rivalHype?' · extra motiviert':''}</div><b>${esc(sname(p.rival))}</b><div class="small mut">Head-to-Head: ${rv.w} : ${rv.l} · Karte ansehen</div></div>`:''}
+ ${S.news.length?`<div class="sec">News</div><div class="panel">${S.news.slice(0,3).map(n=>`<div class="small mut" style="margin-top:4px">${esc(n)}</div>`).join('')}<button class="btn" style="margin-top:10px" data-a="newsS">Alle News</button></div>`:''}`);if(S.story!=null&&!S.T)storyShow()}
+
 const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hlShow:()=>{HLI=0;hlView()},hlNext:()=>{HLI=(HLI+1)%LASTPOP.hl.length;hlView()},hlBack:()=>showResult(LASTPOP.html,LASTPOP.next,LASTPOP.hl),storyA:i=>storyApply(i),
  coachHire:id=>{const p=S.player,c=COACHES.find(x=>x.id===id);p.trainer=id;news(`${p.name} arbeitet jetzt mit ${c.n} (${c.r})`);feed(`Neuer Coach im Team: ${c.n}. Let’s go!`,handle(p.name));save();coachS()},coachFire:()=>{S.player.trainer=null;save();coachS()},
  gear:v=>{const[k,id]=v.split('|'),p=S.player,L=k==='shaft'?SHAFTS:FSHAPE,ok=k==='shaft'?'shafts':'fshapes',s=L.find(x=>x.id===id);p[ok]=p[ok]||[L[0].id];if(!p[ok].includes(id)){if(p.coins<s.p)return;p.coins-=s.p;p[ok].push(id);toast(s.n+' gekauft')}p[k]=id;save();shop()},
@@ -1053,7 +1266,7 @@ const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hl
  copyExp:()=>{const t=document.getElementById('exp');try{navigator.clipboard.writeText(t.value).then(()=>toast('Code kopiert'),()=>{t.select();toast('Bitte markierten Code kopieren')})}catch(e){t.select();toast('Bitte markierten Code kopieren')}},
  doImp:()=>{const v=document.getElementById('imp').value.trim();try{const o=JSON.parse(decodeURIComponent(escape(atob(v))));if(o.v!==4||!o.player)throw 0;S=o;ensure();save();toast('Spielstand geladen');hub()}catch(e){toast('Der Code ist ungültig')}},
  walked,wset:v=>{wsave();const[k,x]=v.split('|');S.player.walk[k]=x;save();walked()},wprev:()=>{wsave();walkOn({n:'Dein Gegner',nick:'Probe'},walked,1)},caller:()=>{CALLER=!CALLER;try{localStorage.setItem('darts_caller',CALLER?'1':'0')}catch(e){}const b=document.getElementById('cbtn');if(b)b.textContent='Caller: '+(CALLER?'an':'aus');if(CALLER)call('Caller on')},home,create,hub,help,upgrade,shop,rank,career,quick,enter:id=>enter(id),bracket,playT,simT,finishT:()=>finishT(),week,cal,newsS,press,pressA,trainMenu,sponsors,job:()=>{const p=S.player;if(p.trainLeft<1)return;p.trainLeft--;const g=p.age<16?40:120;p.coins+=g;save();toast(`+${g} Münzen (1 Trainingseinheit weniger)`);hub()},serv:id=>{const p=S.player,s=SERV.find(x=>x.id===id);if(p.coins<s.p)return;p.coins-=s.p;if(id==='coach')p.coach=true;if(id==='mental')p.form=Math.min(3,(p.form||0)+2);if(id==='camp')p.trainLeft+=3;if(id==='physio'){p.physio=3;p.fresh=Math.min(100,p.fresh+40)}if(id==='manager')p.manager=true;if(id==='pub'){p.pub=true;news(`${p.name} eröffnet eine eigene Darts-Kneipe`)}if(id==='academy'){p.academy=true;p.trainLeft++;news(`${p.name} gründet eine Darts-Akademie`)}if(id==='board'){p.board=true;p.trainLeft++}save();toast(s.n+' gebucht');shop()},flight:c=>{const p=S.player,f=FLIGHTS.find(x=>x[0]===c);if(!p.fls.includes(c)){if(p.coins<f[2])return;p.coins-=f[2];p.fls.push(c)}p.fl=c;save();shop()},tr:k=>startTrain(k),rtab:v=>{rtab=v;rank()},sign:i=>{const s=SPONS[+i];if(!S.player.sponsor){S.player.sponsor={...s,pay:Math.round(s.pay*(S.player.manager?1.3:1)),prog:0};news(`Neuer Sponsor: ${s.n}`);save();toast('Vertrag mit '+s.n)}sponsors()},pvp:()=>{const a=(document.getElementById('p1').value.trim()||'Spieler 1'),b=(document.getElementById('p2').value.trim()||'Spieler 2');startMatch({n:b},{bo:qmode==='cricket'||qmode==='killer'?1:qb,din:qdin,p1:a,p2:b,mode:qmode==='cricket'||qmode==='killer'?qmode:'x01',start:qmode==='301'?301:501},{type:'pvp'})},
- style:v=>{draft.name=(document.getElementById('nm')||{}).value||draft.name;const ag=document.getElementById('ag');if(ag)draft.age=+ag.value||21;draft.style=v;create()},
+ style:v=>{draftSave();draft.style=v;create()},
  up:k=>{const p=S.player,c=p.st[k]>=80?2:1;if(p.sp>=c&&p.st[k]<99){p.sp-=c;p.st[k]++;save()}upgrade()},
  buy:id=>{const s=SETS.find(x=>x.id===id),p=S.player;if(p.coins>=s.p){p.coins-=s.p;p.sets.push(id);p.set=id;save();toast(s.n+' gekauft')}shop()},
  equip:id=>{S.player.set=id;save();shop()},pack:openPack,
@@ -1063,9 +1276,9 @@ const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hl
  ren:id=>{const r=S.pl[+id];modal.innerHTML=`<div class="modal"><div class="box panel"><form id="rf" class="stack" style="text-align:left"><h2>Spieler umbenennen</h2><div><label for="rn">Name</label><input id="rn" maxlength="24" value="${esc(r.n)}"></div><div><label for="rk">Spitzname</label><input id="rk" maxlength="20" value="${esc(r.nick)}"></div><div><label for="ro">Nation</label><input id="ro" maxlength="3" value="${esc(r.nat)}"></div><div class="row"><button type="button" class="btn" data-a="closeM" data-v="">Abbrechen</button><button class="btn pri">Speichern</button></div></form></div></div>`;
   document.getElementById('rf').onsubmit=e=>{e.preventDefault();r.n=document.getElementById('rn').value.trim()||r.n;r.nick=document.getElementById('rk').value.trim();r.nat=(document.getElementById('ro').value.trim()||r.nat).toUpperCase();save();modal.innerHTML='';rank()}},
  closeM:v=>{modal.innerHTML='';if(v&&ACT[v])ACT[v]()}};
-document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=ACT[b.dataset.a];if(f){e.preventDefault();f(b.dataset.v)}});
+Object.assign(ACT,{more,lookEd,acad,look:lookSet,legGo,pcard:id=>pcardModal(id),meCard:()=>pcardModal('ME'),acadJoin:()=>{const p=S.player;if(p.coins<200)return;p.coins-=200;p.jacad=1;news(`${p.name} wird Schüler der Nachwuchs-Akademie`);save();toast('Willkommen in der Akademie');acad()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=ACT[b.dataset.a];if(f){e.preventDefault();if(['hub','cal','trainMenu','rank','more'].includes(b.dataset.a))NAVA=b.dataset.a;f(b.dataset.v)}});
 window.addEventListener('resize',()=>{if(MATCH&&cv)sizeBoard()});try{document.fonts.ready.then(()=>{if(MATCH&&cv)sizeBoard()})}catch(e){}
 load();if(S&&(S.v!==4||!S.player))S=null;ensure();home();
 }
-</script><script>try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>{if(r.scope===location.origin+"/")r.unregister()}))}catch(e){}</script>
-</body></html>
+</script><script>try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>{if(r.scope===location.origin+"/")r.unregister()}))}catch(e){}</script></body></html>
