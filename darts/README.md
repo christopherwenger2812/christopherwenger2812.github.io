@@ -1,6 +1,6 @@
-# Darts Karriere
+# Oche Stars · Darts-Karriere
 
-Darts-Karrierespiel im FIFA-Stil, optimiert für das Handy. Das Spiel ist eine einzelne HTML-Datei und läuft direkt im Browser, ohne Server und ohne Installation.
+Darts-Karrierespiel mit Spielerkarten, Walk-ons und kompletter Laufbahn vom Jugend-Cup bis zum WM-Titel, optimiert für das Handy. Das Spiel ist eine einzelne HTML-Datei und läuft direkt im Browser, ohne Server und ohne Installation.
 
 **Spielen:** https://christopherwenger2812.github.io/darts/
 
@@ -13,8 +13,8 @@ Darts-Karrierespiel im FIFA-Stil, optimiert für das Handy. Das Spiel ist eine e
 - **Caller-Stimme** sagt die Scores auf Englisch an, z. B. „One hundred and eighty!“.
 
 ### Karriere
-- **Spielerkarte** im FIFA-Stil mit 6 Werten: Präzision, Konstanz, Scoring, Doppel, Nerven, Ausdauer.
-- **Start bei null**, wahlweise ab 12 Jahren: Jugend- und Lokalturniere, Challenge Tour, Development Tour, Q-School, Tour Card, Profi.
+- **Spielerkarte** mit Portrait und 6 Werten: Präzision, Konstanz, Scoring, Doppel, Nerven, Ausdauer.
+- **Start bei null**, wahlweise ab 8 Jahren: Jugend- und Lokalturniere, Challenge Tour, Development Tour, Q-School, Tour Card, Profi.
 - **Saison mit 24 Wochen** und PDC-ähnlichen Turnieren mit echten Teilnehmerzahlen und Quali-Wegen:
 
 | Turnier | Teilnehmer | Qualifikation |
@@ -44,7 +44,7 @@ Darts-Karrierespiel im FIFA-Stil, optimiert für das Handy. Das Spiel ist eine e
 - **Social-Media-Feed:** Fans, Profis und dein Rivale kommentieren deine Ergebnisse.
 - **Trainerteam:** 5 Trainer mit Spezialgebiet (Doppel, Mental, Scoring, Fitness, Präzision) und Wochengehalt.
 - **Saisonziele** mit Belohnung, eine Bewertung vom Manager, falls du einen hast.
-- **Spezialkarten** im FIFA-Stil: Team der Woche, Hero, Icon.
+- **Spezialkarten:** Team der Woche, Hero, Icon.
 
 ### Gameplay-Details
 - **Wurfrhythmus:** Gleichmäßiges Werfen bringt dich „in den Flow“ (kleinerer Ring), langes Zögern macht nervös.
@@ -147,3 +147,14 @@ darts/
 - Partner-Touren mit WM-Startplatz für 10 Regionen (DACH, Nordic & Baltic, Osteuropa, Westeuropa, Asien, Nordamerika, Australien, Neuseeland, Afrika, Lateinamerika)
 - Fehler behoben: Beschädigte Turnierbäume werden automatisch repariert. Neuer Knopf „Turnier überspringen“, wenn du nicht (mehr) im Turnier bist
 - Bestehende Karrieren laufen weiter, ein laufendes Turnier wird normal zu Ende gespielt
+
+## Neu in Version 13
+
+- Neuer Name und neues Logo: **Oche Stars**
+- Amateur-Serie: Die 4 Amateur-Turniere (ab 16, ohne Tour Card) zählen für eine nationale Amateur-Rangliste. Die Top 2 spielen die Amateur-WM (64 Spieler aus allen Ländern)
+- Freiplatz für die Q-School für Landesmeister, Amateur-Weltmeister und die Nummer 1 der Amateur-Rangliste. Die Landesmeisterschaft bringt Punkte für die Partner-Tour
+- Lokalmatador-Bonus (mehr Fans) und Preisgeld, das bei Amateur- und Jugend-Turnieren mit dem OVR wächst
+- Eigene Turniernamen für alle 43 Länder
+- Jugend in 4 Altersklassen (U11, U13, U15, U18) mit je 2 nationalen Cups, einer Kontinentalmeisterschaft (z. B. Jugend-EM) und einer Jugend-WM. Alle Jugend-Turniere zählen für die Junior-Rangliste
+- Karrierestart ab 8 Jahren
+- Euro Tour, Floor-Events und World Series erst ab 16 Jahren
