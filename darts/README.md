@@ -163,3 +163,20 @@ darts/
 
 - Balance: Deine Wurfstreuung richtet sich jetzt nach denselben Werten wie bei den Gegnern. Bei gleichem OVR liegt dein Schnitt mit perfektem Timing etwa 15 % über dem Gegner, mit schlechtem Timing deutlich darunter. Scoring- und Doppel-Wert wirken wie bei der KI auf Triple- und Doppelfelder
 - „Erwarteter Schnitt“ auf den Karten ist jetzt realistisch berechnet
+
+## Neu in Version 15
+
+- **Kartenalbum:** Jeder besiegte Turniergegner landet als Karte (Bronze, Silber, Gold) im Album. 9 Sets mit Münzen und XP als Belohnung
+- **Darts-Werkstatt:** Gewicht (18–26 g), Griff, Form und Wolfram-Anteil verändern deine Werte. Der Griff nutzt sich ab und kann neu gefräst werden
+- **2-Jahres-Weltrangliste:** Preisgeld zählt zwei Saisons, dann fällt es heraus
+- **Live-Ticker** im Turnierbaum mit Überraschungen, starken Schnitten, Highfinishes und Eilmeldungen bei Neun-Dartern
+- **Saison-Gala** mit Spieler des Jahres, Newcomer, bestem Checkout, bestem Match und Fan-Abstimmung
+- **Neue Generation:** Ab 40 als Trainer einen eigenen Nachwuchsspieler aufbauen, die Welt läuft weiter
+- **Party-Turnier** für 3 bis 8 Freunde auf einem Handy
+- **Neue Modi:** Bermuda, Around the World und Doppel-Training
+- **Wisch-Steuerung** als Alternative zum Loslassen
+- **Statistik-Center:** Schnitt pro Saison, Trefferbild, Quote pro Doppel, Bilanz gegen Gegner
+- **Offline spielen:** Nach dem ersten Öffnen läuft das Spiel auch ohne Internet (sw.js)
+- **Keine Google-Schriften mehr:** Das Spiel nutzt die Schriften des Geräts
+- **Farbenblind-Modus** und **große Schrift**
+- Fehler behoben: Im „Schnellen Spiel“ ließ sich kein KI-Gegner auswählen
