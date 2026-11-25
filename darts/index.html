@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
 <title>Darts Karriere</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#07090e">
@@ -9,11 +11,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE: TV-Darts-Gala am Samstagabend, laut, golden, Bühnenlicht
+/* VOICE: TV-Darts-Gala am Samstagabend,laut,golden,Bühnenlicht
    IDEA: Ultimate-Spielerkarte trifft TV-Scoreboard einer Darts-WM
-   PICTURE: das Dartboard selbst, groß im Spotlight
-   COLOUR and TYPE: Bühnenschwarz, Board-Rot und -Grün, Kartengold; Oswald + Inter
-   LAYOUT: eine Spalte, Phone-first, Scoreboard oben, Board mittig, Darts unten */
+   PICTURE: das Dartboard selbst,groß im Spotlight
+   COLOUR and TYPE: Bühnenschwarz,Board-Rot und -Grün,Kartengold; Oswald + Inter
+   LAYOUT: eine Spalte,Phone-first,Scoreboard oben,Board mittig,Darts unten */
 :root{color-scheme:dark;--bg:#0b0d12;--pan:#151922;--pan2:#1d2230;--line:#2a3142;--gold:#e9c46a;--gold2:#b8862b;--red:#d62839;--green:#12a150;--ink:#f3f1ea;--mut:#9aa3b2;--cy:#5fd3f3}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:radial-gradient(120% 70% at 50% -10%,#2a2f45 0%,var(--bg) 60%) fixed,var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip;min-height:100vh}
@@ -42,7 +44,6 @@ label{display:block;font-weight:600;margin:0 0 6px}
 .card.bronze{background:radial-gradient(90% 60% at 30% 10%,#ffe0c2 0%,transparent 60%),linear-gradient(160deg,#e6b38a,#b07444 55%,#7d4a24)}
 .card .ovr{font:700 52px/0.9 Oswald,sans-serif}.card .pos{font:700 16px Oswald,sans-serif;margin-top:4px}
 .card .nat{font:700 14px 'Barlow Condensed',Oswald,Impact,'Arial Narrow',sans-serif;border:2px solid currentColor;display:inline-block;padding:0 5px;border-radius:4px;margin-top:6px}
-.card .tag2{position:absolute;right:18px;top:30px;text-align:right;font:700 13px 'Barlow Condensed',Oswald,Impact,'Arial Narrow',sans-serif;line-height:1.3;opacity:.85}
 .card .nm{font:700 24px Oswald,sans-serif;text-align:center;margin-top:24px;border-bottom:1px solid rgba(42,29,4,.35);padding-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .nick{text-align:center;font-size:12px;font-weight:600;opacity:.8;margin-top:2px}
 .card .st{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;margin:8px 6px 0;font:700 17px Oswald,sans-serif}
@@ -74,7 +75,6 @@ label{display:block;font-weight:600;margin:0 0 6px}
 .drts .tot{color:var(--gold)}
 .hint{text-align:center;font-size:14px;color:var(--mut);min-height:22px;margin-top:6px}
 .hint b{color:var(--ink)}
-.meter{height:6px;border-radius:9px;background:var(--pan2);margin-top:6px;overflow:hidden}.meter i{display:block;height:100%;width:0;background:var(--green);transition:width .1s}
 /* Bracket */
 .rd{margin-bottom:14px}.mt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;background:var(--pan);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px}
 .mt .w{font-weight:800}.mt .l{color:var(--mut);text-decoration:line-through}.mt .me{color:var(--gold)}
@@ -94,12 +94,10 @@ label{display:block;font-weight:600;margin:0 0 6px}
 .stage .beams{position:absolute;inset:-40%;z-index:-1;background:conic-gradient(from 200deg at 20% 0%,transparent 0 8deg,color-mix(in srgb,var(--vl) 28%,transparent) 10deg,transparent 16deg 360deg),conic-gradient(from 140deg at 80% 0%,transparent 0 8deg,color-mix(in srgb,var(--vl) 28%,transparent) 10deg,transparent 16deg 360deg);animation:sweep 7s ease-in-out infinite alternate;opacity:var(--vb)}
 @keyframes sweep{to{transform:rotate(9deg) translateX(4%)}}
 .stage .crowd{position:absolute;left:0;right:0;bottom:0;height:30%;z-index:-1;opacity:var(--vc)}
-.stage .crowd svg{width:100%;height:100%}
 .stage .fig{max-width:440px;margin:0 auto;filter:drop-shadow(0 14px 30px rgba(0,0,0,.7))}
 .stage .vname{position:absolute;left:14px;top:10px;font:700 12px Inter;color:rgba(255,255,255,.75);z-index:2;pointer-events:none}
 .stage.roar .crowd{animation:jump .35s ease-in-out 4 alternate}.stage.roar .beams{animation:flash .18s 6 alternate;opacity:1}
 @keyframes jump{to{transform:translateY(-6%)}}@keyframes flash{to{filter:brightness(2.2)}}
-.perf{color:var(--green)}
 .ctxt{min-height:20px;text-align:center;font:600 14px Inter;color:var(--mut);font-style:italic}.ctxt.pop{animation:pop .9s ease}
 .stage.hush{filter:brightness(.7) saturate(.6)}.stage.hush .crowd{opacity:.2}
 .lstat{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(10,12,18,.94);border:1px solid var(--gold);border-radius:14px;padding:12px 16px;z-index:5;display:none;min-width:260px;text-align:center}.lstat.on{display:block;animation:pop .5s ease}
@@ -125,13 +123,12 @@ label{display:block;font-weight:600;margin:0 0 6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}.chips .btn{width:auto;flex:1 1 auto;min-height:44px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media(max-width:380px){h1{font-size:36px}.pl .rm{font-size:28px}.pl{grid-template-columns:8px minmax(0,1fr) 30px 60px}}
-/* ===== Redesign v9: "Matchday" — TV-Studio, Oche-Rot, Kartengold ===== */
+/* ===== Redesign v9: "Matchday" — TV-Studio,Oche-Rot,Kartengold ===== */
 :root{--bg:#07090e;--pan:#0f131d;--pan2:#171c29;--line:#262d3e;--gold:#f2c94c;--gold2:#c9932b;--acc:#ff3d57;--acc2:#c8102e;--red:#ff3d57;--green:#22c55e;--ink:#f5f7fb;--mut:#8f99ad;--cy:#38d6ff}
 html,body{background:radial-gradient(80% 45% at 10% -5%,rgba(255,61,87,.20),transparent 60%),radial-gradient(70% 40% at 100% 0%,rgba(56,214,255,.14),transparent 60%),repeating-linear-gradient(135deg,rgba(255,255,255,.012) 0 2px,transparent 2px 9px),var(--bg) fixed;font-family:Inter,system-ui,sans-serif}
 h1,h2,h3,.os{font-family:'Barlow Condensed',Oswald,Impact,sans-serif;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
 h1{font-size:46px}h2{font-size:28px}h3{font-size:21px}
 #app{padding:12px 14px 40px}
-body.hasnav #app{padding-bottom:96px}
 .btn{border-radius:14px;background:linear-gradient(180deg,#1b2131,#141926);border:1px solid var(--line);font-weight:700;transition:transform .08s,filter .15s}
 .btn:active{transform:scale(.97)}
 .btn.pri{background:linear-gradient(180deg,#ff5a6f,var(--acc2));color:#fff;box-shadow:0 6px 18px rgba(255,61,87,.28),inset 0 1px 0 rgba(255,255,255,.25)}
@@ -148,12 +145,9 @@ input,select{background:#121725;border-radius:12px}
 .kv b{font:800 24px 'Barlow Condensed',Oswald,sans-serif}
 .sec{font:800 15px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);margin:18px 2px 8px;display:flex;align-items:center;gap:8px}
 .sec::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--acc)}
-/* Kopfzeile Start */
-.hh{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,rgba(255,61,87,.16),rgba(15,19,29,.6));border:1px solid var(--line);border-radius:18px;padding:8px 12px}
-.hh .g{flex:1}.hh b{font:800 20px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase}
 .hav{width:48px;height:48px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#2a3349,#111522);border:2px solid var(--acc);flex:0 0 auto;display:flex;align-items:flex-end;justify-content:center}
 .coins{background:#1a1608;border:1px solid #5a4613;padding:5px 10px;border-radius:99px;font-size:14px}
-/* Karte: Portrait rechts, Werte unten */
+/* Karte: Portrait rechts,Werte unten */
 .card{width:250px;aspect-ratio:3/4.35;padding:0;margin:8px auto 4px}
 .card .cl{position:absolute;left:20px;top:28px;display:flex;flex-direction:column;align-items:center;z-index:2;width:56px}
 .card .ovr{font:800 54px/.9 'Barlow Condensed',Oswald,sans-serif}
@@ -178,22 +172,11 @@ input,select{background:#121725;border-radius:12px}
 .lc{min-height:38px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:#151a27;color:var(--ink);font:600 13px Inter,sans-serif;cursor:pointer}
 .lc.on{border-color:var(--acc);background:#3a121a}
 .lc.sw{width:38px;padding:0;border:2px solid rgba(255,255,255,.15)}.lc.sw.on{border:3px solid #fff;box-shadow:0 0 0 2px var(--acc)}
-/* Kacheln */
-.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.tile{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:84px;padding:12px 14px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(150deg,#1c2334,#0f131d);color:var(--ink);text-align:left;cursor:pointer;position:relative;overflow:hidden}
-.tile::after{content:'';position:absolute;right:-18px;top:-18px;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle,rgba(255,61,87,.35),transparent 70%)}
-.tile b{max-width:100%;overflow-wrap:anywhere;font:800 18px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase}.tile span{font-size:12px;color:var(--mut)}
-/* Untere Navigation */
-#nav{position:fixed;left:0;right:0;bottom:0;z-index:8;display:none;justify-content:center;gap:2px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:rgba(9,11,17,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
-body.hasnav #nav{display:flex}
-#nav button{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;background:none;border:0;color:var(--mut);font:600 11px Inter,sans-serif;cursor:pointer;border-radius:12px;min-height:52px}
-#nav button.on{color:#fff;background:rgba(255,61,87,.14)}#nav button.on svg{color:var(--acc)}
 /* Startseite */
 .hero{padding:26px 0 10px}
 .logo{display:flex;flex-direction:column;align-items:center;line-height:.85}
 .logo span{font:800 26px 'Barlow Condensed',Oswald,sans-serif;letter-spacing:.5em;color:var(--acc);margin-right:-.5em}
 .logo b{font:800 58px 'Barlow Condensed',Oswald,sans-serif;letter-spacing:.04em;background:linear-gradient(180deg,#fff,#ffd37a);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero-av{width:170px;height:170px;border-radius:50%;margin:10px auto;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 30%,#3a1420,#0c0f18 70%);border:3px solid var(--acc);box-shadow:0 0 50px rgba(255,61,87,.35)}
 /* Match */
 .pl{border-radius:14px;background:linear-gradient(90deg,#141a27,#0f131d)}
 .pl.on{border-color:var(--acc);box-shadow:0 0 0 1px rgba(255,61,87,.35),0 0 24px rgba(255,61,87,.15)}.pl.on .tag{background:var(--acc)}.pl.on .rm{color:#fff}
@@ -212,7 +195,7 @@ table.ls td.bt{color:var(--green);font-weight:800}
 .modal .box.panel{border-color:rgba(255,61,87,.35)}
 .mt{border-radius:12px}
 @media(max-width:380px){.cmini{zoom:.52}.card{width:236px}}
-/* ===== v10: EA-FC-Menü, Walk-on, Publikum ===== */
+/* ===== v10: EA-FC-Menü,Walk-on,Publikum ===== */
 .fch{display:flex;align-items:center;gap:10px;margin:-4px 0 0}
 .fcav{width:44px;height:44px;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#2a3349,#0f131d);border:1px solid #39425a;display:flex;align-items:flex-end;justify-content:center;flex:0 0 auto;cursor:pointer}
 .fcl{flex:1;min-width:0}.fcl b{display:block;font:800 19px 'Barlow Condensed',Oswald,sans-serif;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fcl span{font-size:12px;color:var(--mut)}
@@ -267,6 +250,8 @@ table.ls td.bt{color:var(--green);font-weight:800}
 .walk.w2{justify-content:flex-start;padding:56px 12px 0}
 .walk.w2 .wtap,.walk.w2 .wtop{position:absolute!important}
 .walk.w2 #wc{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;width:100%}
+.hero-av{width:170px;height:170px;border-radius:50%;margin:10px auto;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 30%,#3a1420,#0c0f18 70%);border:3px solid var(--acc);box-shadow:0 0 50px rgba(255,61,87,.35)}
+@media (prefers-reduced-motion:reduce){.stage .beams,.wlive,.walk .chant{animation:none!important}.walk .card,.walk .in,.ctxt.pop{animation:none!important}}
 </style></head><body>
 <main id="app"></main>
 <div id="modal"></div>
@@ -303,7 +288,6 @@ function aiTarget(rem,dl){const r=checkout(rem,dl);if(r)return r.route[0];
  for(const a of SHOTS){if(a.s[0]==='D'||a.s==='BULL')continue;const c=a.c+leaveCost(rem-a.v);if(c<bc){bc=c;best=a.s}}return best;}
 function gauss(){let u=0;while(!u)u=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*Math.random());}
 function aiSigma(ovr){return Math.max(5,25-ovr*0.2);}
-function aiThrow(ovr,sh,press){const[x,y]=bedPos(sh),s=aiSigma(ovr)*(press?1.07:1);return[x+gauss()*s,y+gauss()*s];}
 /*CORE-END*/
 
 /* ---------- Daten ---------- */
@@ -312,7 +296,7 @@ const STYLES=[{id:'sco',n:'Scoring-Maschine',d:'+8 Scoring, +3 Präzision',b:{sc
 const NATS=['GER','AUT','SUI','NED','BEL','ENG','SCO','WAL','NIR','IRL','POL','CZE','LTU','LAT','POR','ESP','ITA','FRA','DEN','SWE','NOR','FIN','HUN','CRO','AUS','NZL','JPN','PHI','HKG','IND','CAN','USA','RSA','BRA','ARG','MEX','KOR','CHN','SGP','THA','SVK','ROU','GIB'];
 const NAMES=[['Jens Brückner','Der Bulle','GER'],["Liam O'Hara",'Irish Mist','IRL'],['Sven Dahlberg','The Viking','SWE'],['Kees van Dorp','Oranje Flash','NED'],['Tomasz Wilk','Wolf','POL'],['Marco Benedetti','Il Martello','ITA'],['Dale Pickering','Pick','ENG'],['Ollie Thwaite','The Postman','ENG'],['Henrik Sandvik','Fjord','NOR'],['Brett Coolidge','Cool Hand','AUS'],['Arjen Smeets','Tulip','NED'],['Callum Reid','Highlander','SCO'],['Felix Kramm','Kramm-Bombe','GER'],['Nico Laufer','Laufmasche','AUT'],['Paddy Quinlan','Lucky','IRL'],['Wes Harlow','Wrecking Ball','WAL'],['Dmitri Orlov','Ice','LAT'],['Gavin Pryce','Prince','WAL'],['Jasper Kuiper','The Kuip','NED'],['Tobias Rehm','Turbo','GER'],['Ryan Ashdown','Ash','ENG'],['Luka Petrić','Lightning','CRO'],['Kevin Molitor','Molli','GER'],['Mats Engström','Engine','SWE'],['Stuart Blaine','Hammerhead','SCO'],['Dennis Vogt','Vogti','SUI'],['Craig Munro','Munro','SCO'],['Jonas Freitag','Friday','GER'],['Barry Kettle','Boiling Point','ENG'],['Emil Hoxha','Eagle','BEL'],['Rico Lindner','Lindi','GER'],['Owen Treharne','Dragon','WAL'],['Pieter Brandsma','Polder','NED'],['Seamus Fitzgerald','Fitz','IRL'],['Mario Kranzl','Kranzerl','AUT'],['Adam Kowal','Kowalski','POL'],['Lewis Hartigan','Hart','ENG'],['Bram de Wit','White Lightning','NED'],['Fynn Albers','Albatros','GER'],['Gordon McKay','Mac','SCO'],['Niklas Berg','Bergziege','GER'],['Theo Marchetti','Spaghetti','ITA'],['Danny Wexford','Wex','ENG'],['Jari Lehtonen','Sauna','FIN'],['Moritz Kaiser','Der Kaiser','GER'],['Rhys Cardew','Cardiff Kid','WAL'],['Joost Verhoef','Hoefijzer','NED'],['Ole Hagen','Hagel','DEN'],['Graham Tolliver','Tolly','ENG'],['Kieran Mossop','Moss','ENG'],['Lee Brindley','Brindy','ENG'],['Josh Penhale','The Pen','ENG'],['Callum Driscoll','Disco','ENG'],['Thijs Oudeman','Oude Rot','NED'],['Ruud Hoekstra','Hoekie','NED'],['Daan Veltkamp','Veldje','NED'],['Iwan Pritchard','Pritch','WAL'],['Gethin Llewellyn','The Leek','WAL'],['Hamish Dunbar','Braveheart','SCO'],['Euan Strachan','Stretch','SCO'],['Conor Mulgrew','Belfast Bomber','NIR'],['Ciaran Devlin','Devil','NIR'],['Aidan McCaul','Causeway','NIR'],['Wout Vermeiren','Waffle','BEL'],['Jelle Claeys','The Claw','BEL'],['Stijn Peeters','Peetie','BEL'],['Lukas Weidner','Weide','GER'],['Sebastian Rott','Rotti','GER'],['Florian Gruber','Grubi','AUT'],['Bartosz Nowicki','Nowy','POL'],['Ondřej Hájek','Haky','CZE'],['Pavel Kubát','Kubi','CZE'],['Mindaugas Jonaitis','Baltic Storm','LTU'],['Tiago Ferreira','O Tubarão','POR'],['Rui Mesquita','Mesqui','POR'],['Javier Montalvo','El Toro','ESP'],['Carlos Ibarra','Ibi','ESP'],['Mikkel Thorsen','Thor','DEN'],['Oskar Lindqvist','Lindy','SWE'],['Gábor Szalai','Paprika','HUN'],['Bence Varga','Varga-Bombe','HUN'],['Ante Marić','Adriatic','CRO'],['Mitch Garrity','Outback','AUS'],['Brody Fenwick','Fenny','AUS'],['Hemi Takerei','Kiwi','NZL'],['Haruto Miyase','Samurai','JPN'],['Kenji Oribe','Origami','JPN'],['Rodel Bautista','Manila Thrilla','PHI'],['Jomar Dizon','Jeepney','PHI'],['Shane Pelletier','Maple','CAN'],['Tyler Brannigan','Stars & Stripes','USA'],['Cody Hollister','Cowboy','USA'],['Pieter du Toit','Springbok','RSA'],['Chun-Wai Leung','Dragon Fist','HKG'],['Arjun Mehra','Mumbai Missile','IND'],['Davide Rinaldi','Gondola','ITA'],['Julien Mercier','Le Baron','FRA'],['Reto Inderbitzin','Matterhorn','SUI'],['Declan Furey','Furious','IRL'],['Artūrs Ozols','Riga','LAT']];
 const NB=['SWE','NOR','DEN','FIN','LAT','LTU'],EE=['POL','CZE','HUN','CRO','SVK','ROU'];
-const E_=(o)=>o;const CT=(id,w,city)=>({id,w,n:'Challenge Tour '+id.slice(1),d:'Die zweite Liga für Spieler ohne Tour Card: Punkte für die Challenge-Rangliste',city,v:'messe',q:'ct',minAge:16,size:64,lo:34,hi:64,bo:[11,9],prize:1500,fee:80,t:2,rk:'ct'});
+const CT=(id,w,city)=>({id,w,n:'Challenge Tour '+id.slice(1),d:'Die zweite Liga für Spieler ohne Tour Card: Punkte für die Challenge-Rangliste',city,v:'messe',q:'ct',minAge:16,size:64,lo:34,hi:64,bo:[11,9],prize:1500,fee:80,t:2,rk:'ct'});
 const DV=(id,w,city)=>({id,w,n:'Development Tour '+id.slice(1),d:'Nachwuchs-Tour für 16- bis 23-Jährige, Punkte für die Development-Rangliste',city,v:'messe',q:'dv',minAge:16,maxAge:23,size:64,bo:[11,9],prize:1200,fee:50,t:2,rk:'dev'});
 const PC=(id,w,city)=>({id,w,n:'Floor-Event '+id.slice(1),d:'Players-Championship-Stil: alle 128 Tour-Card-Spieler, Punkte für Welt- und ProTour-Rangliste',city,v:'sport',q:'pc',size:128,bo:[15,11],prize:4000,fee:120,t:2,rk:'pro',pt:1});
 const ET=(id,w,n,city,hn)=>({id,w,n,d:'Euro Tour, 48 Spieler: Die Top 16 der Welt steigen in Runde 2 ein, dazu 16 von der ProTour-Rangliste und 16 Qualifikanten (Tour Card, Gastland, Nordic & Baltic, Osteuropa)',city,hn,v:'stadt',q:'et',size:48,stages:[32,16],bo:[15,13,11],prize:9000,fee:200,t:3,rk:'pro',pt:1,eu:1});
@@ -370,10 +354,6 @@ const VEN={fest:'Festzelt am Marktplatz|#4a2c10|#140a04|#ffcc66|.5|.6',verein:'V
 for(const k in VEN){const[n,c1,c2,l,c,b]=VEN[k].split('|');VEN[k]={n,c1,c2,l,c:+c,b:+b}}
 const TRAIN_V={n:'Trainingsraum',c1:'#1e2230',c2:'#0b0d12',l:'#e9c46a',c:0,b:.25};
 const WSTY=[['rock','Stadion-Rock'],['techno','Techno'],['schlager','Schlager'],['hiphop','Hip-Hop']],WPYRO=[['fire','Feuer'],['confetti','Konfetti'],['laser','Laser'],['smoke','Nebel']],WCOL=[['#e9c46a','Gold'],['#ff3b4f','Rot'],['#4fb3ff','Blau'],['#3ddc84','Grün'],['#b77bff','Lila']];
-function crowdSVG(seed){let x=seed||7;const r=()=>(x=(x*9301+49297)%233280)/233280;let s='<svg viewBox="0 0 400 120" preserveAspectRatio="none">';
- for(let row=0;row<3;row++){const y=40+row*30,sz=10+row*3,col=['#0a0a10','#07070b','#030305'][row];for(let i=0;i<26-row*4;i++){const cx=(i+r()*.6)*(400/(26-row*4))+row*6,h=y+r()*6;s+=`<circle cx="${cx.toFixed(1)}" cy="${h.toFixed(1)}" r="${sz*.55}" fill="${col}"/><path d="M${(cx-sz).toFixed(1)} ${(h+sz*2.6).toFixed(1)}Q${cx.toFixed(1)} ${(h+sz*.2).toFixed(1)} ${(cx+sz).toFixed(1)} ${(h+sz*2.6).toFixed(1)}Z" fill="${col}"/>`;
-  if(row<2&&r()<.12)s+=`<rect x="${(cx-11).toFixed(1)}" y="${(h-26).toFixed(1)}" width="22" height="14" rx="2" fill="#f4f1e8"/><text x="${cx.toFixed(1)}" y="${(h-15.5).toFixed(1)}" font-size="10" font-family="Oswald" text-anchor="middle" fill="#c8102e">180</text>`}}
- return s+'</svg>'}
 const SETS=[{id:'b18',n:'Messing 18g',p:0,b:{}},{id:'t80',n:'Tungsten 80% 21g',p:1200,b:{kon:2}},{id:'t90',n:'Tungsten 90% 23g',p:3500,b:{pra:2,kon:2}},{id:'stl',n:'Stealth Black 24g',p:8000,b:{pra:3,sco:3,dop:1}},{id:'gld',n:'Gold Edition 26g',p:20000,b:{pra:4,kon:3,sco:3,dop:3,ner:3,aus:3}}];
 const PACKS=[{id:'br',n:'Bronze-Pack',p:600,c:'bronze',d:'1–2 Skillpunkte'},{id:'si',n:'Silber-Pack',p:1800,c:'silver',d:'2–4 Skillpunkte oder ein Werte-Boost'},{id:'go',n:'Gold-Pack',p:5000,c:'',d:'4–7 Skillpunkte, Chance auf +3 Boost'}];
 const SERV=[{id:'coach',n:'Persönlicher Coach',d:'+25 % XP bis zum Saisonende',p:1500},{id:'mental',n:'Mentaltrainer',d:'Form sofort +2',p:400},{id:'camp',n:'Trainingslager',d:'+3 Trainingseinheiten diese Woche',p:600},{id:'physio',n:'Physiotherapeut',d:'+40 Frische und keine Ermüdung in den nächsten 3 Turnieren',p:350},{id:'board',n:'Profi-Board zu Hause',d:'Dauerhaft 3 statt 2 Trainingseinheiten pro Woche',p:2500,once:1},{id:'manager',n:'Manager',d:'Doppelt so gute Sponsor-Angebote und +30 % Sponsorgeld, nimmt aber 10 % vom Preisgeld',p:1200,once:1},{id:'pub',n:'Eigene Kneipe',d:'Deine Heimspielstätte: +150 Münzen und +20 Fans pro Woche',p:12000,once:1},{id:'academy',n:'Darts-Akademie',d:'Du bildest Talente aus: +300 Münzen und +1 Trainingseinheit pro Woche',p:30000,once:1}];
@@ -411,8 +391,6 @@ function genWorld(nat){const pl=[],ord=shuffle(NAMES.map((_,i)=>i)),nn=()=>Math.
 
 let S=null;
 const KEY='darts_karriere_v4';
-function save(){try{checkAch()}catch(e){}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function load(){try{const s=localStorage.getItem(KEY);if(s)S=JSON.parse(s)}catch(e){S=null}}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -427,10 +405,8 @@ function ctList(){return subList('ct',x=>!x.card&&x.age>=16,!S.player.card)}
 function dvList(){return subList('dv',x=>x.age>=16&&x.age<=23,S.player.age>=16&&S.player.age<=23)}
 function ctRank(){return ctList().findIndex(r=>r.me)+1}
 function dvRank(){return dvList().findIndex(r=>r.me)+1}
-function topRoster(n){return ranking().filter(r=>!r.me).slice(0,n).map(r=>r.id)}
 function ageMul(){const a=S.player.age;return a<=17?1.5:a<=21?1.35:a<=27?1.15:a<=33?1:a<=38?.85:.7}
 function news(t){S.news=S.news||[];S.news.unshift(`S${S.season} · W${Math.min(S.wk,WEEKS)}: ${t}`);S.news=S.news.slice(0,60)}
-function formTxt(){const f=S.player.form||0;return f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}
 function myCol(){return S&&S.player.fl||'#e9c46a'}
 function reqTxt(e){const a=e.minAge&&e.maxAge?`${e.minAge}–${e.maxAge} J.`:e.maxAge?`bis ${e.maxAge} J.`:e.minAge?`ab ${e.minAge} J.`:'';const r={loc:'Amateure',ct:'ohne Tour Card',qs:'ohne Tour Card',pc:'Tour Card',et:'Tour Card / Quali',uk:'Tour Card / Quali',ma:'Tour Card',ws:'Top 8 / Gastregion',wsf:'Top 24',mp:'Top 16 + ProTour',pcf:'Top 64 ProTour',ec:'Top 32 Euro',gs:'Sieger + Rangliste',nc:'2 Beste je Nation',plo:'Liga Top 4',wq:'nicht qualifiziert',wm:'128 Qualifizierte',pln:'Liga der Besten',yth:'',dv:'',jt:'',js:'Top 16 Junior',jw:'Top 32 Junior'}[e.q]||'';return[r,a].filter(Boolean).join(' · ')}
 function wList(){return ranking().map(r=>r.me?'ME':r.id)}
@@ -496,7 +472,7 @@ function boardSVG(sz){let s=`<svg viewBox="-200 -200 400 400" width="${sz||300}"
 /* ---------- Screens ---------- */
 const app=document.getElementById('app'),modal=document.getElementById('modal');
 let MATCH=null,raf=0;
-function show(html){cancelAnimationFrame(raf);app.innerHTML=html;window.scrollTo(0,0);navUpd()}
+function show(html){cancelAnimationFrame(raf);app.innerHTML=html;window.scrollTo(0,0);wake(!!app.querySelector('#cv'))}
 const topBar=(t,back,right)=>`<div class="top"><button class="btn back" data-a="${back||'hub'}">Zurück</button><h2>${t}</h2>${right||'<span></span>'}</div>`;
 
 function help(){show(`${topBar('Anleitung',S?'hub':'home')}
@@ -601,7 +577,9 @@ function fieldBuild(e,me){const p=S.player,W=wList(),aiW=W.filter(id=>id!=='ME')
   case 'wq':{const q=new Set(wmA());take(byOvr(x=>x.age>=16&&!q.has(x.id)),1e9,0);break}
   case 'wm':take(wmField().filter(id=>id!=='ME'),1e9,0);break}
  st.forEach((a,k)=>take(byOvr(x=>A(x)&&x.age>=10),1e9,k));
- if(e.maxAge&&e.maxAge<=17)for(let k=0;k<st.length;k++)while(st[k].length<cap(k)){const a=rnd(Math.max(10,e.minAge||10),e.maxAge),np=genP(pick(NATW),a,Math.max(12,Math.min(55,14+(a-12)*4+rnd(0,12))),false);np.id=S.pl.length;np.sty=pick(AIST)[0];np.fd=pick([20,16,8,10]);np.form=0;np.jt=0;S.pl.push(np);used.add(np.id);st[k].push(np.id)}
+ /* Feld zu klein: erst passende Spieler ohne Einschränkung, dann neue Talente im erlaubten Alter erzeugen */
+ if(!e.minAge&&!e.maxAge)st.forEach((x,k)=>take(byOvr(()=>true),1e9,k));
+ for(let k=0;k<st.length;k++)while(st[k].length<cap(k)){const lo=Math.max(10,e.minAge||16),hi=Math.max(lo,Math.min(e.maxAge||30,lo+12)),a=rnd(lo,hi),np=genP(pick(NATW),a,Math.max(12,Math.min(e.maxAge&&e.maxAge<=17?55:62,14+(Math.min(a,24)-12)*4+rnd(0,12))),false);np.id=S.pl.length;S.pl.push(np);used.add(np.id);st[k].push(np.id)}
  if(me)st[ms].push('ME');return st}
 function koDone(){const T=S.T;if(!T.rounds)return false;const l=T.rounds[T.cur];return l.length===1&&l[0].w!=null&&!(T.stages&&T.stages[T.cur+1]&&T.stages[T.cur+1].length)}
 function rlab(i){const T=S.T;return T.stages&&T.stages[i+1]&&T.stages[i+1].length?(EVM[T.eid].q==='ma'?'Vorrunde '+(i+1):'Runde '+(i+1)):rnameN(T.rounds[i].length*2)}
@@ -971,7 +949,7 @@ function crowdSnd(kind){try{ac();const n=noise(kind==='boo'?1.2:1.6),f=AC.create
 function estAvg(o){return Math.round(o*1.02+4)}
 function getCond(e){S.cond=S.cond||{};if(!S.cond[e.id])S.cond[e.id]=Math.random()<.5?'normal':pick(['laut','warm','grell','kalt']);return S.cond[e.id]}
 function isHome(e){return e.lc!=null||CITYNAT[e.city]===S.player.nat||(['ENG'].includes(S.player.nat)&&!CITYNAT[e.city]&&e.lc==null)}
-function ensure(){if(!S)return;const p=S.player;S.pl.forEach(x=>{if(!x.sty){x.sty=pick(AIST)[0];x.fd=pick([20,16,8,10,12,18,4]);x.form=0}});
+function ensure(){if(!S)return;S=sanitizeSave(S);const p=S.player;S.pl.forEach(x=>{if(!x.sty){x.sty=pick(AIST)[0];x.fd=pick([20,16,8,10,12,18,4]);x.form=0}});
  const d={fresh:100,inj:0,hist:[],ssP:0,ssD:0,tw:0,bestRank:999,nine:0};for(const k in d)if(p[k]==null)p[k]=d[k];if(!S.club)initClubs();const pp=S.player;if(!pp.jersey)pp.jersey={c1:'#c8102e',c2:'#111111',pat:'uni',back:(pp.nick||pp.name.split(' ').slice(-1)[0]).slice(0,12),num:180};if(!pp.goals&&S.pl)genGoals();S.feed=S.feed||[];if(!S.PL)plInit();S.wq=S.wq||[];S.titleS=S.titleS||[];pp.look=pp.look||defLook();if(pp.jt==null)pp.jt=0;if(pp.qsS==null&&S.wk>1)pp.qsS=S.season}
 function scout(id){const x=who(id);if(!x)return'';const h=S.player.h2h[String(id)];const f=x.form||0;return `<div class="small" style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px">
  <span class="mut">Spielstil</span><b>${(AIST.find(a=>a[0]===x.sty)||['','Allrounder'])[1]}</b><span class="mut">Lieblingsdoppel</span><b>D${x.fd}</b><span class="mut">Form</span><b>${f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}</b><span class="mut">Erwarteter Schnitt</span><b>ca. ${estAvg(povr(id))}</b><span class="mut">Head-to-Head</span><b>${h?h.w+' : '+h.l:'erstes Duell'}</b></div>`}
@@ -1016,8 +994,7 @@ function settings(){const back=S?'hub':'home';loadVoices();show(`${topBar('Einst
  <div><label>Wurfhand</label><div class="chips"><button class="btn ${SETG.lefty?'':'pri'}" data-a="setg" data-v="lefty|0">Rechtshänder</button><button class="btn ${SETG.lefty?'pri':''}" data-a="setg" data-v="lefty|1">Linkshänder</button></div><div class="small mut" style="margin-top:4px">Linkshänder: Der Dart fliegt von links ins Board, die Lupe weicht deiner Hand aus.</div></div>
  <div><label>Caller-Stimme</label><div class="chips"><button class="btn ${CALLER?'pri':''}" data-a="setg" data-v="caller|1">An</button><button class="btn ${CALLER?'':'pri'}" data-a="setg" data-v="caller|0">Aus</button></div></div>
  <div><label for="vsel">Stimme des Callers</label>${voiceSel()}<div class="chips" style="margin-top:8px">${[[.85,'Tiefer'],[1,'Normal'],[1.12,'Höher']].map(([v,n])=>`<button class="btn ${(SETG.vpitch||1)===v?'pri':''}" data-a="setg" data-v="vpitch|${v}">${n}</button>`).join('')}<button class="btn" data-a="vtest">Testen</button></div><div class="small mut" style="margin-top:4px">Automatisch wird eine männliche britische Stimme gesucht. Die natürlichsten Stimmen auf Android sind die Google-Online-Stimmen für Englisch (Großbritannien).</div></div>
- ${saveUI()}</div>`)}
-function exportCode(){try{return btoa(unescape(encodeURIComponent(JSON.stringify(S))))}catch(e){return ''}}
+ ${saveUI()}${errUI()}</div>`)}
 function getHof(){try{return JSON.parse(localStorage.getItem('darts_hof')||'[]')}catch(e){return[]}}
 function hofPts(p){return(p.tw||0)*25+p.wins*2+p.t180+(p.nine||0)*100+(p.bestRank<=1?300:p.bestRank<=8?150:p.bestRank<=32?60:p.bestRank<=64?20:0)}
 function hof(){const h=getHof().sort((a,b)=>b.pts-a.pts);show(`${topBar('Hall of Fame',S?'hub':'home')}<p class="small mut" style="margin-top:0">Hier landen alle Karrieren, die du beendet hast. Punkte gibt es für Titel, Siege, 180er, Neun-Darter und den besten Ranglistenplatz.</p>
@@ -1249,9 +1226,6 @@ function legWait(fn){const M=MATCH;M.legNext=fn;const i=document.querySelector('
 function legGo(){const M=MATCH;if(!M||!M.legNext)return;const f=M.legNext;M.legNext=null;const el=document.getElementById('lstat');if(el)el.classList.remove('on');f()}
 
 /* Navigation und Startseite */
-const ICO={hub:'M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',cal:'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4',trainMenu:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2z',rank:'M4 20V10h4v10zM10 20V4h4v16zM16 20v-7h4v7z',more:'M5 12h.01M12 12h.01M19 12h.01'};
-function ico(k,s){return `<svg viewBox="0 0 24 24" width="${s||22}" height="${s||22}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICO[k]}"/></svg>`}
-let NAVA='hub';
 function home(){show(`<div class="hero"><div class="logo"><span>DARTS</span><b>KARRIERE</b></div><p class="mut" style="margin:0 0 6px">Von der Junior-Tour über die Tour Card bis zum WM-Titel.</p>${S?cardHTML():`<div class="hero-av">${avatarSVG(defLook(),150)}</div>`}</div>
  <div class="stack">${S?`<button class="btn pri" data-a="hub">Karriere fortsetzen</button>`:''}
  <button class="btn ${S?'':'pri'}" data-a="create">${S?'Neue Karriere':'Karriere starten'}</button>
@@ -1272,7 +1246,7 @@ function call(t){if(!CALLER)return;try{speechSynthesis.cancel();const v=callerVo
  for(const[s,r,p]of parts){const u=new SpeechSynthesisUtterance(s);if(v){u.voice=v;u.lang=v.lang}else u.lang='en-GB';u.rate=(r||.9)*(SETG.vrate||1);u.pitch=(male?.95:.6)*(p||1)*(SETG.vpitch||1);u.volume=1;speechSynthesis.speak(u)}}catch(e){}}
 function callScore(s){if(s===180)return call([['One hundred',.86],['and eighty!',.7,1.08]]);if(!s)return call([['No score!',.85]]);call(s>=100?[[String(s)+'!',.82,1.03]]:[[String(s),.9]])}
 function voiceSel(){const L=enVoices();if(!L.length)return'<div class="small mut">Dein Gerät hat noch keine englischen Stimmen geladen. Unter Android: Einstellungen → Sprachausgabe → Google-Sprachausgabe → Englisch (Großbritannien) installieren.</div>';
- return `<select id="vsel" data-a="" onchange="SETG.voice=this.value;saveSet()"><option value="">Automatisch (männlich, Englisch)</option>${L.map(v=>`<option value="${esc(v.voiceURI)}" ${SETG.voice===v.voiceURI?'selected':''}>${esc(v.name)} · ${esc(v.lang)}${vIsMale(v)?' · männlich':''}</option>`).join('')}</select>`}
+ return `<select id="vsel" onchange="SETG.voice=this.value;saveSet()"><option value="">Automatisch (männlich, Englisch)</option>${L.map(v=>`<option value="${esc(v.voiceURI)}" ${SETG.voice===v.voiceURI?'selected':''}>${esc(v.name)} · ${esc(v.lang)}${vIsMale(v)?' · männlich':''}</option>`).join('')}</select>`}
 
 /* --- Publikum --- */
 const CRW={E:0,T:0,people:[],seed:0};
@@ -1390,8 +1364,6 @@ function fcPage(){const p=S.player;let h='';
  if(TAB==='store'){h+=tile({a:'shop',c:'hero2',span:1,lab:'Store',art:'bag',t:'Shop',s:'Darts, Flights, Boards und mehr'})+tile({a:'sponsors',c:'c4',lab:'Partner',art:'hand',t:'Sponsoren',s:p.sponsor?esc(p.sponsor.n):'noch keiner'})+tile({a:'job',c:'c2',lab:'Geld verdienen',art:'bolt',t:p.age<16?'Taschengeld':'Nebenjob',s:`+${p.age<16?40:120} Münzen · 1 Training`,dis:p.trainLeft<1})+`<div class="ft c0 static"><i class="fl">Kontostand</i><div class="ftx"><b>${fmt(p.coins)}</b><span>Münzen</span></div></div>`}
  show(fcHead()+`<div class="fgrid">${h}</div>`);if(S.story!=null&&!S.T&&STORY[S.story])storyShow()}
 function hub(){fcPage()}
-function more(){TAB='car';fcPage()}
-function navUpd(){document.body.classList.remove('hasnav');const n=document.getElementById('nav');if(n)n.innerHTML=''}
 function week(){let m=null;try{m=endWeek()}catch(er){console.error(er);try{S.T=null;save()}catch(e){}toast('Fehler beim Simulieren: '+(er&&er.message||er));hub();return}
  TAB='home';if(m)popup(`<h2>Saison ${S.season-1} beendet</h2>${m.map(x=>`<p class="small">${esc(x)}</p>`).join('')}`,'hub');else{toast('Woche '+(S.wk-1)+' ist gespielt');hub()}}
 
@@ -1400,18 +1372,17 @@ const BKEY='darts_karriere_backup';
 function b64e(u8){let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)}
 function b64d(t){t=t.replace(/[^A-Za-z0-9+/=_-]/g,'').replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
 async function zip(str){if(!window.CompressionStream)return null;const cs=new Blob([str]).stream().pipeThrough(new CompressionStream('deflate'));return new Uint8Array(await new Response(cs).arrayBuffer())}
-async function unzip(u8){const ds=new Blob([u8]).stream().pipeThrough(new DecompressionStream('deflate'));return await new Response(ds).text()}
 async function exportCode2(){const j=JSON.stringify(S);try{const z=await zip(j);if(z)return 'DK2:'+b64e(z)}catch(e){}return b64e(new TextEncoder().encode(j))}
 async function parseSave(raw){let t=String(raw||'').trim();if(!t)throw new Error('Es wurde nichts eingefügt.');
  let o=null;const i1=t.indexOf('{'),i2=t.lastIndexOf('}');
  if(i1>=0&&i2>i1&&!/^DK2:/i.test(t)){try{o=JSON.parse(t.slice(i1,i2+1))}catch(e){}}
  if(!o){const m=t.match(/DK2:\s*([A-Za-z0-9+/=_\-\s]+)/i);
-  if(m){if(!window.DecompressionStream)throw new Error('Dieser Browser kann komprimierte Codes nicht lesen. Bitte Chrome aktualisieren.');try{o=JSON.parse(await unzip(b64d(m[1])))}catch(e){throw new Error('Der Code ist unvollständig oder beschädigt. Wurde er ganz kopiert?')}}
+  if(m){if(!window.DecompressionStream)throw new Error('Dieser Browser kann komprimierte Codes nicht lesen. Bitte Chrome aktualisieren.');let txt;try{txt=await unzipCapped(b64d(m[1]),25e6)}catch(e){throw new Error(/groß/.test(e.message)?e.message:'Der Code ist unvollständig oder beschädigt. Wurde er ganz kopiert?')}try{o=JSON.parse(txt)}catch(e){throw new Error('Der Code ist beschädigt.')}}
   else{try{o=JSON.parse(new TextDecoder().decode(b64d(t)))}catch(e){throw new Error('Das ist kein gültiger Spielstand-Code.')}}}
  if(o&&o.S&&o.S.player)o=o.S;
  if(!o||typeof o!=='object'||!o.player||!o.player.name||!Array.isArray(o.pl))throw new Error('Der Code enthält keinen Karriere-Spielstand.');
  if(o.v&&o.v>4)throw new Error('Dieser Spielstand stammt aus einer neueren Version des Spiels.');
- o.v=4;o.season=o.season||1;o.wk=o.wk||1;o.done=o.done||[];o.res=o.res||{};o.news=o.news||[];if(o.T===undefined)o.T=null;return o}
+ o=sanitizeSave(o);o.v=4;o.season=o.season||1;o.wk=o.wk||1;o.done=o.done||[];o.res=o.res||{};o.news=o.news||[];if(o.T===undefined)o.T=null;return o}
 function saveUI(){const has=(()=>{try{return!!localStorage.getItem(BKEY)}catch(e){return false}})();
  return `<div class="panel stack"><h3>Spielstand sichern</h3><div class="small mut">Am sichersten ist die Datei: Du kannst sie in deinen Downloads, in Google Drive oder per Messenger aufheben und auf jedem Gerät wieder laden.</div>
  ${S?`<div class="row"><button class="btn pri" data-a="expFile">Als Datei speichern</button>${navigator.share?'<button class="btn" data-a="expShare">Teilen</button>':''}</div><button class="btn" data-a="expCode">Code kopieren</button><textarea id="exp" readonly placeholder="Hier erscheint der Code" style="display:none;width:100%;height:80px;border-radius:10px;background:var(--pan2);color:var(--ink);border:1px solid var(--line);font:12px monospace;padding:8px"></textarea>`:'<div class="small mut">Starte zuerst eine Karriere.</div>'}</div>
@@ -1427,7 +1398,7 @@ function impPreview(o){const p=o.player,ttl=(p.titles||[]).length;modal.innerHTM
  <div class="row" style="margin-top:12px"><button class="btn" data-a="closeM" data-v="">Abbrechen</button><button class="btn pri" data-a="impGo">Laden</button></div></div></div>`;IMPO=o}
 let IMPO=null;
 async function impText(t){try{impPreview(await parseSave(t))}catch(e){popup(`<h2>Laden nicht möglich</h2><p class="small">${esc(e.message||String(e))}</p>`,'settings')}}
-function impFile(inp){const f=inp.files&&inp.files[0];if(!f)return;if(f.size>20e6){toast('Die Datei ist zu groß');return}const r=new FileReader();r.onload=()=>impText(r.result);r.onerror=()=>toast('Datei konnte nicht gelesen werden');r.readAsText(f);inp.value=''}
+function impFile(inp){const f=inp.files&&inp.files[0];if(!f)return;if(f.size>8e6){toast('Die Datei ist zu groß für einen Spielstand');return}const r=new FileReader();r.onload=()=>impText(r.result);r.onerror=()=>toast('Datei konnte nicht gelesen werden');r.readAsText(f);inp.value=''}
 function impGo(){const o=IMPO;if(!o)return;const old=S;try{if(old)localStorage.setItem(BKEY,JSON.stringify(old))}catch(e){}
  try{S=o;ensure();save();IMPO=null;modal.innerHTML='';TAB='home';toast('Spielstand geladen');hub()}catch(e){S=old;modal.innerHTML='';popup(`<h2>Laden nicht möglich</h2><p class="small">Der Spielstand ist beschädigt (${esc(e.message||'')}).</p>`,'settings')}}
 async function expFile(share){const code=await exportCode2(),p=S.player,nm=`Darts-Karriere_${p.name.replace(/[^A-Za-z0-9ÄÖÜäöüß_-]+/g,'_')}_S${S.season}W${S.wk}.txt`,blob=new Blob([code],{type:'text/plain'});
@@ -1436,6 +1407,42 @@ async function expFile(share){const code=await exportCode2(),p=S.player,nm=`Dart
 async function expCode(){const t=document.getElementById('exp');const code=await exportCode2();if(t){t.style.display='block';t.value=code}try{await navigator.clipboard.writeText(code);toast('Code kopiert ('+Math.round(code.length/1024)+' KB)')}catch(e){if(t){t.select();toast('Bitte den markierten Code kopieren')}}}
 async function impPaste(){try{const t=await navigator.clipboard.readText();const el=document.getElementById('imp');if(el)el.value=t;if(t)impText(t);else toast('Die Zwischenablage ist leer')}catch(e){toast('Kein Zugriff: Bitte lange tippen und „Einfügen“ wählen')}}
 function impUndo(){try{const s=localStorage.getItem(BKEY);if(!s)return;const o=JSON.parse(s);impPreview(o)}catch(e){toast('Keine Sicherung gefunden')}}
+
+/* ===== v11: Stabilität — Fehlerprotokoll, Bildschirm wach halten, sichere Speicherung ===== */
+const VERSION='11',ERRK='darts_errlog',ABKEY='darts_karriere_auto',BRKEY='darts_karriere_defekt';
+let errT=0;
+function errLog(m){try{const a=JSON.parse(localStorage.getItem(ERRK)||'[]');a.unshift(new Date().toLocaleString('de-DE')+' · v'+VERSION+' · '+String(m).slice(0,300));localStorage.setItem(ERRK,JSON.stringify(a.slice(0,15)))}catch(e){}}
+window.addEventListener('error',e=>{errLog((e.message||'Fehler')+(e.lineno?' (Zeile '+e.lineno+')':''));if(Date.now()-errT>6000){errT=Date.now();try{toast('Ein Fehler ist aufgetreten. Details unter Einstellungen → Fehlerprotokoll.')}catch(x){}}});
+window.addEventListener('unhandledrejection',e=>errLog('Async: '+((e.reason&&e.reason.message)||e.reason)));
+/* Bildschirm bleibt während eines Matches an */
+let WL=null;
+async function wake(on){try{if(on&&!WL&&navigator.wakeLock&&document.visibilityState==='visible'){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){const w=WL;WL=null;await w.release()}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(document.getElementById('cv'))wake(true)}else if(S)save()});
+window.addEventListener('pagehide',()=>{if(S)save()});
+/* Speichern mit Rückmeldung und automatischer Sicherung zum Saisonstart */
+let saveWarn=false;
+function save(){if(!S)return;try{checkAch()}catch(e){}
+ try{localStorage.setItem(KEY,JSON.stringify(S));saveWarn=false}catch(e){errLog('Speichern: '+e.message);if(!saveWarn){saveWarn=true;toast('Speichern fehlgeschlagen: Der Gerätespeicher für die Seite ist voll. Bitte Spielstand als Datei sichern.')}}
+ try{if(S.wk===1&&!S.T&&S.autoS!==S.season){S.autoS=S.season;localStorage.setItem(ABKEY,JSON.stringify(S))}}catch(e){}}
+function load(){let raw=null;try{raw=localStorage.getItem(KEY)}catch(e){}if(!raw)return;
+ try{const o=JSON.parse(raw);if(!o||!o.player||!Array.isArray(o.pl))throw new Error('unvollständig');if(o.v&&o.v!==4)throw new Error('Version '+o.v+' wird nicht mehr unterstützt');o.v=4;S=o}
+ catch(e){S=null;errLog('Laden: '+e.message);try{localStorage.setItem(BRKEY,raw)}catch(x){}setTimeout(()=>popup('<h2>Spielstand beschädigt</h2><p class="small">Dein letzter Spielstand konnte nicht gelesen werden. Eine Kopie wurde aufgehoben. Unter Einstellungen kannst du die automatische Sicherung vom Saisonstart oder eine gespeicherte Datei laden.</p>','home'),300)}}
+function errUI(){let a=[];try{a=JSON.parse(localStorage.getItem(ERRK)||'[]')}catch(e){}const hasA=(()=>{try{return!!localStorage.getItem(ABKEY)}catch(e){return false}})();
+ return `${hasA?`<div class="panel stack"><h3>Automatische Sicherung</h3><div class="small mut">Zu Beginn jeder Saison wird dein Spielstand automatisch gesichert.</div><button class="btn" data-a="impAuto">Sicherung vom Saisonstart laden</button></div>`:''}
+ <div class="panel stack"><h3>Fehlerprotokoll</h3>${a.length?`<div class="small mut" style="max-height:140px;overflow:auto;font-family:monospace;font-size:11px">${a.map(x=>`<div style="margin-top:4px">${esc(x)}</div>`).join('')}</div><div class="row"><button class="btn" data-a="errCopy">Kopieren</button><button class="btn" data-a="errClear">Leeren</button></div>`:'<div class="small mut">Keine Fehler aufgezeichnet.</div>'}</div>
+ <p class="small mut" style="text-align:center;margin:4px 0 0">Darts Karriere · Version ${VERSION}</p>`}
+function impAuto(){try{const s=localStorage.getItem(ABKEY);if(s)impPreview(JSON.parse(s))}catch(e){toast('Sicherung nicht lesbar')}}
+
+/* ===== v11: Sicherheit — Spielstände bereinigen, bevor sie angezeigt werden ===== */
+const COLK=/^(shirt|fl|col|c1|c2|color|fls)$/,HEX=/^#[0-9a-fA-F]{3,8}$/,BADK=new Set(['__proto__','constructor','prototype']);
+function cleanStr(s){return String(s).replace(/[<>"`\\]/g,'').replace(/javascript:/gi,'').slice(0,400)}
+function sanitizeSave(o,k,d){d=d||0;if(d>12)return null;if(o==null)return o;const t=typeof o;
+ if(t==='string')return COLK.test(k||'')?(HEX.test(o)?o:'#c8102e'):cleanStr(o);
+ if(t==='number')return isFinite(o)?o:0;if(t==='boolean')return o;
+ if(Array.isArray(o)){const a=o.slice(0,5000).map(v=>sanitizeSave(v,k,d+1));return k==='fls'?a.filter(c=>HEX.test(c)):a}
+ if(t==='object'){const r={};for(const key of Object.keys(o)){if(BADK.has(key))continue;r[cleanStr(key).slice(0,60)]=sanitizeSave(o[key],key,d+1)}return r}return null}
+async function unzipCapped(u8,max){const rd=new Blob([u8]).stream().pipeThrough(new DecompressionStream('deflate')).getReader(),dec=new TextDecoder();let out='',n=0;
+ for(;;){const{done,value}=await rd.read();if(done)break;n+=value.length;if(n>max){try{rd.cancel()}catch(e){}throw new Error('Der Spielstand ist unrealistisch groß und wurde aus Sicherheitsgründen abgelehnt.')}out+=dec.decode(value,{stream:true})}return out+dec.decode()}
 
 const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hlShow:()=>{HLI=0;hlView()},hlNext:()=>{HLI=(HLI+1)%LASTPOP.hl.length;hlView()},hlBack:()=>showResult(LASTPOP.html,LASTPOP.next,LASTPOP.hl),storyA:i=>storyApply(i),
  coachHire:id=>{const p=S.player,c=COACHES.find(x=>x.id===id);p.trainer=id;news(`${p.name} arbeitet jetzt mit ${c.n} (${c.r})`);feed(`Neuer Coach im Team: ${c.n}. Let’s go!`,handle(p.name));save();coachS()},coachFire:()=>{S.player.trainer=null;save();coachS()},
@@ -1458,9 +1465,9 @@ const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hl
  ren:id=>{const r=S.pl[+id];modal.innerHTML=`<div class="modal"><div class="box panel"><form id="rf" class="stack" style="text-align:left"><h2>Spieler umbenennen</h2><div><label for="rn">Name</label><input id="rn" maxlength="24" value="${esc(r.n)}"></div><div><label for="rk">Spitzname</label><input id="rk" maxlength="20" value="${esc(r.nick)}"></div><div><label for="ro">Nation</label><input id="ro" maxlength="3" value="${esc(r.nat)}"></div><div class="row"><button type="button" class="btn" data-a="closeM" data-v="">Abbrechen</button><button class="btn pri">Speichern</button></div></form></div></div>`;
   document.getElementById('rf').onsubmit=e=>{e.preventDefault();r.n=document.getElementById('rn').value.trim()||r.n;r.nick=document.getElementById('rk').value.trim();r.nat=(document.getElementById('ro').value.trim()||r.nat).toUpperCase();save();modal.innerHTML='';rank()}},
  closeM:v=>{modal.innerHTML='';if(v&&ACT[v])ACT[v]()}};
-Object.assign(ACT,{tab:v=>{TAB=v;fcPage()},vtest:()=>{const c=CALLER;CALLER=true;call([['Game on!',.85],['One hundred',.86],['and eighty!',.7,1.08]]);CALLER=c},expFile:()=>expFile(false),expShare:()=>expFile(true),expCode,impPaste,impGo,impUndo,doImp:()=>impText((document.getElementById('imp')||{}).value),more,lookEd,acad,look:lookSet,legGo,pcard:id=>pcardModal(id),meCard:()=>pcardModal('ME'),acadJoin:()=>{const p=S.player;if(p.coins<200)return;p.coins-=200;p.jacad=1;news(`${p.name} wird Schüler der Nachwuchs-Akademie`);save();toast('Willkommen in der Akademie');acad()}});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=ACT[b.dataset.a];if(f){e.preventDefault();if(['hub','cal','trainMenu','rank','more'].includes(b.dataset.a))NAVA=b.dataset.a;f(b.dataset.v)}});
+Object.assign(ACT,{tab:v=>{TAB=v;fcPage()},vtest:()=>{const c=CALLER;CALLER=true;call([['Game on!',.85],['One hundred',.86],['and eighty!',.7,1.08]]);CALLER=c},expFile:()=>expFile(false),expShare:()=>expFile(true),expCode,impPaste,impGo,impUndo,impAuto,errCopy:()=>{let a=[];try{a=JSON.parse(localStorage.getItem(ERRK)||'[]')}catch(e){}navigator.clipboard&&navigator.clipboard.writeText(a.join('\n')).then(()=>toast('Protokoll kopiert'),()=>toast('Kopieren nicht möglich'))},errClear:()=>{try{localStorage.removeItem(ERRK)}catch(e){}settings()},doImp:()=>impText((document.getElementById('imp')||{}).value),lookEd,acad,look:lookSet,legGo,pcard:id=>pcardModal(id),meCard:()=>pcardModal('ME'),acadJoin:()=>{const p=S.player;if(p.coins<200)return;p.coins-=200;p.jacad=1;news(`${p.name} wird Schüler der Nachwuchs-Akademie`);save();toast('Willkommen in der Akademie');acad()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=ACT[b.dataset.a];if(f){e.preventDefault();f(b.dataset.v)}});
 window.addEventListener('resize',()=>{if(MATCH&&cv)sizeBoard()});try{document.fonts.ready.then(()=>{if(MATCH&&cv)sizeBoard()})}catch(e){}
-load();if(S&&(S.v!==4||!S.player))S=null;ensure();home();
+load();ensure();home();
 }
 </script><script>try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>{if(r.scope===location.origin+"/")r.unregister()}))}catch(e){}</script></body></html>

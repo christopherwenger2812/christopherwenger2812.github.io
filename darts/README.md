@@ -129,3 +129,11 @@ darts/
 - Männliche Caller-Stimme mit Stimmauswahl und Tonhöhe in den Einstellungen
 - Spielstände als Datei speichern, teilen und laden, mit Vorschau vor dem Laden und automatischer Sicherung
 - „Woche auslassen“ abgesichert
+
+## Neu in Version 11
+
+- Fehler behoben: Ab etwa Saison 4 waren Turnierfelder (z. B. Development Tour) zu klein, die Wochen-Simulation stürzte ab und „Woche auslassen“ reagierte nicht. Fehlende Plätze werden jetzt mit neuen Talenten im passenden Alter aufgefüllt
+- Sicherheit: Importierte und gespeicherte Spielstände werden bereinigt, bevor sie angezeigt werden (Schutz vor eingeschleustem Code). Dazu eine Content-Security-Policy und eine Größengrenze beim Entpacken
+- Fehlerprotokoll in den Einstellungen, automatische Sicherung zu jedem Saisonstart, Schutz bei beschädigtem Spielstand
+- Bildschirm bleibt während eines Matches an, Speichern beim Verlassen der App
+- Ungenutzter Code und tote CSS-Regeln entfernt
