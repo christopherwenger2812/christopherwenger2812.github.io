@@ -120,3 +120,12 @@ darts/
 - Nachwuchs wie im echten System: Junior-Tour (10 bis 17), Junior Super 16, Junior World Masters, Junior-WM mit Finale auf der WM-Bühne, Nachwuchs-Akademie
 - Development Tour: Top 2 bekommen die Tour Card, Platz 3 bis 16 einen Freiplatz für die Q-School
 - Challenge Tour nur nach Teilnahme an der Q-School
+
+## Neu in Version 10
+
+- Menü im EA-FC-Stil: Reiter Start, Spielen, Karriere, Spieler und Store mit großen Kacheln
+- Walk-on in 4 Akten: Hallen-Intro, Einlauf des Gegners, dein Einlauf durchs Publikum mit Security und Pyro, Face-off mit Werte-Vergleich. Tippen springt zum nächsten Akt
+- Animiertes Publikum im Match mit Schildern, Fahnen und Hüten, das bei 180ern und Checkouts aufspringt
+- Männliche Caller-Stimme mit Stimmauswahl und Tonhöhe in den Einstellungen
+- Spielstände als Datei speichern, teilen und laden, mit Vorschau vor dem Laden und automatischer Sicherung
+- „Woche auslassen“ abgesichert
