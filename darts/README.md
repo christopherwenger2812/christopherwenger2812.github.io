@@ -40,6 +40,23 @@ Darts-Karrierespiel im FIFA-Stil, optimiert für das Handy. Das Spiel ist eine e
 - **Sponsoren, Manager, Verein mit Team-Liga, eigene Kneipe, Darts-Akademie.**
 - **Hallen** mit Licht, Publikum und Bedingungen. **Walk-ons** mit eigenem Song-Titel, Beat, Pyro und Fan-Gesang.
 - **Hall of Fame** für beendete Karrieren.
+- **Story-Momente und Privatleben:** Ereignisse mit Entscheidungen, z. B. eine Hochzeit in der Turnierwoche.
+- **Social-Media-Feed:** Fans, Profis und dein Rivale kommentieren deine Ergebnisse.
+- **Trainerteam:** 5 Trainer mit Spezialgebiet (Doppel, Mental, Scoring, Fitness, Präzision) und Wochengehalt.
+- **Saisonziele** mit Belohnung, eine Bewertung vom Manager, falls du einen hast.
+- **Spezialkarten** im FIFA-Stil: Team der Woche, Hero, Icon.
+
+### Gameplay-Details
+- **Wurfrhythmus:** Gleichmäßiges Werfen bringt dich „in den Flow“ (kleinerer Ring), langes Zögern macht nervös.
+- **Bounce-outs und Robin Hoods**, selten, aber mit Kommentar.
+- **Checkout-Wahl:** Caller-Tipp plus alternative Wege zum Antippen, das Ziel leuchtet auf dem Board.
+- **Highlights:** Nach jedem Match laufen 180er, Hochfinishes und der Matchdart noch einmal in Zeitlupe.
+
+### Sammeln und Anpassen
+- **Ausrüstung:** Barrels, Shafts, Flight-Form und Flight-Farbe einzeln kaufen, jeweils mit kleinen Werte-Boni.
+- **Trikot-Designer:** Farben, Muster, Rückenname und Nummer, mit dem Sponsor auf der Brust. Das Trikot erscheint beim Walk-on.
+- **Erfolge** (24 Abzeichen) und **Trophäenschrank** mit allen Pokalen.
+- **Fotoalbum:** gezeichnete Szenen deiner größten Momente.
 
 ### Training und Modi
 - **6 Trainings:** Around the Clock, Bob's 27, 121-Checkout, Scoring-Drill, Shanghai, Halve-It.
