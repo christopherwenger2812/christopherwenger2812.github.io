@@ -158,3 +158,8 @@ darts/
 - Jugend in 4 Altersklassen (U11, U13, U15, U18) mit je 2 nationalen Cups, einer Kontinentalmeisterschaft (z. B. Jugend-EM) und einer Jugend-WM. Alle Jugend-Turniere zählen für die Junior-Rangliste
 - Karrierestart ab 8 Jahren
 - Euro Tour, Floor-Events und World Series erst ab 16 Jahren
+
+## Neu in Version 14
+
+- Balance: Deine Wurfstreuung richtet sich jetzt nach denselben Werten wie bei den Gegnern. Bei gleichem OVR liegt dein Schnitt mit perfektem Timing etwa 15 % über dem Gegner, mit schlechtem Timing deutlich darunter. Scoring- und Doppel-Wert wirken wie bei der KI auf Triple- und Doppelfelder
+- „Erwarteter Schnitt“ auf den Karten ist jetzt realistisch berechnet
