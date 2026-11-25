@@ -298,57 +298,62 @@ const NAMES=[['Jens Brückner','Der Bulle','GER'],["Liam O'Hara",'Irish Mist','I
 const NB=['SWE','NOR','DEN','FIN','LAT','LTU'],EE=['POL','CZE','HUN','CRO','SVK','ROU'];
 const CT=(id,w,city)=>({id,w,n:'Challenge Tour '+id.slice(1),d:'Die zweite Liga für Spieler ohne Tour Card: Punkte für die Challenge-Rangliste',city,v:'messe',q:'ct',minAge:16,size:64,lo:34,hi:64,bo:[11,9],prize:1500,fee:80,t:2,rk:'ct'});
 const DV=(id,w,city)=>({id,w,n:'Development Tour '+id.slice(1),d:'Nachwuchs-Tour für 16- bis 23-Jährige, Punkte für die Development-Rangliste',city,v:'messe',q:'dv',minAge:16,maxAge:23,size:64,bo:[11,9],prize:1200,fee:50,t:2,rk:'dev'});
-const PC=(id,w,city)=>({id,w,n:'Floor-Event '+id.slice(1),d:'Players-Championship-Stil: alle 128 Tour-Card-Spieler, Punkte für Welt- und ProTour-Rangliste',city,v:'sport',q:'pc',size:128,bo:[15,11],prize:4000,fee:120,t:2,rk:'pro',pt:1});
-const ET=(id,w,n,city,hn)=>({id,w,n,d:'Euro Tour, 48 Spieler: Die Top 16 der Welt steigen in Runde 2 ein, dazu 16 von der ProTour-Rangliste und 16 Qualifikanten (Tour Card, Gastland, Nordic & Baltic, Osteuropa)',city,hn,v:'stadt',q:'et',size:48,stages:[32,16],bo:[15,13,11],prize:9000,fee:200,t:3,rk:'pro',pt:1,eu:1});
+const PC=(id,w,city)=>({id,w,n:'Floor-Event '+(id.startsWith('PC')?+id.slice(2):id.slice(1)),d:'Players-Championship-Stil: alle 128 Tour-Card-Spieler, Punkte für Welt- und ProTour-Rangliste',city,v:'sport',q:'pc',size:128,bo:[15,11],prize:id.startsWith('PC')?1600:4000,fee:120,t:2,rk:'pro',pt:1});
+const ET=(id,w,n,city,hn)=>({id,w,n,d:'Euro Tour, 48 Spieler: Die Top 16 der Welt steigen in Runde 2 ein, dazu 16 von der ProTour-Rangliste und 16 Qualifikanten (Tour Card, Gastland, Nordic & Baltic, Osteuropa)',city,hn,v:'stadt',q:'et',size:48,stages:[32,16],bo:[15,13,11],prize:id.startsWith('EU')?4500:9000,fee:200,t:3,rk:'pro',pt:1,eu:1});
 const LO=(id,w,i,size)=>({id,w,lc:i,loc:i,v:i<2?'fest':'buerger',q:'loc',size,lo:18+i*4,hi:44+i*4,bo:[7,5],prize:300+i*200,fee:10+i*5,t:1,rk:'none'});
 const JT=(id,w,city)=>({id,w,n:'Junior Tour '+id.slice(2),d:'Junior-Tour für 10- bis 17-Jährige: Punkte für die Junior-Rangliste, sie entscheidet über Super 16 und Junior-WM',city,v:'verein',q:'jt',minAge:10,maxAge:17,size:32,bo:[7,5],prize:600,fee:15,t:1,rk:'jt'});
 const YT=(id,w,n,max,size,city,lc)=>({id,w,n,d:`Nachwuchsturnier für Spieler bis ${max} Jahre`,city,lc,v:size>16?'stadt':'verein',q:'yth',maxAge:max,size,bo:[7,5],prize:size>16?1500:300,fee:0,t:size>16?2:1,rk:'none'});
 const WS=(id,w,n,city,host)=>({id,w,n,d:'World Series: Einladungsturnier für die Top 8 der Welt plus 8 Spieler aus der Gastregion',city,host,v:'pav',q:'ws',size:16,bo:[15,13,11],prize:6000,fee:0,t:3,rk:'none',ws:1});
+const WSR=(id,w,city,k)=>({id,w,n:'Frauen-Serie '+k,d:'Turnier nur für Spielerinnen ab 16: Punkte für die Frauen-Rangliste. Die Top 8 spielen das Frauen-Matchplay, die Top 2 fahren zur WM',city,v:'sport',q:'wos',minAge:16,size:32,bo:[11,9,7],prize:1500,fee:30,t:2,rk:'wo',wo:1});
+const AF=(id,w,i)=>({id,w,afi:i,n:'Partner-Tour',d:'Partner-Tour deiner Region: Punkte für die Regionalrangliste. Die Besten ohne Tour Card fahren zur WM',city:null,v:'messe',q:'aff',minAge:16,size:32,bo:[11,9,7],prize:1500,fee:40,t:2,rk:'af'});
 const EV=[
  {id:'QS',w:1,n:'Q-School',d:'Final Stage mit 64 Spielern: Die vier Halbfinalisten bekommen sofort die Tour Card für 2 Saisons',city:'Kalkar',v:'messe',q:'qs',minAge:16,size:64,bo:[11],prize:2000,fee:400,t:2,rk:'none'},
  YT('Y1',1,'Jugend-Cup U16',15,16,null,0),LO('L1',1,0,16),
  {id:'MA',w:2,n:'Masters',d:'Die Top 24 sind gesetzt, Platz 25 bis 120 der Tour-Card-Spieler kämpft in Vorrunden um 8 Plätze. Gespielt wird in Sätzen mit Best of 3 Legs',city:'Milton Keynes',v:'stadt',q:'ma',size:120,stages:[64,32,0,0,24],sets:[6,5,4,4,3,3,3],lps:2,prize:30000,fee:0,t:5,rk:'pro'},
- CT('C1',2,'Hildesheim'),JT('JT1',2,'Milton Keynes'),WS('W1',2,'World Series: Golf Masters','Manama',['JPN','PHI','HKG','IND','CHN','SGP','THA','KOR']),
- PC('F1',3,'Barnsley'),CT('C2',3,'Milton Keynes'),DV('D1',3,'Wigan'),LO('L2',3,1,16),
- ET('E1',4,'Kraków Open','Kraków','POL'),JT('JT2',4,'Wigan'),
+ CT('C1',2,'Hildesheim'),JT('JT1',2,'Milton Keynes'),
+ CT('C2',3,'Milton Keynes'),DV('D1',3,'Wigan'),LO('L2',3,1,16),
+ JT('JT2',4,'Wigan'),
  {id:'UK',w:5,n:'Kingdom Open',d:'UK-Open-Stil, 160 Spieler: Tour-Card-Spieler steigen je nach Rang in Runde 2 bis 4 ein, Amateure in Runde 1',city:'Minehead',v:'pav',q:'uk',minAge:16,size:160,stages:[64,32,32,32],bo:[21,21,19,19,19,11],prize:16000,fee:0,t:4,rk:'pro'},
  DV('D2',5,'Milton Keynes'),
- PC('F2',6,'Hildesheim'),CT('C3',6,'Wigan'),JT('JT3',6,'Hildesheim'),LO('L3',6,2,32),
- ET('E2',7,'Riesa Trophy','Riesa','GER'),YT('Y3',7,'Jugend-Cup II U16',15,16,null,2),
- ET('E3',8,'Graz Open','Graz','AUT'),DV('D3',8,'Hildesheim'),LO('L4',8,3,32),
- PC('F3',9,'Wigan'),CT('C4',9,'Leicester'),JT('JT4',9,'Leicester'),
- ET('E4',10,'Hildesheim Masters','Hildesheim','GER'),YT('YE',10,'Jugend-EM U18',17,32,'Budapest'),
+ CT('C3',6,'Wigan'),JT('JT3',6,'Hildesheim'),LO('L3',6,2,32),
+ YT('Y3',7,'Jugend-Cup II U16',15,16,null,2),
+ DV('D3',8,'Hildesheim'),LO('L4',8,3,32),
+ CT('C4',9,'Leicester'),JT('JT4',9,'Leicester'),
+ YT('YE',10,'Jugend-EM U18',17,32,'Budapest'),
  {id:'NC',w:11,n:'Nationen-Cup',d:'40 Nationen im Doppel: Die 4 Topnationen sind gesetzt, 36 spielen in 12 Dreiergruppen, die Gruppensieger erreichen das Achtelfinale',city:'Frankfurt am Main',v:'eis',q:'nc',teams:1,size:40,groups:{n:12,per:3,adv:1,seeds:4,bo:7},bo:[19,15,15,11],prize:12000,fee:0,t:4,rk:'none'},
  CT('C5',11,'Barnsley'),
  {id:'MP',w:12,n:'Summer Matchplay',d:'32 Spieler: Top 16 der Welt und 16 von der ProTour-Rangliste. Die lange Distanz',city:'Blackpool',v:'winter',q:'mp',size:32,bo:[35,33,31,21,19],prize:24000,fee:0,t:5,rk:'pro'},
  DV('D4',12,'Wigan'),JT('JT5',12,'Barnsley'),
- WS('W2',13,'World Series: Dutch Masters','Den Haag',['NED','BEL']),PC('F4',13,'Leicester'),
- ET('E5',14,'Prag Open','Prag','CZE'),{id:'JW',w:14,n:'Junioren-WM U24',d:'Weltmeisterschaft für 16- bis 23-Jährige: Tour-Card-Spieler im passenden Alter und die Besten der Development-Rangliste',city:'Minehead',v:'kongress',q:'dv',minAge:16,maxAge:23,size:64,bo:[13,11,9],prize:3000,fee:0,t:3,rk:'dev'},
- ET('E6',15,'Leverkusen Grand Prix','Leverkusen','GER'),CT('C6',15,'Hildesheim'),{id:'JS',w:15,n:'Junior Super 16',d:'Die Top 16 der Junior-Rangliste spielen um den Titel',city:'Wigan',v:'messe',q:'js',minAge:10,maxAge:17,size:16,bo:[11,9,7,7],prize:1500,fee:0,t:2,rk:'jt'},
+ 
+ {id:'JW',w:14,n:'Junioren-WM U24',d:'Weltmeisterschaft für 16- bis 23-Jährige: Tour-Card-Spieler im passenden Alter und die Besten der Development-Rangliste',city:'Minehead',v:'kongress',q:'dv',minAge:16,maxAge:23,size:64,bo:[13,11,9],prize:3000,fee:0,t:3,rk:'dev'},
+ CT('C6',15,'Hildesheim'),{id:'JS',w:15,n:'Junior Super 16',d:'Die Top 16 der Junior-Rangliste spielen um den Titel',city:'Wigan',v:'messe',q:'js',minAge:10,maxAge:17,size:16,bo:[11,9,7,7],prize:1500,fee:0,t:2,rk:'jt'},
  {id:'PLO',w:15,n:'Liga der Besten: Playoffs',d:'Die Top 4 der Liga-Tabelle spielen um den Titel',city:'London',v:'arena',q:'plo',size:4,bo:[21,19],prize:25000,fee:0,t:5,rk:'none'},
- WS('W3',16,'World Series: Big Apple Masters','New York',['USA','CAN']),PC('F5',16,'Barnsley'),DV('D5',16,'Milton Keynes'),
+ DV('D5',16,'Milton Keynes'),
  {id:'GP',w:17,n:'Grand Prix',d:'32 Spieler (Top 16 der Welt + 16 ProTour), Double-In und Sätze',city:'Leicester',v:'ball',q:'mp',size:32,sets:[5,4,3,3,2],din:1,prize:20000,fee:0,t:5,rk:'pro'},
  JT('JT6',17,'Milton Keynes'),
- ET('E7',18,'Rotterdam Championship','Rotterdam','NED'),CT('C7',18,'Milton Keynes'),
+ CT('C7',18,'Milton Keynes'),
  {id:'WSF',w:19,n:'World Series Finals',d:'24 Spieler: Die Top 8 sind gesetzt und steigen in Runde 2 ein, dazu Platz 9 bis 24 der Welt',city:'Amsterdam',v:'pav',q:'wsf',size:24,stages:[16,8],bo:[21,19,11],prize:12000,fee:0,t:4,rk:'none'},
  DV('D6',19,'Wigan'),{id:'JM',w:19,n:'Junior World Masters',d:'Großes Junioren-Turnier mit 64 Spielern aus aller Welt, offen für alle 10- bis 17-Jährigen',city:'Hull',v:'stadt',q:'jt',minAge:10,maxAge:17,size:64,bo:[11,9,9,7,7,7],prize:2500,fee:30,t:2,rk:'jt'},
  {id:'EC',w:20,n:'Euro Championship',d:'Die Top 32 der Euro-Tour-Rangliste',city:'Dortmund',v:'stadt',q:'ec',size:32,bo:[21,21,19,19,11],prize:20000,fee:0,t:5,rk:'pro'},
- PC('F6',20,'Wigan'),CT('C8',20,'Leicester'),
+ CT('C8',20,'Leicester'),
  {id:'GS',w:21,n:'Grand Slam',d:'32 Spieler: alle Turniersieger der Saison, aufgefüllt über die Weltrangliste. 8 Vierergruppen, die Top 2 erreichen das Achtelfinale',city:'Wolverhampton',v:'stadt',q:'gs',size:32,groups:{n:8,per:4,adv:2,seeds:0,bo:9},bo:[31,33,31,19],prize:24000,fee:0,t:5,rk:'pro'},
  {id:'TF',w:22,n:'Tour Finals',d:'Die Top 64 der ProTour-Rangliste',city:'Minehead',v:'kongress',q:'pcf',size:64,bo:[21,21,19,19,11],prize:24000,fee:0,t:5,rk:'pro'},
  {id:'WQ',w:23,n:'WM-Qualifikation',d:'Für alle ab 16, die noch nicht für die WM qualifiziert sind. Die vier Halbfinalisten fahren zur WM',city:'Milton Keynes',v:'messe',q:'wq',minAge:16,size:32,bo:[11],prize:3000,fee:100,t:3,rk:'none'},
  {id:'WM',w:24,n:'Weltmeisterschaft',d:'128 Spieler: Top 40 der Welt, Top 40 der ProTour-Rangliste und 48 Qualifikanten. Sätze mit Best of 5 Legs',city:'London',v:'palast',q:'wm',size:128,sets:[7,6,5,4,4,3,3],prize:80000,fee:0,t:6,rk:'pro'},
  {id:'JWC',w:24,n:'Junior-WM U18',d:'Die Top 32 der Junior-Rangliste. Das Finale läuft auf der großen WM-Bühne in London',city:'London',v:'palast',q:'jw',minAge:10,maxAge:17,size:32,bo:[13,11,9,9,9],prize:4000,fee:0,t:3,rk:'none'},
  {id:'PLN',w:0,n:'Liga der Besten',d:'Liga-Abend: Viertelfinale, Halbfinale und Finale an einem Abend. Sieg 5, Finale 3, Halbfinale 2 Punkte',city:'London',v:'arena',q:'pln',size:8,bo:[11],prize:3000,fee:0,t:4,rk:'none'}];
-const EVM={};EV.forEach(e=>EVM[e.id]=e);const WEEKS=24;
+const EV_OLD=[PC('F1',3,'Barnsley'),PC('F2',6,'Hildesheim'),PC('F3',9,'Wigan'),PC('F4',13,'Leicester'),PC('F5',16,'Barnsley'),PC('F6',20,'Wigan'),ET('E1',4,'Kraków Open','Kraków','POL'),ET('E2',7,'Riesa Trophy','Riesa','GER'),ET('E3',8,'Graz Open','Graz','AUT'),ET('E4',10,'Hildesheim Masters','Hildesheim','GER'),ET('E5',14,'Prag Open','Prag','CZE'),ET('E6',15,'Leverkusen Grand Prix','Leverkusen','GER'),ET('E7',18,'Rotterdam Championship','Rotterdam','NED'),WS('W1',2,'World Series: Golf Masters','Manama',['JPN','PHI','HKG','IND','CHN','SGP','THA','KOR']),WS('W2',13,'World Series: Dutch Masters','Den Haag',['NED','BEL']),WS('W3',16,'World Series: Big Apple Masters','New York',['USA','CAN'])];
+EV.push(ET('EU01',4,'Kraków Open','Kraków','POL'),ET('EU02',5,'Göttingen Darts Trophy','Göttingen','GER'),ET('EU03',6,'Wieze Open','Wieze','BEL'),ET('EU04',7,'München Grand Prix','München','GER'),ET('EU05',8,'Sindelfingen Grand Prix','Sindelfingen','GER'),ET('EU06',9,'Graz Open','Graz','AUT'),ET('EU07',10,'Riesa International','Riesa','GER'),ET('EU08',11,'Kiel Ostsee Open','Kiel','GER'),ET('EU09',12,'Bratislava Open','Bratislava','SVK'),ET('EU10',13,'Leverkusen Open','Leverkusen','GER'),ET('EU11',15,'Budapest Trophy','Budapest','HUN'),ET('EU12',16,'Prag Open','Prag','CZE'),ET('EU13',17,'Antwerpen Trophy','Antwerpen','BEL'),ET('EU14',18,'Basel Trophy','Basel','SUI'),ET('EU15',19,'Maastricht Championship','Maastricht','NED'),PC('PC01',3,'Wigan'),PC('PC02',4,'Leicester'),PC('PC03',5,'Hildesheim'),PC('PC04',6,'Milton Keynes'),PC('PC05',7,'Rosmalen'),PC('PC06',8,'Wigan'),PC('PC07',9,'Leicester'),PC('PC08',10,'Hildesheim'),PC('PC09',11,'Milton Keynes'),PC('PC10',13,'Rosmalen'),PC('PC11',14,'Wigan'),PC('PC12',15,'Leicester'),PC('PC13',16,'Hildesheim'),PC('PC14',18,'Milton Keynes'),PC('PC15',19,'Rosmalen'),PC('PC16',20,'Wigan'),PC('PC17',21,'Leicester'),WS('WS1',1,'Manama Masters','Manama',['JPN','PHI','HKG','IND','CHN','SGP','THA','KOR']),WS('WS2',2,'Riad Masters','Riad',['JPN','PHI','HKG','IND','CHN','SGP','THA','KOR']),WS('WS3',11,'Kopenhagen Masters','Kopenhagen',['DEN','SWE','NOR','FIN','LTU','LAT']),WS('WS4',12,'New York Masters','New York',['USA','CAN','MEX']),WS('WS5',15,'Auckland Masters','Auckland',['NZL','AUS']),WS('WS6',16,'Wollongong Masters','Wollongong',['AUS','NZL']),WSR('WO1',3,'Hildesheim',1),WSR('WO2',5,'Leicester',2),WSR('WO3',7,'Wigan',3),WSR('WO4',9,'Milton Keynes',4),WSR('WO5',11,'Rosmalen',5),WSR('WO6',14,'Hildesheim',6),WSR('WO7',17,'Wigan',7),WSR('WO8',20,'Leicester',8),{id:'WWM',w:12,n:'Frauen-Matchplay',d:'Die Top 8 der Frauen-Rangliste. Die Siegerin bekommt Startplätze für Grand Slam und WM',city:'Blackpool',v:'winter',q:'wwm',minAge:16,size:8,bo:[11,9,7],prize:6000,fee:0,t:4,rk:'none',wo:1},AF('AF1',3,0),AF('AF2',6,1),AF('AF3',9,2),AF('AF4',13,3),AF('AF5',16,4),AF('AF6',20,5));
+EV.sort((a,b)=>a.w-b.w);
+const EVM={};EV.concat(EV_OLD).forEach(e=>EVM[e.id]=e);const WEEKS=24;
 const PLC=['Berlin','Glasgow','Belfast','Dublin','Antwerpen','Cardiff','Exeter','Brighton','Nottingham','Manchester','Newcastle','Liverpool'];
 const LOCAL={DE:['Kirmes-Cup','Schützenfest-Turnier','Bezirksmeisterschaft','Landesmeisterschaft'],EN:['Pub League Final',"Working Men's Club Open",'County Championship','Regional Masters'],NL:['Kroegtoernooi','Kermis Cup','Gewestelijk Kampioenschap','Nationaal Open'],PL:['Puchar Pubu','Turniej Miejski','Mistrzostwa Okręgu','Mistrzostwa Polski'],NORD:['Pub-Cup','Midsommar Open','Distrikts-Meisterschaft','Landesmeisterschaft'],ES:['Copa del Bar','Fiesta Open','Campeonato Regional','Campeonato Nacional'],JP:['Bar-Cup Tokio','Matsuri Open','Präfektur-Meisterschaft','Japan Open']};
 const LOCD=['Lokales Turnier um die Ecke, Startgeld fast nichts','Volksfest-Turnier mit Festzelt-Stimmung','Die besten Vereinsspieler der Region','Die Meisterschaft deines Landes für Amateure'];
 function grp(n){return{GER:'DE',AUT:'DE',SUI:'DE',ENG:'EN',SCO:'EN',WAL:'EN',NIR:'EN',IRL:'EN',AUS:'EN',NZL:'EN',CAN:'EN',USA:'EN',RSA:'EN',NED:'NL',BEL:'NL',POL:'PL',SWE:'NORD',NOR:'NORD',DEN:'NORD',FIN:'NORD',ESP:'ES',POR:'ES',BRA:'ES',ARG:'ES',MEX:'ES',JPN:'JP',KOR:'AS',CHN:'AS',SGP:'AS',THA:'AS',HKG:'AS',SVK:'PL',ROU:'PL',CZE:'PL'}[n]||'EN'}
 function plRankMe(){return Object.keys(S.PL.tab).sort((a,b)=>S.PL.tab[b]-S.PL.tab[a]).indexOf('ME')+1}
-function evName(e){return e.loc!=null?(LOCAL[grp(S?S.player.nat:'GER')]||LOCAL.EN)[e.loc]:e.n}
+function evName(e){if(e.q==='aff')return(REG[myReg()]||{n:'Partner-Tour'}).n+' '+(e.afi+1);return e.loc!=null?(LOCAL[grp(S?S.player.nat:'GER')]||LOCAL.EN)[e.loc]:e.n}
 const CITY={GER:['Bochum','Kassel','Hannover','Frankfurt am Main'],AUT:['Graz','Linz','Salzburg','Wien'],SUI:['Luzern','Bern','Basel','Zürich'],NED:['Zwolle','Utrecht','Eindhoven','Rotterdam'],BEL:['Gent','Antwerpen','Lüttich','Brüssel'],ENG:['Stoke-on-Trent','Barnsley','Leeds','Birmingham'],SCO:['Dundee','Aberdeen','Edinburgh','Glasgow'],WAL:['Swansea','Newport','Wrexham','Cardiff'],NIR:['Derry','Newry','Lisburn','Belfast'],IRL:['Galway','Limerick','Cork','Dublin'],POL:['Gdańsk','Kraków','Wrocław','Warschau'],CZE:['Brünn','Ostrava','Pilsen','Prag'],ESP:['Valencia','Sevilla','Barcelona','Madrid'],POR:['Braga','Coimbra','Porto','Lissabon'],ITA:['Bologna','Turin','Mailand','Rom'],FRA:['Lille','Lyon','Marseille','Paris'],DEN:['Odense','Aalborg','Aarhus','Kopenhagen'],SWE:['Uppsala','Malmö','Göteborg','Stockholm'],NOR:['Stavanger','Trondheim','Bergen','Oslo'],FIN:['Oulu','Turku','Tampere','Helsinki'],HUN:['Szeged','Debrecen','Győr','Budapest'],CRO:['Rijeka','Split','Osijek','Zagreb'],LTU:['Šiauliai','Klaipėda','Kaunas','Vilnius'],LAT:['Ventspils','Liepāja','Daugavpils','Riga'],AUS:['Geelong','Perth','Brisbane','Melbourne'],NZL:['Hamilton','Christchurch','Wellington','Auckland'],JPN:['Sapporo','Nagoya','Osaka','Tokio'],PHI:['Davao','Cebu','Quezon City','Manila'],HKG:['Sha Tin','Tsuen Wan','Kowloon','Hongkong'],IND:['Pune','Bangalore','Delhi','Mumbai'],CAN:['Calgary','Ottawa','Vancouver','Toronto'],USA:['Philadelphia','Chicago','New York','Las Vegas'],RSA:['Durban','Pretoria','Kapstadt','Johannesburg'],BRA:['Curitiba','Recife','Rio de Janeiro','São Paulo'],ARG:['Rosario','Mendoza','Córdoba','Buenos Aires'],MEX:['Puebla','Monterrey','Guadalajara','Mexiko-Stadt'],KOR:['Daegu','Incheon','Busan','Seoul'],CHN:['Chengdu','Guangzhou','Shanghai','Peking'],SGP:['Jurong','Tampines','Woodlands','Singapur'],THA:['Khon Kaen','Pattaya','Chiang Mai','Bangkok'],SVK:['Žilina','Prešov','Košice','Bratislava'],ROU:['Iași','Timișoara','Cluj-Napoca','Bukarest'],GIB:['Catalan Bay','Westside','Europa Point','Gibraltar']};
-function evCity(e){if(e.q==='pln')return PLC[(S?S.wk:3)-3]||'London';return e.lc!=null?(CITY[S?S.player.nat:'GER']||CITY.GER)[e.lc]:e.city}
+function evCity(e){if(e.q==='aff')return(REG[myReg()]||REG.dach).c[e.afi];if(e.q==='pln')return PLC[(S?S.wk:3)-3]||'London';return e.lc!=null?(CITY[S?S.player.nat:'GER']||CITY.GER)[e.lc]:e.city}
 function evDesc(e){return e.loc!=null?LOCD[e.loc]:e.d}
 const VEN={fest:'Festzelt am Marktplatz|#4a2c10|#140a04|#ffcc66|.5|.6',verein:'Vereinsheim|#2b2418|#0e0b07|#ffd59a|.25|.2',buerger:'Bürgerhaus, Saal 1|#2e2a22|#0f0d0a|#fff1c9|.3|.2',messe:'Messehalle B|#1c2633|#090c10|#cfe3ff|.12|.3',sport:'Sporthalle Nord|#1d2e29|#08100d|#d8fff0|.05|.15',pav:'Pavilion Hall|#38123f|#0c040e|#ff5ca8|.8|.9',stadt:'Stadthalle|#122050|#05081a|#4fb3ff|.9|.9',arena:'Arena der Besten|#141428|#040408|#ffffff|1|1',eis:'Eissporthalle|#0d2b45|#030b12|#7fe7ff|.9|.9',winter:'Wintergarten|#3a1010|#0d0303|#ff4b4b|.95|1',ball:'Hotel-Ballsaal|#2e1446|#0a0412|#c38bff|.8|.8',kongress:'Kongresszentrum|#0e2814|#030a05|#5dff8f|.9|.9',palast:'Der Palast|#3a0e52|#0b0212|#ffd166|1|1'};
 for(const k in VEN){const[n,c1,c2,l,c,b]=VEN[k].split('|');VEN[k]={n,c1,c2,l,c:+c,b:+b}}
@@ -408,7 +413,7 @@ function dvRank(){return dvList().findIndex(r=>r.me)+1}
 function ageMul(){const a=S.player.age;return a<=17?1.5:a<=21?1.35:a<=27?1.15:a<=33?1:a<=38?.85:.7}
 function news(t){S.news=S.news||[];S.news.unshift(`S${S.season} · W${Math.min(S.wk,WEEKS)}: ${t}`);S.news=S.news.slice(0,60)}
 function myCol(){return S&&S.player.fl||'#e9c46a'}
-function reqTxt(e){const a=e.minAge&&e.maxAge?`${e.minAge}–${e.maxAge} J.`:e.maxAge?`bis ${e.maxAge} J.`:e.minAge?`ab ${e.minAge} J.`:'';const r={loc:'Amateure',ct:'ohne Tour Card',qs:'ohne Tour Card',pc:'Tour Card',et:'Tour Card / Quali',uk:'Tour Card / Quali',ma:'Tour Card',ws:'Top 8 / Gastregion',wsf:'Top 24',mp:'Top 16 + ProTour',pcf:'Top 64 ProTour',ec:'Top 32 Euro',gs:'Sieger + Rangliste',nc:'2 Beste je Nation',plo:'Liga Top 4',wq:'nicht qualifiziert',wm:'128 Qualifizierte',pln:'Liga der Besten',yth:'',dv:'',jt:'',js:'Top 16 Junior',jw:'Top 32 Junior'}[e.q]||'';return[r,a].filter(Boolean).join(' · ')}
+function reqTxt(e){const a=e.minAge&&e.maxAge?`${e.minAge}–${e.maxAge} J.`:e.maxAge?`bis ${e.maxAge} J.`:e.minAge?`ab ${e.minAge} J.`:'';const r={loc:'Amateure',ct:'ohne Tour Card',qs:'ohne Tour Card',pc:'Tour Card',et:'Tour Card / Quali',uk:'Tour Card / Quali',ma:'Tour Card',ws:'Top 8 / Gastregion',wsf:'Top 24',mp:'Top 16 + ProTour',pcf:'Top 64 ProTour',ec:'Top 32 Euro',gs:'Sieger + Rangliste',nc:'2 Beste je Nation',plo:'Liga Top 4',wq:'nicht qualifiziert',wm:'128 Qualifizierte',pln:'Liga der Besten',yth:'',dv:'',jt:'',js:'Top 16 Junior',jw:'Top 32 Junior',aff:'Partner-Tour',wos:'Spielerinnen',wwm:'Top 8 Frauen'}[e.q]||'';return[r,a].filter(Boolean).join(' · ')}
 function wList(){return ranking().map(r=>r.me?'ME':r.id)}
 function ordBy(key,f,meOk){const l=S.pl.filter(f).map(x=>({id:x.id,v:x[key]||0,o:x.ovr}));if(meOk)l.push({id:'ME',v:S.player[key]||0,o:ovr()});return l.sort((a,b)=>b.v-a.v||b.o-a.o).map(x=>x.id)}
 function ptList(){return ordBy('pt',x=>x.card||x.pt>0,!!S.player.card||S.player.pt>0)}
@@ -416,10 +421,10 @@ function euList(){return ordBy('eu',x=>x.card||x.eu>0,!!S.player.card||S.player.
 function ctIds(){return ctList().map(x=>x.me?'ME':x.id)}
 function dvIds(){return dvList().map(x=>x.me?'ME':x.id)}
 function wmA(){const W=wList(),a=W.slice(0,40),s=new Set(a);return a.concat(ptList().filter(id=>!s.has(id)).slice(0,40))}
-function wmField(){const A=wmA(),s=new Set(A),add=id=>{if(!s.has(id)&&s.size<128){s.add(id);A.push(id)}};ctIds().slice(0,2).forEach(add);dvIds().slice(0,2).forEach(add);(S.wq||[]).forEach(add);
+function wmField(){const A=wmA(),s=new Set(A),add=id=>{if(!s.has(id)&&s.size<128){s.add(id);A.push(id)}};ctIds().slice(0,2).forEach(add);dvIds().slice(0,2).forEach(add);(S.wq||[]).forEach(add);wmExtra().forEach(add);
  S.pl.filter(x=>x.age>=16).sort((a,b)=>b.ovr-a.ovr).forEach(x=>add(x.id));return A}
-function wmWhy(){if(wList().slice(0,40).includes('ME'))return 'Top 40 der Weltrangliste';if(wmA().includes('ME'))return 'Über die ProTour-Rangliste';if((S.wq||[]).includes('ME'))return 'Über die WM-Qualifikation';return 'Über die Challenge- oder Development-Rangliste'}
-function gsField(){const t=[...new Set(S.titleS||[])].slice(0,24),s=new Set(t);for(const id of wList()){if(s.size>=32)break;s.add(id)}return[...s]}
+function wmWhy(){if(!wList().slice(0,40).includes('ME')&&!wmA().includes('ME')&&wmExtra().includes('ME'))return wmExtraWhy();if(wList().slice(0,40).includes('ME'))return 'Top 40 der Weltrangliste';if(wmA().includes('ME'))return 'Über die ProTour-Rangliste';if((S.wq||[]).includes('ME'))return 'Über die WM-Qualifikation';return 'Über die Challenge- oder Development-Rangliste'}
+function gsField(){const t=[...new Set([...(S.wwm!=null?[S.wwm]:[]),...(S.titleS||[])])].slice(0,24),s=new Set(t);for(const id of wList()){if(s.size>=32)break;s.add(id)}return[...s]}
 function natTop(nat){const l=S.pl.filter(x=>x.nat===nat).map(x=>({id:x.id,v:x.pts,o:x.ovr}));if(S.player.nat===nat)l.push({id:'ME',v:S.player.pts,o:ovr()});return l.sort((a,b)=>b.v-a.v||b.o-a.o).map(x=>x.id)}
 function plTop4(){if(!S.PL)return[];return Object.keys(S.PL.tab).sort((a,b)=>S.PL.tab[b]-S.PL.tab[a]).slice(0,4).map(k=>k==='ME'?'ME':+k)}
 function plWeek(w){return w>=3&&w<=14}
@@ -432,6 +437,9 @@ function mePath(e){const p=S.player,W=wList(),r=W.indexOf('ME')+1;
  const cardW=()=>W.filter(id=>id==='ME'||S.pl[id].card),top16=W.slice(0,16);
  switch(e.q){
  case 'loc':return p.card?no('Als Profi spielst du keine Lokalturniere mehr.'):yes(0,'Offen für alle Amateure');
+ case 'aff':return myReg()?yes(0,'Offen für alle aus '+REG[myReg()].nat.join(', ')):no('Für deine Nation gibt es keine Partner-Tour. Dein Weg ist die Challenge Tour.');
+ case 'wos':return p.g==='w'?yes(0,'Offen für alle Spielerinnen ab 16'):no('Nur für Spielerinnen.');
+ case 'wwm':return p.g!=='w'?no('Nur für Spielerinnen.'):woIds().slice(0,8).includes('ME')?yes(0,'Top 8 der Frauen-Rangliste'):no(`Nur die Top 8 der Frauen-Rangliste (du: Platz ${woRank()}).`);
  case 'yth':return yes(0,'Startplatz über dein Alter');
  case 'jt':return yes(0,'Offen für alle von 10 bis 17');
  case 'js':return jtIds().slice(0,16).includes('ME')?yes(0,'Top 16 der Junior-Rangliste'):no(`Nur die Top 16 der Junior-Rangliste (du: Platz ${jtRank()}).`);
@@ -455,10 +463,10 @@ function mePath(e){const p=S.player,W=wList(),r=W.indexOf('ME')+1;
  case 'nc':return natTop(p.nat).slice(0,2).includes('ME')?yes(0,'Einer der 2 bestplatzierten Spieler deiner Nation'):no('Für jede Nation spielen ihre 2 bestplatzierten Spieler.');
  case 'plo':return plTop4().includes('ME')?yes(0,'Top 4 der Liga-Tabelle'):no('Nur die Top 4 der Liga der Besten.');
  case 'wq':return wmA().includes('ME')||(S.wq||[]).includes('ME')?no('Du bist schon für die WM qualifiziert.'):yes(0,'Offen für alle Nicht-Qualifizierten');
- case 'wm':return wmField().includes('ME')?yes(0,wmWhy()):no('Qualifiziert sind die Top 40 der Welt, die Top 40 der ProTour, Challenge/Development Top 2 und die WM-Quali.')}
+ case 'wm':return wmField().includes('ME')?yes(0,wmWhy()):no('Qualifiziert sind die Top 40 der Welt, die Top 40 der ProTour, Challenge/Development Top 2, die WM-Quali, die Besten der Partner-Touren sowie Frauen-Matchplay-Siegerin und Top 2 der Frauen-Rangliste.')}
  return yes(0,'')}
 function elig(e){return mePath(e)}
-function weekEv(w){return EV.filter(e=>e.w===w)}
+function weekEv(w){return EV.filter(e=>e.w===w&&(e.q!=='aff'||myReg()))}
 function myWeek(w){return weekEv(w).filter(e=>elig(e).ok)}
 function CE(){return S&&S.T?EVM[S.T.eid]:null}
 
@@ -482,13 +490,15 @@ function help(){show(`${topBar('Anleitung',S?'hub':'home')}
  <p><b>Saison:</b> 24 Wochen. Jede Woche wählst du eines der Turniere, für die du spielberechtigt bist. Die anderen laufen ohne dich.</p>
  <p><b>Karriere:</b> Unter 16 spielst du Junior-Tour, Jugend- und Lokalturniere. Die Tour Card gibt es über die Q-School (Halbfinale), die Top 2 der Challenge-Rangliste oder die Top 2 der Development-Rangliste.</p>
  <p><b>Nachwuchs:</b> Von 10 bis 17 spielst du die Junior-Tour mit eigener Rangliste. Die Top 16 spielen die Super 16, die Top 32 die Junior-WM, deren Finale auf der WM-Bühne läuft. Die Akademie gibt dir ein Extra-Training pro Woche. Ab 16 kommen Development Tour (bis 23) und Q-School dazu. Die Challenge Tour ist nur für Q-School-Teilnehmer.</p>
+ <p><b>Partner-Touren:</b> In vielen Regionen gibt es eine eigene Tour mit 6 Events, z. B. die Super-Liga DACH, die Nordic & Baltic Tour oder die Asien-Tour. Die Besten ohne Tour Card bekommen einen WM-Startplatz.</p>
+ <p><b>Spielerinnen:</b> Spielerinnen spielen alle offenen Turniere und zusätzlich die Frauen-Serie. Die Top 8 der Frauen-Rangliste spielen das Frauen-Matchplay, die Siegerin fährt zu Grand Slam und WM, die Top 2 der Rangliste ebenfalls zur WM.</p>
  <p><b>Ausbullen:</b> Vor jedem Match wirft jeder einen Dart aufs Bull. Wer näher dran ist, beginnt das erste Leg, danach wird abgewechselt.</p>
  <p><b>Münzen:</b> Für Startgeld und Reisekosten, für Coach, Physio und Trainingslager, für Dart-Sets, Flights und Packs.</p>
  <p><b>Werte:</b> ${STATS.map(s=>`${s[2]}: ${s[3]}`).join('. ')}.</p></div>`)}
 
-let draft={name:'',nick:'',nat:'GER',style:'sco',age:18,look:null};
+let draft={name:'',nick:'',nat:'GER',style:'sco',age:18,look:null,g:'m'};
 function evRow(e,btn){const ok=elig(e),fee=feeOf(e),p=S.player;return `<div class="panel stack" style="margin-top:8px;padding:12px"><div class="small mut">${esc(evCity(e))} · ${esc(VEN[e.v].n)} · ${reqTxt(e)||'für alle'}</div><h3>${esc(evName(e))}</h3><div class="small mut">${esc(evDesc(e))}</div>
- <div class="chips small"><span class="badge">${e.teams?e.size+' Nationen':e.size+' Spieler'}</span><span class="badge">${fmtTxt(e)}</span><span class="badge g">${fmt(e.prize*sm())} Preisgeld</span><span class="badge">${e.rk==='pro'?'Weltrangliste':e.rk==='ct'?'Challenge-Rangliste':e.rk==='dev'?'Development-Rangliste':e.rk==='jt'?'Junior-Rangliste':'ohne Rangliste'}${e.pt?' + ProTour':''}${e.eu?' + Euro':''}</span>${fee?`<span class="badge">${e.q==='pc'||e.q==='et'?'Reisekosten':'Startgeld'} ${fee}</span>`:''}</div>
+ <div class="chips small"><span class="badge">${e.teams?e.size+' Nationen':e.size+' Spieler'}</span><span class="badge">${fmtTxt(e)}</span><span class="badge g">${fmt(e.prize*sm())} Preisgeld</span><span class="badge">${e.rk==='pro'?'Weltrangliste':e.rk==='ct'?'Challenge-Rangliste':e.rk==='dev'?'Development-Rangliste':e.rk==='jt'?'Junior-Rangliste':e.rk==='af'?'Regionalrangliste':e.rk==='wo'?'Frauen-Rangliste':'ohne Rangliste'}${e.pt?' + ProTour':''}${e.eu?' + Euro':''}</span>${fee?`<span class="badge">${e.q==='pc'||e.q==='et'?'Reisekosten':'Startgeld'} ${fee}</span>`:''}</div>
  ${ok.ok?`<div class="small" style="color:var(--gold)">Dein Weg: ${esc(ok.why)}</div>`:''}
  ${btn&&ok.ok?(p.coins>=fee?`<button class="btn pri" data-a="enter" data-v="${e.id}">Antreten${fee?' (−'+fee+')':''}</button>`:`<button class="btn" disabled>Dir fehlen ${fee-p.coins} Münzen</button>`):''}</div>`}
 function fmtRound(e,n){const idx=Math.max(0,Math.round(Math.log2(n))-1),pick2=a=>Array.isArray(a)?a[Math.min(idx,a.length-1)]:a,kurz=SETG.len!=='orig';
@@ -521,13 +531,15 @@ function sponsors(){const p=S.player,c=p.sponsor,offers=SPONS.map((s,i)=>({...s,
  ${next?`<p class="small mut" style="margin-top:12px">Nächstes Angebot ab ${fmt(next.f)} Fans: ${esc(next.n)}</p>`:''}`)}
 
 let rtab='pro';
-function rank(){const tabs=[['pro','Welt'],['pt','ProTour'],['eu','Euro'],['ct','Challenge'],['dv','Development'],['jt','Junior'],['pl','Liga']],t=rtab,me=S.player;let r,info;
+function rank(){const tabs=[['pro','Welt'],['pt','ProTour'],['eu','Euro'],['ct','Challenge'],['dv','Development'],['jt','Junior'],['af','Region'],['wo','Frauen'],['pl','Liga']],t=rtab,me=S.player;let r,info;
  const mk=(ids,key)=>ids.map(id=>id==='ME'?{me:true,n:me.name,nat:me.nat,ovr:ovr(),v:me[key]||0}:{id,n:S.pl[id].n,nat:S.pl[id].nat,ovr:S.pl[id].ovr,card:S.pl[id].card,v:S.pl[id][key]||0});
  if(t==='pro'){r=ranking().map(x=>({...x,v:x.pts}));info='Weltrangliste: Top 64 behalten die Tour Card, Top 40 fahren direkt zur WM, die Top 16 sind bei Matchplay und Grand Prix dabei. Tippe auf einen Spieler für seine Karte mit allen Werten.'}
  else if(t==='pt'){r=mk(ptList(),'pt');info='ProTour-Rangliste (Floor-Events und Euro Tour, nur diese Saison): Sie entscheidet über Plätze bei Euro Tour, Matchplay, Grand Prix, Tour Finals (Top 64) und WM (Top 40 Nicht-Qualifizierte).'}
  else if(t==='eu'){r=mk(euList(),'eu');info='Euro-Tour-Rangliste: Die Top 32 spielen die Euro Championship.'}
  else if(t==='ct'){r=ctList();info='Q-School-Teilnehmer ohne Tour Card: Die Top 2 bekommen die Tour Card, Platz 3 bis 16 einen Freiplatz für die Q-School, die Top 2 fahren zur WM, die Top 8 sind bei den Kingdom Open direkt dabei.'}
  else if(t==='dv'){r=dvList();info='Spieler von 16 bis 23: Die Top 2 bekommen die Tour Card und fahren zur WM, Platz 3 bis 16 bekommen einen Freiplatz für die Q-School.'}
+ else if(t==='af'){r=myReg()?mk(afIds(),'af'):[];info=myReg()?REG[myReg()].n+': Die besten '+REG[myReg()].ws+' ohne Tour Card fahren zur WM.':'Für deine Nation gibt es keine Partner-Tour. Dein Weg zur Tour Card führt über Q-School und Challenge Tour.'}
+ else if(t==='wo'){r=mk(woIds(),'wo');info='Frauen-Rangliste: Die Top 8 spielen das Frauen-Matchplay, die Top 2 fahren zur WM.'}
  else if(t==='jt'){r=jtList();info='Junior-Rangliste (10 bis 17 Jahre): Die Top 16 spielen die Super 16, die Top 32 die Junior-WM.'}
  else{r=S.PL?Object.keys(S.PL.tab).sort((a,b)=>S.PL.tab[b]-S.PL.tab[a]).map(k=>k==='ME'?{me:true,n:me.name,nat:me.nat,ovr:ovr(),v:S.PL.tab[k]}:{id:+k,n:S.pl[+k].n,nat:S.pl[+k].nat,ovr:S.pl[+k].ovr,v:S.PL.tab[k]}):[];info='Liga der Besten: 8 Spieler, 12 Liga-Abende (Sieg 5, Finale 3, Halbfinale 2 Punkte). Die Top 4 spielen die Playoffs.'}
  const mi=r.findIndex(x=>x.me),shown=r.slice(0,80);
@@ -552,11 +564,14 @@ function bOrder(n){let a=[1,2];while(a.length<n){const m=a.length*2+1;a=a.flatMa
 function seedDraw(ids,k){const W=wList(),str=ids.slice().sort((a,b)=>{const ia=W.indexOf(a),ib=W.indexOf(b);return(ia<0?999:ia)-(ib<0?999:ib)}),seeds=str.slice(0,k),rest=shuffle(str.slice(k)),bySeed=[...seeds,...rest];return bOrder(ids.length).map(sn=>bySeed[sn-1])}
 function fieldBuild(e,me){const p=S.player,W=wList(),aiW=W.filter(id=>id!=='ME'),stg=e.stages||[e.size],st=stg.map(()=>[]),used=new Set(['ME']),ms=me?me.stage:-1;
  const cap=k=>stg[k]-(ms===k?1:0),take=(arr,n,k)=>{for(const id of arr){if(st[k].length>=Math.min(n,cap(k)))break;if(used.has(id))continue;used.add(id);st[k].push(id)}};
- const A=x=>(!e.minAge||x.age>=e.minAge)&&(!e.maxAge||x.age<=e.maxAge),byOvr=f=>S.pl.filter(f).sort((a,b)=>b.ovr-a.ovr).map(x=>x.id);
+ const A=x=>(!e.minAge||x.age>=e.minAge)&&(!e.maxAge||x.age<=e.maxAge)&&(!e.wo||x.g==='w')&&(e.q!=='aff'||inReg(x)),byOvr=f=>S.pl.filter(f).sort((a,b)=>b.ovr-a.ovr).map(x=>x.id);
  const band=(c,lo,hi,n)=>{let pool=c.filter(x=>x.ovr>=lo&&x.ovr<=hi);if(pool.length<n){const mid=(lo+hi)/2;pool=[...c].sort((a,b)=>Math.abs(a.ovr-mid)-Math.abs(b.ovr-mid)).slice(0,Math.max(n,Math.round(n*1.4)))}return shuffle(pool.map(x=>x.id))};
  const cardW=aiW.filter(id=>S.pl[id].card);
  switch(e.q){
   case 'loc':{let c=S.pl.filter(x=>!x.card&&x.nat===p.nat);if(c.length<cap(0)*1.5)c=S.pl.filter(x=>!x.card);take(band(c,e.lo,e.hi,cap(0)),1e9,0);break}
+  case 'wos':take(byOvr(x=>x.g==='w'&&x.age>=16),1e9,0);break;
+  case 'wwm':take(woIds().filter(id=>id!=='ME').slice(0,8),1e9,0);break;
+  case 'aff':take(byOvr(x=>inReg(x)&&x.age>=16&&!x.card),1e9,0);take(byOvr(x=>inReg(x)&&x.age>=16),1e9,0);break;
   case 'js':case 'jw':take(jtIds().filter(id=>id!=='ME'),1e9,0);break;
   case 'yth':case 'dv':case 'jt':take(shuffle(S.pl.filter(A).map(x=>x.id)),1e9,0);break;
   case 'ct':take(band(S.pl.filter(x=>!x.card&&A(x)),e.lo,e.hi,cap(0)),1e9,0);break;
@@ -579,7 +594,7 @@ function fieldBuild(e,me){const p=S.player,W=wList(),aiW=W.filter(id=>id!=='ME')
  st.forEach((a,k)=>take(byOvr(x=>A(x)&&x.age>=10),1e9,k));
  /* Feld zu klein: erst passende Spieler ohne Einschränkung, dann neue Talente im erlaubten Alter erzeugen */
  if(!e.minAge&&!e.maxAge)st.forEach((x,k)=>take(byOvr(()=>true),1e9,k));
- for(let k=0;k<st.length;k++)while(st[k].length<cap(k)){const lo=Math.max(10,e.minAge||16),hi=Math.max(lo,Math.min(e.maxAge||30,lo+12)),a=rnd(lo,hi),np=genP(pick(NATW),a,Math.max(12,Math.min(e.maxAge&&e.maxAge<=17?55:62,14+(Math.min(a,24)-12)*4+rnd(0,12))),false);np.id=S.pl.length;S.pl.push(np);used.add(np.id);st[k].push(np.id)}
+ for(let k=0;k<st.length;k++)while(st[k].length<cap(k)){const lo=Math.max(10,e.minAge||16),hi=Math.max(lo,Math.min(e.maxAge||30,lo+12)),a=rnd(lo,hi),np=(e.wo?genW:genP)(e.q==='aff'&&myReg()?pick(REG[myReg()].nat):pick(NATW),a,Math.max(12,Math.min(e.maxAge&&e.maxAge<=17?55:62,14+(Math.min(a,24)-12)*4+rnd(0,12))),false);np.id=S.pl.length;S.pl.push(np);used.add(np.id);st[k].push(np.id)}
  if(me)st[ms].push('ME');return st}
 function koDone(){const T=S.T;if(!T.rounds)return false;const l=T.rounds[T.cur];return l.length===1&&l[0].w!=null&&!(T.stages&&T.stages[T.cur+1]&&T.stages[T.cur+1].length)}
 function rlab(i){const T=S.T;return T.stages&&T.stages[i+1]&&T.stages[i+1].length?(EVM[T.eid].q==='ma'?'Vorrunde '+(i+1):'Runde '+(i+1)):rnameN(T.rounds[i].length*2)}
@@ -608,13 +623,13 @@ function groupView(){const T=S.T,e=CE(),mine=grpMine();
  <div class="stack" style="margin-bottom:12px">${mine?`<div class="panel"><div class="small mut">Gruppenspiel</div><h3>${esc(pname('ME'))} gegen ${esc(pname(mine.a==='ME'?mine.b:mine.a))}</h3>${T.teams?'':scout(mine.a==='ME'?mine.b:mine.a)}</div><button class="btn pri" data-a="playT">Auf die Bühne</button>`:`<button class="btn pri" data-a="simT">${T.out?'Gruppenphase simulieren':'Spieltag simulieren (spielfrei)'}</button>`}</div>
  ${T.G.map((g,i)=>{const s=tabSorted(g.tab);const hasMe=g.ids.includes('ME');return `<div class="rd"><h3 style="${hasMe?'color:var(--gold)':''}">Gruppe ${String.fromCharCode(65+i)}</h3><div class="list">${s.map((k,j)=>`<div class="it" style="padding:6px 10px;${k==='ME'?'border-color:var(--gold)':''}"><div class="num" style="font-size:16px;min-width:22px">${j+1}</div><div class="g small"><b>${esc(pname(k))}</b> <span class="mut">${g.tab[k].w}–${g.tab[k].l} · ${g.tab[k].f}:${g.tab[k].a}</span></div><b>${g.tab[k].p}</b></div>`).join('')}</div></div>`}).join('')}`)}
 function who(id){return id==='ME'?null:S.pl[+id]}
-function sname(id){return id==='ME'?S.player.name:who(id).n}
+function sname(id){if(id==='ME')return S.player.name;const w=who(id);return w?w.n:'Freilos'}
 function pnick(id){const w=who(id);return w?w.nick:''}
 function isRival(id){return S.player.rival!=null&&String(S.player.rival)===String(id)}
 function pname(id){const tm=S.T&&S.T.teams&&S.T.teams[id];if(tm)return tm.nat+': '+tm.ids.map(i=>sname(i).split(' ').slice(-1)[0]).join(' & ');return sname(id)}
-function povr(id){const tm=S.T&&S.T.teams&&S.T.teams[id];if(tm)return Math.round(tm.ids.reduce((a,i)=>a+(i==='ME'?ovr():S.pl[i].ovr),0)/tm.ids.length);if(id==='ME')return ovr();const w=who(id);let o=w.ovr+Math.round((w.form||0)*.6);if(isRival(id))o+=S.player.rivalHype?4:2;return Math.min(99,o)}
+function povr(id){const tm=S.T&&S.T.teams&&S.T.teams[id];if(tm)return Math.round(tm.ids.reduce((a,i)=>a+(i==='ME'?ovr():S.pl[i].ovr),0)/tm.ids.length);if(id==='ME')return ovr();const w=who(id);if(!w)return 1;let o=w.ovr+Math.round((w.form||0)*.6);if(isRival(id))o+=S.player.rivalHype?4:2;return Math.min(99,o)}
 function fw(n,p){let a=0,b=0;while(a<n&&b<n)Math.random()<p?a++:b++;return[a,b]}
-function simM(m,f){const pa=1/(1+10**((povr(m.b)-povr(m.a))/14));let r;if(f.sets){let a=0,b=0;while(a<f.sets&&b<f.sets){const[x,y]=fw(f.lps,pa);x>y?a++:b++}r=[a,b]}else r=fw(Math.ceil(f.bo/2),pa);m.w=r[0]>r[1]?m.a:m.b;m.sc=r[0]+':'+r[1]}
+function simM(m,f){const va=validId(m.a),vb=validId(m.b);if(!va||!vb){m.w=va?m.a:vb?m.b:null;m.sc=va?'1:0':'0:1';return}const pa=1/(1+10**((povr(m.b)-povr(m.a))/14));let r;if(f.sets){let a=0,b=0;while(a<f.sets&&b<f.sets){const[x,y]=fw(f.lps,pa);x>y?a++:b++}r=[a,b]}else r=fw(Math.ceil(f.bo/2),pa);m.w=r[0]>r[1]?m.a:m.b;m.sc=r[0]+':'+r[1]}
 function curFmt(){const T=S.T,e=CE();return fmtRound(e,T.rounds[T.cur].length*2)}
 function qOpp(e){const p=S.player,po=ovr(),f=e.q==='et'&&p.card?x=>x.card:e.q==='et'&&e.hn===p.nat?x=>x.nat===p.nat&&!x.card:e.q==='et'?x=>(NB.includes(p.nat)?NB:EE).includes(x.nat):e.q==='ws'?x=>(e.host||[]).includes(x.nat):x=>!x.card&&x.age>=16;
  let c=S.pl.filter(x=>f(x)&&Math.abs(x.ovr-po)<=14);if(c.length<3)c=S.pl.filter(x=>Math.abs(x.ovr-po)<=12);return pick(c).id}
@@ -634,14 +649,14 @@ function enter(id,noMe){const e=EVM[id],me=!noMe?mePath(e):null;if(me&&!me.ok)re
  buildMain(e,me);save();if(noMe){runAll();return finishT(true)}bracket()}
 function runAll(){let g=0;while(S.T.kind==='groups'&&g++<20)grpAdvance();g=0;while(!koDone()&&g++<20)advance()}
 function advance(){const T=S.T,r=T.rounds[T.cur],f=curFmt();for(const m of r)if(m.w==null)simM(m,f);
- const win=r.map(m=>m.w),inc=(T.stages&&T.stages[T.cur+1])||[];if(win.length===1&&!inc.length){save();return}
+ const win=r.map(m=>m.w).filter(validId),inc=(T.stages&&T.stages[T.cur+1])||[];if(win.length===1&&!inc.length){save();return}
  let ent;if(inc.length){const a=shuffle(win),b=shuffle(inc.slice());ent=[];if(a.length===b.length)a.forEach((w,i)=>ent.push(b[i],w));else ent=shuffle([...a,...b])}else ent=win;
  T.rounds.push(mkR0(ent));T.cur++;save()}
 function simT(){const T=S.T;if(T.kind==='groups'){if(T.out){runAll()}else grpAdvance()}else if(T.out){runAll()}else advance();bracket()}
 let PRESS=null;
 function finishT(silent){const T=S.T,e=CE(),tot=T.rounds.length,P=e.prize*sm(),share=[1,.5,.25,.125,.06,.03,.015,.008],p=S.player,nm=evName(e);
  const place={};T.rounds.forEach((rd,i)=>rd.forEach(m=>{const l=m.w===m.a?m.b:m.a;place[l]=tot-i}));(T.gids||[]).forEach(id=>{if(place[id]===undefined)place[id]=tot+1});const fin=T.rounds[tot-1][0],champ=fin.w,runner=fin.w===fin.a?fin.b:fin.a;place[champ]=0;
- const award=(id,mo)=>{const tg=o=>{if(e.rk==='pro')o.pts=(o.pts||0)+mo;if(e.rk==='ct')o.ct=(o.ct||0)+mo;if(e.rk==='dev')o.dv=(o.dv||0)+mo;if(e.rk==='jt')o.jt=(o.jt||0)+mo;if(e.pt)o.pt=(o.pt||0)+mo;if(e.eu)o.eu=(o.eu||0)+mo;if(e.ws)o.ws=(o.ws||0)+mo};if(id==='ME'){tg(p);p.coins+=Math.round(mo*(e.rk==='pro'?.35:.6)*(p.manager?.9:1));return}const w=who(id);if(w)tg(w)};
+ const award=(id,mo)=>{const tg=o=>{if(e.rk==='pro')o.pts=(o.pts||0)+mo;if(e.rk==='ct')o.ct=(o.ct||0)+mo;if(e.rk==='dev')o.dv=(o.dv||0)+mo;if(e.rk==='jt')o.jt=(o.jt||0)+mo;if(e.rk==='af')o.af=(o.af||0)+mo;if(e.rk==='wo')o.wo=(o.wo||0)+mo;if(e.pt)o.pt=(o.pt||0)+mo;if(e.eu)o.eu=(o.eu||0)+mo;if(e.ws)o.ws=(o.ws||0)+mo};if(id==='ME'){tg(p);p.coins+=Math.round(mo*(e.rk==='pro'?.35:.6)*(p.manager?.9:1));return}const w=who(id);if(w)tg(w)};
  for(const id in place){const money=Math.round(P*(share[place[id]]||.004));if(T.teams)T.teams[id].ids.forEach(i=>award(i,Math.round(money/2)));else award(id,money)}
  const key=k=>k==='ME'||String(k).startsWith('N:')?k:+k;
  // Spezial: Liga-Abend
@@ -655,7 +670,7 @@ function finishT(silent){const T=S.T,e=CE(),tot=T.rounds.length,P=e.prize*sm(),s
  if(e.q==='wq'){S.wq=Object.keys(place).filter(k=>place[k]<=2).map(key);news(`WM-Quali: ${S.wq.map(k=>sname(k)).join(', ')} fahren zur WM`)}
  if(e.q==='qs'){const qs=Object.keys(place).filter(k=>place[k]<=2).map(key);qs.forEach(k=>{if(k!=='ME'&&who(k))who(k).card=true});news(`Q-School: Tour Cards für ${qs.map(k=>sname(k)).join(', ')}`)}
  if(e.q==='plo')news(`${pname(champ)} gewinnt die Liga der Besten!`);
- S.res[e.id]=pname(champ);S.done.push(e.id);
+ S.res[e.id]=pname(champ);S.done.push(e.id);if(e.q==='wwm'){S.wwm=champ;news(`${pname(champ)} gewinnt das Frauen-Matchplay und spielt Grand Slam und WM`)}
  if(!T.teams)for(const id in place){const w=who(id);if(w)w.form=Math.max(-3,Math.min(3,(w.form||0)+(place[id]===0?1:place[id]>=tot?-1:0)))}
  if(place.ME!==undefined&&(p.card||p.pts>0))p.bestRank=Math.min(p.bestRank,myRank());
  const pl=place.ME;let html='',press=false;
@@ -672,7 +687,7 @@ function finishT(silent){const T=S.T,e=CE(),tot=T.rounds.length,P=e.prize*sm(),s
    if(pl<=2&&!won)news(`${p.name} erreicht beim ${nm} das ${pl===1?'Finale':'Halbfinale'}`);if(pl===1)p.finalS=1;p.played=p.played||[];p.played.push(e.id);if(pl>=4&&e.t>=3&&Math.random()<.5)feed(pick([`Früh raus heute, @${handle(p.name)}. Kopf hoch!`,`Das war nichts, @${handle(p.name)} …`]));if(p.rival!=null&&Math.random()<.25)feed(pick(['Manche können halt nur Kirmes.','Wir sehen uns auf der Bühne. 😉'.replace(' 😉',''),'Zu viel Gerede, zu wenig Doppel.']),handle(sname(p.rival)));
    const lostIn=pl>tot?'Aus in der Gruppenphase':'Aus im '+rnameN(2**pl);
    html=`<div class="os" style="font-size:16px;color:var(--mut)">${esc(nm)}</div><h1 style="color:${won?'var(--gold)':'var(--ink)'}">${won?'Turniersieg!':pl===1?'Finalist':lostIn}</h1>
-   <p>${e.rk==='pro'?`+${fmt(money)} Ranglistenpunkte · `:e.rk==='ct'?`+${fmt(money)} Challenge-Punkte · `:e.rk==='dev'?`+${fmt(money)} Development-Punkte · `:e.rk==='jt'?`+${fmt(money)} Junior-Punkte · `:''}+${fmt(money*(e.rk==='pro'?.35:.6))} Münzen · +${xg} XP</p>${extra}`;
+   <p>${e.rk==='pro'?`+${fmt(money)} Ranglistenpunkte · `:e.rk==='ct'?`+${fmt(money)} Challenge-Punkte · `:e.rk==='dev'?`+${fmt(money)} Development-Punkte · `:e.rk==='jt'?`+${fmt(money)} Junior-Punkte · `:e.rk==='af'?`+${fmt(money)} Regional-Punkte · `:e.rk==='wo'?`+${fmt(money)} Frauen-Punkte · `:''}+${fmt(money*(e.rk==='pro'?.35:.6))} Münzen · +${xg} XP</p>${extra}`;
    if(pl<=2&&e.t>=2&&!T.teams){press=true;let opp=null;for(const rd of T.rounds)for(const m of rd)if(m.a==='ME'||m.b==='ME')opp=m.a==='ME'?m.b:m.a;PRESS={pl,n:nm,opp}}}}
  S.T=null;save();if(silent)return;
  const msgs=endWeek();
@@ -682,12 +697,13 @@ function plSim(){const e=EVM.PLN;buildMain(e,S.PL.ids.includes('ME')?{stage:0}:n
 function enterPLN(){buildMain(EVM.PLN,{stage:0});save();bracket()}
 function qualiResult(won){const T=S.T,e=CE(),q=T.q;if(won){q.w++;if(q.w>=q.n){delete S.T.q;buildMain(e,{stage:q.stage});news(`${S.player.name} qualifiziert sich über den ${q.label} für ${evName(e)}`);toast('Qualifiziert! Du stehst im Hauptfeld');save();return}q.opp=qOpp(e);save();return}
  buildMain(e,null);S.T.qlost=true;runAll();save()}
-function endWeek(){try{if(plWeek(S.wk)&&S.PL&&!S.PL.done[S.wk])plSim()}catch(er){console.warn(er);if(S.PL)S.PL.done[S.wk]=1}for(const e of weekEv(S.wk))if(!S.done.includes(e.id)){try{enter(e.id,true)}catch(er){console.warn('sim',e.id,er);S.T=null;if(!S.done.includes(e.id))S.done.push(e.id)}}const p=S.player;p.trainLeft=(p.board?3:2)+(p.academy?1:0)+(p.jacad&&p.age<=17?1:0);
+function endWeek(){try{if(plWeek(S.wk)&&S.PL&&!S.PL.done[S.wk])plSim()}catch(er){console.warn(er);if(S.PL)S.PL.done[S.wk]=1}if(S.T){try{repairT();if(S.T){S.T.out=true;runAll();finishT(true)}}catch(er){errLog('Woche: '+er.message)}if(S.T){if(!S.done.includes(S.T.eid))S.done.push(S.T.eid);S.T=null}}
+ for(const e of weekEv(S.wk))if(!S.done.includes(e.id)){try{enter(e.id,true)}catch(er){console.warn('sim',e.id,er);S.T=null;if(!S.done.includes(e.id))S.done.push(e.id)}}const p=S.player;p.trainLeft=(p.board?3:2)+(p.academy?1:0)+(p.jacad&&p.age<=17?1:0);
  p.fresh=Math.min(100,p.fresh+(S.playedWk?8:25));S.playedWk=false;if(p.inj){p.inj--;if(!p.inj){news(`${p.name} ist wieder fit`);toast('Wieder fit!')}}
  if(p.pub){p.coins+=150;p.fans+=20}if(p.trainer){const c=COACHES.find(x=>x.id===p.trainer);if(p.coins>=c.fee)p.coins-=c.fee;else{p.trainer=null;news(`${c.n} kündigt, weil kein Gehalt mehr kam`)}if(p.trainer==='fc')p.fresh=Math.min(100,p.fresh+10)}if(p.trainer==='mc'&&(p.form||0)<-1)p.form=-1;if(p.academy)p.coins+=300;if(S.club.my!=null)p.coins+=S.club.sal;if(S.wk<=14)try{clubRound(S.wk)}catch(er){console.warn(er)}
  S.pl.forEach(x=>{if(x.form&&Math.random()<.3)x.form-=Math.sign(x.form)});S.wk++;let msgs=null;if(S.wk>WEEKS)msgs=processSeason();else if(S.story==null&&Math.random()<.22&&S.wk>1)S.story=storyPick();if(S.wk>2&&Math.random()<.35){const t=ranking().filter(r=>!r.me)[rnd(0,15)];if(t)feed(pick(['Training heute: 3 Stunden Doppel. Weiter geht’s.','Danke für die Unterstützung letzte Woche!','Neue Woche, neue Chance.','Wer kommt nächste Woche in die Halle?']),handle(t.n))}save();return msgs}
 function aiSeason(){const ret=[];S.pl.forEach((x,i)=>{x.age++;const d=x.age<=23?rnd(0,3):x.age<=32?rnd(-1,1):x.age<=40?rnd(-2,1):rnd(-3,0);x.ovr=Math.max(12,Math.min(97,x.ovr+d));
-  if((x.age>=44&&Math.random()<.25)||(x.age>=30&&x.ovr<26&&Math.random()<.3)){ret.push(x.n);const np=genP(Math.random()<.55?S.player.nat:pick(NATW),rnd(10,15),rnd(12,30),false);for(const k in x)delete x[k];Object.assign(x,np,{id:i});if(String(S.player.rival)===String(i)){S.player.rival=null;S.player.rivalHype=false}delete S.player.h2h[String(i)]}});
+  if((x.age>=44&&Math.random()<.25)||(x.age>=30&&x.ovr<26&&Math.random()<.3)){ret.push(x.n);const np=x.g==='w'?genW(pick(['ENG','NED','GER','WAL','SCO','AUS','JPN','BEL']),rnd(16,22),rnd(22,40),false):genP(Math.random()<.55?S.player.nat:pick(NATW),rnd(10,15),rnd(12,30),false);for(const k in x)delete x[k];Object.assign(x,np,{id:i});if(String(S.player.rival)===String(i)){S.player.rival=null;S.player.rivalHype=false}delete S.player.h2h[String(i)]}});
  if(ret.length)news(`Karriereende: ${ret.slice(0,3).join(', ')}${ret.length>3?' und '+(ret.length-3)+' weitere. Neue Talente rücken nach':''}`);
  const ctTop=S.pl.filter(x=>!x.card&&x.age>=16).sort((a,b)=>b.ct-a.ct).slice(0,2),dvTop=S.pl.filter(x=>x.age>=16&&x.age<=23&&!x.card).sort((a,b)=>b.dv-a.dv).slice(0,2);
  const rk=S.pl.filter(x=>x.card||x.pts>0).sort((a,b)=>b.pts-a.pts),keep=new Set(rk.slice(0,118).map(x=>x.id)),lost=[];
@@ -705,7 +721,7 @@ function processSeason(){const p=S.player,msgs=[];goalsEval(msgs);p.hist.push({s
  if(p.card&&!msgs.some(m=>m.includes('Tour Card für')))0;if(p.card)news(`${p.name} startet als Profi in die Saison ${S.season}`);
  const sp=p.sponsor;if(sp){if(spDone(sp)){p.coins+=sp.bonus;msgs.push(`Sponsor ${sp.n}: Saisonziel erreicht, +${fmt(sp.bonus)} Münzen.`)}else msgs.push(`Sponsor ${sp.n}: Ziel verfehlt, der Vertrag endet.`);p.sponsor=null}
  if(p.coach){p.coach=false;msgs.push('Der Coach-Vertrag ist ausgelaufen.')}
- p.wmq=false;p.ct=0;p.dv=0;p.jt=0;p.pt=0;p.eu=0;p.ws=0;S.wq=[];S.titleS=[];S.pl.forEach(x=>{x.pt=0;x.eu=0;x.ws=0});p.pts=Math.round(p.pts*.6);aiSeason();plInit();genGoals();
+ p.wmq=false;p.ct=0;p.dv=0;p.jt=0;p.pt=0;p.eu=0;p.ws=0;p.af=0;p.wo=0;S.wwm=null;S.wq=[];S.titleS=[];S.pl.forEach(x=>{x.pt=0;x.eu=0;x.ws=0;x.af=0;x.wo=0});p.pts=Math.round(p.pts*.6);aiSeason();plInit();genGoals();
  news(`Saison ${S.season} beginnt.`);return msgs}
 function press(){const P=PRESS;if(!P)return hub();const q=P.pl===0?`Glückwunsch zum Sieg beim ${P.n}! Was bedeutet dir der Titel?`:P.pl===1?'Knapp verloren im Finale. Was nimmst du mit?':`Halbfinale beim ${P.n}. Wie zufrieden bist du?`;
  modal.innerHTML=`<div class="modal"><div class="box panel" style="text-align:left"><div class="small mut">Pressekonferenz</div><h2 style="margin:4px 0 12px;font-size:24px">„${esc(q)}“</h2><div class="stack">${PRESS_A.map((a,i)=>`<button class="btn" style="justify-content:flex-start;text-align:left;padding:10px 14px" data-a="pressA" data-v="${i}"><span><b>${a[0]}:</b> „${a[1]}“<br><span class="small mut">${a[2]}</span></span></button>`).join('')}</div></div></div>`}
@@ -950,7 +966,7 @@ function estAvg(o){return Math.round(o*1.02+4)}
 function getCond(e){S.cond=S.cond||{};if(!S.cond[e.id])S.cond[e.id]=Math.random()<.5?'normal':pick(['laut','warm','grell','kalt']);return S.cond[e.id]}
 function isHome(e){return e.lc!=null||CITYNAT[e.city]===S.player.nat||(['ENG'].includes(S.player.nat)&&!CITYNAT[e.city]&&e.lc==null)}
 function ensure(){if(!S)return;S=sanitizeSave(S);const p=S.player;S.pl.forEach(x=>{if(!x.sty){x.sty=pick(AIST)[0];x.fd=pick([20,16,8,10,12,18,4]);x.form=0}});
- const d={fresh:100,inj:0,hist:[],ssP:0,ssD:0,tw:0,bestRank:999,nine:0};for(const k in d)if(p[k]==null)p[k]=d[k];if(!S.club)initClubs();const pp=S.player;if(!pp.jersey)pp.jersey={c1:'#c8102e',c2:'#111111',pat:'uni',back:(pp.nick||pp.name.split(' ').slice(-1)[0]).slice(0,12),num:180};if(!pp.goals&&S.pl)genGoals();S.feed=S.feed||[];if(!S.PL)plInit();S.wq=S.wq||[];S.titleS=S.titleS||[];pp.look=pp.look||defLook();if(pp.jt==null)pp.jt=0;if(pp.qsS==null&&S.wk>1)pp.qsS=S.season}
+ const d={fresh:100,inj:0,hist:[],ssP:0,ssD:0,tw:0,bestRank:999,nine:0};for(const k in d)if(p[k]==null)p[k]=d[k];if(!S.club)initClubs();const pp=S.player;if(!pp.jersey)pp.jersey={c1:'#c8102e',c2:'#111111',pat:'uni',back:(pp.nick||pp.name.split(' ').slice(-1)[0]).slice(0,12),num:180};if(!pp.goals&&S.pl)genGoals();S.feed=S.feed||[];if(!S.PL)plInit();S.wq=S.wq||[];S.titleS=S.titleS||[];pp.look=pp.look||defLook();if(pp.jt==null)pp.jt=0;if(pp.qsS==null&&S.wk>1)pp.qsS=S.season;try{repairT()}catch(e){S.T=null}if(!pp.g)pp.g='m';if(pp.af==null)pp.af=0;if(pp.wo==null)pp.wo=0;if(!S.pl.some(x=>x.g==='w'))addWomen()}
 function scout(id){const x=who(id);if(!x)return'';const h=S.player.h2h[String(id)];const f=x.form||0;return `<div class="small" style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px">
  <span class="mut">Spielstil</span><b>${(AIST.find(a=>a[0]===x.sty)||['','Allrounder'])[1]}</b><span class="mut">Lieblingsdoppel</span><b>D${x.fd}</b><span class="mut">Form</span><b>${f>0?'▲'.repeat(f):f<0?'▼'.repeat(-f):'●'}</b><span class="mut">Erwarteter Schnitt</span><b>ca. ${estAvg(povr(id))}</b><span class="mut">Head-to-Head</span><b>${h?h.w+' : '+h.l:'erstes Duell'}</b></div>`}
 /* Spielmodi Cricket und Killer */
@@ -1111,10 +1127,10 @@ const GLASS=[['kein','Keine'],['rund','Rund'],['eckig','Eckig'],['sonne','Sonnen
 const SHIRT=['#c8102e','#12a150','#1f5fd6','#16181f','#f2f2f2','#e9c46a','#7b3fe4','#ff7a1a','#14b8c4','#e83e8c'];
 const LOOKK=[['skin','Hautton',SKIN.map((c,i)=>[i,c])],['hair','Frisur',HAIRS],['hc','Haarfarbe',HAIRC.map((c,i)=>[i,c])],['beard','Bart',BEARD],['glass','Brille',GLASS],['shirt','Shirt',SHIRT.map(c=>[c,c])]];
 function defLook(){return{skin:1,hair:'kurz',hc:1,beard:'kein',glass:'kein',shirt:'#c8102e'}}
-function lookFor(x){if(!x)return defLook();if(x.look)return x.look;const r=srand(x.id*31+7),a=x.age||30;
- const hair=a>=42&&r()<.35?'glatze':rp(r,['kurz','buzz','seite','kurz','lang','locken','buzz','seite','iro','dutt']);
+function lookFor(x){if(!x)return defLook();if(x.look)return x.look;const r=srand(x.id*31+7),a=x.age||30,w=x.g==='w';
+ const hair=w?rp(r,['lang','lang','dutt','locken','seite','kurz','lang']):a>=42&&r()<.35?'glatze':rp(r,['kurz','buzz','seite','kurz','lang','locken','buzz','seite','iro','dutt']);
  const hc=a>=52&&r()<.6?6+Math.floor(r()*2):Math.floor(r()*6);
- return{skin:Math.floor(r()*r()*6),hair,hc,beard:a<17?'kein':rp(r,['kein','kein','stoppel','voll','ziege','schnauz','stoppel']),glass:r()<.18?rp(r,['rund','eckig']):'kein',shirt:rp(r,SHIRT)}}
+ return{skin:Math.floor(r()*r()*6),hair,hc,beard:a<17||w?'kein':rp(r,['kein','kein','stoppel','voll','ziege','schnauz','stoppel']),glass:r()<.18?rp(r,['rund','eckig']):'kein',shirt:rp(r,SHIRT)}}
 function shade(h,f){const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);return'#'+((1<<24)|(Math.min(255,r)<<16)|(Math.min(255,g)<<8)|Math.min(255,b)).toString(16).slice(1)}
 function avatarSVG(L,w){L=L||defLook();const sk=SKIN[L.skin]||SKIN[1],hc=HAIRC[L.hc]||HAIRC[1],sh=L.shirt||'#c8102e',sd=shade(sk,.82);let back='',top='',bd='',gl='';
  if(L.hair==='lang')back=`<path d="M24 48 C20 16 80 16 76 48 L79 78 C70 74 67 64 67 54 L33 54 C33 64 30 74 21 78 Z" fill="${hc}"/>`;
@@ -1177,7 +1193,7 @@ function draftCard(){const age=Math.max(10,Math.min(60,+((document.getElementByI
 function draftSave(){const g=id=>document.getElementById(id);if(g('nm'))draft.name=g('nm').value;if(g('nk'))draft.nick=g('nk').value;if(g('ag'))draft.age=+g('ag').value||18;if(g('na'))draft.nat=g('na').value}
 function create(){LOOKT='draft';draft.look=draft.look||defLook();show(`${topBar('Neuer Spieler','home')}
  <form id="cf" class="stack"><div id="pv">${draftCard()}</div>
- <div class="panel stack"><h3>Spieler</h3><div><label for="nm">Name</label><input id="nm" maxlength="22" value="${esc(draft.name)}" placeholder="z. B. Christopher Schmidt" required></div>
+ <div class="panel stack"><h3>${draft.g==='w'?'Spielerin':'Spieler'}</h3><div class="chips" role="group" aria-label="Geschlecht"><button type="button" class="btn ${draft.g!=='w'?'pri':''}" data-a="gsel" data-v="m">Spieler</button><button type="button" class="btn ${draft.g==='w'?'pri':''}" data-a="gsel" data-v="w">Spielerin</button></div><div><label for="nm">Name</label><input id="nm" maxlength="22" value="${esc(draft.name)}" placeholder="z. B. Christopher Schmidt" required></div>
  <div class="row"><div><label for="nk">Spitzname</label><input id="nk" maxlength="18" value="${esc(draft.nick||'')}" placeholder="z. B. The Rocket"></div><div style="flex:.6"><label for="ag">Alter</label><input id="ag" type="number" inputmode="numeric" min="10" max="60" value="${draft.age}"></div></div>
  <div><label for="na">Nation</label><select id="na">${NATS.map(n=>`<option ${n===draft.nat?'selected':''}>${n}</option>`).join('')}</select></div></div>
  <div class="panel"><h3>Aussehen</h3><div id="lk">${lookChips(draft.look)}</div></div>
@@ -1186,7 +1202,7 @@ function create(){LOOKT='draft';draft.look=draft.look||defLook();show(`${topBar(
  <button class="btn pri">Karriere starten</button></form>`);
  const f=document.getElementById('cf');f.addEventListener('input',()=>{draftSave();document.getElementById('pv').innerHTML=draftCard()});
  f.onsubmit=e=>{e.preventDefault();draftSave();const name=document.getElementById('nm').value.trim()||'Spieler';const age=Math.max(10,Math.min(60,parseInt(document.getElementById('ag').value)||18));const st={};const base=age<16?Math.max(22,28+(age-12)*2):35;STATS.forEach(([k])=>st[k]=base);const sb=STYLES.find(s=>s.id===draft.style).b;for(const k in sb)st[k]+=sb[k];const nat=document.getElementById('na').value;
-  S={v:4,player:{look:{...draft.look},name,nick:document.getElementById('nk').value.trim(),nat,style:draft.style,age,st,boost:{},tp:{},sp:0,xp:0,lvl:1,coins:60,pts:0,ct:0,dv:0,jt:0,card:0,fans:0,form:0,h2h:{},rival:null,tb:{},trainLeft:2,set:'b18',sets:['b18'],fl:'#e9c46a',fls:['#e9c46a'],titles:[],wins:0,losses:0,best:0,t180:0,hiCo:0},pl:genWorld(nat),season:1,wk:1,done:[],res:{},T:null,news:[]};
+  S={v:4,player:{look:{...draft.look},g:draft.g||'m',af:0,wo:0,name,nick:document.getElementById('nk').value.trim(),nat,style:draft.style,age,st,boost:{},tp:{},sp:0,xp:0,lvl:1,coins:60,pts:0,ct:0,dv:0,jt:0,card:0,fans:0,form:0,h2h:{},rival:null,tb:{},trainLeft:2,set:'b18',sets:['b18'],fl:'#e9c46a',fls:['#e9c46a'],titles:[],wins:0,losses:0,best:0,t180:0,hiCo:0},pl:genWorld(nat),season:1,wk:1,done:[],res:{},T:null,news:[]};
   news(age<16?'Karriere gestartet. Junior-Tour, Akademie und Jugend-Cups warten. Mit 16 öffnen sich Development Tour und Q-School.':'Karriere gestartet. Erstes Ziel: die Tour Card. Die Q-School ist in Woche 1.');S.no1=ranking()[0].n;ensure();plInit();save();hub()}}
 
 /* Junior-Tour */
@@ -1348,7 +1364,7 @@ function fcHead(){const p=S.player;return `<div class="fch"><div class="fcav" da
  <div class="fct" role="tablist">${TABS.map(([k,n])=>`<button role="tab" aria-selected="${TAB===k}" data-a="tab" data-v="${k}" class="${TAB===k?'on':''}">${n}</button>`).join('')}</div>`}
 function fcPage(){const p=S.player;let h='';
  if(TAB==='home'){const mine=S.T?[CE()]:myWeek(S.wk),nxt=[];for(let w=S.wk+1;w<=WEEKS&&nxt.length<3;w++)myWeek(w).forEach(e=>nxt.length<3&&nxt.push(e));const rv=p.rival!=null?p.h2h[String(p.rival)]||{w:0,l:0}:null;
-  h+=`<div class="ft hero s2"><i class="fl">${S.T?'Läuft gerade':'Diese Woche · Woche '+S.wk}</i><div class="heroin">${S.T?evRow(CE(),false)+`<button class="btn pri" style="margin-top:8px" data-a="bracket">${S.T.q?'Zur Qualifikation':'Zum Turnierbaum'}</button>`:mine.length?mine.map(e=>evRow(e,true)).join(''):'<div class="small mut" style="padding:6px 2px">Diese Woche ist kein Turnier für dich dabei. Zeit für Training.</div>'}
+  h+=`<div class="ft hero s2"><i class="fl">${S.T?'Läuft gerade':'Diese Woche · Woche '+S.wk}</i><div class="heroin">${S.T?evRow(CE(),false)+`<button class="btn pri" style="margin-top:8px" data-a="bracket">${S.T.q?'Zur Qualifikation':'Zum Turnierbaum'}</button>`+(S.T.out?`<button class="btn" style="margin-top:8px" data-a="skipT">Turnier überspringen</button>`:''):mine.length?mine.map(e=>evRow(e,true)).join(''):'<div class="small mut" style="padding:6px 2px">Diese Woche ist kein Turnier für dich dabei. Zeit für Training.</div>'}
    ${S.T?'':`<button class="btn wkbtn" data-a="week">${art('skip')}<span>${mine.length?'Woche auslassen':'Nächste Woche'}</span></button>`}</div></div>`;
   if(!S.T&&S.PL&&S.PL.ids.includes('ME')&&plWeek(S.wk)&&!S.PL.done[S.wk])h+=`<div class="ft c4 s2 static"><i class="fl">Liga der Besten · Abend ${S.wk-2} von 12</i><div class="ftx"><b>Liga-Abend in ${PLC[S.wk-3]}</b><span>Du bist Platz ${plRankMe()} der Tabelle</span></div><div class="row" style="margin-top:8px;position:relative;z-index:2"><button class="btn pri" data-a="plnGo">Antreten</button><button class="btn" data-a="plnSim">Simulieren</button></div></div>`;
   h+=tile({a:'meCard',c:'c3',tall:1,lab:'Mein Spieler',t:'OVR '+ovr(eff()),s:'Lv '+p.lvl+(p.sp?' · '+p.sp+' Skillpunkte':''),html:`<div class="cmini tcard">${cardHTML()}</div>`});
@@ -1409,7 +1425,7 @@ async function impPaste(){try{const t=await navigator.clipboard.readText();const
 function impUndo(){try{const s=localStorage.getItem(BKEY);if(!s)return;const o=JSON.parse(s);impPreview(o)}catch(e){toast('Keine Sicherung gefunden')}}
 
 /* ===== v11: Stabilität — Fehlerprotokoll, Bildschirm wach halten, sichere Speicherung ===== */
-const VERSION='11',ERRK='darts_errlog',ABKEY='darts_karriere_auto',BRKEY='darts_karriere_defekt';
+const VERSION='12',ERRK='darts_errlog',ABKEY='darts_karriere_auto',BRKEY='darts_karriere_defekt';
 let errT=0;
 function errLog(m){try{const a=JSON.parse(localStorage.getItem(ERRK)||'[]');a.unshift(new Date().toLocaleString('de-DE')+' · v'+VERSION+' · '+String(m).slice(0,300));localStorage.setItem(ERRK,JSON.stringify(a.slice(0,15)))}catch(e){}}
 window.addEventListener('error',e=>{errLog((e.message||'Fehler')+(e.lineno?' (Zeile '+e.lineno+')':''));if(Date.now()-errT>6000){errT=Date.now();try{toast('Ein Fehler ist aufgetreten. Details unter Einstellungen → Fehlerprotokoll.')}catch(x){}}});
@@ -1444,6 +1460,59 @@ function sanitizeSave(o,k,d){d=d||0;if(d>12)return null;if(o==null)return o;cons
 async function unzipCapped(u8,max){const rd=new Blob([u8]).stream().pipeThrough(new DecompressionStream('deflate')).getReader(),dec=new TextDecoder();let out='',n=0;
  for(;;){const{done,value}=await rd.read();if(done)break;n+=value.length;if(n>max){try{rd.cancel()}catch(e){}throw new Error('Der Spielstand ist unrealistisch groß und wurde aus Sicherheitsgründen abgelehnt.')}out+=dec.decode(value,{stream:true})}return out+dec.decode()}
 
+/* ===== v12: Partner-Touren, Frauen-Turniere, Spielerinnen ===== */
+const REG={
+ dach:{n:'Super-Liga DACH',nat:['GER','AUT','SUI'],c:['Hildesheim','Wien','Zürich','München','Köln','Graz'],ws:1},
+ nord:{n:'Nordic & Baltic Tour',nat:['DEN','SWE','NOR','FIN','LTU','LAT'],c:['Kopenhagen','Stockholm','Oslo','Helsinki','Riga','Vilnius'],ws:1},
+ ost:{n:'Osteuropa-Tour',nat:['POL','CZE','SVK','HUN','ROU','CRO'],c:['Warschau','Prag','Bratislava','Budapest','Bukarest','Zagreb'],ws:1},
+ west:{n:'Westeuropa-Tour',nat:['NED','BEL','FRA','ESP','POR','ITA','GIB'],c:['Amsterdam','Brüssel','Paris','Madrid','Lissabon','Mailand'],ws:1},
+ asia:{n:'Asien-Tour',nat:['JPN','PHI','HKG','IND','KOR','CHN','SGP','THA'],c:['Tokio','Manila','Hongkong','Seoul','Kuala Lumpur','Bangkok'],ws:3},
+ na:{n:'Nordamerika-Tour',nat:['USA','CAN'],c:['Las Vegas','Toronto','Chicago','Vancouver','Philadelphia','Calgary'],ws:2},
+ aus:{n:'Australien-Tour',nat:['AUS'],c:['Sydney','Melbourne','Brisbane','Perth','Adelaide','Hobart'],ws:1},
+ nzl:{n:'Neuseeland-Tour',nat:['NZL'],c:['Auckland','Wellington','Christchurch','Hamilton','Dunedin','Napier'],ws:1},
+ afr:{n:'Afrika-Tour',nat:['RSA'],c:['Johannesburg','Kapstadt','Durban','Pretoria','Gqeberha','Bloemfontein'],ws:1},
+ lat:{n:'Lateinamerika-Tour',nat:['BRA','ARG','MEX'],c:['São Paulo','Buenos Aires','Mexiko-Stadt','Rio de Janeiro','Córdoba','Guadalajara'],ws:1}};
+function regOf(nat){for(const k in REG)if(REG[k].nat.includes(nat))return k;return null}
+function myReg(){return S?regOf(S.player.nat):null}
+function inReg(x){const r=REG[myReg()];return!!r&&r.nat.includes(x.nat)}
+function afIds(){return ordBy('af',x=>inReg(x)&&x.age>=16,!!myReg()&&S.player.age>=16)}
+function afRank(){return afIds().indexOf('ME')+1}
+function woIds(){return ordBy('wo',x=>x.g==='w'&&x.age>=16,S.player.g==='w'&&S.player.age>=16)}
+function woRank(){return woIds().indexOf('ME')+1}
+/* WM-Startplätze aus Partner-Touren und Frauen-Turnieren */
+function wmExtra(){const out=[],s=new Set(),me=S.player,put=(list,n,ok)=>{let c=0;for(const id of list){if(c>=n)break;if(s.has(id))continue;const x=id==='ME'?null:S.pl[id];if(ok&&!ok(id,x))continue;s.add(id);out.push(id);c++}};
+ if(S.wwm!=null&&S.wwm!==undefined)put([S.wwm],1);
+ put(woIds(),2);
+ const nc=(id,x)=>id==='ME'?!me.card:!x.card;
+ for(const k in REG){const r=REG[k];if(k===myReg())put(afIds(),r.ws,nc);else put(S.pl.filter(x=>r.nat.includes(x.nat)&&!x.card&&x.age>=16).sort((a,b)=>b.ovr-a.ovr).map(x=>x.id),r.ws)}
+ return out}
+function wmExtraWhy(){if(S.wwm==='ME')return 'Als Siegerin des Frauen-Matchplay';if(woIds().slice(0,2).includes('ME'))return 'Über die Frauen-Rangliste';if(myReg())return 'Über die '+REG[myReg()].n;return ''}
+/* Spielerinnen */
+const NPW={DE:['Anna','Lena','Sarah','Julia','Laura','Lisa','Jana','Nina','Katrin','Sabine','Melanie','Vanessa','Jessica','Tanja','Sandra','Nicole','Steffi','Svenja','Leonie','Emma','Mia','Lea','Hannah','Michelle'],
+ EN:['Emma','Sophie','Chloe','Lauren','Jade','Kelly','Gemma','Amy','Lucy','Hannah','Rachel','Zoe','Kirsty','Leanne','Stacey','Megan','Bethany','Holly','Ellie','Katie','Shannon','Danielle','Jodie','Abbie'],
+ NL:['Anouk','Fleur','Sanne','Lotte','Femke','Esther','Marieke','Ilse','Noor','Eva','Lieke','Roos','Iris','Kim','Mandy','Joyce','Bianca','Wendy'],
+ PL:['Anna','Kasia','Magda','Ewa','Agnieszka','Monika','Zuzana','Petra','Lucie','Tereza','Eszter','Réka','Ioana','Ivana'],
+ NORD:['Kirsi','Emma','Ida','Sofia','Maja','Elin','Linnea','Freja','Sanna','Aino','Laura','Ingrid','Liv','Tuva'],
+ ES:['Lucía','María','Paula','Sofía','Carla','Ana','Julia','Inês','Marta','Camila','Valentina','Sara'],
+ JP:['Mikuru','Yuki','Aya','Haruka','Sakura','Rina','Mai','Nanami','Kana','Misaki','Emi','Natsumi'],
+ AS:['Paula','Grace','Lovely','Jia','Mei','Hana','Siti','Ploy','Ji-woo','Anya','Lin','Kim']};
+function femSur(sn,nat){if(grp(nat)==='PL'){if(/ski$/.test(sn))return sn.replace(/ski$/,'ska');if(/cki$/.test(sn))return sn.replace(/cki$/,'cka');if(/ny$/.test(sn))return sn.replace(/ny$/,'ná')}return sn}
+function genW(nat,age,ovr,card){const x=genP(nat,age,ovr,card),g=grp(nat),sur=(NP[g]||NP.EN)[1];x.n=pick(NPW[g]||NPW.EN)+' '+femSur(pick(sur),nat);x.g='w';x.wo=0;return x}
+function addWomen(){const nats=['ENG','ENG','ENG','ENG','ENG','ENG','NED','NED','NED','NED','GER','GER','GER','WAL','SCO','BEL','NIR','IRL','AUS','AUS','NZL','JPN','JPN','PHI','USA','CAN','SWE','FIN','DEN','POL','CZE','HUN','ESP'];
+ const add=(age,ovr,card)=>{const x=genW(pick(nats),age,ovr,card);x.id=S.pl.length;S.pl.push(x)};
+ add(rnd(20,30),rnd(74,79),true);add(rnd(28,42),rnd(70,75),true);
+ for(let i=0;i<10;i++)add(rnd(18,50),rnd(55,69),false);for(let i=0;i<36;i++)add(rnd(16,55),rnd(26,54),false)}
+function defLookG(g){const L=defLook();if(g==='w'){L.hair='lang';L.beard='kein'}return L}
+
+/* ===== v12: Reparatur beschädigter Turnierbäume ===== */
+function validId(id){if(id==='ME')return true;if(id==null)return false;if(S.T&&S.T.teams&&S.T.teams[id])return true;const n=+id;return Number.isInteger(n)&&!!S.pl[n]}
+function repairT(){const T=S&&S.T;if(!T)return false;let fixed=false;
+ if(!EVM[T.eid]){S.T=null;return true}
+ (T.rounds||[]).forEach(rd=>rd.forEach(m=>{const va=validId(m.a),vb=validId(m.b);if(va&&vb)return;fixed=true;if(va||vb){m.w=va?m.a:m.b;m.sc=va?'1:0':'0:1'}else{m.w=null;m.dead=1}}));
+ if(T.stages)T.stages=T.stages.map(a=>a.filter(validId));
+ return fixed}
+function safeT(fn){return(...a)=>{try{return fn(...a)}catch(er){errLog('Turnier: '+(er&&er.message));const T=S.T;if(T){try{if(!S.done.includes(T.eid))S.done.push(T.eid)}catch(e){}S.T=null;save()}modal.innerHTML='';popup('<h2>Turnier beendet</h2><p class="small">Der Turnierbaum war beschädigt und konnte nicht weitergespielt werden. Das Turnier wurde ohne Wertung beendet, deine Karriere läuft normal weiter.</p>','hub')}}}
+
 const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hlShow:()=>{HLI=0;hlView()},hlNext:()=>{HLI=(HLI+1)%LASTPOP.hl.length;hlView()},hlBack:()=>showResult(LASTPOP.html,LASTPOP.next,LASTPOP.hl),storyA:i=>storyApply(i),
  coachHire:id=>{const p=S.player,c=COACHES.find(x=>x.id===id);p.trainer=id;news(`${p.name} arbeitet jetzt mit ${c.n} (${c.r})`);feed(`Neuer Coach im Team: ${c.n}. Let’s go!`,handle(p.name));save();coachS()},coachFire:()=>{S.player.trainer=null;save();coachS()},
  gear:v=>{const[k,id]=v.split('|'),p=S.player,L=k==='shaft'?SHAFTS:FSHAPE,ok=k==='shaft'?'shafts':'fshapes',s=L.find(x=>x.id===id);p[ok]=p[ok]||[L[0].id];if(!p[ok].includes(id)){if(p.coins<s.p)return;p.coins-=s.p;p[ok].push(id);toast(s.n+' gekauft')}p[k]=id;save();shop()},
@@ -1454,7 +1523,7 @@ const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hl
  setg:v=>{const[k,x]=v.split('|');if(k==='diff')SETG.diff=x;if(k==='len')SETG.len=x;if(k==='off')SETG.off=+x;if(k==='lefty')SETG.lefty=x==='1';if(k==='vpitch')SETG.vpitch=+x;if(k==='caller'){CALLER=x==='1';try{localStorage.setItem('darts_caller',x)}catch(e){}}saveSet();settings()},
  copyExp:()=>{const t=document.getElementById('exp');try{navigator.clipboard.writeText(t.value).then(()=>toast('Code kopiert'),()=>{t.select();toast('Bitte markierten Code kopieren')})}catch(e){t.select();toast('Bitte markierten Code kopieren')}},
  doImp:()=>{const v=document.getElementById('imp').value.trim();try{const o=JSON.parse(decodeURIComponent(escape(atob(v))));if(o.v!==4||!o.player)throw 0;S=o;ensure();save();toast('Spielstand geladen');hub()}catch(e){toast('Der Code ist ungültig')}},
- walked,wset:v=>{wsave();const[k,x]=v.split('|');S.player.walk[k]=x;save();walked()},wprev:()=>{wsave();walkOn({n:'Dein Gegner',nick:'Probe'},walked,1)},caller:()=>{CALLER=!CALLER;try{localStorage.setItem('darts_caller',CALLER?'1':'0')}catch(e){}const b=document.getElementById('cbtn');if(b)b.textContent='Caller: '+(CALLER?'an':'aus');if(CALLER)call('Caller on')},home,create,hub,help,upgrade,shop,rank,career,quick,enter:id=>enter(id),bracket,playT,simT,finishT:()=>finishT(),week,cal,newsS,press,pressA,trainMenu,sponsors,job:()=>{const p=S.player;if(p.trainLeft<1)return;p.trainLeft--;const g=p.age<16?40:120;p.coins+=g;save();toast(`+${g} Münzen (1 Trainingseinheit weniger)`);hub()},serv:id=>{const p=S.player,s=SERV.find(x=>x.id===id);if(p.coins<s.p)return;p.coins-=s.p;if(id==='coach')p.coach=true;if(id==='mental')p.form=Math.min(3,(p.form||0)+2);if(id==='camp')p.trainLeft+=3;if(id==='physio'){p.physio=3;p.fresh=Math.min(100,p.fresh+40)}if(id==='manager')p.manager=true;if(id==='pub'){p.pub=true;news(`${p.name} eröffnet eine eigene Darts-Kneipe`)}if(id==='academy'){p.academy=true;p.trainLeft++;news(`${p.name} gründet eine Darts-Akademie`)}if(id==='board'){p.board=true;p.trainLeft++}save();toast(s.n+' gebucht');shop()},flight:c=>{const p=S.player,f=FLIGHTS.find(x=>x[0]===c);if(!p.fls.includes(c)){if(p.coins<f[2])return;p.coins-=f[2];p.fls.push(c)}p.fl=c;save();shop()},tr:k=>startTrain(k),rtab:v=>{rtab=v;rank()},sign:i=>{const s=SPONS[+i];if(!S.player.sponsor){S.player.sponsor={...s,pay:Math.round(s.pay*(S.player.manager?1.3:1)),prog:0};news(`Neuer Sponsor: ${s.n}`);save();toast('Vertrag mit '+s.n)}sponsors()},pvp:()=>{const a=(document.getElementById('p1').value.trim()||'Spieler 1'),b=(document.getElementById('p2').value.trim()||'Spieler 2');startMatch({n:b},{bo:qmode==='cricket'||qmode==='killer'?1:qb,din:qdin,p1:a,p2:b,mode:qmode==='cricket'||qmode==='killer'?qmode:'x01',start:qmode==='301'?301:501},{type:'pvp'})},
+ walked,wset:v=>{wsave();const[k,x]=v.split('|');S.player.walk[k]=x;save();walked()},wprev:()=>{wsave();walkOn({n:'Dein Gegner',nick:'Probe'},walked,1)},caller:()=>{CALLER=!CALLER;try{localStorage.setItem('darts_caller',CALLER?'1':'0')}catch(e){}const b=document.getElementById('cbtn');if(b)b.textContent='Caller: '+(CALLER?'an':'aus');if(CALLER)call('Caller on')},home,create,hub,help,upgrade,shop,rank,career,quick,enter:id=>enter(id),bracket:safeT(()=>{repairT();if(!S.T)return hub();bracket()}),playT:safeT(playT),simT:safeT(()=>{repairT();simT()}),finishT:safeT(()=>{repairT();finishT()}),week,cal,newsS,press,pressA,trainMenu,sponsors,job:()=>{const p=S.player;if(p.trainLeft<1)return;p.trainLeft--;const g=p.age<16?40:120;p.coins+=g;save();toast(`+${g} Münzen (1 Trainingseinheit weniger)`);hub()},serv:id=>{const p=S.player,s=SERV.find(x=>x.id===id);if(p.coins<s.p)return;p.coins-=s.p;if(id==='coach')p.coach=true;if(id==='mental')p.form=Math.min(3,(p.form||0)+2);if(id==='camp')p.trainLeft+=3;if(id==='physio'){p.physio=3;p.fresh=Math.min(100,p.fresh+40)}if(id==='manager')p.manager=true;if(id==='pub'){p.pub=true;news(`${p.name} eröffnet eine eigene Darts-Kneipe`)}if(id==='academy'){p.academy=true;p.trainLeft++;news(`${p.name} gründet eine Darts-Akademie`)}if(id==='board'){p.board=true;p.trainLeft++}save();toast(s.n+' gebucht');shop()},flight:c=>{const p=S.player,f=FLIGHTS.find(x=>x[0]===c);if(!p.fls.includes(c)){if(p.coins<f[2])return;p.coins-=f[2];p.fls.push(c)}p.fl=c;save();shop()},tr:k=>startTrain(k),rtab:v=>{rtab=v;rank()},sign:i=>{const s=SPONS[+i];if(!S.player.sponsor){S.player.sponsor={...s,pay:Math.round(s.pay*(S.player.manager?1.3:1)),prog:0};news(`Neuer Sponsor: ${s.n}`);save();toast('Vertrag mit '+s.n)}sponsors()},pvp:()=>{const a=(document.getElementById('p1').value.trim()||'Spieler 1'),b=(document.getElementById('p2').value.trim()||'Spieler 2');startMatch({n:b},{bo:qmode==='cricket'||qmode==='killer'?1:qb,din:qdin,p1:a,p2:b,mode:qmode==='cricket'||qmode==='killer'?qmode:'x01',start:qmode==='301'?301:501},{type:'pvp'})},
  style:v=>{draftSave();draft.style=v;create()},
  up:k=>{const p=S.player,c=p.st[k]>=80?2:1;if(p.sp>=c&&p.st[k]<99){p.sp-=c;p.st[k]++;save()}upgrade()},
  buy:id=>{const s=SETS.find(x=>x.id===id),p=S.player;if(p.coins>=s.p){p.coins-=s.p;p.sets.push(id);p.set=id;save();toast(s.n+' gekauft')}shop()},
@@ -1465,7 +1534,7 @@ const ACT={social,coachS,jersey,album,route:v=>{if(MATCH){MATCH.ri=+v;hud()}},hl
  ren:id=>{const r=S.pl[+id];modal.innerHTML=`<div class="modal"><div class="box panel"><form id="rf" class="stack" style="text-align:left"><h2>Spieler umbenennen</h2><div><label for="rn">Name</label><input id="rn" maxlength="24" value="${esc(r.n)}"></div><div><label for="rk">Spitzname</label><input id="rk" maxlength="20" value="${esc(r.nick)}"></div><div><label for="ro">Nation</label><input id="ro" maxlength="3" value="${esc(r.nat)}"></div><div class="row"><button type="button" class="btn" data-a="closeM" data-v="">Abbrechen</button><button class="btn pri">Speichern</button></div></form></div></div>`;
   document.getElementById('rf').onsubmit=e=>{e.preventDefault();r.n=document.getElementById('rn').value.trim()||r.n;r.nick=document.getElementById('rk').value.trim();r.nat=(document.getElementById('ro').value.trim()||r.nat).toUpperCase();save();modal.innerHTML='';rank()}},
  closeM:v=>{modal.innerHTML='';if(v&&ACT[v])ACT[v]()}};
-Object.assign(ACT,{tab:v=>{TAB=v;fcPage()},vtest:()=>{const c=CALLER;CALLER=true;call([['Game on!',.85],['One hundred',.86],['and eighty!',.7,1.08]]);CALLER=c},expFile:()=>expFile(false),expShare:()=>expFile(true),expCode,impPaste,impGo,impUndo,impAuto,errCopy:()=>{let a=[];try{a=JSON.parse(localStorage.getItem(ERRK)||'[]')}catch(e){}navigator.clipboard&&navigator.clipboard.writeText(a.join('\n')).then(()=>toast('Protokoll kopiert'),()=>toast('Kopieren nicht möglich'))},errClear:()=>{try{localStorage.removeItem(ERRK)}catch(e){}settings()},doImp:()=>impText((document.getElementById('imp')||{}).value),lookEd,acad,look:lookSet,legGo,pcard:id=>pcardModal(id),meCard:()=>pcardModal('ME'),acadJoin:()=>{const p=S.player;if(p.coins<200)return;p.coins-=200;p.jacad=1;news(`${p.name} wird Schüler der Nachwuchs-Akademie`);save();toast('Willkommen in der Akademie');acad()}});
+Object.assign(ACT,{skipT:safeT(()=>{repairT();if(!S.T)return hub();S.T.out=true;if(S.T.q){delete S.T.q}runAll();finishT()}),gsel:v=>{draftSave();const was=draft.g;draft.g=v;if(was!==v){const L=draft.look||defLook();if(v==='w'){L.beard='kein';if(['kurz','buzz','glatze','iro'].includes(L.hair))L.hair='lang'}draft.look=L}create()},tab:v=>{TAB=v;fcPage()},vtest:()=>{const c=CALLER;CALLER=true;call([['Game on!',.85],['One hundred',.86],['and eighty!',.7,1.08]]);CALLER=c},expFile:()=>expFile(false),expShare:()=>expFile(true),expCode,impPaste,impGo,impUndo,impAuto,errCopy:()=>{let a=[];try{a=JSON.parse(localStorage.getItem(ERRK)||'[]')}catch(e){}navigator.clipboard&&navigator.clipboard.writeText(a.join('\n')).then(()=>toast('Protokoll kopiert'),()=>toast('Kopieren nicht möglich'))},errClear:()=>{try{localStorage.removeItem(ERRK)}catch(e){}settings()},doImp:()=>impText((document.getElementById('imp')||{}).value),lookEd,acad,look:lookSet,legGo,pcard:id=>pcardModal(id),meCard:()=>pcardModal('ME'),acadJoin:()=>{const p=S.player;if(p.coins<200)return;p.coins-=200;p.jacad=1;news(`${p.name} wird Schüler der Nachwuchs-Akademie`);save();toast('Willkommen in der Akademie');acad()}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=ACT[b.dataset.a];if(f){e.preventDefault();f(b.dataset.v)}});
 window.addEventListener('resize',()=>{if(MATCH&&cv)sizeBoard()});try{document.fonts.ready.then(()=>{if(MATCH&&cv)sizeBoard()})}catch(e){}
 load();ensure();home();

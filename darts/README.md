@@ -137,3 +137,13 @@ darts/
 - Fehlerprotokoll in den Einstellungen, automatische Sicherung zu jedem Saisonstart, Schutz bei beschädigtem Spielstand
 - Bildschirm bleibt während eines Matches an, Speichern beim Verlassen der App
 - Ungenutzter Code und tote CSS-Regeln entfernt
+
+## Neu in Version 12
+
+- Euro Tour mit allen 15 Stationen der Saison 2026 (Krakau bis Maastricht)
+- 17 Floor-Events (die Hälfte der 34 Players Championships) in Wigan, Leicester, Hildesheim, Milton Keynes und Rosmalen
+- World Series mit den 6 echten Stationen 2026: Bahrain, Saudi-Arabien, Kopenhagen, New York, Auckland, Wollongong, dazu die Finals in Amsterdam
+- Spielerinnen: Frauen-Serie mit 8 Events, eigene Frauen-Rangliste und Frauen-Matchplay (Top 8). Siegerin: Grand Slam und WM, Top 2 der Rangliste: WM
+- Partner-Touren mit WM-Startplatz für 10 Regionen (DACH, Nordic & Baltic, Osteuropa, Westeuropa, Asien, Nordamerika, Australien, Neuseeland, Afrika, Lateinamerika)
+- Fehler behoben: Beschädigte Turnierbäume werden automatisch repariert. Neuer Knopf „Turnier überspringen“, wenn du nicht (mehr) im Turnier bist
+- Bestehende Karrieren laufen weiter, ein laufendes Turnier wird normal zu Ende gespielt
