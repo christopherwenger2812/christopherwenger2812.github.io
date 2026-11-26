@@ -193,3 +193,7 @@ darts/
 - Turniere an echten Tagen mit Wochentag und Datum (Floor-Events dienstags, Liga donnerstags, WM Mitte Dezember bis Anfang Januar)
 - Saisonziele passend zu OVR und Status (Jugend, Amateur, Profi, Frauen)
 - Realistischere Avatare: Schattierung, Augen mit Iris, Nase, Lippen, Polo-Shirt, neue Frisuren (Tolle, Zopf), Gesichtsform und Augenfarbe wählbar
+
+## Neu in Version 17.1
+- Zielen fairer: Nervenmalus nur noch beim echten Finish-Doppel, Ermüdung schwächer, perfektes Timing streut deutlich weniger
+- Mit Maus oder Stift zielt das Fadenkreuz direkt auf den Klickpunkt (Versatz nur noch bei Touch)

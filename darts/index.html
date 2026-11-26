@@ -885,17 +885,18 @@ function sizeBoard(){const r=cv.getBoundingClientRect();DPR=Math.min(3,window.de
  for(let i=0;i<20;i++){const a=(i*18-9-90)*Math.PI/180;g.beginPath();g.moveTo(15.9*Math.cos(a),15.9*Math.sin(a));g.lineTo(170*Math.cos(a),170*Math.sin(a));g.stroke()}
  g.fillStyle='#fff';g.font='600 17px Oswald, sans-serif';g.textAlign='center';g.textBaseline='middle';for(let i=0;i<20;i++){const a=(i*18-90)*Math.PI/180;g.fillText(ORDER[i],186*Math.cos(a),186*Math.sin(a))}
  const sp=g.createRadialGradient(-50,-70,0,-50,-70,240);sp.addColorStop(0,'rgba(255,240,200,.16)');sp.addColorStop(1,'rgba(0,0,0,.25)');g.fillStyle=sp;g.beginPath();g.arc(0,0,200,0,7);g.fill()}
+/* Mit Maus/Stift zielt man direkt, nur mit dem Finger sitzt das Fadenkreuz darüber */function aOff(e){return e&&e.pointerType&&e.pointerType!=='touch'?0:SETG.off}
 function toMM(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*400-200,(e.clientY-r.top)/r.height*400-200]}
 function canThrow(){return MATCH&&MATCH.live&&!MATCH.busy&&!MATCH.fly&&thrower().human&&MATCH.turn&&MATCH.turn.d.length<3}
-function pd(e){if(!canThrow())return;e.preventDefault();try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}const[x,y]=toMM(e);if(SETG.ctrl==='swipe'){swipeStart(e,x,y);return}MATCH.aim={fx:x,fy:y-SETG.off,x,y:y-SETG.off,t0:performance.now(),ph:Math.random()*100}}
-function pm(e){if(!MATCH||!MATCH.aim)return;if(MATCH.aim.swipe){swipeMove(e);return}const[x,y]=toMM(e);MATCH.aim.fx=x;MATCH.aim.fy=y-SETG.off}
+function pd(e){if(!canThrow())return;e.preventDefault();try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}const[x,y]=toMM(e);if(SETG.ctrl==='swipe'){swipeStart(e,x,y);return}const o=aOff(e);MATCH.aim={fx:x,fy:y-o,x,y:y-o,off:o,t0:performance.now(),ph:Math.random()*100}}
+function pm(e){if(!MATCH||!MATCH.aim)return;if(MATCH.aim.swipe){swipeMove(e);return}const[x,y]=toMM(e);MATCH.aim.fx=x;MATCH.aim.fy=y-(MATCH.aim.off??SETG.off)}
 function aimParams(){const M=MATCH,c=M.cur,st=M.p[c].st,rem=M.rem[c];let f=1;if(S&&c===0&&M.ctx.type!=='pvp')f*=1-(S.player.form||0)*.05;
- const onFin=rem<=170&&checkout(rem,3-M.turn.d.length),decider=M.legs[0]===M.ltw-1&&M.legs[1]===M.ltw-1;
- if(onFin)f*=1+(100-st.ner)/140;if(decider)f*=1+(100-st.ner)/200;if(!(S&&c===0&&S.player.physio&&M.ctx.type==='t'))f*=1+Math.min(.3,M.st[c].darts*(100-st.aus)*0.0001);
+ /* Nerven nur beim echten Doppel-Wurf aufs Finish, Ermüdung gedeckelt (v17.1) */const onFin=rem<=50&&(rem%2===0||rem===50),decider=M.legs[0]===M.ltw-1&&M.legs[1]===M.ltw-1;
+ if(onFin)f*=1+(100-st.ner)/450;if(decider)f*=1+(100-st.ner)/700;if(!(S&&c===0&&S.player.physio&&M.ctx.type==='t'))f*=1+Math.min(.1,M.st[c].darts*(100-st.aus)*0.00003);
  let P=0.75+st.kon/100*0.75,rmn=1,rmx=1;if(c===0&&M.ctx.type!=='pvp'){f*=DIFF[SETG.diff][1];if(M.home)f*=(S&&(S.player.locT||0)>=3)?.93:.96;if(M.fanOpp)f*=1.03;if(S&&M.ctx.type==='t'){const fr=S.player.fresh;if(fr<15)f*=1.15;else if(fr<30)f*=1.08}
   if(M.cond==='laut')P*=.88;if(M.cond==='grell')rmn=1.12;if(M.cond==='kalt')rmx=1.06;if(M.cond==='warm')f*=1+Math.min(.12,M.st[0].darts*.0012)}
  if(M.flow&&M.flow[c]>=4)f*=.92;if(M.nerv&&M.nerv[c]){f*=1.08}
- /* Streuung wie bei KI-Spielern mit gleichem Wert: perfektes Timing 0,8-fach, schlechtes 1,6-fach */const bs=aiSigma((st.pra+st.kon)/2)/0.42,rMin=0.8*bs*f*rmn,rMax=1.6*bs*f*rmx;return{rMin,rMax,P}}
+ /* Streuung wie bei KI-Spielern mit gleichem Wert: perfektes Timing 0,62-fach, schlechtes 1,7-fach */const bs=aiSigma((st.pra+st.kon)/2)/0.42,rMin=0.62*bs*f*rmn,rMax=1.7*bs*f*rmx;return{rMin,rMax,P}}
 function ringNow(){const a=MATCH.aim,{rMin,rMax,P}=aimParams(),t=(performance.now()-a.t0)/1000;let r=rMin+(rMax-rMin)*(0.5+0.5*Math.cos(2*Math.PI*t/P));if(t>3)r+=(t-3)*5;return{r,rMin,rMax}}
 function aimPt(){const a=MATCH.aim,st=MATCH.p[MATCH.cur].st,t=performance.now()/1000+a.ph,A=0.5+(100-st.pra)*0.045;a.x+=(a.fx-a.x)*.3;a.y+=(a.fy-a.y)*.3;return[a.x+A*Math.sin(t*2.1),a.y+A*Math.cos(t*1.7)]}
 function pu(e){if(!MATCH||!MATCH.aim)return;e.preventDefault();if(MATCH.aim.swipe){MATCH.aim=null;MATCH.sw=null;toast('Wische mit dem Finger nach oben, um zu werfen');return}const[x,y]=aimPt(),{r,rMin,rMax}=ringNow(),st=MATCH.p[MATCH.cur].st;MATCH.aim=null;{const M=MATCH,c=M.cur,T=(performance.now()-(M.tReady||0))/1000;M.flow=M.flow||[0,0];M.nerv=M.nerv||[0,0];if(T>=.4&&T<=3.2){M.flow[c]++;if(M.flow[c]===4){ctx2('Im Flow! Der Rhythmus stimmt.');if(S&&c===0&&M.ctx.type!=='pvp')S.player.flowOnce=1}}else if(T>7){if(M.flow[c]>=4)ctx2('Rhythmus verloren …');M.flow[c]=0;M.nerv[c]=1}else M.flow[c]=Math.max(0,M.flow[c]-1)}
@@ -968,7 +969,7 @@ function loop(){const M=MATCH;if(!cx||!M)return;const now=performance.now();cx.s
   cx.strokeStyle=col;cx.lineWidth=2;cx.beginPath();cx.arc(x,y,r,0,7);cx.stroke();
   cx.strokeStyle='rgba(255,255,255,.25)';cx.lineWidth=1;cx.setLineDash([2,3]);cx.beginPath();cx.arc(x,y,rMin,0,7);cx.stroke();cx.setLineDash([]);
   cx.strokeStyle='#fff';cx.lineWidth=1.6;cx.beginPath();cx.moveTo(x-9,y);cx.lineTo(x-2.5,y);cx.moveTo(x+2.5,y);cx.lineTo(x+9,y);cx.moveTo(x,y-9);cx.lineTo(x,y-2.5);cx.moveTo(x,y+2.5);cx.lineTo(x,y+9);cx.stroke();
-  cx.fillStyle='rgba(255,255,255,.1)';cx.beginPath();cx.arc(M.aim.fx,M.aim.fy+SETG.off,14,0,7);cx.fill();
+  cx.fillStyle='rgba(255,255,255,.1)';cx.beginPath();cx.arc(M.aim.fx,M.aim.fy+(M.aim.off??SETG.off),14,0,7);cx.fill();
   // Lupe
   const L=44,Z=2.8,lx=SETG.lefty?(x>60?-150:150):(x<-60?150:-150),ly=-150;cx.save();cx.beginPath();cx.arc(lx,ly,L,0,7);cx.fillStyle='#000';cx.fill();cx.clip();cx.translate(lx,ly);cx.scale(Z,Z);cx.translate(-x,-y);cx.drawImage(boardImg,-200,-200,400,400);
   M.marks.forEach(([mx,my,c])=>{cx.fillStyle=c===0?'#e9c46a':'#5fd3f3';cx.beginPath();cx.arc(mx,my,1.2,0,7);cx.fill()});
@@ -1470,7 +1471,7 @@ async function impPaste(){try{const t=await navigator.clipboard.readText();const
 function impUndo(){try{const s=localStorage.getItem(BKEY);if(!s)return;const o=JSON.parse(s);impPreview(o)}catch(e){toast('Keine Sicherung gefunden')}}
 
 /* ===== v11: Stabilität — Fehlerprotokoll, Bildschirm wach halten, sichere Speicherung ===== */
-const VERSION='17',ERRK='darts_errlog',ABKEY='darts_karriere_auto',BRKEY='darts_karriere_defekt';
+const VERSION='17.1',ERRK='darts_errlog',ABKEY='darts_karriere_auto',BRKEY='darts_karriere_defekt';
 let errT=0;
 function errLog(m){try{const a=JSON.parse(localStorage.getItem(ERRK)||'[]');a.unshift(new Date().toLocaleString('de-DE')+' · v'+VERSION+' · '+String(m).slice(0,300));localStorage.setItem(ERRK,JSON.stringify(a.slice(0,15)))}catch(e){}}
 window.addEventListener('error',e=>{errLog((e.message||'Fehler')+(e.lineno?' (Zeile '+e.lineno+')':''));if(Date.now()-errT>6000){errT=Date.now();try{toast('Ein Fehler ist aufgetreten. Details unter Einstellungen → Fehlerprotokoll.')}catch(x){}}});
@@ -1682,7 +1683,7 @@ function statsC(){const p=S.player,h=(p.hist||[]).map(x=>({s:x.s,v:x.avg})).filt
  <div class="sec">Checkout-Quote pro Doppel</div><div class="panel">${dk.length?`<svg viewBox="0 0 340 150" width="100%" role="img" aria-label="Trefferquote je Doppelfeld"><line x1="26" x2="336" y1="130" y2="130" stroke="rgba(255,255,255,.2)"/><text x="22" y="24" fill="var(--mut)" font-size="9" text-anchor="end">100%</text><text x="22" y="79" fill="var(--mut)" font-size="9" text-anchor="end">50%</text>${bars}</svg><div class="small mut">Gezählt werden alle Würfe, bei denen du auf ein Doppel gezielt hast. Tippe auf einen Balken für die Zahlen.</div>`:'<div class="small mut">Noch keine Würfe auf Doppel. Das Doppel-Training im Trainingsplatz füllt diese Statistik schnell.</div>'}</div>
  <div class="sec">Bilanz gegen Gegner</div><div class="panel">${H2.length?H2.map(x=>`<div class="row small" style="margin-top:6px;align-items:center" data-a="pcard" data-v="${x.k}" role="button"><span style="flex:1">${esc(x.n)}</span><b style="color:${x.v.w>x.v.l?'var(--green)':x.v.w<x.v.l?'#ff8a8a':'var(--ink)'}">${x.v.w} : ${x.v.l}</b></div>`).join(''):'<div class="small mut">Noch keine Duelle.</div>'}</div>`)}
 /* --- Wisch-Steuerung --- */
-function swipeStart(e,x,y){MATCH.sw={sx:e.clientX,sy:e.clientY,t0:performance.now(),pts:[[e.clientX,e.clientY,performance.now()]]};MATCH.aim={fx:x,fy:y-SETG.off,x,y:y-SETG.off,t0:performance.now(),ph:Math.random()*100,swipe:1}}
+function swipeStart(e,x,y){MATCH.sw={sx:e.clientX,sy:e.clientY,t0:performance.now(),pts:[[e.clientX,e.clientY,performance.now()]]};const o=aOff(e);MATCH.aim={fx:x,fy:y-o,x,y:y-o,off:o,t0:performance.now(),ph:Math.random()*100,swipe:1}}
 function swipeMove(e){const M=MATCH,w=M.sw;if(!w)return false;const now=performance.now();w.pts.push([e.clientX,e.clientY,now]);if(w.pts.length>8)w.pts.shift();const up=w.sy-e.clientY;
  if(up>70){const a=w.pts[0],dt=Math.max(1,now-a[2]),v=(a[1]-e.clientY)/dt,dx=e.clientX-w.sx;M.sw=null;swipeThrow(dx,v);return true}return false}
 function swipeThrow(dx,v){const M=MATCH,a=M.aim;if(!a)return;M.aim=null;const st=M.p[M.cur].st,{rMin}=aimParams(),z=hit(a.fx,a.fy),so=aiSigma((st.pra+st.kon)/2);let s=rMin*0.42*(1+Math.min(1,Math.abs(dx)/50));if(z.m===3)s*=aiSigma(st.sco)/so;if(z.d||z.b===25)s*=aiSigma(st.dop)/so;
