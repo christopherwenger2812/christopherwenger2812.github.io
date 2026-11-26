@@ -1,12 +1,31 @@
-// Aufräum-Service-Worker für den Hauptordner.
-// Alltag liegt jetzt in /alltag/ und hat dort seinen eigenen Service Worker.
-// Dieser Worker entfernt die alte Registrierung im Hauptordner, die sonst
-// auch /darts/ kontrolliert hat, und lädt offene Seiten einmal neu.
-self.addEventListener('install', () => self.skipWaiting());
+/* Oche Stars: Offline-Speicher. Das Spiel wird beim ersten Öffnen gespeichert und läuft danach auch ohne Internet. */
+const CACHE = 'oche-stars-v22';
+const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
+});
+
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
-    await self.registration.unregister();
-    const clients = await self.clients.matchAll({ type: 'window' });
-    for (const client of clients) client.navigate(client.url);
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((k) => k.startsWith('oche-stars-') && k !== CACHE).map((k) => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+/* Erst das Netz fragen (damit Updates sofort ankommen), ohne Netz den Speicher nehmen. */
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  event.respondWith((async () => {
+    try {
+      const res = await fetch(req);
+      if (res && res.ok) { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+      return res;
+    } catch (e) {
+      const hit = await caches.match(req, { ignoreSearch: true });
+      return hit || caches.match('./index.html');
+    }
   })());
 });
