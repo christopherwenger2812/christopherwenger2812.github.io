@@ -1,5 +1,5 @@
 /* Oche Stars: Offline-Speicher. Das Spiel wird beim ersten Öffnen gespeichert und läuft danach auch ohne Internet. */
-const CACHE = 'oche-stars-v28';
+const CACHE = 'oche-stars-v29';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
