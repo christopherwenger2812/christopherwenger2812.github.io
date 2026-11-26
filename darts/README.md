@@ -224,3 +224,8 @@ darts/
 - Sicherheit: Einstellungen und Spielstand werden beim Laden auf gültige Werte geprüft, Aktionen nur noch über eigene Funktionen
 - Aufgeräumt: ungenutzte Funktionen und Daten entfernt
 - Suche in den Ranglisten, Tastatur-Bedienung, Vibration und reduzierte Animationen einstellbar, Speicheranzeige, Hinweis „Neu in Version …“ nach Updates
+
+## Neu in Version 21
+- Vereine: fünf Erwachsenen-Ligen (Kreisliga bis Bundesliga) mit Auf- und Abstieg
+- Jugendligen U11, U13, U15 und U18 passend zu den Turnier-Altersklassen, automatisches Aufrücken mit deinem Verein
+- Viele verschiedene Vereinsnamen und Städte
