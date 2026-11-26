@@ -197,3 +197,6 @@ darts/
 ## Neu in Version 17.1
 - Zielen fairer: Nervenmalus nur noch beim echten Finish-Doppel, Ermüdung schwächer, perfektes Timing streut deutlich weniger
 - Mit Maus oder Stift zielt das Fadenkreuz direkt auf den Klickpunkt (Versatz nur noch bei Touch)
+
+## Neu in Version 17.2
+- Balance: Perfektes Timing entspricht jetzt genau der Streuung eines KI-Gegners mit gleichem OVR (vorher deutlich besser)
