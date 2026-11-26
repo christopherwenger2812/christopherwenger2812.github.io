@@ -200,3 +200,8 @@ darts/
 
 ## Neu in Version 17.2
 - Balance: Perfektes Timing entspricht jetzt genau der Streuung eines KI-Gegners mit gleichem OVR (vorher deutlich besser)
+
+## Neu in Version 18
+- Kalender zeigt standardmäßig nur deine Turniere (spielbar oder schon gespielt), Umschalter auf „Alle Turniere“
+- Ranglisten zeigen standardmäßig nur die Tabellen, in denen du vertreten bist
+- Neue Turnier-Detailseite: Datum, Format, Preisgeld, Sieger (auch frühere Saisons), dein Ergebnis und wie du dich qualifizierst
