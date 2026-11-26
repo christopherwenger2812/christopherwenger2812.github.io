@@ -242,3 +242,14 @@ darts/
 
 ## Neu in Version 25
 - Balance: Doppel und Bull unterhalb von OVR 50 wieder besser zu treffen (Spieler und KI gleich)
+
+## Neu in Version 26
+- Jugend: U11 und U13 spielen 301 statt 501 (Turniere und Jugendliga)
+
+## Neu in Version 27
+- U11 spielt 301 Single-Out (jedes Feld zählt zum Auschecken)
+- Jugend-Team-Cup: Ländervergleich je Altersklasse mit den 2 besten Jugendlichen jedes Landes
+- Jugend-Doppel: Paar-Turnier je Altersklasse mit Partner aus deinem Verein
+
+## Neu in Version 28
+- Junior Tour in zwei Divisionen: U14 (10–13 Jahre, 301 Single-Out) und U18 (14–17 Jahre, 501), mit eigenen Ranglisten, Super 16 und Junior World Masters
