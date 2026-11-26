@@ -219,3 +219,8 @@ darts/
 - Vereinsliga: Ligaspiel jede Woche selbst spielen, das Ergebnis entscheidet die Begegnung mit
 - Saisonvorschau öffnet sich automatisch zum Saisonstart
 - Gala: Karten der Preisträger kommen ins Kartenalbum
+
+## Neu in Version 20
+- Sicherheit: Einstellungen und Spielstand werden beim Laden auf gültige Werte geprüft, Aktionen nur noch über eigene Funktionen
+- Aufgeräumt: ungenutzte Funktionen und Daten entfernt
+- Suche in den Ranglisten, Tastatur-Bedienung, Vibration und reduzierte Animationen einstellbar, Speicheranzeige, Hinweis „Neu in Version …“ nach Updates
