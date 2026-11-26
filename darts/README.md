@@ -180,3 +180,16 @@ darts/
 - **Keine Google-Schriften mehr:** Das Spiel nutzt die Schriften des Geräts
 - **Farbenblind-Modus** und **große Schrift**
 - Fehler behoben: Im „Schnellen Spiel“ ließ sich kein KI-Gegner auswählen
+
+## Neu in Version 16
+
+- Jugend: Jede Altersklasse hat zusätzlich eine lokale Stadtmeisterschaft. Jugend-Turniere tragen Namen in der Sprache deines Landes (z. B. Coupe des Jeunes, Puchar Młodzików)
+- Amateure: Die Top 4 der nationalen Amateur-Rangliste bekommen einen Freiplatz bei Euro-Tour-Events im eigenen Land
+- Lokalmatador ab 3 lokalen Titeln: mehr Unterstützung bei Heimspielen und bis zu 30 % bessere Sponsorenangebote
+
+
+## Neu in Version 17
+- XP-Balken in der Kopfzeile: Level, aktuelle XP und wie viele bis zum nächsten Level
+- Turniere an echten Tagen mit Wochentag und Datum (Floor-Events dienstags, Liga donnerstags, WM Mitte Dezember bis Anfang Januar)
+- Saisonziele passend zu OVR und Status (Jugend, Amateur, Profi, Frauen)
+- Realistischere Avatare: Schattierung, Augen mit Iris, Nase, Lippen, Polo-Shirt, neue Frisuren (Tolle, Zopf), Gesichtsform und Augenfarbe wählbar
