@@ -205,3 +205,17 @@ darts/
 - Kalender zeigt standardmäßig nur deine Turniere (spielbar oder schon gespielt), Umschalter auf „Alle Turniere“
 - Ranglisten zeigen standardmäßig nur die Tabellen, in denen du vertreten bist
 - Neue Turnier-Detailseite: Datum, Format, Preisgeld, Sieger (auch frühere Saisons), dein Ergebnis und wie du dich qualifizierst
+
+## Neu in Version 19
+- Zweiter Verband: Welt-Darts-Bund (WDB) mit 8 offenen Turnieren, World Masters, eigener WM und Rangliste; Brücke zur PDL-WM und Q-School-Freiplätze
+- Jugend: Qualifikation für die Jugend-EM (Top 4 des Landes oder Cup-Sieg) und über das EM-Halbfinale für die Jugend-WM, in allen Altersklassen
+- Ausrüster mit Ausrüsterverträgen, Gewicht wirkt auf Flow und Ermüdung
+- Top-Trainer mit Weltranglisten-Bedingung, Trainingsraum mit 9 Ausbaustufen
+- Vereinsligen: Oberliga, Landesliga, Bezirksliga mit Auf- und Abstieg, Jugendligen U14 und U18
+- Pressekonferenz auch nach überraschenden Niederlagen, Auswirkung auf Sponsor und Rivalen; Gala mit Münzen und Album-Fotos
+- Matchdart in Zeitlupe, Match-Analyse, Talent-Scout, Saisonvorschau, Weltrekorde, TV-Experten-Modus
+
+## Neu in Version 19.1
+- Vereinsliga: Ligaspiel jede Woche selbst spielen, das Ergebnis entscheidet die Begegnung mit
+- Saisonvorschau öffnet sich automatisch zum Saisonstart
+- Gala: Karten der Preisträger kommen ins Kartenalbum
