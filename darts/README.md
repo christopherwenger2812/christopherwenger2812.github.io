@@ -229,3 +229,10 @@ darts/
 - Vereine: fünf Erwachsenen-Ligen (Kreisliga bis Bundesliga) mit Auf- und Abstieg
 - Jugendligen U11, U13, U15 und U18 passend zu den Turnier-Altersklassen, automatisches Aufrücken mit deinem Verein
 - Viele verschiedene Vereinsnamen und Städte
+
+## Neu in Version 22
+- Balance: Unterhalb von OVR 50 macht das OVR deutlich mehr Unterschied (gilt für Spieler und KI gleich), Profis ab OVR 50 unverändert
+
+## Neu in Version 23
+- Heimatstadt wählbar (beim Erstellen oder in den Einstellungen), dort gibt es immer einen Verein
+- Lokale Turniere wechseln jede Saison durch viele Städte des Landes, kleine Turniere oft in der Heimatstadt
