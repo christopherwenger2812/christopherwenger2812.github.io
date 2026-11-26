@@ -236,3 +236,9 @@ darts/
 ## Neu in Version 23
 - Heimatstadt wählbar (beim Erstellen oder in den Einstellungen), dort gibt es immer einen Verein
 - Lokale Turniere wechseln jede Saison durch viele Städte des Landes, kleine Turniere oft in der Heimatstadt
+
+## Neu in Version 24
+- Vereine: Mit Tour Card darfst du nur noch in Bundesliga oder Oberliga spielen
+
+## Neu in Version 25
+- Balance: Doppel und Bull unterhalb von OVR 50 wieder besser zu treffen (Spieler und KI gleich)
