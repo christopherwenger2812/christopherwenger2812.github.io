@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="app-version" content="2026.11.23-9">
+    <meta name="app-version" content="2026.11.27-1">
     <meta name="theme-color" content="#f4f6fb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2367,10 +2367,78 @@
                         </div>
 
                         <!-- Gemeinsame Liste -->
+                        <!-- ===== Abgleich über Firebase ===== -->
+                        <div x-show="!setQuery.trim() && setCat === 'sync'" class="card p-5 sm:p-6 space-y-3">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="label mr-auto"><i class="fa-solid fa-cloud mr-2"></i>Abgleich über Firebase</p>
+                                <span x-show="fbBereit" class="text-[11px] font-bold" :class="fbState === 'fehler' ? 'text-rose-400' : 'accent'" x-text="fbState === 'läuft' ? 'läuft …' : fbState === 'fehler' ? 'Fehler' : 'verbunden'"></span>
+                            </div>
+                            <p class="text-[11px] muted leading-relaxed">Deine Daten liegen in deiner eigenen Firebase-Datenbank und werden zwischen allen Geräten abgeglichen – verschlüsselt, bevor sie das Gerät verlassen. Auf dem Gerät bleibt eine Kopie, damit die App ohne Netz nicht leer ist.</p>
+
+                            <!-- Einrichtung -->
+                            <details class="inner p-3" :open="!fbBereit">
+                                <summary class="text-[12px] font-bold cursor-pointer">Einrichten – einmalig, etwa zehn Minuten</summary>
+                                <ol class="text-[11px] muted leading-relaxed list-decimal pl-5 space-y-1 mt-2">
+                                    <li>Auf <b>console.firebase.google.com</b> ein Projekt anlegen (Google Analytics kannst du abwählen).</li>
+                                    <li><b>Build → Firestore Database → Datenbank erstellen</b>, Produktionsmodus, Standort <b>eur3</b> oder <b>europe-west3</b>.</li>
+                                    <li><b>Build → Authentication → Jetzt starten</b>, dann <b>E-Mail/Passwort</b> einschalten.</li>
+                                    <li>Zahnrad oben links → <b>Projekteinstellungen</b>. Dort steht die <b>Projekt-ID</b>. Weiter unten unter „Meine Apps“ eine <b>Web-App</b> hinzufügen (Symbol <code>&lt;/&gt;</code>) – danach siehst du den <b>apiKey</b>.</li>
+                                    <li>Beides hier eintragen, dann unten registrieren.</li>
+                                    <li>Zuletzt in <b>Firestore → Regeln</b> die Regeln unten einsetzen und veröffentlichen. Ohne sie lässt Firebase nichts zu.</li>
+                                </ol>
+                                <div class="mt-2">
+                                    <div class="flex items-center gap-2">
+                                        <p class="label !text-[10px] mr-auto">Firestore-Regeln</p>
+                                        <button type="button" class="btn btn-soft !py-1 !text-[11px]" @click="copy(fbRegeln, 'Regeln kopiert')"><i class="fa-regular fa-copy"></i>Kopieren</button>
+                                    </div>
+                                    <pre class="text-[10px] muted mt-1 overflow-x-auto leading-relaxed whitespace-pre-wrap break-all" x-text="fbRegeln"></pre>
+                                </div>
+                            </details>
+
+                            <div class="grid sm:grid-cols-2 gap-2">
+                                <label class="block"><span class="label !text-[10px]">Projekt-ID</span>
+                                    <input type="text" class="field mt-1" x-model="fbCfg.projectId" @change="fbSpeichern()" placeholder="alltag-1a2b3" autocomplete="off" spellcheck="false" aria-label="Firebase-Projekt-ID"></label>
+                                <label class="block"><span class="label !text-[10px]">Web-API-Schlüssel</span>
+                                    <input type="text" class="field mt-1" x-model="fbCfg.apiKey" @change="fbSpeichern()" placeholder="AIza…" autocomplete="off" spellcheck="false" aria-label="Firebase-API-Schlüssel"></label>
+                            </div>
+
+                            <template x-if="!fbBereit">
+                                <div class="space-y-2">
+                                    <div class="grid sm:grid-cols-2 gap-2">
+                                        <label class="block"><span class="label !text-[10px]">E-Mail</span>
+                                            <input type="email" class="field mt-1" x-model="fbCfg.email" autocomplete="username" aria-label="E-Mail für Firebase"></label>
+                                        <label class="block"><span class="label !text-[10px]">Passwort</span>
+                                            <input type="password" class="field mt-1" x-model="fbPass" autocomplete="current-password" @keydown.enter="fbAnmelden(false)" aria-label="Passwort für Firebase"></label>
+                                    </div>
+                                    <p class="text-[11px] muted leading-relaxed">Aus diesem Passwort entsteht auch der Schlüssel für deine Daten. Auf dem zweiten Gerät dieselbe E-Mail und dasselbe Passwort – sonst kommst du an die Daten nicht heran. Mindestens sechs Zeichen, besser zwölf.</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-primary" :disabled="fbBusy" @click="fbAnmelden(false)"><i class="fa-solid fa-right-to-bracket"></i>Anmelden</button>
+                                        <button type="button" class="btn btn-soft" :disabled="fbBusy" @click="fbAnmelden(true)"><i class="fa-solid fa-user-plus"></i>Erstmalig registrieren</button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="fbBereit">
+                                <div class="space-y-2">
+                                    <div class="inner p-3 text-[11px] font-semibold space-y-1">
+                                        <p><span class="muted">Angemeldet als:</span> <span x-text="fbCfg.email"></span></p>
+                                        <p><span class="muted">Letzter Abgleich:</span> <span x-text="fbLast ? mailDayZeit(new Date(fbLast).toISOString()) : 'noch nicht'"></span></p>
+                                        <p x-show="fbMsg" :class="fbState === 'fehler' ? 'text-amber-400' : ''" x-text="fbMsg"></p>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-primary" :disabled="fbBusy" @click="fbSync(true)"><i class="fa-solid fa-rotate" :class="fbBusy ? 'spin' : ''"></i>Jetzt abgleichen</button>
+                                        <button type="button" class="btn btn-soft" :disabled="fbBusy" @click="fbAllesHoch()"><i class="fa-solid fa-cloud-arrow-up"></i>Alles hochladen</button>
+                                        <button type="button" class="btn btn-soft" :disabled="fbBusy" @click="fbAllesRunter()"><i class="fa-solid fa-cloud-arrow-down"></i>Alles holen</button>
+                                        <button type="button" class="btn btn-soft" @click="fbAbmelden()"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
                         <div x-show="!setQuery.trim() && setCat === 'sync'" class="card p-5 sm:p-6 space-y-3">
                             <p class="label"><i class="fa-solid fa-user-group mr-2"></i>Gemeinsame Einkaufsliste</p>
                             <p class="text-[11px] muted leading-relaxed">Eine Einkaufsliste, die du mit jemandem teilst – über einen eigenen Raum mit eigenem Passwort. Geteilt wird <b>nur diese eine Liste</b>: keine Termine, keine Aufgaben, keine Notizen, kein Tresor. Beide Seiten brauchen die App und dieselben drei Angaben.</p>
-                            <p x-show="!syncCfg.url" class="text-[12px] muted">Dafür muss zuerst der Abgleich über das Google-Script eingerichtet sein.</p>
+                            <p x-show="!syncCfg.url" class="text-[12px] muted">Dafür muss zuerst unter „Verbundene Geräte“ die Google-Script-URL eingetragen sein.</p>
                             <template x-if="syncCfg.url">
                                 <div class="space-y-2">
                                     <label class="block"><span class="label !text-[10px]">Welche Liste</span>
@@ -2401,7 +2469,7 @@
                         <div x-show="!setQuery.trim() && setCat === 'notify'" class="card p-5 sm:p-6 space-y-3">
                             <p class="label"><i class="fa-solid fa-chart-line mr-2"></i>Wochenrückblick</p>
                             <p class="text-[11px] muted leading-relaxed">Sonntags um 18 Uhr eine Mail: was du erledigt hast, was offen und überfällig ist, was nächste Woche ansteht, wie die Routinen liefen und wie viel Strom, Gas und Wasser durchgelaufen sind. Nutzt dieselbe Übersicht wie die Morgenmail – nichts Zusätzliches wird abgelegt.</p>
-                            <p x-show="!mailDayReady" class="text-[12px] muted">Dafür muss zuerst der Abgleich über das Google-Script eingerichtet sein.</p>
+                            <p x-show="!mailDayReady" class="text-[12px] muted">Dafür muss zuerst unter „Verbundene Geräte“ die Google-Script-URL eingetragen sein.</p>
                             <template x-if="mailDayReady">
                                 <div class="space-y-2">
                                     <div class="flex flex-wrap gap-2">
@@ -2656,7 +2724,7 @@
 <div class="card p-5 sm:p-6 space-y-5">
                     <div>
                         <p class="label"><i class="fa-solid fa-link mr-2"></i>Verbundene Geräte</p>
-                        <p class="text-[11px] muted mt-1.5 leading-relaxed">Hält Termine, Aufgaben, Einkauf, Tresor und Einstellungen auf deinen Geräten synchron. Alles wird mit deinem Sync-Passwort verschlüsselt, bevor es das Gerät verlässt. Nur pro Gerät bleiben Design/Akzent, Dichte, Startseite, Ansichten, Benachrichtigungen und die Update-Prüfung sowie die Google-Kalender-URL.</p>
+                        <p class="text-[11px] muted mt-1.5 leading-relaxed">Raumname und Passwort gehören zum Google-Script: Sie sichern den Zugriff auf Gmail, die Guten-Morgen-Mail, Erinnerungen, Drive-Sicherungen und die gemeinsame Einkaufsliste. Der Datenabgleich selbst läuft über Firebase (eine Karte weiter oben).</p>
                     </div>
 
                     <form @submit.prevent="saveSyncCreds()" class="space-y-3">
@@ -2676,35 +2744,26 @@
                     </form>
 
                     <div class="pt-5 border-t divider space-y-3" :class="syncReady ? '' : 'opacity-50 pointer-events-none'">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold"><i class="fa-brands fa-google mr-2"></i>Über dein Google-Konto</p>
-                                <p class="text-[11px] muted mt-0.5">Ein kleines Script in deinem Drive speichert die verschlüsselten Daten – die Geräte müssen nie gleichzeitig online sein.</p>
-                            </div>
-                            <button type="button" role="switch" :aria-checked="syncCfg.google" class="switch" :class="syncCfg.google ? 'on' : ''" @click="toggleSyncChannel('google')" aria-label="Google-Abgleich"></button>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold"><i class="fa-brands fa-google mr-2"></i>Google-Script (Gmail, Mails, Erinnerungen, gemeinsame Liste)</p>
+                            <p class="text-[11px] muted mt-0.5">Der Datenabgleich läuft über Firebase. Das Script wird nur noch für Gmail, die Guten-Morgen-Mail, Erinnerungen, den Wochenrückblick, Drive-Sicherungen und die gemeinsame Einkaufsliste gebraucht.</p>
                         </div>
-                        <div x-show="syncCfg.google" class="space-y-3">
-                            <input type="url" x-model="syncCfg.url" @change="saveSyncCfg()" placeholder="https://script.google.com/macros/s/…/exec" class="field" aria-label="Sync-Script-URL">
-                            <div class="flex flex-wrap items-center justify-between gap-3">
-                                <p class="text-[11px] muted min-w-0" :class="gError ? '!text-rose-400' : ''" x-text="gStatusText"></p>
-                                <div class="flex gap-2">
-                                    <button type="button" @click="copySyncScript()" class="btn btn-soft"><i class="fa-regular fa-copy"></i>Script kopieren</button>
-                                    <button type="button" @click="saveSyncCfg(); syncGoogle(true)" class="btn btn-soft" :disabled="gBusy"><i class="fa-solid fa-rotate" :class="gBusy ? 'spin' : ''"></i>Jetzt abgleichen</button>
-                                </div>
-                            </div>
-                            <details class="inner p-4 text-[11px] leading-relaxed">
-                                <summary class="cursor-pointer text-xs font-bold">Einrichtung (einmalig, ca. 3 Minuten)</summary>
-                                <ol class="list-decimal pl-5 mt-3 space-y-1.5 muted">
-                                    <li>Oben auf <b>Script kopieren</b> klicken.</li>
-                                    <li>Auf <b>script.google.com</b> mit deinem Google-Konto anmelden und <b>Neues Projekt</b> wählen.</li>
-                                    <li>Den Beispielcode komplett löschen, das kopierte Script einfügen und speichern.</li>
-                                    <li><b>Bereitstellen → Neue Bereitstellung → Typ „Web-App“</b>: Ausführen als <b>Ich</b>, Zugriff <b>Jeder</b> → Bereitstellen.</li>
-                                    <li>Drive-Zugriff erlauben (bei der Warnung „Nicht verifiziert“: <b>Erweitert → Weiter</b>).</li>
-                                    <li>Die <b>Web-App-URL</b> hier einfügen. Auf dem zweiten Gerät dieselbe URL, denselben Raumnamen und dasselbe Passwort eintragen.</li>
-                                </ol>
-                                <p class="mt-3 muted">„Jeder“ heißt nur, dass kein Google-Login nötig ist. Gespeichert werden ausschließlich verschlüsselte Daten unter einem nicht erratbaren Dateinamen in deinem Drive.</p>
-                            </details>
+                        <input type="url" x-model="syncCfg.url" @change="saveSyncCfg()" placeholder="https://script.google.com/macros/s/…/exec" class="field" aria-label="Script-URL">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <p class="text-[11px] muted min-w-0" x-text="syncCfg.url ? 'Script eingetragen.' : 'Noch keine Script-URL eingetragen.'"></p>
+                            <button type="button" @click="copySyncScript()" class="btn btn-soft"><i class="fa-regular fa-copy"></i>Script kopieren</button>
                         </div>
+                        <details class="inner p-4 text-[11px] leading-relaxed">
+                            <summary class="cursor-pointer text-xs font-bold">Einrichtung (einmalig, ca. 3 Minuten)</summary>
+                            <ol class="list-decimal pl-5 mt-3 space-y-1.5 muted">
+                                <li>Oben auf <b>Script kopieren</b> klicken.</li>
+                                <li>Auf <b>script.google.com</b> mit deinem Google-Konto anmelden und <b>Neues Projekt</b> wählen.</li>
+                                <li>Den Beispielcode komplett löschen, das kopierte Script einfügen und speichern.</li>
+                                <li><b>Bereitstellen → Neue Bereitstellung → Typ „Web-App“</b>: Ausführen als <b>Ich</b>, Zugriff <b>Jeder</b> → Bereitstellen.</li>
+                                <li>Zugriff erlauben (bei der Warnung „Nicht verifiziert“: <b>Erweitert → Weiter</b>).</li>
+                                <li>Die <b>Web-App-URL</b> hier einfügen – auf jedem Gerät dieselbe URL, derselbe Raumname und dasselbe Passwort.</li>
+                            </ol>
+                        </details>
                     </div>
 
                     <div class="pt-5 border-t divider space-y-3" :class="syncReady ? '' : 'opacity-50 pointer-events-none'">
@@ -2727,7 +2786,7 @@
                             <div class="card p-5 sm:p-6"><div class="space-y-3">
                         <p class="label"><i class="fa-brands fa-google-drive mr-2"></i>Sicherungen in Google Drive</p>
                         <template x-if="!backupReady()">
-                            <p class="text-[11px] muted">Dafür müssen deine Geräte über Google verbunden sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zu den verbundenen Geräten</button></p>
+                            <p class="text-[11px] muted">Dafür muss die Google-Script-URL eingetragen sein. <button type="button" class="accent font-bold" @click="setCat = 'sync'">Zu den verbundenen Geräten</button></p>
                         </template>
                         <template x-if="backupReady()">
                             <div class="space-y-3">
@@ -3541,7 +3600,7 @@
                 <label class="label" for="imUrl">Adresse der Rezeptseite</label>
                 <input id="imUrl" type="url" x-model="importUrl" class="field" placeholder="https://…" @keydown.enter.prevent="importFromUrl()">
                 <p class="muted text-[11px] leading-relaxed">Die Seite wird über dein eigenes Google-Script geladen, weil der Browser fremde Seiten nicht direkt lesen darf. Klappt bei allen Seiten mit Rezept-Auszeichnung, also bei den meisten Koch-Portalen.</p>
-                <p x-show="!syncCfg.url" class="text-[11px] font-bold text-amber-400">Dafür muss unter „Verbundene Geräte“ das Google-Script eingerichtet sein.</p>
+                <p x-show="!syncCfg.url" class="text-[11px] font-bold text-amber-400">Dafür muss unter „Verbundene Geräte“ die Google-Script-URL eingetragen sein.</p>
             </div>
 
             <div x-show="importWay === 'pdf'" class="space-y-2">
@@ -4770,6 +4829,35 @@
             const base = await crypto.subtle.importKey('raw', te.encode(password), 'PBKDF2', false, ['deriveKey']);
             return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
         }
+        /* ---------- Firebase ----------
+           Bewusst ohne das Firebase-SDK: Die REST-Schnittstellen reichen für
+           Anmeldung und Datenbank, und die App bleibt eine Datei ohne 300 KB
+           Fremdcode. Der Preis: keine Live-Benachrichtigungen vom Server, es
+           wird in kurzen Abständen nachgefragt. */
+        const FB_AUTH = 'https://identitytoolkit.googleapis.com/v1/accounts:';
+        const FB_TOKEN = 'https://securetoken.googleapis.com/v1/token';
+        /* Pfad der Dokumente eines Nutzers, einmal als Adresse und einmal als
+           Name, wie ihn Firestore in Schreibvorgängen erwartet. */
+        const FB_API = 'https://firestore.googleapis.com/v1/';
+        const fbBasis = pid => 'projects/' + pid + '/databases/(default)/documents';
+        const fbPfad = (pid, uid) => fbBasis(pid) + '/nutzer/' + uid + '/eintraege';
+        /* Firestore erlaubt keinen Doppelpunkt am Anfang und keine Schrägstriche
+           in Dokumentnamen; die Schlüssel der App sehen aus wie „ev:abc“. */
+        const fbId = k => String(k).replace(/[\/:.*~]/g, m => ({ '/': '~s', ':': '~d', '.': '~p', '*': '~a', '~': '~~' }[m]));
+        const fbKey = id => String(id).replace(/~[sdpa~]/g, m => ({ '~s': '/', '~d': ':', '~p': '.', '~a': '*', '~~': '~' }[m]));
+
+        /* Ein Schlüssel, der sich ausleiten und wieder einlesen lässt – nötig,
+           damit „angemeldet bleiben“ ohne erneute Passworteingabe geht. */
+        async function fbSchluessel(passwort, uid) {
+            const base = await crypto.subtle.importKey('raw', te.encode(passwort), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: te.encode('firebase|' + uid), iterations: 250000, hash: 'SHA-256' },
+                base, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+        }
+        async function fbSchluesselText(key) { return toB64(await crypto.subtle.exportKey('raw', key)); }
+        async function fbSchluesselAus(text) {
+            return crypto.subtle.importKey('raw', fromB64(text), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+        }
+
         async function encryptJSON(key, obj) {
             const iv = crypto.getRandomValues(new Uint8Array(12));
             return { iv: toB64(iv), data: toB64(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, te.encode(JSON.stringify(obj)))) };
@@ -4869,7 +4957,7 @@
         const sha256Hex = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
         let syncMeta = {};                                  // pro Eintrag: { u: Änderungszeit, h: Hash } bzw. { u, d: 1 } für Gelöschtes
         let syncKeyCache = { tag: '', key: null };          // abgeleiteter Schlüssel (nur im Speicher)
-        const syncRt = { gen: 0, peer: null, conns: new Map(), retryTimer: null, sendTimer: null, gTimer: null, gPoll: null };
+        const syncRt = { gen: 0, peer: null, conns: new Map(), retryTimer: null, sendTimer: null, fbTimer: null, fbPoll: null };
         const PEER_LIB = 'https://cdn.jsdelivr.net/npm/peerjs@1.5/dist/peerjs.min.js';
         const SYNC_SCRIPT = `/**
  * Christophers Space – Sync-Script
@@ -6717,7 +6805,7 @@ function reply_(p) {
                     { cat: 'mail', src: 'mail', k: 'notify', type: 'toggle', label: 'Bei neuen Mails benachrichtigen', desc: 'Hinweis in der App, bei aktivierten Benachrichtigungen auch als Systemhinweis' },
                     { cat: 'mail', src: 'mail', k: 'preview', type: 'toggle', label: 'Vorschautext in der Liste zeigen' },
                     { cat: 'mail', src: 'mail', k: 'images', type: 'toggle', label: 'Externe Bilder immer laden', desc: 'Absender können dann sehen, dass du die Mail geöffnet hast' },
-                    { cat: 'sync', k: 'autoBackup', type: 'toggle', label: 'Automatische Sicherung in Google Drive', desc: 'Legt regelmäßig eine verschlüsselte Sicherung an (die letzten 8 bleiben erhalten). Benötigt den Google-Abgleich.' },
+                    { cat: 'sync', k: 'autoBackup', type: 'toggle', label: 'Automatische Sicherung in Google Drive', desc: 'Legt regelmäßig eine verschlüsselte Sicherung an (die letzten 8 bleiben erhalten). Benötigt die Google-Script-URL unter „Verbundene Geräte“.' },
                     { cat: 'sync', k: 'backupEvery', type: 'select', if: 'autoBackup', label: 'Sicherung erstellen', o: [[1, 'Täglich'], [7, 'Wöchentlich'], [30, 'Monatlich']] },
                     { cat: 'vault', k: 'vaultLockMin', type: 'select', label: 'Automatisch sperren nach', o: [[1, '1 Minute'], [2, '2 Minuten'], [5, '5 Minuten'], [10, '10 Minuten'], [15, '15 Minuten'], [30, '30 Minuten']] },
                     { cat: 'vault', k: 'lockOnHide', type: 'toggle', label: 'Sofort sperren, wenn die App im Hintergrund ist', desc: 'Beim Wechsel in einen anderen Tab oder eine andere App' },
@@ -6738,9 +6826,9 @@ function reply_(p) {
                 wocheBusy: false, wocheMsg: '', wocheStat: null,
                 syncStatus: 'Nur auf diesem Gerät', syncOk: false,
                 googleScriptUrl: '', googleScriptUrlInput: '',
-                syncCfg: { room: '', pass: '', google: false, p2p: false, url: '' },
+                syncCfg: { room: '', pass: '', p2p: false, url: '' },
                 syncRoomInput: '', syncPassInput: '', syncPassShow: false, syncError: '',
-                gBusy: false, gError: '', gLast: 0, _syncToastAt: 0,
+                gBusy: false, gLast: 0, _syncToastAt: 0,
                 backups: [], backupBusy: false, backupMsg: '', _backupTry: 0,
                 backupLast: (() => { try { return Number(localStorage.getItem('organizer_backup_last')) || 0; } catch (e) { return 0; } })(),
                 p2p: { status: 'off', role: '', peers: 0, error: '' },
@@ -6868,6 +6956,8 @@ function reply_(p) {
                     this.googleScriptUrl = this.googleScriptUrlInput = localStorage.getItem('organizer_gscript_url') || '';
                     const sc = readJSON(SYNC_CFG_KEY, null);
                     if (sc && typeof sc === 'object') this.syncCfg = { ...this.syncCfg, ...sc };
+                    const fc = readJSON('organizer_fbcfg', null);
+                    if (fc && typeof fc === 'object') this.fbCfg = { ...this.fbCfg, ...fc };
                     const tc = readJSON('organizer_teilcfg', null);
                     if (tc && typeof tc === 'object') this.teilCfg = { ...this.teilCfg, ...tc };
                     this.syncRoomInput = this.syncCfg.room || localStorage.getItem('organizer_sync_room') || '';
@@ -6941,7 +7031,7 @@ function reply_(p) {
                         mq2.addEventListener('change', e => { this.schmal = e.matches; });
                     } catch (e) {}
                     setTimeout(() => this.pushAgenda(), 4000);
-                    window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.syncCfg.google) this.syncGoogle(); });
+                    window.addEventListener('online', () => { this.online = true; this.touchSync(); if (this.fbBereit) this.fbSync(true); });
                     window.addEventListener('offline', () => { this.online = false; });
                     this.$watch('activeTab', v => { if (v === 'today') this.loadWeather(); this.vaultError = ''; this.mpInput = this.mpConfirm = ''; if (v === 'calendar') this.scrollGrid(); });
                     this.$watch('calendarView', () => this.scrollGrid());
@@ -7182,25 +7272,19 @@ function reply_(p) {
                 },
                 /* ---------- Geräte-Abgleich (Google & P2P) ---------- */
                 get syncReady() { return !!this.syncCfg.room && (this.syncCfg.pass || '').length >= 8 && !!window.crypto?.subtle; },
-                get syncActive() { return this.syncReady && (this.syncCfg.google || this.syncCfg.p2p); },
+                get syncActive() { return this.fbBereit || (this.syncReady && this.syncCfg.p2p); },
                 get headerStatus() {
                     if (!this.online) return 'Offline – Änderungen werden später abgeglichen';
                     if (!this.syncActive) return this.syncStatus;
                     const p = [];
-                    if (this.syncCfg.google) p.push(this.gError ? 'Google ⚠' : this.gBusy ? 'Google …' : this.gLast ? 'Google ✓' : 'Google');
+                    if (this.fbBereit) p.push(this.fbState === 'fehler' ? 'Firebase ⚠' : this.fbBusy ? 'Firebase …' : this.fbLast ? 'Firebase ✓' : 'Firebase');
                     if (this.syncCfg.p2p) p.push({ connected: 'P2P ✓', waiting: 'P2P wartet', connecting: 'P2P …', error: 'P2P ⚠' }[this.p2p.status] || 'P2P');
                     return 'Abgleich: ' + p.join(' · ');
                 },
                 get headerOk() {
                     if (!this.online) return false;
                     if (!this.syncActive) return this.syncOk;
-                    return (!this.syncCfg.google || (!this.gError && !!this.gLast)) && (!this.syncCfg.p2p || ['connected', 'waiting'].includes(this.p2p.status));
-                },
-                get gStatusText() {
-                    if (!this.syncCfg.url) return 'Bitte die Web-App-URL deines Scripts eintragen.';
-                    if (this.gBusy) return 'Gleiche ab …';
-                    if (this.gError) return '⚠ ' + this.gError;
-                    return this.gLast ? 'Zuletzt abgeglichen: ' + new Date(this.gLast).toLocaleString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht abgeglichen.';
+                    return (!this.fbBereit || (this.fbState !== 'fehler' && !!this.fbLast)) && (!this.syncCfg.p2p || ['connected', 'waiting'].includes(this.p2p.status));
                 },
                 get p2pStatusText() {
                     const s = this.p2p;
@@ -7227,26 +7311,24 @@ function reply_(p) {
                 async clearSync() {
                     if (!await this.ask('Abgleich beenden und die Zugangsdaten von diesem Gerät entfernen? Deine Daten bleiben erhalten.')) return;
                     this.stopSync();
-                    Object.assign(this.syncCfg, { room: '', pass: '', google: false, p2p: false });
-                    this.syncPassInput = ''; this.syncRoomInput = ''; this.gError = ''; this.gLast = 0;
+                    Object.assign(this.syncCfg, { room: '', pass: '', p2p: false });
+                    this.syncPassInput = ''; this.syncRoomInput = ''; this.gLast = 0;
                     this.saveSyncCfg(); this.toast('Abgleich beendet');
                 },
                 toggleSyncChannel(ch) {
                     if (!this.syncReady) return;
                     this.syncCfg[ch] = !this.syncCfg[ch]; this.saveSyncCfg();
-                    if (ch === 'google') { this.gError = ''; if (this.syncCfg.google && this.syncCfg.url) this.syncGoogle(true); }
-                    else if (this.syncCfg.p2p) this.startP2P(); else this.stopP2P();
+                    if (this.syncCfg.p2p) this.startP2P(); else this.stopP2P();
                 },
                 copySyncScript() { this.copyText(SYNC_SCRIPT, 'Script kopiert – jetzt in Google Apps Script einfügen'); },
                 startSync() {
-                    if (!this.syncReady) return;
-                    if (this.syncCfg.google && this.syncCfg.url) setTimeout(() => this.syncGoogle(), 1500);
-                    if (this.syncCfg.p2p) this.startP2P();
-                    clearInterval(syncRt.gPoll);
-                    syncRt.gPoll = setInterval(() => { if (document.visibilityState === 'visible' && this.syncReady && this.syncCfg.google && this.syncCfg.url) this.syncGoogle(); }, 120000);
+                    if (this.fbBereit) setTimeout(() => this.fbSync(true), 800);
+                    clearInterval(syncRt.fbPoll);
+                    syncRt.fbPoll = setInterval(() => { if (this.fbBereit && document.visibilityState === 'visible') this.fbSync(); }, 30000);
+                    if (this.syncReady && this.syncCfg.p2p) this.startP2P();
                 },
-                stopSync() { this.stopP2P(); clearInterval(syncRt.gPoll); clearTimeout(syncRt.gTimer); clearTimeout(syncRt.sendTimer); },
-                restartSync() { syncKeyCache = { tag: '', key: null }; this.gError = ''; this.stopSync(); this.startSync(); },
+                stopSync() { this.stopP2P(); clearInterval(syncRt.fbPoll); clearTimeout(syncRt.sendTimer); },
+                restartSync() { syncKeyCache = { tag: '', key: null }; this.stopSync(); this.startSync(); },
                 /* Hält das Wetter von selbst frisch, solange die App offen und sichtbar ist. */
                 wxTick() {
                     if (!this.cfg.weather || this.cfg.weatherAuto === false) return;
@@ -7261,9 +7343,233 @@ function reply_(p) {
                     this.maybeAutoCheck();
                     this.wxTick();
                     if (!this.syncReady) return;
-                    if (this.syncCfg.google && this.syncCfg.url && Date.now() - this.gLast > 30000) this.syncGoogle();
+                    if (this.fbBereit && Date.now() - this.fbLast > 30000) this.fbSync();
                     if (this.syncCfg.p2p && ['off', 'error'].includes(this.p2p.status)) this.startP2P();
                 },
+                /* ================= FIREBASE =================
+                   Zweiter Abgleichweg neben dem Google-Script. Die Daten liegen
+                   in Firestore, verschlüsselt wie bisher – der Server sieht nur
+                   Kennungen und Zeitstempel. Die Zusammenführung übernimmt
+                   dieselbe Mechanik wie beim Script: ein Eintrag je Schlüssel,
+                   der jüngere gewinnt, Gelöschtes bleibt als Grabstein stehen. */
+                fbCfg: { on: false, apiKey: '', projectId: '', email: '', uid: '', refresh: '', keyB64: '', lastU: 0 },
+                fbBusy: false, fbMsg: '', fbPass: '', fbState: '', fbLast: 0,
+                _fbTok: '', _fbTokBis: 0, _fbKey: null,
+
+                get fbBereit() { return !!(this.fbCfg.on && this.fbCfg.apiKey && this.fbCfg.projectId && this.fbCfg.uid && this.fbCfg.refresh); },
+
+                fbSpeichern() { try { localStorage.setItem('organizer_fbcfg', JSON.stringify(this.fbCfg)); } catch (e) {} },
+
+                /* Ein gültiges Zugangsmerkmal. Es läuft nach einer Stunde ab und
+                   wird mit dem Erneuerungsmerkmal nachgeholt – das ist der Teil,
+                   der „angemeldet bleiben“ möglich macht. */
+                async fbToken() {
+                    if (this._fbTok && Date.now() < this._fbTokBis - 60000) return this._fbTok;
+                    if (!this.fbCfg.refresh) throw new Error('Nicht angemeldet');
+                    const res = await fetch(FB_TOKEN + '?key=' + encodeURIComponent(this.fbCfg.apiKey), {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ grant_type: 'refresh_token', refresh_token: this.fbCfg.refresh })
+                    });
+                    const d = await res.json();
+                    if (!res.ok) throw new Error(this.fbFehler(d) || 'Anmeldung abgelaufen – bitte neu anmelden');
+                    this._fbTok = d.id_token; this._fbTokBis = Date.now() + (Number(d.expires_in) || 3600) * 1000;
+                    if (d.refresh_token && d.refresh_token !== this.fbCfg.refresh) { this.fbCfg.refresh = d.refresh_token; this.fbSpeichern(); }
+                    return this._fbTok;
+                },
+
+                /* Firebase antwortet mit sprechenden, aber englischen Kürzeln. */
+                fbFehler(d) {
+                    const m = String(d && d.error && (d.error.message || d.error.status) || '');
+                    const tabelle = {
+                        EMAIL_EXISTS: 'Diese Adresse ist schon registriert – bitte anmelden statt registrieren.',
+                        EMAIL_NOT_FOUND: 'Diese Adresse ist nicht registriert.',
+                        INVALID_PASSWORD: 'Falsches Passwort.',
+                        INVALID_LOGIN_CREDENTIALS: 'E-Mail oder Passwort stimmt nicht.',
+                        WEAK_PASSWORD: 'Das Passwort muss mindestens sechs Zeichen haben.',
+                        INVALID_EMAIL: 'Das ist keine gültige E-Mail-Adresse.',
+                        TOKEN_EXPIRED: 'Die Anmeldung ist abgelaufen – bitte neu anmelden.',
+                        USER_DISABLED: 'Dieses Konto ist gesperrt.',
+                        TOO_MANY_ATTEMPTS_TRY_LATER: 'Zu viele Versuche – bitte später erneut.',
+                        OPERATION_NOT_ALLOWED: 'In der Firebase-Konsole ist „E-Mail/Passwort“ noch nicht eingeschaltet (Authentication → Sign-in method).',
+                        PERMISSION_DENIED: 'Die Firestore-Regeln lassen das nicht zu. Bitte die Regeln aus der Anleitung einsetzen.',
+                        NOT_FOUND: 'Projekt oder Datenbank nicht gefunden – stimmt die Projekt-Kennung? Ist Firestore angelegt?'
+                    };
+                    for (const k in tabelle) if (m.indexOf(k) === 0 || m === k) return tabelle[k];
+                    return m;
+                },
+
+                async fbAnmelden(neu) {
+                    const mail = (this.fbCfg.email || '').trim(), pass = this.fbPass;
+                    if (!this.fbCfg.apiKey.trim() || !this.fbCfg.projectId.trim()) return this.fbMsg = 'Bitte zuerst Projekt-Kennung und Web-API-Schlüssel eintragen.';
+                    if (!mail || !pass) return this.fbMsg = 'E-Mail und Passwort fehlen.';
+                    this.fbBusy = true; this.fbMsg = '';
+                    try {
+                        const res = await fetch(FB_AUTH + (neu ? 'signUp' : 'signInWithPassword') + '?key=' + encodeURIComponent(this.fbCfg.apiKey.trim()), {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: mail, password: pass, returnSecureToken: true })
+                        });
+                        const d = await res.json();
+                        if (!res.ok) throw new Error(this.fbFehler(d) || 'Anmeldung fehlgeschlagen');
+                        this.fbCfg.uid = d.localId; this.fbCfg.refresh = d.refreshToken; this.fbCfg.email = mail;
+                        this._fbTok = d.idToken; this._fbTokBis = Date.now() + (Number(d.expiresIn) || 3600) * 1000;
+                        /* Der Schlüssel entsteht aus dem Passwort und der Nutzerkennung –
+                           damit kommt jedes Gerät mit denselben Angaben an dieselben Daten. */
+                        this._fbKey = await fbSchluessel(pass, d.localId);
+                        this.fbCfg.keyB64 = await fbSchluesselText(this._fbKey);
+                        this.fbCfg.on = true; this.fbPass = '';
+                        this.fbSpeichern();
+                        this.fbMsg = neu ? 'Konto angelegt und angemeldet.' : 'Angemeldet.';
+                    } catch (e) { this.fbMsg = e.message; this.merkeFehler('Firebase', e.message); }
+                    finally { this.fbBusy = false; }
+                    /* Der erste Abgleich läuft erst nach dem Anmelden – sonst stolpert
+                       er über die eigene „läuft gerade“-Sperre und täte nichts. */
+                    if (this.fbBereit) await this.fbSync(true);
+                },
+
+                fbAbmelden() {
+                    this.fbCfg = { ...this.fbCfg, on: false, uid: '', refresh: '', keyB64: '', lastU: 0 };
+                    this._fbTok = ''; this._fbKey = null; this.fbSpeichern();
+                    this.fbMsg = 'Abgemeldet. Die Daten bleiben in Firebase liegen.';
+                },
+
+                async fbGetKey() {
+                    if (this._fbKey) return this._fbKey;
+                    if (!this.fbCfg.keyB64) throw new Error('Kein Schlüssel – bitte neu anmelden.');
+                    this._fbKey = await fbSchluesselAus(this.fbCfg.keyB64);
+                    return this._fbKey;
+                },
+
+                /* pfad hängt an .../documents an, body macht daraus eine Anfrage mit POST */
+                async fbRuf(pfad, body) {
+                    const tok = await this.fbToken();
+                    const res = await fetch(FB_API + fbBasis(this.fbCfg.projectId.trim()) + pfad, {
+                        method: body ? 'POST' : 'GET',
+                        headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' },
+                        ...(body ? { body: JSON.stringify(body) } : {})
+                    });
+                    const d = await res.json().catch(() => ({}));
+                    if (!res.ok) throw new Error(this.fbFehler(d) || ('Firestore antwortet ' + res.status));
+                    return d;
+                },
+
+                /* ---------- Hochladen ----------
+                   Nur Geändertes, und in Paketen: Firestore nimmt bis zu 500
+                   Schreibvorgänge auf einmal entgegen. */
+                async fbPush() {
+                    const key = await this.fbGetKey();
+                    const schnapp = this.buildSnapshot();
+                    const offen = Object.entries(schnapp.items).filter(([k, r]) => (r.u || 0) > (this.fbCfg.lastU || 0));
+                    if (!offen.length) return 0;
+                    const pfad = fbPfad(this.fbCfg.projectId.trim(), this.fbCfg.uid);
+                    for (let i = 0; i < offen.length; i += 400) {
+                        const writes = [];
+                        for (const [k, r] of offen.slice(i, i + 400)) {
+                            const felder = { u: { integerValue: String(r.u || 0) } };
+                            if (r.d) felder.d = { booleanValue: true };
+                            else felder.j = { stringValue: JSON.stringify(await encryptJSON(key, r.v)) };
+                            writes.push({ update: { name: pfad + '/' + fbId(k), fields: felder },
+                                          updateMask: { fieldPaths: ['u', 'd', 'j'] } });
+                        }
+                        await this.fbRuf(':commit', { writes });
+                    }
+                    return offen.length;
+                },
+
+                /* ---------- Herunterladen ----------
+                   Gefragt wird nur nach dem, was sich seit dem letzten Mal geändert
+                   hat. Der Zeitstempel kommt vom Eintrag selbst, nicht vom Server –
+                   so bleibt die Reihenfolge dieselbe wie beim Zusammenführen. */
+                async fbPull(zwingen) {
+                    const key = await this.fbGetKey();
+                    let ab = Number(this.fbCfg.lastU) || 0, geholt = 0, hoechste = ab;
+                    const items = {};
+                    for (let runde = 0; runde < 20; runde++) {
+                        /* runQuery läuft auf dem Elterndokument, nicht auf der Wurzel */
+                        const antwort = await this.fbRuf('/nutzer/' + this.fbCfg.uid + ':runQuery', {
+                            structuredQuery: {
+                                from: [{ collectionId: 'eintraege' }],
+                                where: { fieldFilter: { field: { fieldPath: 'u' }, op: 'GREATER_THAN', value: { integerValue: String(ab) } } },
+                                orderBy: [{ field: { fieldPath: 'u' }, direction: 'ASCENDING' }],
+                                limit: 300
+                            }
+                        });
+                        const zeilen = (Array.isArray(antwort) ? antwort : []).filter(z => z && z.document);
+                        for (const z of zeilen) {
+                            const name = z.document.name || '', f = z.document.fields || {};
+                            const k = fbKey(name.slice(name.lastIndexOf('/') + 1));
+                            const u = Number(f.u && f.u.integerValue) || 0;
+                            if (u > hoechste) hoechste = u;
+                            if (f.d && f.d.booleanValue) { items[k] = { u, d: 1 }; geholt++; continue; }
+                            try { items[k] = { u, v: await decryptJSON(key, JSON.parse(f.j.stringValue)) }; geholt++; }
+                            catch (e) { /* mit einem anderen Passwort verschlüsselt – überspringen */ }
+                        }
+                        if (zeilen.length < 300) break;
+                        ab = hoechste;
+                    }
+                    /* „Alles holen“ soll wirklich alles setzen – also den eigenen
+                       Merker für diese Einträge vorher aus dem Weg räumen. */
+                    if (zwingen) for (const k in items) delete syncMeta[k];
+                    if (geholt) this.applyRemote({ v: 1, items });
+                    if (hoechste > (this.fbCfg.lastU || 0)) { this.fbCfg.lastU = hoechste; this.fbSpeichern(); }
+                    return geholt;
+                },
+
+                /* ---------- Ein Durchgang ----------
+                   Erst holen, dann schicken: So gewinnt bei gleichzeitiger Änderung
+                   nicht einfach das Gerät, das zuletzt gespeichert hat, sondern die
+                   jüngere Änderung je Eintrag. */
+                async fbSync(sofort) {
+                    if (!this.fbBereit || this.fbBusy) return;
+                    if (!sofort && Date.now() - this.fbLast < 4000) return;
+                    this.fbBusy = true; this.fbState = 'läuft';
+                    try {
+                        const rein = await this.fbPull();
+                        this.stampChanges();
+                        const raus = await this.fbPush();
+                        /* „lastU“ wandert nur mit dem, was wirklich vom Server kam.
+                           Würde hier der eigene Stand zählen, bliebe eine fremde
+                           Änderung mit gleichem Zeitstempel für immer unsichtbar. */
+                        this.fbLast = Date.now(); this.fbState = 'ok';
+                        this.fbMsg = (rein || raus) ? (rein ? rein + ' empfangen' : '') + (rein && raus ? ', ' : '') + (raus ? raus + ' gesendet' : '') : 'Alles aktuell';
+                        if (rein) this.saveAllData();
+                    } catch (e) {
+                        this.fbState = 'fehler'; this.fbMsg = e.message;
+                        this.merkeFehler('Firebase', e.message);
+                    } finally { this.fbBusy = false; }
+                },
+
+                /* Alles noch einmal hochladen – nach einem Wechsel des Passworts oder
+                   wenn ein Gerät mit altem Stand dazukommt. */
+                async fbAllesHoch() {
+                    if (!await this.ask('Alle Daten dieses Geräts noch einmal zu Firebase hochladen?')) return;
+                    this.fbCfg.lastU = 0; this.fbSpeichern();
+                    this.stampChanges();
+                    this.fbBusy = true; this.fbMsg = '';
+                    try { const n = await this.fbPush(); this.fbMsg = n + ' Einträge hochgeladen.'; }
+                    catch (e) { this.fbMsg = e.message; }
+                    finally { this.fbBusy = false; }
+                },
+
+                /* Alles neu holen: setzt den Merker zurück, damit nichts übersprungen wird. */
+                async fbAllesRunter() {
+                    this.fbCfg.lastU = 0; this.fbSpeichern();
+                    this.fbBusy = true; this.fbMsg = '';
+                    try { const n = await this.fbPull(true); this.saveAllData(); this.fbMsg = n + ' Einträge geholt.'; }
+                    catch (e) { this.fbMsg = e.message; }
+                    finally { this.fbBusy = false; }
+                },
+
+                get fbRegeln() {
+                    return ['rules_version = \'2\';',
+                        'service cloud.firestore {',
+                        '  match /databases/{database}/documents {',
+                        '    match /nutzer/{uid}/{dokumente=**} {',
+                        '      allow read, write: if request.auth != null && request.auth.uid == uid;',
+                        '    }',
+                        '  }',
+                        '}'].join('\n');
+                },
+
                 async getSyncKey() {
                     const tag = this.syncCfg.room + '\u0000' + this.syncCfg.pass;
                     if (syncKeyCache.tag !== tag) syncKeyCache = { tag, key: await deriveKey(this.syncCfg.pass, te.encode('space-sync|' + this.syncCfg.room), 250000) };
@@ -7308,9 +7614,9 @@ function reply_(p) {
                     return changed;
                 },
                 queueSync() {
-                    if (!this.syncReady) return;
+                    if (!this.syncReady && !this.fbBereit) return;
                     clearTimeout(syncRt.sendTimer); syncRt.sendTimer = setTimeout(() => this.p2pBroadcast(), 600);
-                    if (this.syncCfg.google && this.syncCfg.url) { clearTimeout(syncRt.gTimer); syncRt.gTimer = setTimeout(() => this.syncGoogle(), 2500); }
+                    if (this.fbBereit) { clearTimeout(syncRt.fbTimer); syncRt.fbTimer = setTimeout(() => this.fbSync(), 2500); }
                 },
                 buildSnapshot(forBackup) {
                     const maps = {};
@@ -7468,36 +7774,8 @@ function reply_(p) {
                         return daten;
                     } finally { clearTimeout(to); }
                 },
-                async syncGoogle(manual = false) {
-                    if (!this.syncReady || !this.syncCfg.google) return;
-                    if (!this.syncCfg.url) { if (manual) this.toast('Bitte zuerst die Script-URL eintragen'); return; }
-                    if (this.gBusy) { return; }
-                    this.gBusy = true;
-                    try {
-                        this.stampChanges();
-                        let got = await this.gCall({ action: 'get' }), done = false;
-                        for (let i = 0; i < 4 && !done; i++) {
-                            if (!got.ok) throw new Error(got.error || 'Serverfehler');
-                            const remote = got.blob ? await this.decryptSnap(got.blob) : { v: 1, items: {} };
-                            if (!this.applyRemote(remote).needPush) { done = true; break; }
-                            const put = await this.gCall({ action: 'put', baseRev: got.rev, blob: await this.encryptSnap() });
-                            if (put.ok) { done = true; break; }
-                            if (!put.conflict) throw new Error(put.error || 'Serverfehler');
-                            got = { ok: true, rev: put.rev, blob: put.blob }; // jemand war schneller → dessen Stand mit unserem zusammenführen und erneut senden
-                        }
-                        if (!done) throw new Error('Zu viele gleichzeitige Änderungen – bitte später erneut versuchen.');
-                        this.gError = ''; this.gLast = Date.now();
-                        if (manual) this.toast('Alles auf dem neuesten Stand');
-                        this.maybeAutoBackup();
-                    } catch (e) {
-                        this.gError = e.name === 'AbortError' ? 'Zeitüberschreitung' : e instanceof TypeError ? 'Keine Verbindung zum Script (offline, oder Zugriff nicht auf „Jeder“ gestellt?)' : (e.message || 'Unbekannter Fehler');
-                        this.merkeFehler('Abgleich', this.gError);
-                        if (manual) this.toast('Abgleich fehlgeschlagen');
-                    } finally { this.gBusy = false; }
-                },
-
                 /* --- Sicherung in Google Drive (verschlüsselt mit dem Sync-Passwort, die letzten 8 bleiben) --- */
-                backupReady() { return !!(this.syncReady && this.syncCfg.google && this.syncCfg.url); },
+                backupReady() { return !!(this.syncReady && this.syncCfg.url); },
                 backupErrText(e) {
                     const m = (e && e.message) || '';
                     if (/Unbekannte Aktion/.test(m)) return 'Das Google-Script ist veraltet – bitte unter „Geräte-Abgleich“ das neue Script kopieren, einfügen und die Web-App als neue Version bereitstellen.';
@@ -8288,7 +8566,7 @@ function reply_(p) {
                 },
                 async teilCall(payload) {
                     const url = (this.syncCfg.url || '').trim();
-                    if (!/^https:\/\/script\.google\.com\//.test(url)) throw new Error('Dafür muss zuerst der Abgleich über das Google-Script eingerichtet sein.');
+                    if (!/^https:\/\/script\.google\.com\//.test(url)) throw new Error('Dafür muss zuerst unter „Verbundene Geräte“ die Google-Script-URL eingetragen sein.');
                     const room = (await sha256Hex('google|' + this.teilCfg.room)).slice(0, 32);
                     const sig = (await sha256Hex('sig|' + this.teilCfg.room + '|' + this.teilCfg.pass)).slice(0, 32);
                     const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 25000);
@@ -9174,7 +9452,7 @@ function reply_(p) {
                    eine Mail schicken kann, legt die App zusätzlich eine kurze Übersicht ab –
                    nur Datum, Uhrzeit und Titel, bewusst ohne Notizen und ohne Orte aus dem Tresor. */
                 mailDayBusy: false, mailDayMsg: '',
-                get mailDayReady() { return !!(this.syncCfg.url && this.syncCfg.google); },
+                get mailDayReady() { return !!this.syncCfg.url; },
                 /* Baut die Übersicht für die nächsten sieben Tage */
                 agendaDaten() {
                     const tage = [];
@@ -9379,10 +9657,9 @@ function reply_(p) {
                     const sag = (was, stufe, text) => this.pruefErg.push({ was, stufe, text });
                     try {
                         this.pruefSchritt = 'Abgleich …';
-                        if (!this.syncCfg.room) sag('Abgleich', 'aus', 'nicht eingerichtet');
-                        else if (!this.syncCfg.google) sag('Abgleich', 'aus', 'Google-Script nicht eingeschaltet');
+                        if (!this.fbBereit) sag('Abgleich', 'aus', 'Firebase nicht eingerichtet');
                         else {
-                            try { const r = await this.gCall({ action: 'get' }); sag('Abgleich', 'ok', 'erreichbar, Stand ' + (r.rev || 0)); }
+                            try { await this.fbSync(true); sag('Abgleich', this.fbState === 'fehler' ? 'fehler' : 'ok', this.fbMsg || 'Firebase erreichbar'); }
                             catch (e) { sag('Abgleich', 'fehler', e.message); }
                         }
 
