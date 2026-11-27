@@ -95,9 +95,11 @@ Nur für Spieler ohne Tour Card. Die Ranglisten gelten jeweils eine Saison.
 - Tages-Challenge, Geister-Duell gegen den eigenen besten Leg.
 - **Schnelles Spiel:** 501, 301, Cricket, Killer, Bermuda, Around the World, gegen die KI oder zu zweit.
 - **Party-Turnier** für 3 bis 8 Personen an einem Handy.
-- **Statistik-Center** und Match-Analyse mit Trefferbild und Doppelquote.
+- **Statistik-Center** mit Karriere-Kennzahlen, Trefferbild, Doppelquote und persönlichen Tipps, dazu die Match-Analyse.
 
 ## Einstellungen
+
+Sortiert in die Kategorien Spiel, Steuerung, Darstellung, Ton, Profil sowie Speichern & Cloud.
 
 - Schwierigkeit (Leicht, Normal, Profi), Matchlänge (Kurz oder Original)
 - Fadenkreuz-Abstand, Links- oder Rechtshänder, Wisch-Steuerung
@@ -115,6 +117,7 @@ Nach dem ersten Öffnen läuft das Spiel auch offline.
 
 ## Spielstand
 
+- **Mehrere Karrieren:** Unter Einstellungen → Speichern & Cloud → „Karrieren verwalten“ (oder auf dem Startbildschirm) startest du weitere Karrieren und wechselst zwischen ihnen.
 - Der Spielstand liegt im Browser des Geräts. Mit dem **Cloud-Speicher** (siehe unten) wird er zusätzlich in deinem Firebase-Projekt gesichert.
 - Updates löschen den Spielstand nicht. Zum Saisonstart wird automatisch eine Sicherung angelegt.
 - **Gerät wechseln:** Einstellungen → „Spielstand exportieren“, Code oder Datei auf dem neuen Gerät über „Spielstand importieren“ laden.
@@ -133,7 +136,7 @@ Einmalig einrichten in der [Firebase-Konsole](https://console.firebase.google.co
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /saves/{uid} {
+    match /saves/{uid}/{rest=**} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
   }
@@ -141,8 +144,9 @@ service cloud.firestore {
 ```
 
 5. **Projekteinstellungen → Allgemein → Deine Apps → Web-App (</>)** hinzufügen. Den angezeigten Block `firebaseConfig` kopieren.
-6. Im Spiel **Einstellungen → Cloud-Speicher**: Konfiguration einfügen, speichern, dann mit E-Mail und Passwort **Konto erstellen**.
-7. Auf weiteren Geräten dieselbe Konfiguration einfügen und **Anmelden**. Das Spiel bietet den Cloud-Stand dann zum Laden an.
+6. Das Projekt `oche-stars` ist im Spiel schon fest eingetragen. Unter **Einstellungen → Cloud-Speicher** einfach mit E-Mail und Passwort **Konto erstellen**.
+7. Auf weiteren Geräten **Anmelden**.
+8. Mit „Immer neuesten Stand nehmen“ lädt das Spiel beim Start und beim Zurückkehren in die App automatisch den neueren Stand jeder Karriere. Alle Karrieren liegen in der Cloud unter `saves/<Benutzer>/k/<Karriere>`. Das Spiel bietet den Cloud-Stand dann zum Laden an.
 
 Der `apiKey` in der Konfiguration ist kein Geheimnis. Geschützt werden die Daten durch die Anmeldung und die Regeln: Jeder kann nur seinen eigenen Spielstand lesen und schreiben. Das Passwort wird nicht auf dem Gerät gespeichert.
 
@@ -188,6 +192,8 @@ Eigene Aufnahmen ersetzen einfach die Dateien mit gleichem Namen. `index.json` l
 
 | Version | Neu |
 |---|---|
+| 36 | Einstellungen in Kategorien, mehrere Karrieren, Cloud mit allen Karrieren und „Immer neuesten Stand“, Vereinsliga auf der Startseite, Tipps im Statistik-Center |
+| 35.1 | Oche-Stars-Firebase-Projekt fest eingetragen |
 | 35 | Cloud-Speicher mit Firebase für mehrere Geräte |
 | 34 | Spielerpool bis 720 mit fester Altersstruktur, Karriereende nach Alter und Leistung, jährlicher Nachwuchsjahrgang, immer 128 Tour Cards |
 | 33 | WDB Youth Masters und WDB-Jugend-WM in U14 (301 Single-Out) und U18 (501) getrennt, eigene Ranglisten |
