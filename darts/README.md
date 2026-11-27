@@ -21,7 +21,7 @@ Darts-Karrierespiel fürs Handy: vom Jugend-Cup mit 8 Jahren bis zum WM-Titel un
 - **Spielerkarte** mit Portrait und 6 Werten: Präzision, Konstanz, Scoring, Doppel, Nerven, Ausdauer. Spielstil zum Start: Scoring-Maschine, Finisher, Eiskalt oder Allrounder.
 - **Charakter-Editor:** Hautton, Gesichtsform, Augenfarbe, Frisur, Bart, Brille, Shirt. Dazu Spitzname, Heimatstadt und Geburtstag.
 - **Saison mit 24 Wochen**, Turniere an echten Tagen mit Datum.
-- **Über 400 erfundene Spieler** aus über 40 Nationen, die altern, sich entwickeln, aufhören und von Talenten ersetzt werden.
+- **Bis zu 720 erfundene Spieler** aus über 40 Nationen mit fester Altersstruktur: Sie altern, entwickeln sich und hören je nach Alter und Leistung auf. Jedes Jahr rückt ein neuer Nachwuchsjahrgang nach.
 - **Zwei Verbände**, die PDL und der Welt-Darts-Bund (WDB), sowie ein eigener Jugendbereich, siehe unten.
 
 ### PDL: Weg zum Profi
@@ -115,10 +115,36 @@ Nach dem ersten Öffnen läuft das Spiel auch offline.
 
 ## Spielstand
 
-- Der Spielstand liegt **nur lokal im Browser** des Geräts, nicht auf GitHub.
+- Der Spielstand liegt im Browser des Geräts. Mit dem **Cloud-Speicher** (siehe unten) wird er zusätzlich in deinem Firebase-Projekt gesichert.
 - Updates löschen den Spielstand nicht. Zum Saisonstart wird automatisch eine Sicherung angelegt.
 - **Gerät wechseln:** Einstellungen → „Spielstand exportieren“, Code oder Datei auf dem neuen Gerät über „Spielstand importieren“ laden.
 - Wer die Browserdaten löscht, löscht den Spielstand. Darum ab und zu exportieren.
+
+## Cloud-Speicher (Firebase)
+
+Einmalig einrichten in der [Firebase-Konsole](https://console.firebase.google.com/):
+
+1. **Projekt hinzufügen**, Name z. B. `oche-stars`, Google Analytics kann aus bleiben.
+2. **Authentication → Jetzt starten → Anbieter „E-Mail/Passwort“** aktivieren.
+3. **Firestore Database → Datenbank erstellen**, Standort `europe-west3` (Frankfurt), im Produktionsmodus starten.
+4. Unter **Firestore → Regeln** diese Regeln einfügen und veröffentlichen:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /saves/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
+
+5. **Projekteinstellungen → Allgemein → Deine Apps → Web-App (</>)** hinzufügen. Den angezeigten Block `firebaseConfig` kopieren.
+6. Im Spiel **Einstellungen → Cloud-Speicher**: Konfiguration einfügen, speichern, dann mit E-Mail und Passwort **Konto erstellen**.
+7. Auf weiteren Geräten dieselbe Konfiguration einfügen und **Anmelden**. Das Spiel bietet den Cloud-Stand dann zum Laden an.
+
+Der `apiKey` in der Konfiguration ist kein Geheimnis. Geschützt werden die Daten durch die Anmeldung und die Regeln: Jeder kann nur seinen eigenen Spielstand lesen und schreiben. Das Passwort wird nicht auf dem Gerät gespeichert.
 
 ## Dateien
 
@@ -162,6 +188,8 @@ Eigene Aufnahmen ersetzen einfach die Dateien mit gleichem Namen. `index.json` l
 
 | Version | Neu |
 |---|---|
+| 35 | Cloud-Speicher mit Firebase für mehrere Geräte |
+| 34 | Spielerpool bis 720 mit fester Altersstruktur, Karriereende nach Alter und Leistung, jährlicher Nachwuchsjahrgang, immer 128 Tour Cards |
 | 33 | WDB Youth Masters und WDB-Jugend-WM in U14 (301 Single-Out) und U18 (501) getrennt, eigene Ranglisten |
 | 32 | WDB-Ausbau: Bronze-Turniere, Frauen, Jugend, WM-Quali, Nationen- und Kontinental-Cups; neue Ranglisten-Übersicht |
 | 31 | Team-OVR im Doppel, Vereinskader, Spitzname änderbar |
