@@ -605,7 +605,7 @@
     <div class="min-h-[100dvh] flex flex-col">
         <header class="sticky top-0 z-40 border-b backdrop-blur-xl divider" style="background: color-mix(in srgb, var(--surface) 85%, transparent);">
             <div class="mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4" :class="wideTab ? 'max-w-[1900px]' : 'max-w-7xl'">
-                <div class="flex items-center gap-3 shrink-0">
+                <div class="flex items-center gap-3 min-w-0 md:shrink-0">
                     <svg class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl shrink-0" role="img" aria-label="Logo"><use href="#logoApp"/></svg>
                     <div class="min-w-0 max-w-[9rem] lg:max-w-[14rem]">
                         <h1 class="text-base sm:text-lg font-black tracking-tight truncate"><span x-text="appTitle.first"></span><span class="accent" x-text="appTitle.last"></span></h1>
@@ -620,9 +620,9 @@
                         <span x-text="clockTime"></span>
                         <span class="dt" x-text="clockDate"></span>
                     </button>
-                    <button type="button" @click="openTagesblatt()" class="icon-btn" title="Tagesblatt" aria-label="Tagesblatt"><i class="fa-regular fa-sun"></i></button>
-                    <button type="button" @click="openSchnell()" class="icon-btn" title="Schnell erfassen (Strg + J)" aria-label="Schnell erfassen"><i class="fa-solid fa-circle-plus"></i></button>
-                    <button type="button" @click="openSearch()" class="icon-btn" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button type="button" @click="openTagesblatt()" class="icon-btn hidden md:inline-flex" title="Tagesblatt" aria-label="Tagesblatt"><i class="fa-regular fa-sun"></i></button>
+                    <button type="button" @click="openSchnell()" class="icon-btn hidden md:inline-flex" title="Schnell erfassen (Strg + J)" aria-label="Schnell erfassen"><i class="fa-solid fa-circle-plus"></i></button>
+                    <button type="button" @click="openSearch()" class="icon-btn hidden md:inline-flex" title="Suchen (Strg + K)" aria-label="Alles durchsuchen"><i class="fa-solid fa-magnifying-glass"></i></button>
                     <button type="button" @click="switchTab('settings')" class="icon-btn" :class="activeTab === 'settings' ? 'accent' : ''" title="Einstellungen" aria-label="Einstellungen"><i class="fa-solid fa-gear"></i></button>
                 </div>
                 <!-- Navigation: die häufigen Bereiche direkt, der Rest unter „Mehr“.
@@ -632,12 +632,14 @@
                         <template x-for="t in mainTabs" :key="t.id">
                             <button @click="switchTab(t.id); navMore = false" :class="activeTab === t.id ? 'on' : ''" class="flex items-center gap-2"><i :class="t.icon"></i><span class="hidden lg:inline" x-text="t.label"></span><span x-show="t.id === 'mail' && mailUnread > 0" class="min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black grid place-items-center" x-text="mailUnread > 99 ? '99+' : mailUnread"></span></button>
                         </template>
-                        <button @click="navMore = !navMore" :class="moreTabs.some(t => t.id === activeTab) ? 'on' : ''" class="flex items-center gap-2" :aria-expanded="navMore" aria-haspopup="true" aria-label="Weitere Bereiche">
-                            <i :class="(moreTabs.find(t => t.id === activeTab) || {}).icon || 'fa-solid fa-ellipsis'"></i>
-                            <span class="hidden lg:inline" x-text="(moreTabs.find(t => t.id === activeTab) || {}).label || 'Mehr'"></span>
-                            <i class="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
-                        </button>
                     </nav>
+                    <!-- „Mehr“ steht bewusst außerhalb der scrollenden Leiste:
+                         sonst rutscht es bei schmalen Fenstern aus dem Bild. -->
+                    <button @click="navMore = !navMore" :class="moreTabs.some(t => t.id === activeTab) ? 'on' : ''" class="seg ml-1 shrink-0 flex items-center gap-2" :aria-expanded="navMore" aria-haspopup="true" aria-label="Weitere Bereiche">
+                        <i :class="(moreTabs.find(t => t.id === activeTab) || {}).icon || 'fa-solid fa-ellipsis'"></i>
+                        <span class="hidden lg:inline" x-text="(moreTabs.find(t => t.id === activeTab) || {}).label || 'Mehr'"></span>
+                        <i class="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
+                    </button>
                     <div x-show="navMore" x-transition.opacity.duration.120ms x-cloak @click.outside="navMore = false"
                          class="card absolute right-0 top-full mt-2 p-1.5 w-56 z-50" style="box-shadow: var(--shadow-s)">
                         <template x-for="t in moreTabs" :key="t.id">
@@ -664,6 +666,8 @@
                     <button @click="showMore = false; switchTab(t.id)" class="side !py-3.5" :class="activeTab === t.id ? 'on' : ''"><i :class="t.icon" class="w-5 text-center"></i><span x-text="t.label"></span></button>
                 </template>
                 <button @click="showMore = false; openSearch()" class="side !py-3.5"><i class="fa-solid fa-magnifying-glass w-5 text-center"></i>Alles durchsuchen</button>
+                <button @click="showMore = false; openSchnell()" class="side !py-3.5"><i class="fa-solid fa-circle-plus w-5 text-center"></i>Schnell erfassen</button>
+                <button @click="showMore = false; openTagesblatt()" class="side !py-3.5"><i class="fa-regular fa-sun w-5 text-center"></i>Tagesblatt</button>
                 <button @click="showMore = false" class="btn btn-soft w-full !py-3 mt-2">Schließen</button>
             </div>
         </div>
