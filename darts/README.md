@@ -192,6 +192,7 @@ Eigene Aufnahmen ersetzen einfach die Dateien mit gleichem Namen. `index.json` l
 
 | Version | Neu |
 |---|---|
+| 36.1 | Cloud-Abgleich: weiter fortgeschrittener Stand gewinnt, keine Überschreibung mit älteren Ständen |
 | 36 | Einstellungen in Kategorien, mehrere Karrieren, Cloud mit allen Karrieren und „Immer neuesten Stand“, Vereinsliga auf der Startseite, Tipps im Statistik-Center |
 | 35.1 | Oche-Stars-Firebase-Projekt fest eingetragen |
 | 35 | Cloud-Speicher mit Firebase für mehrere Geräte |
